@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="{{ locale }}">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light only" />
+    <title>{{ subject }}</title>
+  </head>
+  {#- No remote images, scripts or tracking: styles are inline because mail
+      clients drop <style> blocks, and the logo travels inside the message
+      (cid:logo, attached by build_message). -#}
+  <body style="margin:0;padding:0;background:#eff1f4;font-family:'IBM Plex Sans',Arial,Helvetica,sans-serif;color:#10131a;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#eff1f4;padding:24px 0;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border:1px solid #e2e5ea;border-radius:8px;">
+            <tr>
+              <td style="padding:18px 32px;background:#0c0d10;border-radius:7px 7px 0 0;border-bottom:3px solid #17b4c4;">
+                <table role="presentation" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td style="vertical-align:middle;padding-right:12px;">
+                      <img src="cid:{{ logo_cid }}" width="32" height="32" alt="" style="display:block;border:0;" />
+                    </td>
+                    <td style="vertical-align:middle;font-size:22px;letter-spacing:-0.2px;color:#f2f5fa;">
+                      <strong>TTX</strong><strong style="color:#6fd3f5;">-</strong><span style="color:#c6d0e0;">Zone</span>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:28px 32px;font-size:15px;line-height:1.6;">
+                {% block content %}{% endblock %}
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:16px 32px;background:#f6f7f9;border-top:1px solid #e2e5ea;border-radius:0 0 7px 7px;font-size:12px;color:#616e7c;">
+                {% block footer %}{% endblock %}
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

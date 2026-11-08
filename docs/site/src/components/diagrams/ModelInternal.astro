@@ -1,0 +1,44 @@
+---
+import Diagram from './Diagram.astro';
+
+const tip = 'url(#diagram-internal-tool-a)';
+---
+
+<Diagram
+  title="Internal tool"
+  description="Everything runs on the internal network. People reach the proxy over HTTPS; the proxy forwards to the frontend and the API. The API uses PostgreSQL and the uploads volume; the worker uses PostgreSQL. Nothing is published to the Internet."
+  width={720}
+  height={268}
+>
+  <rect class="zone" x="8" y="10" width="704" height="250" rx="4"></rect>
+  <text class="small" x="20" y="30">Your internal network</text>
+
+  <rect class="box" x="24" y="108" width="120" height="52" rx="4"></rect>
+  <text class="strong mid" x="84" y="131">People</text>
+  <text class="small mid" x="84" y="149">every role</text>
+
+  <rect class="on" x="194" y="108" width="110" height="52" rx="4"></rect>
+  <text class="strong mid" x="249" y="131">proxy</text>
+  <text class="small mid" x="249" y="149">HTTPS :443</text>
+
+  <rect class="box" x="354" y="44" width="120" height="48" rx="4"></rect>
+  <text class="strong mid" x="414" y="73">frontend</text>
+  <rect class="box" x="354" y="110" width="120" height="48" rx="4"></rect>
+  <text class="strong mid" x="414" y="139">api</text>
+  <rect class="box" x="354" y="176" width="120" height="48" rx="4"></rect>
+  <text class="strong mid" x="414" y="205">worker</text>
+
+  <rect class="box" x="554" y="76" width="140" height="48" rx="4"></rect>
+  <text class="strong mid" x="624" y="105">uploads</text>
+  <rect class="box" x="554" y="150" width="140" height="48" rx="4"></rect>
+  <text class="strong mid" x="624" y="179">postgres</text>
+
+  <path class="line" d="M144 134h49" marker-end={tip}></path>
+  <path class="line" d="M304 126c25 0 25-58 49-58" marker-end={tip}></path>
+  <path class="line" d="M304 134h49" marker-end={tip}></path>
+  <path class="line" d="M474 128c40 0 40-28 79-28" marker-end={tip}></path>
+  <path class="line" d="M474 140c40 0 40 30 79 30" marker-end={tip}></path>
+  <path class="line" d="M474 200c40 0 40-20 79-20" marker-end={tip}></path>
+
+  <text class="small" x="20" y="248">Nothing is published to the Internet. Outbound, if used: email, identity provider, SIEM.</text>
+</Diagram>

@@ -1,0 +1,112 @@
+# The reverse proxy of deploy/docker-compose.yml (docs/deployment.md, section
+# 4). The image fills in ${TTX_SERVER_NAME} and ${TTX_API_UPSTREAM} when it
+# starts; nginx's own $variables stay as they are.
+
+# Public routes that hash a password, whatever the outcome. The API counts
+# failed sign-ins itself (login_throttle_service); this caps the work one
+# address can ask for, signing up included. A room behind one address signing
+# in at once queues in the burst rather than being refused.
+limit_req_zone $binary_remote_addr zone=auth:10m rate=30r/s;
+
+server {
+    listen 8080 default_server;
+    server_name _;
+    server_tokens off;
+
+    location = /healthz {
+        access_log off;
+        default_type text/plain;
+        return 200 "ok\n";
+    }
+
+    location / {
+        return 301 https://${TTX_SERVER_NAME}$request_uri;
+    }
+}
+
+server {
+    listen 8443 ssl default_server;
+    http2 on;
+    server_name ${TTX_SERVER_NAME};
+    server_tokens off;
+
+    ssl_certificate     /etc/nginx/certs/fullchain.pem;
+    ssl_certificate_key /etc/nginx/certs/privkey.pem;
+    ssl_protocols       TLSv1.2 TLSv1.3;
+
+    # The API and the frontend image send their own Content-Security-Policy
+    # and X-Frame-Options. add_header in a location would replace this one:
+    # no location below adds its own.
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+
+    # Names resolved per request, not once at start: a recreated container
+    # gets a new address, and the proxy doesn't need the API up to start.
+    resolver 127.0.0.11 valid=10s;
+    set $api ${TTX_API_UPSTREAM};
+    set $web frontend:8080;
+
+    proxy_http_version 1.1;
+    proxy_set_header Connection "";
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
+    # Default cap for the API; the upload routes below raise it.
+    client_max_body_size 12m;
+
+    # Exact, or nginx answers this one with a redirect to its prefix below,
+    # and the API redirects back: the exercise list would never load.
+    location = /api/v1/ttx {
+        proxy_pass http://$api;
+    }
+
+    location /api/v1/ttx/ {
+        # Inject files: MSEL_FILE_MAX_BYTES (50 MB) plus the multipart envelope.
+        client_max_body_size 55m;
+        client_body_timeout  300s;
+        proxy_read_timeout   300s;
+        proxy_send_timeout   300s;
+        proxy_pass http://$api;
+    }
+
+    location ~ ^/api/v1/(organizations/[^/]+/scenarios|ttx/[^/]+/scenario) {
+        # Scenario import: SCENARIO_MAX_BYTES (200 MB).
+        client_max_body_size 210m;
+        client_body_timeout  600s;
+        proxy_read_timeout   600s;
+        proxy_send_timeout   600s;
+        proxy_pass http://$api;
+    }
+
+    location ~ ^/api/v1/ttx/[^/]+/run/stream {
+        # The Playground's live updates (Server-Sent Events).
+        proxy_buffering off;
+        proxy_read_timeout 1h;
+        proxy_pass http://$api;
+    }
+
+    location ~ ^/api/v1/auth/(login|register|password/) {
+        limit_req zone=auth burst=300;
+        limit_req_status 429;
+        error_page 429 = @rate_limited;
+        proxy_pass http://$api;
+    }
+
+    # The API's own error format, and the code the sign-in page translates.
+    location @rate_limited {
+        default_type application/json;
+        return 429 '{"success":false,"error":{"code":"LOGIN_THROTTLED","message":"Too many requests. Try again later.","ttx_id":null}}';
+    }
+
+    location /api/ {
+        proxy_pass http://$api;
+    }
+
+    location /media/ {
+        proxy_pass http://$api;
+    }
+
+    location / {
+        proxy_pass http://$web;
+    }
+}

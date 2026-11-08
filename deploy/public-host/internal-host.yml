@@ -1,0 +1,34 @@
+# What the internal host adds when the Players' public face runs on a DMZ host
+# (public-host/docker-compose.yml). Layer it on the main file, from deploy/:
+#
+#   docker compose -f docker-compose.yml -f public-host/internal-host.yml up -d
+#
+# In .env, besides the main file's settings:
+#   TTX_DB_BIND      the internal address:port the DMZ host connects to,
+#                    e.g. 10.0.0.5:5432; allow it from the DMZ host only
+#   TTX_UPLOADS_PATH the shared mount, the same files as the DMZ host's
+#
+# PostgreSQL then offers TLS, which the DMZ host insists on (TTX_DB_SSLMODE):
+# put server.crt and server.key in public-host/db-certs/ (the key owned by
+# uid 70, mode 600).
+
+services:
+  postgres:
+    command:
+      - postgres
+      - -c
+      - ssl=on
+      - -c
+      - ssl_cert_file=/run/db-certs/server.crt
+      - -c
+      - ssl_key_file=/run/db-certs/server.key
+      - -c
+      - ssl_min_protocol_version=TLSv1.2
+    ports:
+      - "${TTX_DB_BIND:?set TTX_DB_BIND in .env}:5432"
+    volumes:
+      - ./public-host/db-certs:/run/db-certs:ro
+
+  api:
+    volumes:
+      - ${TTX_UPLOADS_PATH:?set TTX_UPLOADS_PATH in .env}:/app/uploads

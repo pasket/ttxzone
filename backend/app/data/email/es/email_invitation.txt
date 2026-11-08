@@ -1,0 +1,12 @@
+Hola:
+
+{{ inviter }} ({{ organization }}) te invita a participar como Jugador en el ejercicio de mesa «{{ exercise }}» en {{ product_name }}. Para unirte, abre este enlace antes de {{ days }} días:
+
+{{ link }}
+
+El enlace es solo para ti: funciona únicamente con una cuenta con esta dirección de correo, y puedes crearla al abrirlo. Sirve una sola vez.
+
+Si no esperabas este mensaje, ignóralo: no ocurre nada si no abres el enlace.
+
+--
+Mensaje automático enviado por {{ product_name }}.

@@ -1,0 +1,61 @@
+---
+title: Instance administration
+description: Who runs a TTX-Zone instance, how they reach its workspace and where to start.
+sidebar:
+  label: Overview
+  order: 1
+---
+
+import Deployment from '../../../components/diagrams/Deployment.astro';
+
+TTX-Zone is self-hosted. An instance is a set of containers on infrastructure you run, with one database and one place for uploaded files. This section is for whoever installs it and looks after it: the **instance administrator**.
+
+## Who the instance administrator is
+
+An instance administrator runs the instance itself, above every organization on it: who may create organizations, the accounts, sign-in security, email, single sign-on, legal documents, the AI assistant and the activity log. It's a role on the instance, separate from the [roles inside an organization](/guide/concepts/#roles), and it gives no access to any organization's exercises. One person can be both, with one account.
+
+- **The first one** is granted from the server's console, because access to the server is the root of trust. [Install](/instance/install/#create-the-first-administrator) shows how.
+- **Later ones** are granted by an existing administrator, from **Accounts**, unless `INSTANCE_ADMIN_WEB_GRANTS=false` keeps that to the console.
+- An instance administrator must use an authenticator app. Until they enroll one, the workspace stays closed to them.
+
+## Reaching the workspace
+
+Open the avatar menu, top right, and choose **Instance administration**. Only instance administrators see that entry. The context bar then shows **This instance** instead of an organization, and the menu lists the workspace's sections:
+
+| Section | What you do there | Guide |
+|---|---|---|
+| **Tenancy rule** | Decide who may create organizations | [Tenancy and accounts](/instance/tenancy/) |
+| **Accounts** | Create, suspend, reset and sign out accounts; grant administrators | [Tenancy and accounts](/instance/tenancy/#accounts) |
+| **Organizations** | Create organizations and name their Exercise Program Manager | [Tenancy and accounts](/instance/tenancy/) |
+| **Legal documents** | Publish terms of service and a privacy policy | [Tenancy and accounts](/instance/tenancy/#legal-documents) |
+| **Email** | Configure outgoing email | [Email](/instance/email/) |
+| **Sign-in security** | Password rules and which roles need a second factor | [Tenancy and accounts](/instance/tenancy/#sign-in-security) |
+| **Single sign-on** | Sign in through your identity provider | [Single sign-on](/instance/single-sign-on/) |
+| **AI assistant** | Turn the assistant on or off, see its use | [AI assistant](/instance/ai-assistant/) |
+| **Activity log** | Read what happened, forward it to a SIEM | [Logs and activity](/instance/logs-and-activity/) |
+
+Some messages in the application call this workspace **Platform**.
+
+## What runs
+
+<Deployment />
+
+| Service | What it does |
+|---|---|
+| `postgres` | The database, PostgreSQL 16 |
+| `migrate` | Applies database migrations, then exits |
+| `api` | The HTTP API |
+| `worker` | Background work: outgoing email, forwarding to a SIEM, retention |
+| `frontend` | The web application, served by Nginx |
+| `proxy` | Terminates TLS. The only service that publishes a port |
+
+Players who connect from the Internet can have a separate public face, which adds two more services: see [Deployment models](/instance/deployment-models/).
+
+## Where to start
+
+1. Pick a [deployment model and an installation size](/instance/deployment-models/).
+2. [Install](/instance/install/) and create the first administrator.
+3. [Configure](/instance/configuration/) the settings that matter on a server; check [network and ports](/instance/network-and-ports/) with whoever runs your firewall.
+4. Choose [who may create organizations](/instance/tenancy/).
+5. Set up [email](/instance/email/) and, if you use one, [single sign-on](/instance/single-sign-on/).
+6. Schedule [backups](/instance/backup-and-restore/) and test a restore.

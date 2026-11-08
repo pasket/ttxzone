@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <clipPath id="clip-audit-1">
+      <circle cx="32" cy="32" r="31"/>
+    </clipPath>
+  </defs>
+  <circle cx="32" cy="32" r="31" fill="#1a1f2c" stroke="#232838" stroke-width="1.5"/>
+  <g clip-path="url(#clip-audit-1)">
+    <circle cx="32" cy="24" r="10" fill="#e7eaf0"/><path d="M10,56 C10,40 19,32 32,32 C45,32 54,40 54,56 Z" fill="#e7eaf0"/>
+  </g>
+  <circle cx="47" cy="47" r="12" fill="#17b4c4" stroke="#1a1f2c" stroke-width="1.5"/>
+  <g transform="translate(39.5, 39.5) scale(0.94)">
+    <circle cx="6.7" cy="6.7" r="4.2" fill="none" stroke="#0b0e14" stroke-width="1.4"/><line x1="9.8" y1="9.8" x2="13.8" y2="13.8" stroke="#0b0e14" stroke-width="1.6" stroke-linecap="round"/>
+  </g>
+</svg>

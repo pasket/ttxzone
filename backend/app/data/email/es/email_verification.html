@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+{% block content %}
+<p style="margin:0 0 16px;">Hola, {{ name }}:</p>
+<p style="margin:0 0 16px;">Para terminar de crear tu cuenta de {{ product_name }}, confirma que esta dirección es tuya abriendo este enlace antes de {{ hours }} horas:</p>
+<p style="margin:0 0 24px;"><a href="{{ link }}" style="display:inline-block;padding:10px 20px;background:#00c2d1;color:#0c0d10;text-decoration:none;border-radius:6px;font-weight:bold;">Confirmar mi correo</a></p>
+<p style="margin:0 0 16px;color:#616e7c;font-size:13px;word-break:break-all;">O copia esta dirección en tu navegador: {{ link }}</p>
+<p style="margin:0;">Si no has creado ninguna cuenta, ignora este mensaje.</p>
+{% endblock %}
+{% block footer %}Mensaje automático enviado por {{ product_name }}.{% endblock %}

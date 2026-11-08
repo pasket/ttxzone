@@ -1,0 +1,12 @@
+Hola, {{ name }}:
+
+Tu código de verificación de {{ product_name }} es:
+
+{{ code }}
+
+Funciona una sola vez, durante {{ minutes }} minutos. Nadie de {{ product_name }} te lo pedirá nunca.
+
+Si no acabas de intentar iniciar sesión o confirmar una acción, puede que alguien conozca tu contraseña: cámbiala.
+
+--
+Mensaje automático enviado por {{ product_name }}.

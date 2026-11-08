@@ -1,0 +1,8 @@
+-r requirements.txt
+# Pinned for the same reason as requirements.txt: a new ruff release can
+# add lint rules or change formatting and turn CI red on unrelated changes.
+ruff==0.16.7
+pytest==9.1.1
+pytest-cov==7.1.0
+httpx==0.28.1
+pypdf==6.21.4  # PDF text extraction in the export tests

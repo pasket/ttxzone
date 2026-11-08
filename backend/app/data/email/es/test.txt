@@ -1,0 +1,8 @@
+Este es un correo de prueba de {{ product_name }}.
+
+Si lo estás leyendo, el despliegue puede enviar correo: la configuración de Administración de la instancia -> Correo funciona.
+
+Lo pidió {{ requested_by }} el {{ sent_at }} (UTC).
+
+--
+Mensaje automático enviado por {{ product_name }}.

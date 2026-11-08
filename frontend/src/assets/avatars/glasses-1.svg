@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <clipPath id="clip-glasses">
+      <circle cx="32" cy="32" r="31"/>
+    </clipPath>
+  </defs>
+  <circle cx="32" cy="32" r="31" fill="#1a1f2c" stroke="#232838" stroke-width="1.5"/>
+  <g clip-path="url(#clip-glasses)">
+    <circle cx="32" cy="24" r="10" fill="#e7eaf0"/><path d="M10,56 C10,40 19,32 32,32 C45,32 54,40 54,56 Z" fill="#e7eaf0"/>
+    <circle cx="26" cy="23" r="4" fill="none" stroke="#17b4c4" stroke-width="2.4"/><circle cx="38" cy="23" r="4" fill="none" stroke="#17b4c4" stroke-width="2.4"/><line x1="30" y1="23" x2="34" y2="23" stroke="#17b4c4" stroke-width="2.2"/><line x1="22" y1="23.5" x2="26" y2="23" stroke="#17b4c4" stroke-width="2"/><line x1="38" y1="23" x2="42" y2="22.5" stroke="#17b4c4" stroke-width="2"/>
+  </g>
+</svg>

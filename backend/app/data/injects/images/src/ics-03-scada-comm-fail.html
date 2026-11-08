@@ -1,0 +1,58 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="size" content="1280x660"><link rel="stylesheet" href="base.css">
+<style>
+  body { background: #0e1a24; color: #d6e2ec; position: relative; font-family: Arial, sans-serif; }
+  .title { background: #1b3346; padding: 8px 14px; display: flex; justify-content: space-between; font-weight: 700; }
+  .grid { display: grid; grid-template-columns: 1fr 380px; gap: 12px; padding: 12px; }
+  .map { background: #10222f; border: 1px solid #2b4a60; height: 560px; position: relative; }
+  .s { position: absolute; width: 14px; height: 14px; border-radius: 50%; border: 2px solid #0e1a24; }
+  .on { background: #2fd47a; }
+  .off { background: #ff4545; box-shadow: 0 0 0 4px rgba(255,69,69,.25); }
+  .cc { position: absolute; width: 24px; height: 24px; background: #4aa3ff; border-radius: 3px; border: 2px solid #fff; }
+  .alarms { background: #10222f; border: 1px solid #2b4a60; }
+  .alarms h4 { padding: 10px 12px; border-bottom: 1px solid #2b4a60; font-size: 13px; }
+  .a { padding: 8px 12px; border-bottom: 1px solid #1d3647; font: 12px Menlo, monospace; }
+  .a b { color: #ff6b6b; }
+  .legend { position: absolute; left: 12px; bottom: 10px; font-size: 12px; color: #9fb3c4; }
+  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin: 0 4px 0 12px; vertical-align: -1px; }
+  .sum { position: absolute; right: 12px; top: 12px; background: #2a1215; border: 1px solid #7a2a30; padding: 8px 12px; font-weight: 700; color: #ff8a8a; }
+</style></head>
+<body>
+<div class="title"><span data-es="SCADA · Vista general de la red · Centro de control">SCADA · Network overview · Control centre</span><span>14:36</span></div>
+<div class="grid">
+  <div class="map" id="map">
+    <div class="cc" style="left:430px;top:260px" title="CC"></div>
+    <div class="sum" data-es="Sin comunicación: muchas unidades remotas">Comms lost: many remote units</div>
+    <div class="legend"><i style="background:#2fd47a"></i><span data-es="Comunica">Online</span><i style="background:#ff4545"></i>COMM FAIL<i style="background:#4aa3ff;border-radius:2px"></i><span data-es="Centro de control">Control centre</span></div>
+  </div>
+  <div class="alarms">
+    <h4 data-es="Alarmas (últimos 30 min)">Alarms (last 30 min)</h4>
+    <div class="a">14:35 RTU-118 <b>COMM FAIL</b></div>
+    <div class="a">14:33 RTU-097 <b>COMM FAIL</b></div>
+    <div class="a">14:31 RTU-143 <b>COMM FAIL</b></div>
+    <div class="a">14:28 RTU-022 <b>COMM FAIL</b></div>
+    <div class="a">14:26 RTU-064 <b>COMM FAIL</b></div>
+    <div class="a">14:22 RTU-131 <b>COMM FAIL</b></div>
+    <div class="a">14:19 RTU-008 <b>COMM FAIL</b></div>
+    <div class="a">14:15 RTU-077 <b>COMM FAIL</b></div>
+    <div class="a">14:12 RTU-105 <b>COMM FAIL</b></div>
+    <div class="a" style="color:#9fb3c4" data-es="Telemetría congelada: últimos valores válidos de 13:58">Telemetry frozen: last good values 13:58</div>
+  </div>
+</div>
+<div class="stamp" data-es="Ficticio · material de ejercicio">Fictitious · exercise material</div>
+<script>
+  // A fixed, seeded scatter of remote sites (same picture every render).
+  let seed = 7
+  const rnd = () => ((seed = (seed * 9301 + 49297) % 233280) / 233280)
+  const map = document.getElementById('map')
+  for (let i = 0; i < 90; i++) {
+    const x = 30 + rnd() * 820, y = 40 + rnd() * 470
+    const off = (x > 480 && y < 330) || rnd() < 0.18
+    const s = document.createElement('div')
+    s.className = 's ' + (off ? 'off' : 'on')
+    s.style.left = x + 'px'; s.style.top = y + 'px'
+    map.appendChild(s)
+  }
+</script>
+<script src="i18n.js"></script>
+</body></html>

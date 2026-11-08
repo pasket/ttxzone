@@ -1,0 +1,1 @@
+{{ product_name }}: confirma que tu dirección de correo sigue siendo tuya

@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block content %}
+<p style="margin:0 0 16px;">Hola, {{ name }}:</p>
+<p style="margin:0 0 16px;">Hace tiempo que tu cuenta de {{ product_name }} no confirma esta dirección de correo. Para seguir usando la cuenta, confirma que sigue siendo tuya abriendo este enlace antes de {{ days }} días:</p>
+<p style="margin:0 0 24px;"><a href="{{ link }}" style="display:inline-block;padding:10px 20px;background:#00c2d1;color:#0c0d10;text-decoration:none;border-radius:6px;font-weight:bold;">Confirmar mi correo</a></p>
+<p style="margin:0 0 16px;color:#616e7c;font-size:13px;word-break:break-all;">O copia esta dirección en tu navegador: {{ link }}</p>
+<p style="margin:0 0 16px;">Hasta entonces la cuenta funciona como siempre; después, espera a la confirmación. Si no puedes abrir el enlace a tiempo, inicia sesión y pide uno nuevo.</p>
+<p style="margin:0;">Si no tienes cuenta en {{ product_name }}, ignora este mensaje.</p>
+{% endblock %}
+{% block footer %}Mensaje automático enviado por {{ product_name }}.{% endblock %}

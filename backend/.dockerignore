@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.git
+.env
+.env.*
+# Runtime data: volumes in a deployment, never baked into an image.
+logs/
+uploads/
+# Not needed at runtime (the dev container bind-mounts the whole source).
+tests/
+CLAUDE.md

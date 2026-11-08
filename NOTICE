@@ -1,0 +1,56 @@
+TTX-Zone (Cybersecurity Tabletop Zone)
+Copyright (C) 2026 Andoni Valverde
+
+This program is free software: you can redistribute it and/or modify it
+under the terms of the GNU Affero General Public License as published by the
+Free Software Foundation, either version 3 of the License, or (at your
+option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+details. You should have received a copy of it along with this program, in
+the file LICENSE; if not, see <https://www.gnu.org/licenses/>.
+
+Additional terms (section 7 of the GNU Affero General Public License)
+---------------------------------------------------------------------
+
+The following additional terms apply to this program and to every work
+based on it:
+
+a) Author attribution (section 7(b)). The interactive user interface's
+   "About" screen, or an equivalent screen that any user can reach, must
+   keep the notice "TTX-Zone, created by Andoni Valverde" and a link to the
+   original source code at <https://github.com/pasket/ttxzone>. This NOTICE
+   file must be kept with every copy of the source code.
+
+b) Modified versions (section 7(c)). A modified version must be marked as
+   modified in that same screen and in its source code, in reasonable ways
+   different from the original version, and must not be presented as the
+   original work of the author.
+
+c) Names and logos (section 7(e)). This license grants no right to use the
+   "TTX-Zone" name, the TTX-Zone logo or the author's name to endorse or
+   promote a modified version, other than to state where it comes from as
+   required above. A modified version offered to others must carry a name of
+   its own.
+
+Third-party content
+-------------------
+
+MITRE ATT&CK(R) data (backend/app/data/attack/): (C) The MITRE Corporation.
+Reproduced and distributed under the ATT&CK Terms of Use
+<https://attack.mitre.org/resources/legal-and-branding/terms-of-use/>.
+MITRE ATT&CK and ATT&CK are registered trademarks of The MITRE Corporation.
+
+IBM Plex Sans and IBM Plex Mono typefaces (loaded from Google Fonts by the
+application, bundled by the documentation site):
+Copyright IBM Corp., under the SIL Open Font License, Version 1.1.
+
+Bitstream Vera typeface (embedded in the PDFs the backend generates; the font
+files ship with the ReportLab package): Copyright (C) 2003 Bitstream, Inc.,
+under the Bitstream Vera Fonts license. Bitstream Vera is a trademark of
+Bitstream, Inc.
+
+Third-party software dependencies are listed in frontend/package.json and
+backend/requirements.txt, each under its own license.

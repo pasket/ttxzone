@@ -1,0 +1,59 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="size" content="1280x560"><link rel="stylesheet" href="base.css">
+<style>
+  body { background: #e9ebee; position: relative; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 16px; }
+  .panel h3 { color: #5a6170; }
+  .cap { font-size: 13px; color: #5a6170; padding: 8px 14px 12px; }
+  svg text { font: 12px -apple-system, Arial; }
+</style></head>
+<body class="light">
+<div class="grid">
+  <div class="panel">
+    <h3 data-es="Hallazgo · rack B-07, puerto 23 del switch de acceso">Finding · rack B-07, access switch port 23</h3>
+    <svg width="610" height="420" viewBox="0 0 610 420">
+      <rect x="40" y="20" width="530" height="380" fill="#2b2f36" rx="6"/>
+      <g fill="#3c414a">
+        <rect x="60" y="40" width="490" height="60" rx="3"/><rect x="60" y="250" width="490" height="60" rx="3"/><rect x="60" y="320" width="490" height="60" rx="3"/>
+      </g>
+      <rect x="60" y="120" width="490" height="110" fill="#454b55" rx="3"/>
+      <g fill="#14171c">
+        <rect x="80" y="150" width="22" height="18"/><rect x="108" y="150" width="22" height="18"/><rect x="136" y="150" width="22" height="18"/><rect x="164" y="150" width="22" height="18"/>
+        <rect x="192" y="150" width="22" height="18"/><rect x="220" y="150" width="22" height="18"/><rect x="248" y="150" width="22" height="18"/><rect x="276" y="150" width="22" height="18"/>
+        <rect x="304" y="150" width="22" height="18"/><rect x="332" y="150" width="22" height="18"/><rect x="360" y="150" width="22" height="18"/><rect x="388" y="150" width="22" height="18"/>
+      </g>
+      <g stroke-width="5" fill="none">
+        <path d="M91 150 V110" stroke="#3d7be0"/><path d="M119 150 V110" stroke="#3d7be0"/><path d="M147 150 V110" stroke="#e0b23d"/><path d="M175 150 V110" stroke="#3d7be0"/>
+        <path d="M231 150 V110" stroke="#44a65c"/><path d="M287 150 V110" stroke="#3d7be0"/>
+      </g>
+      <path d="M371 168 C371 200 400 200 430 205" stroke="#d1373d" stroke-width="5" fill="none"/>
+      <rect x="425" y="190" width="90" height="34" rx="5" fill="#111"/>
+      <rect x="432" y="198" width="10" height="6" fill="#2fd47a"/><rect x="446" y="198" width="10" height="6" fill="#2fd47a"/>
+      <line x1="505" y1="190" x2="520" y2="168" stroke="#111" stroke-width="3"/>
+      <text x="458" y="216" fill="#aaa" style="font-size:9px">4G</text>
+      <circle cx="470" cy="207" r="62" fill="none" stroke="#d1373d" stroke-width="3"/>
+      <text x="330" y="290" fill="#fff" style="font-weight:700" data-es="Dispositivo no inventariado">Unregistered device</text>
+      <text x="330" y="306" fill="#ddd" data-es="módem 4G · alimentado por USB">4G modem · USB powered</text>
+    </svg>
+  </div>
+  <div class="panel">
+    <h3 data-es="CCTV · Cámara 04 · Acceso CPD · hace 2 días, 18:47">CCTV · Camera 04 · Data centre entrance · 2 days ago, 18:47</h3>
+    <svg width="610" height="420" viewBox="0 0 610 420" style="filter:grayscale(1) contrast(.9)">
+      <rect x="0" y="0" width="610" height="420" fill="#6f7377"/>
+      <rect x="0" y="300" width="610" height="120" fill="#5b5e62"/>
+      <rect x="230" y="60" width="170" height="250" fill="#8d9195" stroke="#4b4e52" stroke-width="6"/>
+      <rect x="380" y="180" width="10" height="30" fill="#3b3e42"/>
+      <rect x="430" y="160" width="26" height="36" fill="#2e3135"/>
+      <g fill="#2d3033"><circle cx="300" cy="150" r="20"/><rect x="278" y="170" width="44" height="100" rx="12"/><rect x="282" y="268" width="14" height="60"/><rect x="304" y="268" width="14" height="60"/></g>
+      <g fill="#3a3d40"><circle cx="210" cy="160" r="20"/><rect x="186" y="180" width="48" height="96" rx="12"/><rect x="190" y="274" width="14" height="56"/><rect x="214" y="274" width="14" height="56"/></g>
+      <rect x="188" y="190" width="44" height="30" fill="#9a9d55"/>
+      <rect x="190" y="225" width="40" height="6" fill="#cfd27a"/>
+      <text x="14" y="24" fill="#fff" style="font: 13px Menlo, monospace">CAM04 18:47:12</text>
+      <text x="14" y="404" fill="#fff" style="font: 12px Menlo, monospace" data-es="1 tarjeta · 2 personas">1 badge · 2 people</text>
+    </svg>
+    <div class="cap" data-es="Una persona con chaleco de contrata entra detrás de un empleado sin pasar su tarjeta.">A person in a contractor's vest walks in behind an employee without badging.</div>
+  </div>
+</div>
+<div class="stamp" data-es="Ficticio · material de ejercicio">Fictitious · exercise material</div>
+<script src="i18n.js"></script>
+</body></html>

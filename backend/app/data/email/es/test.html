@@ -1,0 +1,7 @@
+{% extends "layout.html" %}
+{% block content %}
+<p style="margin:0 0 16px;">Este es un correo de prueba de {{ product_name }}.</p>
+<p style="margin:0 0 16px;">Si lo estás leyendo, el despliegue puede enviar correo: la configuración de <strong>Administración de la instancia &rarr; Correo</strong> funciona.</p>
+<p style="margin:0;color:#616e7c;">Lo pidió {{ requested_by }} el {{ sent_at }} (UTC).</p>
+{% endblock %}
+{% block footer %}Mensaje automático enviado por {{ product_name }}.{% endblock %}

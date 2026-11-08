@@ -1,0 +1,62 @@
+---
+import Diagram from './Diagram.astro';
+
+const tip = 'url(#diagram-exercise-with-external-players-a)';
+---
+
+<Diagram
+  title="Exercise with external Players"
+  description="Players from other organizations reach a public proxy in a DMZ over HTTPS. It forwards to a frontend and to api-public, which serves only what a Player needs. api-public reaches PostgreSQL on the internal network through one firewall opening, port 5432, and shares the uploaded files. Staff use the internal proxy, the frontend, the internal API and the worker, as in the internal model."
+  width={720}
+  height={444}
+>
+  <rect class="zone" x="8" y="10" width="704" height="72" rx="4"></rect>
+  <text class="small" x="20" y="30">Internet</text>
+  <rect class="box" x="24" y="38" width="200" height="36" rx="4"></rect>
+  <text class="strong mid" x="124" y="61">Players from outside</text>
+
+  <rect class="zone" x="8" y="96" width="704" height="104" rx="4"></rect>
+  <text class="small" x="20" y="116">DMZ</text>
+  <rect class="on" x="24" y="124" width="130" height="56" rx="4"></rect>
+  <text class="strong mid" x="89" y="148">proxy-public</text>
+  <text class="small mid" x="89" y="166">HTTPS :443</text>
+  <rect class="box" x="214" y="112" width="130" height="34" rx="4"></rect>
+  <text class="strong mid" x="279" y="134">frontend</text>
+  <rect class="box" x="214" y="156" width="130" height="34" rx="4"></rect>
+  <text class="strong mid" x="279" y="178">api-public</text>
+  <text class="small" x="522" y="190">Only :5432 open inward</text>
+
+  <rect class="zone" x="8" y="214" width="704" height="222" rx="4"></rect>
+  <text class="small" x="20" y="234">Internal network</text>
+  <rect class="box" x="24" y="282" width="120" height="52" rx="4"></rect>
+  <text class="strong mid" x="84" y="305">Staff</text>
+  <text class="small mid" x="84" y="323">design, control</text>
+  <rect class="on" x="184" y="282" width="110" height="52" rx="4"></rect>
+  <text class="strong mid" x="239" y="305">proxy</text>
+  <text class="small mid" x="239" y="323">HTTPS :443</text>
+  <rect class="box" x="334" y="240" width="110" height="42" rx="4"></rect>
+  <text class="strong mid" x="389" y="266">frontend</text>
+  <rect class="box" x="334" y="292" width="110" height="42" rx="4"></rect>
+  <text class="strong mid" x="389" y="318">api</text>
+  <rect class="box" x="334" y="344" width="110" height="42" rx="4"></rect>
+  <text class="strong mid" x="389" y="370">worker</text>
+  <rect class="box" x="554" y="240" width="150" height="42" rx="4"></rect>
+  <text class="strong mid" x="629" y="266">uploads</text>
+  <rect class="box" x="554" y="310" width="150" height="42" rx="4"></rect>
+  <text class="strong mid" x="629" y="336">postgres</text>
+
+  <path class="line" d="M89 74v49" marker-end={tip}></path>
+  <path class="line" d="M154 144c30 0 30-15 59-15" marker-end={tip}></path>
+  <path class="line" d="M154 160c30 0 30 13 59 13" marker-end={tip}></path>
+  <path class="line" d="M344 168H510V322H553" marker-end={tip}></path>
+  <path class="line" d="M344 178H494V254H553" marker-end={tip}></path>
+
+  <path class="line" d="M144 308h39" marker-end={tip}></path>
+  <path class="line" d="M294 300c20 0 20-39 39-39" marker-end={tip}></path>
+  <path class="line" d="M294 313h39" marker-end={tip}></path>
+  <path class="line" d="M444 306c30 0 30-38 109-38" marker-end={tip}></path>
+  <path class="line" d="M444 320c40 0 40 18 109 18" marker-end={tip}></path>
+  <path class="line" d="M444 365c50 0 50-20 109-20" marker-end={tip}></path>
+
+  <text class="small" x="20" y="424">A session works only on the face it was opened on: Players on the public address, staff on the internal one.</text>
+</Diagram>

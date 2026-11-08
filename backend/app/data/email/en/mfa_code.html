@@ -1,0 +1,9 @@
+{% extends "layout.html" %}
+{% block content %}
+<p style="margin:0 0 16px;">Hello {{ name }},</p>
+<p style="margin:0 0 16px;">Your {{ product_name }} verification code is:</p>
+<p style="margin:0 0 24px;"><span style="display:inline-block;padding:10px 20px;background:#f6f7f9;border:1px solid #e2e5ea;border-radius:6px;font-family:'IBM Plex Mono',Menlo,Consolas,monospace;font-size:26px;font-weight:bold;letter-spacing:6px;color:#10131a;">{{ code }}</span></p>
+<p style="margin:0 0 16px;">It works once, within {{ minutes }} minutes. Nobody from {{ product_name }} will ever ask you for it.</p>
+<p style="margin:0;">If you didn't just try to sign in or confirm an action, someone may know your password: change it.</p>
+{% endblock %}
+{% block footer %}Automatic message sent by {{ product_name }}.{% endblock %}

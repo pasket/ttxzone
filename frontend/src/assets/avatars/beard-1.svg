@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <clipPath id="clip-beard">
+      <circle cx="32" cy="32" r="31"/>
+    </clipPath>
+  </defs>
+  <circle cx="32" cy="32" r="31" fill="#1a1f2c" stroke="#232838" stroke-width="1.5"/>
+  <g clip-path="url(#clip-beard)">
+    <circle cx="32" cy="24" r="10" fill="#e7eaf0"/><path d="M10,56 C10,40 19,32 32,32 C45,32 54,40 54,56 Z" fill="#e7eaf0"/>
+    <ellipse cx="32" cy="29.5" rx="8" ry="7" fill="#17b4c4"/>
+  </g>
+</svg>

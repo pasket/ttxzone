@@ -1,0 +1,70 @@
+---
+title: Deployment models
+description: Internal tool or exercise with external Players, and which installation fits a consultancy, a company or a sector-wide exercise.
+sidebar:
+  order: 2
+---
+
+import ModelInternal from '../../../components/diagrams/ModelInternal.astro';
+import ModelExternal from '../../../components/diagrams/ModelExternal.astro';
+
+Two questions shape a deployment: **where the Players connect from**, which decides the model, and **who the instance serves**, which decides the installation.
+
+## Model 1: internal tool
+
+Everyone, Players included, reaches TTX-Zone from your internal network or VPN. Nothing is published to the Internet.
+
+<ModelInternal />
+
+- **Use it when** the Players are your own staff, or guests who sit in your rooms or on your VPN.
+- **Run** `deploy/docker-compose.yml` as it is: [Install](/instance/install/).
+- **Expose** only the proxy, on an internal address (`TTX_HTTPS_BIND=10.0.0.5:443`, for example).
+
+## Model 2: exercise with external Players
+
+The design and control of the exercise stay internal, while Players from other organizations connect from the Internet to a **public face**: a second API with `APP_ROLE=api-public` behind its own proxy and hostname.
+
+<ModelExternal />
+
+The public face serves only what a Player needs: signing in, their account, the exercise list, joining with an invitation link or a code, leaving, and a Player's part of a live session. Everything else answers 404: design, control, evaluation, Admin, Instance administration, the libraries, the AI assistant and the API description. Whatever roles someone holds, on the public face they act only as a Player, and a session opened there doesn't work on the internal address, nor the other way round.
+
+Two layouts, from the same images:
+
+| | Same host | Separate host in a DMZ |
+|---|---|---|
+| Files | `deploy/docker-compose.yml` with `--profile public` | `deploy/docker-compose.yml` inside, plus `deploy/public-host/docker-compose.yml` on the DMZ host |
+| Isolation | The public proxy has a Docker network of its own and reaches only `api-public` and the frontend; the host itself faces both networks | Network isolation by your firewall: only PostgreSQL's port is open from the DMZ inward |
+| Uploaded files | The same volume | A shared mount on both hosts (NFS or similar) |
+| Suits | A small installation, a trial, a host already in a DMZ | A company whose security policy requires a DMZ |
+
+For the same host, set `TTX_PUBLIC_SERVER_NAME`, put its certificate in `certs-public/`, bind `TTX_PUBLIC_HTTPS_BIND` to the address the Internet reaches, then:
+
+```bash
+docker compose --profile public up -d
+```
+
+For a separate host, follow the comments in `deploy/public-host/docker-compose.yml` and its `.env.example`: the database address, TLS to PostgreSQL (`PGSSLMODE=verify-full`), the shared uploads and the firewall rule. Both layouts need:
+
+- **Links in emails** to point where the recipients can reach: set `TTX_EMAIL_BASE_URL` to the public address if invitations go to Players outside. Staff then follow password-reset links there too, and sign in on the internal address afterwards.
+- **Single sign-on**, if used, with each face's callback registered at the provider (`<address>/api/v1/auth/oidc/callback`).
+- **Sizing** of the public face for the number of Players: [Scaling](/instance/scaling/#how-many-players).
+
+## Choosing an installation
+
+| | Small, own use | Enterprise | Beyond the organization |
+|---|---|---|---|
+| **Who** | A team of consultants running exercises for their clients | Teams inside one company or group | One organization leading an exercise with other entities, organizations or agencies |
+| **Model** | Internal, or the same-host public face when clients play remotely | Internal | External, with the public face in a DMZ |
+| **[Tenancy rule](/instance/tenancy/)** | `managed`, one organization per client, so each client's people, exercises and library stay apart | `managed` with a maximum of 1, or one per subsidiary | `managed`: the leading organization; others join its exercises as Players |
+| **Compose** | `deploy/` | `deploy/` | `deploy/` and `deploy/public-host/` |
+| **Sign-in** | Passwords and an authenticator app | [Single sign-on](/instance/single-sign-on/) with your identity provider | Single sign-on for staff; passwords for outside Players |
+| **Email** | Recommended, for invitations | [Your SMTP relay](/instance/email/) | Required: invitations go to outside addresses |
+| **Size** | One API process | One API process; a worker beside it | The public face sized for the Players expected |
+
+Notes on each:
+
+- **Small, own use.** One server, often a single virtual machine. An instance administrator creates an organization per client and names a consultant as its Exercise Program Manager; the consultants are Exercise Planners in each. The client's staff join as Players, Observers or Evaluators.
+- **Enterprise.** IT runs the instance and grants the business owner the Exercise Program Manager role. Set [which roles need a second factor](/instance/tenancy/#sign-in-security), and back up the database and the uploads with your usual tools: [Backup and restore](/instance/backup-and-restore/).
+- **Beyond the organization.** Outside Players don't need an organization of their own: they join the leading organization's exercise with an invitation link or a code. Observers and Evaluators from partner entities get those roles in the leading organization; [Allowed Domains](/guide/administration/#allowed-domains) limits only who can become an Exercise Planner or Exercise Program Manager.
+
+The `open` rule, where anyone founds their own organization, suits none of these: it's for a public service hosting unrelated teams.

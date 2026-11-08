@@ -1,0 +1,95 @@
+# The Players' public face on a host of its own, in a DMZ (docs/deployment.md,
+# section 9). The rest of the instance runs inside, from ../docker-compose.yml
+# with internal-host.yml layered on it.
+#
+#   cp .env.example .env              # then fill it in
+#   docker compose pull               # the same release as inside
+#   docker compose up -d
+#
+# Copy the whole deploy/ folder: the proxy reuses ../nginx/.
+#
+# The DMZ host needs, from the internal network, only PostgreSQL's port and the
+# shared uploads; nothing on the internal network needs to reach this host.
+
+name: ttxzone-public
+
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+networks:
+  ttx-public:
+    driver: bridge
+    ipam:
+      config:
+        # Fixed so api-public can trust its proxy's address alone.
+        - subnet: 172.30.2.0/24
+
+volumes:
+  api_public_logs:
+
+services:
+  api-public:
+    image: ghcr.io/pasket/ttxzone-backend:${TTX_VERSION:?set TTX_VERSION in .env}
+    logging: *default-logging
+    restart: unless-stopped
+    env_file: .env
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    environment:
+      ENVIRONMENT: production
+      APP_ROLE: api-public
+      # The internal host runs the migrations; this one never does.
+      RUN_MIGRATIONS: "false"
+      POSTGRES_HOST: ${TTX_DB_HOST:?set TTX_DB_HOST in .env}
+      POSTGRES_PORT: ${TTX_DB_PORT:-5432}
+      # TLS to PostgreSQL across the firewall (libpq's own variables).
+      PGSSLMODE: ${TTX_DB_SSLMODE:-verify-full}
+      PGSSLROOTCERT: /run/db-ca/root.crt
+      FORWARDED_ALLOW_IPS: 172.30.2.10
+      BACKEND_CORS_ORIGINS: '["https://${TTX_PUBLIC_SERVER_NAME:?set TTX_PUBLIC_SERVER_NAME in .env}"]'
+      PUBLIC_BASE_URL: https://${TTX_PUBLIC_SERVER_NAME}
+    volumes:
+      # The same files as inside: a shared mount, writable by uid 10001.
+      - ${TTX_UPLOADS_PATH:?set TTX_UPLOADS_PATH in .env}:/app/uploads
+      - api_public_logs:/app/logs
+      # The CA that signed PostgreSQL's certificate, as root.crt.
+      - ./db-ca:/run/db-ca:ro
+    networks: [ttx-public]
+
+  frontend:
+    image: ghcr.io/pasket/ttxzone-frontend:${TTX_VERSION}
+    logging: *default-logging
+    restart: unless-stopped
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    networks: [ttx-public]
+
+  proxy-public:
+    image: nginxinc/nginx-unprivileged:1.30-alpine
+    logging: *default-logging
+    restart: unless-stopped
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    environment:
+      TTX_SERVER_NAME: ${TTX_PUBLIC_SERVER_NAME}
+      TTX_API_UPSTREAM: api-public:8000
+    ports:
+      - "${TTX_PUBLIC_HTTP_BIND:-80}:8080"
+      - "${TTX_PUBLIC_HTTPS_BIND:-443}:8443"
+    volumes:
+      - ../nginx/ttxzone.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ../nginx/05-certificates.sh:/docker-entrypoint.d/05-certificates.sh:ro
+      # fullchain.pem and privkey.pem for TTX_PUBLIC_SERVER_NAME, readable by uid 101.
+      - ./certs:/etc/nginx/certs:ro
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8080/healthz"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    networks:
+      ttx-public:
+        ipv4_address: 172.30.2.10
+    depends_on: [api-public, frontend]

@@ -1,0 +1,12 @@
+Hola, {{ name }}:
+
+Hace tiempo que tu cuenta de {{ product_name }} no confirma esta dirección de correo. Para seguir usando la cuenta, confirma que sigue siendo tuya abriendo este enlace antes de {{ days }} días:
+
+{{ link }}
+
+Hasta entonces la cuenta funciona como siempre; después, espera a la confirmación. Si no puedes abrir el enlace a tiempo, inicia sesión y pide uno nuevo.
+
+Si no tienes cuenta en {{ product_name }}, ignora este mensaje.
+
+--
+Mensaje automático enviado por {{ product_name }}.

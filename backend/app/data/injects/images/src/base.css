@@ -1,0 +1,28 @@
+/* Shared look of TTX-Zone's illustrative inject images: generic,
+   fictitious tools -- no real product, brand or logo. */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100vw; height: 100vh; overflow: hidden; }
+body { font: 14px/1.4 -apple-system, "Helvetica Neue", Arial, sans-serif; }
+.mono { font-family: Menlo, Consolas, monospace; }
+.dark { background: #11141a; color: #d8dde6; }
+.light { background: #f3f4f6; color: #1f2430; }
+.bar { display: flex; align-items: center; gap: 12px; height: 44px; padding: 0 18px;
+  border-bottom: 1px solid #262b35; font-weight: 600; }
+.light .bar { border-color: #d6d9df; background: #fff; }
+.chip { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 12px; font-weight: 600; }
+.crit { background: #b3262b; color: #fff; }
+.high { background: #c96a12; color: #fff; }
+.med { background: #a68a12; color: #fff; }
+.ok { background: #1f7a4f; color: #fff; }
+.muted { color: #8a93a3; }
+table { border-collapse: collapse; width: 100%; }
+th, td { text-align: left; padding: 7px 12px; border-bottom: 1px solid #232833; font-size: 13px; }
+.light th, .light td { border-color: #e1e3e8; }
+th { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: #8a93a3; font-weight: 600; }
+.panel { border: 1px solid #262b35; border-radius: 4px; background: #161a22; }
+.light .panel { border-color: #d6d9df; background: #fff; }
+.panel h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: #8a93a3;
+  padding: 10px 14px; border-bottom: 1px solid #262b35; }
+.light .panel h3 { border-color: #e1e3e8; }
+.stamp { position: absolute; right: 16px; bottom: 12px; font-size: 11px; color: #8a93a3;
+  letter-spacing: .08em; text-transform: uppercase; }

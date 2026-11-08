@@ -1,0 +1,10 @@
+Hello {{ name }},
+
+To finish creating your {{ product_name }} account, confirm that this address is yours by opening this link within {{ hours }} hours:
+
+{{ link }}
+
+If you didn't create an account, ignore this message.
+
+--
+Automatic message sent by {{ product_name }}.

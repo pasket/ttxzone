@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <clipPath id="clip-headscarf">
+      <circle cx="32" cy="32" r="31"/>
+    </clipPath>
+  </defs>
+  <circle cx="32" cy="32" r="31" fill="#17b4c4" stroke="#109fae" stroke-width="1.5"/>
+  <g clip-path="url(#clip-headscarf)">
+    <circle cx="32" cy="24" r="10" fill="#0b0e14"/><path d="M10,56 C10,40 19,32 32,32 C45,32 54,40 54,56 Z" fill="#0b0e14"/>
+    <path d="M17,23 C17,9 47,9 47,23 L47,52 L38,52 L38,30 L26,30 L26,52 L17,52 Z" fill="#e7eaf0"/><ellipse cx="32" cy="25" rx="7.5" ry="8.5" fill="#0b0e14"/>
+  </g>
+</svg>

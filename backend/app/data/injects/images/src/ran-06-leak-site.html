@@ -1,0 +1,46 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="size" content="1280x580"><link rel="stylesheet" href="base.css">
+<style>
+  body { background: #0d0d0f; color: #ddd; position: relative; }
+  .url { background: #1e1f24; padding: 8px 16px; font: 13px Menlo, monospace; color: #9aa; border-bottom: 1px solid #2b2c33; }
+  header { padding: 18px 40px; font: 700 26px Menlo, monospace; color: #ff3b3b; letter-spacing: .12em; border-bottom: 1px solid #2b2c33; }
+  main { padding: 26px 40px; display: grid; grid-template-columns: 1fr 360px; gap: 30px; }
+  .victim { background: #444; color: transparent; border-radius: 2px; user-select: none; }
+  h2 { font-size: 24px; margin-bottom: 8px; }
+  .meta { color: #999; margin-bottom: 18px; }
+  .thumbs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 16px; }
+  .doc { height: 120px; border-radius: 4px; position: relative; overflow: hidden;
+    background: repeating-linear-gradient(90deg, #8b8f99 0 12px, #6e727c 12px 24px),
+      repeating-linear-gradient(0deg, #9aa0aa 0 12px, #7b808a 12px 24px);
+    background-blend-mode: multiply; filter: blur(1.5px); }
+  .doc::after { content: ""; position: absolute; left: 10px; top: 14px; width: 34px; height: 44px; background: #5d616b; }
+  .count { background: #1a0b0b; border: 1px solid #5a1d1d; padding: 20px; text-align: center; }
+  .count b { display: block; font: 700 46px Menlo, monospace; color: #ff3b3b; margin: 8px 0; }
+  .bar2 { height: 10px; background: #2a2a2a; margin-top: 18px; }
+  .bar2 i { display: block; height: 100%; width: 4%; background: #ff3b3b; }
+  .small { font-size: 13px; color: #999; }
+</style></head>
+<body>
+<div class="url">http://leakdemo7fictitiousq2zblogexamplev3notarealsitepublish.onion/post/0417</div>
+<header>// DATA_LEAKS</header>
+<main>
+  <div>
+    <h2><span class="victim">██████████████</span> <span data-es="— muestra publicada">— sample published</span></h2>
+    <div class="meta" data-es="Sector: <span class='victim'>████████</span> · Datos: documentos de identidad, contratos, nóminas · Tamaño de la muestra: 2 GB">Sector: <span class="victim">████████</span> · Data: identity documents, contracts, payroll · Sample size: 2 GB</div>
+    <p data-es="La empresa ha ignorado nuestras propuestas. Publicamos una primera muestra como prueba. Si no hay acuerdo, se publicará todo.">The company ignored our proposals. We publish a first sample as proof. Without an agreement, everything will be published.</p>
+    <div class="thumbs"><div class="doc"></div><div class="doc"></div><div class="doc"></div><div class="doc"></div><div class="doc"></div><div class="doc"></div></div>
+    <p class="small" style="margin-top:10px" data-es="Escaneos de documentos de identidad (pixelados en esta vista)">Scanned identity documents (pixelated in this view)</p>
+  </div>
+  <div>
+    <div class="count">
+      <span data-es="PUBLICACIÓN COMPLETA EN">FULL PUBLICATION IN</span>
+      <b data-es="5d 00h">5d 00h</b>
+      <span class="small" data-es="Publicado: 2 GB de ~48 GB">Published: 2 GB of ~48 GB</span>
+      <div class="bar2"><i></i></div>
+    </div>
+    <p class="small" style="margin-top:16px" data-es="Visitas: 3.912 · Descargas de la muestra: 288">Views: 3,912 · Sample downloads: 288</p>
+  </div>
+</main>
+<div class="stamp" data-es="Ficticio · material de ejercicio">Fictitious · exercise material</div>
+<script src="i18n.js"></script>
+</body></html>

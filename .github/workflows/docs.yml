@@ -1,0 +1,61 @@
+name: Documentation
+
+# Publishes the documentation site to GitHub Pages from a release tag, so the
+# site always matches a released version (docs/documentation-strategy.md). A tag
+# with a suffix (v0.2.0-rc1) publishes nothing, and neither does a private
+# repository: nothing goes public before the repository does. Needs Settings ->
+# Pages -> Source: GitHub Actions, the custom domain set there, and a v*.*.* tag
+# rule on the github-pages environment (docs/repository-settings.md §5).
+on:
+  push:
+    tags: ["v*.*.*"]
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build
+    if: ${{ !github.event.repository.private && !contains(github.ref_name, '-') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: docs/site
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22.23.4" # Astro's minimum
+          cache: npm
+          cache-dependency-path: docs/site/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: docs/site/dist
+
+  deploy:
+    name: Publish
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

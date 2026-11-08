@@ -1,0 +1,73 @@
+# The stack the browser tests run against (docs/features/e2e-tests.md): the
+# development images on their own project, database and port, so a run never
+# touches the development stack or its data. `npm run e2e` starts it.
+
+name: ttxzone-e2e
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ttx_e2e
+      POSTGRES_PASSWORD: e2e-password
+      POSTGRES_DB: ttx_e2e
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ttx_e2e -d ttx_e2e']
+      interval: 2s
+      timeout: 5s
+      retries: 20
+
+  backend:
+    build:
+      context: ../../backend
+      target: dev
+    # Without --reload: the image holds the code, built by `up --build`.
+    command: ['sh', 'start.sh']
+    environment:
+      ENVIRONMENT: development
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: '5432'
+      POSTGRES_USER: ttx_e2e
+      POSTGRES_PASSWORD: e2e-password
+      POSTGRES_DB: ttx_e2e
+      SECRET_KEY: e2e-secret-key-not-for-production
+      DATA_ENCRYPTION_KEY: dGVzdC1rZXktbm90LWZvci1wcm9kdWN0aW9uLTMyYnk=
+      BACKEND_CORS_ORIGINS: '["http://localhost:15173"]'
+      ASSISTANT_ENABLED: 'true'
+    volumes:
+      # scripts.seed_demo uses the test suite's payload builders, which the
+      # image leaves out.
+      - ../../backend/tests:/app/tests:ro
+    tmpfs:
+      - /app/logs
+      - /app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8000/api/v1/health']
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+  frontend:
+    build:
+      context: ..
+      target: dev
+    environment:
+      VITE_API_PROXY_TARGET: http://backend:8000
+    ports:
+      - '127.0.0.1:15173:5173'
+    volumes:
+      - ..:/app
+      - /app/node_modules
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD', 'wget', '-q', '--spider', 'http://127.0.0.1:5173/']
+      interval: 2s
+      timeout: 5s
+      retries: 30

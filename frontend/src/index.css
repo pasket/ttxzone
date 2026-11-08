@@ -1,0 +1,223 @@
+@import 'tailwindcss';
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-ink: #0c0d10; /* dark app bg -- de-blued from #0b0e14 toward true neutral, less "tech-blue", more sober for exec/legal audiences */
+  --color-surface: #131722; /* dark panel/input bg */
+  --color-line: #232838; /* dark border */
+  --color-fg: #e7eaf0; /* dark primary text */
+  --color-fg-muted: #b0b8c8; /* dark secondary text -- lightened from the guide's #8B93A6 for a less murky, more polished feel on exec-facing screens */
+  --color-fg-faint: #939db0; /* dark tertiary/meta text -- lightened from #6B7280, same reasoning; 4.5:1 on the raised rows too */
+  --color-fg-disabled: #4b5566;
+  --color-fg-nav: #bcc2d1; /* dark inactive nav-item text -- lightened from #A6ADBB */
+
+  --color-paper: #eff1f4; /* light app bg */
+  --color-paper-surface: #f6f7f9; /* light panel/input bg */
+  --color-paper-surface-raised: #ffffff; /* light floating/overlay surface (dropdowns, popovers) */
+  --color-paper-line: #e2e5ea; /* light border */
+  --color-paper-ink: #10131a; /* light primary text */
+
+  /* Content panels (lists, forms, settings groups, dashboard charts) --
+   * light values here, dark ones under .dark below. A panel reads as a
+   * tonally lifted surface on the page bg (white on paper, lighter gray on
+   * ink), never via a shadow; inputs inside one use --color-field, which
+   * stays the old surface value so fields read as inset and every input
+   * outside a panel (auth screens) keeps its previous look. */
+  --color-panel: #ffffff;
+  --color-panel-line: #e2e5ea;
+  --color-field: #f6f7f9;
+
+  --color-surface-raised: #222634; /* dark floating/overlay surface -- a touch lighter than --color-surface so floating UI (dropdowns) reads as elevated via tonal lift, since a black box-shadow doesn't show up against a near-black page bg */
+
+  --color-accent: #17b4c4; /* brand accent -- nav/links/focus rings, brightened from the guide's #0EA5B7 */
+  --color-accent-hover: #109fae;
+  /* The accent as text, focus rings and form controls: on a light surface
+   * --color-accent reads at 2.5:1, so here it's a darker teal that clears
+   * 4.5:1 on the panel, the page and the accent's own tints. Fills keep
+   * --color-accent, with text-ink on them. Dark values under .dark. */
+  --color-accent-fg: #0b6e7b;
+  --color-accent-fg-hover: #085661;
+
+  /* Splunk-inspired: color is otherwise restrained (mostly mono), reserved
+   * almost entirely for the one true call-to-action -- a distinct, more
+   * saturated hue from --color-accent so primary buttons read as a clear,
+   * singular action rather than blending into general brand-color chrome. */
+  --color-cta: #00c2d1;
+  --color-cta-hover: #00aab8;
+
+  /* distinct from --color-severity-critical on purpose: a routine destructive
+   * action (revoke/delete) must never look as alarming as a critical inject
+   * badge once the severity scale is a real, consumed UI -- also darkened
+   * from the guide's #e5484d, which failed WCAG AA (3.91:1) with white
+   * button text; #d1373d clears 4.5:1 at rest and gets safely brighter on
+   * hover. */
+  --color-danger: #d1373d;
+  --color-danger-hover: #b52d33;
+  /* The same red as text: 4.5:1 on its own tints and on the dark panels,
+   * where --color-danger reads at 3.5:1 (dark under .dark). */
+  --color-danger-fg: #b52d33;
+
+  /* Success toast accent only -- sober muted green, deliberately distinct
+   * from --color-accent (cyan) and --color-danger (red), same
+   * single-global-value pattern as those two. */
+  --color-success: #1f9d63;
+  /* The same green as text: 4.5:1 on the light surfaces (dark under .dark). */
+  --color-success-fg: #0f7043;
+
+  /* The live storyline's "now" line only (control center): where the play
+   * stands, warm so it reads apart from the teal phases and lines; it turns
+   * --color-success once ENDEX is out. */
+  --color-playhead: #e0912f;
+
+  /* reserved for inject severity once that UI exists -- not consumed yet */
+  --color-severity-info: #5b8def;
+  --color-severity-medium: #f5a524;
+  --color-severity-high: #f0653e;
+  --color-severity-critical: #e5484d;
+
+  /* Fixed 8-swatch palette for tags (OrganizationTag + TTXTag) -- single
+   * global values matching backend TagColor enum. All 8 avoid hues with fixed
+   * meaning elsewhere (severity-*, accent/cta, danger, success). A chip takes
+   * its border and tint from these (never a solid fill) and its text from the
+   * `-fg` shade below, which clears 4.5:1 on that tint in each theme
+   * (TAG_COLOR_SWATCH_CLASS). */
+  --color-tag-violet: #7c6fe0;
+  --color-tag-indigo: #5b63d3;
+  --color-tag-fuchsia: #c44fc0;
+  --color-tag-rose: #d6547a;
+  --color-tag-plum: #9c4f96;
+  --color-tag-slate: #64748b;
+  --color-tag-sand: #a68a64;
+  --color-tag-moss: #6b8f57;
+  /* Added for palette versatility -- muted, moderate-saturation tones
+   * chosen the same way as the original 8 (stay clear of the reserved
+   * hues above even where the hue itself is nearby, by keeping
+   * saturation well below those hues' vivid originals). A CUSTOM color
+   * (arbitrary "#RRGGBB", see TagColor.CUSTOM backend-side) has no fixed
+   * token here -- it's applied via inline style at render time instead,
+   * with no contrast guarantee (an explicit, opt-in tradeoff). */
+  --color-tag-teal: #3c8a86;
+  --color-tag-lime: #6f7d2e;
+  --color-tag-graphite: #5d6470;
+  --color-tag-violet-fg: color-mix(in srgb, var(--color-tag-violet) 70%, black);
+  --color-tag-indigo-fg: color-mix(in srgb, var(--color-tag-indigo) 70%, black);
+  --color-tag-fuchsia-fg: color-mix(in srgb, var(--color-tag-fuchsia) 70%, black);
+  --color-tag-rose-fg: color-mix(in srgb, var(--color-tag-rose) 70%, black);
+  --color-tag-plum-fg: color-mix(in srgb, var(--color-tag-plum) 70%, black);
+  --color-tag-slate-fg: color-mix(in srgb, var(--color-tag-slate) 70%, black);
+  --color-tag-sand-fg: color-mix(in srgb, var(--color-tag-sand) 70%, black);
+  --color-tag-moss-fg: color-mix(in srgb, var(--color-tag-moss) 70%, black);
+  --color-tag-teal-fg: color-mix(in srgb, var(--color-tag-teal) 70%, black);
+  --color-tag-lime-fg: color-mix(in srgb, var(--color-tag-lime) 70%, black);
+  --color-tag-graphite-fg: color-mix(in srgb, var(--color-tag-graphite) 70%, black);
+
+  /* Categorical chart series (dashboards), light-mode values -- redefined
+   * under .dark below. Validated with the dataviz skill's
+   * validate_palette.js against --color-panel (light #ffffff, dark
+   * #191c24): lightness band, chroma floor, CVD and
+   * normal-vision separation, contrast -- all pass. Fixed order, never
+   * cycled; a series past the third folds into --color-chart-other. Kept
+   * clear of the severity-* (injects) and tag palettes on purpose. */
+  --color-chart-1: #0095a8;
+  --color-chart-2: #6a5bd6;
+  --color-chart-3: #b07a1f;
+  --color-chart-other: #64748b;
+
+  /* Account inactivity (the "Last login" column in people tables), light
+   * values here, dark ones under .dark. An escalating amber -> orange -> red
+   * scale for no login in over 3 / 6 / 12 months -- its own tokens so it
+   * never borrows the inject severity-* scale or --color-danger (a
+   * destructive action). Always paired with a distinct icon shape and text,
+   * never color alone; each clears 4.5:1 as text on its own 12% tint over
+   * --color-panel in both themes. */
+  --color-inactive-1: #8a5a00;
+  --color-inactive-2: #b54708;
+  --color-inactive-3: #b42318;
+
+  /* FIRST Traffic Light Protocol 2.0 label colours -- always text on a
+   * black ground (TlpBadge), per the TLP spec, so a single value serves
+   * light and dark themes. Classification labels only: never reuse them
+   * for severity, status or decoration. */
+  --color-tlp-red: #ff2b2b;
+  --color-tlp-amber: #ffc000;
+  --color-tlp-green: #33ff00;
+  --color-tlp-clear: #ffffff;
+
+  --font-sans: 'IBM Plex Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+}
+
+/* The one token whose raw value genuinely differs per theme (not just a
+ * light/dark token swap) -- redefined under .dark, same pattern the style
+ * guide artifact's own token file uses for om-bg-hover. */
+:root {
+  --color-hover: rgb(0 0 0 / 4%);
+  color-scheme: light;
+}
+.dark {
+  --color-hover: rgb(255 255 255 / 6%);
+  --color-accent-fg: #17b4c4;
+  --color-accent-fg-hover: #109fae;
+  --color-success-fg: #1f9d63;
+  --color-danger-fg: #f0787c;
+  --color-tag-violet-fg: color-mix(in srgb, var(--color-tag-violet) 60%, white);
+  --color-tag-indigo-fg: color-mix(in srgb, var(--color-tag-indigo) 60%, white);
+  --color-tag-fuchsia-fg: color-mix(in srgb, var(--color-tag-fuchsia) 60%, white);
+  --color-tag-rose-fg: color-mix(in srgb, var(--color-tag-rose) 60%, white);
+  --color-tag-plum-fg: color-mix(in srgb, var(--color-tag-plum) 60%, white);
+  --color-tag-slate-fg: color-mix(in srgb, var(--color-tag-slate) 60%, white);
+  --color-tag-sand-fg: color-mix(in srgb, var(--color-tag-sand) 60%, white);
+  --color-tag-moss-fg: color-mix(in srgb, var(--color-tag-moss) 60%, white);
+  --color-tag-teal-fg: color-mix(in srgb, var(--color-tag-teal) 60%, white);
+  --color-tag-lime-fg: color-mix(in srgb, var(--color-tag-lime) 60%, white);
+  --color-tag-graphite-fg: color-mix(in srgb, var(--color-tag-graphite) 60%, white);
+  --color-panel: #191c24;
+  --color-panel-line: #2a2e3a;
+  --color-field: #131722;
+  --color-chart-1: #14a3b2;
+  --color-chart-2: #8b7cf0;
+  --color-chart-3: #b8842a;
+  --color-inactive-1: #d6a23a;
+  --color-inactive-2: #ec8a4b;
+  --color-inactive-3: #f2726b;
+  color-scheme: dark;
+}
+
+/* No double-tap-to-zoom delay on taps; pinch zoom still works. The
+ * default grey tap flash is dropped: every control has its own hover/focus
+ * styling. */
+html {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--color-paper);
+  color: var(--color-paper-ink);
+}
+.dark body {
+  background: var(--color-ink);
+  color: var(--color-fg);
+}
+
+/* Headings wrap balanced (no one-word widow on the last line). In the base
+ * layer so a heading's own text-pretty/text-wrap utility still wins. */
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+  }
+}
+
+/* Screen-reader text (`sr-only`) is absolutely placed: in a scroller that
+ * isn't its containing block it escapes the clip and the whole page scrolls
+ * sideways. In the base layer, so a utility such as `sticky` still wins. */
+@layer base {
+  .overflow-x-auto {
+    position: relative;
+  }
+}

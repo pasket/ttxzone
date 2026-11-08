@@ -1,0 +1,56 @@
+---
+title: Network and ports
+description: Default ports between the components, what is published, and every connection an instance opens.
+sidebar:
+  order: 5
+---
+
+import NetworkFlows from '../../../components/diagrams/NetworkFlows.astro';
+
+## Connections
+
+<NetworkFlows />
+
+Browsers load the application from the frontend and call the API under `/api/`, both through the proxy. The live session's updates use Server-Sent Events on the same HTTPS connection, so no other port or protocol is needed. An AI client reaches the assistant's endpoint, `/api/v1/mcp`, through the internal proxy too: the public face doesn't serve it.
+
+## Ports
+
+Defaults of the files in `deploy/`. Only the proxies publish a port on the host.
+
+| Component | Listens on, in its container | Published on the host | Set by |
+|---|---|---|---|
+| `proxy` | 8080 (HTTP, redirects to HTTPS), 8443 (HTTPS) | 80 and 443 | `TTX_HTTP_BIND`, `TTX_HTTPS_BIND` |
+| `proxy-public`, same host (`--profile public`) | 8080, 8443 | 8080 and 8443 | `TTX_PUBLIC_HTTP_BIND`, `TTX_PUBLIC_HTTPS_BIND` |
+| `proxy-public`, DMZ host (`public-host/`) | 8080, 8443 | 80 and 443 | The same variables |
+| `frontend` | 8080 | No | |
+| `api`, `api-public` | 8000 | No | |
+| `worker` | None | No | |
+| `postgres` | 5432 | No; with `public-host/internal-host.yml`, on `TTX_DB_BIND` | |
+
+A bind takes a port or `address:port`, to publish on one interface only: an internal address for the internal proxy, the Internet-facing one for the public proxy.
+
+The containers talk over private Docker networks with fixed subnets, so each API trusts the forwarded client address only from its own proxy: `172.30.0.0/24` inside, `172.30.1.0/24` for the same-host public face, `172.30.2.0/24` on a DMZ host. Change them in the Compose files if they clash with your networks.
+
+## Outbound connections
+
+All optional, and only once you configure what needs them.
+
+| From | To | Port | When |
+|---|---|---|---|
+| `worker` | Your SMTP server | 25, 465, 587 or 2525 | [Outgoing email](/instance/email/) is set up |
+| `worker` | Your SIEM's webhook | HTTPS, 443 by default | Forwarding is set up in **Activity log** |
+| `api` | Your identity provider | HTTPS 443 | [Single sign-on](/instance/single-sign-on/) is set up |
+| `api` | DNS | 53 | Under the `open` [tenancy rule](/instance/tenancy/), to check the domain of someone founding an organization |
+
+Nothing else leaves the instance: no telemetry and no update check. Browsers load the application's typefaces from Google Fonts (`fonts.googleapis.com`, `fonts.gstatic.com`); without access to them, the application falls back to the system's fonts.
+
+## Firewall rules
+
+| Model | Allow inward |
+|---|---|
+| [Internal tool](/instance/deployment-models/#model-1-internal-tool) | Internal clients to the proxy, 443 (and 80 for the redirect) |
+| [External Players](/instance/deployment-models/#model-2-exercise-with-external-players) | The Internet to the public proxy, 443 (and 80); the DMZ host to PostgreSQL, 5432; both hosts to the shared uploads |
+
+## Development stack
+
+`docker-compose.yml` at the repository's root is for a workstation, never a server: the frontend's dev server on 5173, the API on 8000, PostgreSQL on `127.0.0.1:5432`, and, with `--profile mail`, Mailpit's inbox on `127.0.0.1:8025`.

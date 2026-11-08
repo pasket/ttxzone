@@ -1,0 +1,206 @@
+# A production deployment on one Docker host (docs/deployment.md). Only the
+# reverse proxy publishes a port.
+#
+#   cp .env.example .env              # then fill it in
+#   docker compose pull               # or: docker compose build (from a clone)
+#   docker compose up -d
+#   docker compose --profile public up -d   # adds the Players' public face
+#
+# docker-compose.yml at the repository root is the development stack.
+
+name: ttxzone-prod
+
+# Docker keeps each container's stdout too: capped here, or json-file grows
+# without bound. 10 MB x 3 per container.
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+x-backend: &backend
+  image: ghcr.io/pasket/ttxzone-backend:${TTX_VERSION:-latest}
+  logging: *default-logging
+  restart: unless-stopped
+  env_file: .env
+  cap_drop: [ALL]
+  security_opt: ["no-new-privileges:true"]
+  networks: [ttx]
+
+# Everything but what differs per process. The migrate service runs the
+# migrations once, so no API process does.
+x-backend-env: &backend-env
+  ENVIRONMENT: production
+  POSTGRES_HOST: postgres
+  RUN_MIGRATIONS: "false"
+  # Only this proxy's X-Forwarded-For is believed (docs/deployment.md, section 4).
+  FORWARDED_ALLOW_IPS: 172.30.0.10
+  BACKEND_CORS_ORIGINS: '["https://${TTX_SERVER_NAME:?set TTX_SERVER_NAME in .env}"]'
+  PUBLIC_BASE_URL: https://${TTX_SERVER_NAME}
+
+x-proxy: &proxy
+  image: nginxinc/nginx-unprivileged:1.30-alpine
+  logging: *default-logging
+  restart: unless-stopped
+  cap_drop: [ALL]
+  security_opt: ["no-new-privileges:true"]
+  healthcheck:
+    test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8080/healthz"]
+    interval: 15s
+    timeout: 5s
+    retries: 3
+
+networks:
+  ttx:
+    driver: bridge
+    ipam:
+      config:
+        # Fixed so each API can trust its proxy's address alone. Change it
+        # here and in the addresses below if it clashes with a local network.
+        - subnet: 172.30.0.0/24
+  # The Players' public face (--profile public): its proxy reaches only
+  # api-public and the frontend, never the internal API or the database.
+  ttx-public:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.1.0/24
+
+volumes:
+  postgres_data:
+  uploads:
+  api_logs:
+  api_public_logs:
+  worker_logs:
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    logging: *default-logging
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?set POSTGRES_USER in .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:?set POSTGRES_DB in .env}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks: [ttx]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # One-shot: every start applies pending migrations, and the API and the
+  # worker wait for it. A failed migration keeps them down.
+  migrate:
+    <<: *backend
+    # The one place the image is built from a clone; the others share its tag.
+    build:
+      context: ../backend
+      target: prod
+    restart: "no"
+    command: ["alembic", "upgrade", "head"]
+    environment: *backend-env
+    healthcheck:
+      disable: true
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  api:
+    <<: *backend
+    environment:
+      <<: *backend-env
+      APP_ROLE: api-internal
+    volumes:
+      - uploads:/app/uploads
+      - api_logs:/app/logs
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  worker:
+    <<: *backend
+    environment:
+      <<: *backend-env
+      APP_ROLE: worker
+      # Links in emails: the public address when invitations go to Players
+      # outside (docs/deployment.md, section 9).
+      PUBLIC_BASE_URL: ${TTX_EMAIL_BASE_URL:-https://${TTX_SERVER_NAME}}
+    volumes:
+      - worker_logs:/app/logs
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  frontend:
+    image: ghcr.io/pasket/ttxzone-frontend:${TTX_VERSION:-latest}
+    build:
+      context: ../frontend
+      target: prod
+      args:
+        VITE_COMMIT_SHA: ${VITE_COMMIT_SHA:-}
+        VITE_COMMIT_DATE: ${VITE_COMMIT_DATE:-}
+        VITE_SOURCE_URL: ${VITE_SOURCE_URL:-}
+    logging: *default-logging
+    restart: unless-stopped
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    networks: [ttx, ttx-public]
+
+  proxy:
+    <<: *proxy
+    environment:
+      TTX_SERVER_NAME: ${TTX_SERVER_NAME}
+      TTX_API_UPSTREAM: api:8000
+    ports:
+      - "${TTX_HTTP_BIND:-80}:8080"
+      - "${TTX_HTTPS_BIND:-443}:8443"
+    volumes:
+      - ./nginx/ttxzone.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./nginx/05-certificates.sh:/docker-entrypoint.d/05-certificates.sh:ro
+      - ./certs:/etc/nginx/certs:ro
+    networks:
+      ttx:
+        ipv4_address: 172.30.0.10
+    depends_on: [api, frontend]
+
+  # The Players' face (docs/deployment.md, section 9), on the same host. Its
+  # own hostname and certificate; bind it to the address the Internet reaches.
+  # For a real DMZ, run these two on another host instead.
+  api-public:
+    <<: *backend
+    profiles: ["public"]
+    environment:
+      <<: *backend-env
+      APP_ROLE: api-public
+      FORWARDED_ALLOW_IPS: 172.30.1.10
+      BACKEND_CORS_ORIGINS: '["https://${TTX_PUBLIC_SERVER_NAME:-}"]'
+      PUBLIC_BASE_URL: https://${TTX_PUBLIC_SERVER_NAME:-}
+    volumes:
+      - uploads:/app/uploads
+      - api_public_logs:/app/logs
+    # ttx for the database; ttx-public for its proxy.
+    networks: [ttx, ttx-public]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  proxy-public:
+    <<: *proxy
+    profiles: ["public"]
+    environment:
+      TTX_SERVER_NAME: ${TTX_PUBLIC_SERVER_NAME:-}
+      TTX_API_UPSTREAM: api-public:8000
+    ports:
+      - "${TTX_PUBLIC_HTTP_BIND:-8080}:8080"
+      - "${TTX_PUBLIC_HTTPS_BIND:-8443}:8443"
+    volumes:
+      - ./nginx/ttxzone.conf.template:/etc/nginx/templates/default.conf.template:ro
+      - ./nginx/05-certificates.sh:/docker-entrypoint.d/05-certificates.sh:ro
+      - ./certs-public:/etc/nginx/certs:ro
+    networks:
+      ttx-public:
+        ipv4_address: 172.30.1.10
+    depends_on: [api-public, frontend]

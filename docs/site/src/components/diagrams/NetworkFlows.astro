@@ -1,0 +1,70 @@
+---
+import Diagram from './Diagram.astro';
+
+const tip = 'url(#diagram-connections-and-ports-a)';
+---
+
+<Diagram
+  title="Connections and ports"
+  description="Arrows point from whoever opens the connection. Staff browsers and AI clients reach the proxy on port 443; Players' browsers reach the public proxy on 443. The proxies forward to the frontend on 8080 and to their API on 8000. The APIs and the worker reach PostgreSQL on 5432. The API reaches the identity provider over HTTPS; the worker reaches the SMTP server and the SIEM webhook."
+  width={720}
+  height={300}
+>
+  <rect class="box" x="24" y="30" width="150" height="44" rx="4"></rect>
+  <text class="strong mid" x="99" y="57">Staff browsers</text>
+  <rect class="box" x="24" y="110" width="150" height="44" rx="4"></rect>
+  <text class="strong mid" x="99" y="137">Players' browsers</text>
+  <rect class="box" x="24" y="190" width="150" height="44" rx="4"></rect>
+  <text class="strong mid" x="99" y="217">AI client (MCP)</text>
+
+  <rect class="on" x="224" y="30" width="120" height="44" rx="4"></rect>
+  <text class="strong mid" x="284" y="49">proxy</text>
+  <text class="small mid" x="284" y="66">:443, :80 redirects</text>
+  <rect class="on" x="224" y="110" width="120" height="44" rx="4"></rect>
+  <text class="strong mid" x="284" y="129">proxy-public</text>
+  <text class="small mid" x="284" y="146">:443, optional</text>
+
+  <rect class="box" x="394" y="10" width="130" height="40" rx="4"></rect>
+  <text class="strong mid" x="459" y="27">frontend</text>
+  <text class="small mid" x="459" y="43">:8080</text>
+  <rect class="box" x="394" y="60" width="130" height="40" rx="4"></rect>
+  <text class="strong mid" x="459" y="77">api</text>
+  <text class="small mid" x="459" y="93">:8000</text>
+  <rect class="box" x="394" y="110" width="130" height="40" rx="4"></rect>
+  <text class="strong mid" x="459" y="127">api-public</text>
+  <text class="small mid" x="459" y="143">:8000</text>
+  <rect class="box" x="394" y="190" width="130" height="40" rx="4"></rect>
+  <text class="strong mid" x="459" y="207">worker</text>
+  <text class="small mid" x="459" y="223">no port</text>
+
+  <rect class="box" x="574" y="10" width="130" height="40" rx="4"></rect>
+  <text class="strong mid" x="639" y="27">Identity provider</text>
+  <text class="small mid" x="639" y="43">HTTPS :443</text>
+  <rect class="box" x="574" y="60" width="130" height="40" rx="4"></rect>
+  <text class="strong mid" x="639" y="77">postgres</text>
+  <text class="small mid" x="639" y="93">:5432</text>
+  <rect class="box" x="574" y="160" width="130" height="40" rx="4"></rect>
+  <text class="strong mid" x="639" y="177">SMTP server</text>
+  <text class="small mid" x="639" y="193">25, 465, 587, 2525</text>
+  <rect class="box" x="574" y="210" width="130" height="40" rx="4"></rect>
+  <text class="strong mid" x="639" y="227">SIEM webhook</text>
+  <text class="small mid" x="639" y="243">HTTPS :443</text>
+
+  <path class="line" d="M174 52h49" marker-end={tip}></path>
+  <path class="line" d="M174 132h49" marker-end={tip}></path>
+  <path class="line" d="M174 212c26 0 26-146 49-146" marker-end={tip}></path>
+
+  <path class="line" d="M344 44c26 0 26-14 49-14" marker-end={tip}></path>
+  <path class="line" d="M344 60c26 0 26 20 49 20" marker-end={tip}></path>
+  <path class="line" d="M344 132h49" marker-end={tip}></path>
+  <path class="line" d="M344 122c28 0 28-86 49-86" marker-end={tip}></path>
+
+  <path class="line" d="M524 72c26 0 26-42 49-42" marker-end={tip}></path>
+  <path class="line" d="M524 80h49" marker-end={tip}></path>
+  <path class="line" d="M524 130c28 0 28-42 49-42" marker-end={tip}></path>
+  <path class="line" d="M524 204c32 0 32-110 49-110" marker-end={tip}></path>
+  <path class="line" d="M524 210c26 0 26-30 49-30" marker-end={tip}></path>
+  <path class="line" d="M524 216c26 0 26 14 49 14" marker-end={tip}></path>
+
+  <text class="small" x="24" y="282">Only the proxies accept connections from outside the Docker host. Everything else answers on a private network.</text>
+</Diagram>

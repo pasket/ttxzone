@@ -1,0 +1,45 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.log
+backend/uploads/
+
+# --- Node / Frontend ---
+node_modules/
+dist/
+dist-ssr/
+.vite/
+coverage/
+playwright-report/
+frontend/e2e/.auth/
+test-results/
+
+# --- Environment ---
+.env
+.env.*.local
+!.env.example
+
+# --- Deployment ---
+deploy/certs/
+deploy/certs-public/
+deploy/public-host/certs/
+deploy/public-host/db-ca/
+deploy/public-host/db-certs/
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+
+# --- Editors ---
+.vscode/
+.idea/
+*.iml
+
+# Runtime logs, including rotated backups (app.log.1, ...) that *.log misses.
+backend/logs/

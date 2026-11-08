@@ -1,0 +1,257 @@
+name: Images
+
+# The release pipeline (docs/deployment.md, section 7). Pushing a tag vX.Y.Z:
+#   1. verify  -- the tag is semver, sits on main, and agrees with
+#                 frontend/package.json, backend/pyproject.toml and a dated
+#                 CHANGELOG.md section (seconds, before anything long runs);
+#   2. CI and the browser tests on the tagged commit;
+#   3. both production images, for linux/amd64 and linux/arm64, scanned
+#      (trivy: no fixable HIGH or CRITICAL), then pushed to GHCR as X.Y.Z
+#      and X.Y;
+#   4. `latest` moved to them, only once both are up, so it never points at
+#      a mismatched pair;
+#   5. the GitHub Release, its notes taken from the CHANGELOG.md section.
+# A tag with a suffix (v0.2.0-rc1) is a pre-release: its version tag only, no
+# X.Y, no `latest`, a Release marked as pre-release, and an Unreleased
+# CHANGELOG.md section is accepted. Run by hand (`gh workflow run images.yml`)
+# it's a dry run of the same jobs on the branch: everything builds, nothing is
+# pushed or released. GHCR packages created from a private repository stay
+# private when it goes public (docs/repository-settings.md).
+on:
+  push:
+    tags: ["v*.*.*"]
+  workflow_dispatch:
+
+concurrency:
+  group: images-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Tag, versions and changelog agree
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      version: ${{ steps.check.outputs.version }}
+      prerelease: ${{ steps.check.outputs.prerelease }}
+      push: ${{ steps.check.outputs.push }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # origin/main, for the ancestry check
+
+      - id: check
+        run: |
+          frontend=$(jq -r .version frontend/package.json)
+          backend=$(sed -n 's/^version = "\(.*\)"$/\1/p' backend/pyproject.toml | head -1)
+          [ "$frontend" = "$backend" ] \
+            || { echo "::error::frontend/package.json says $frontend, backend/pyproject.toml says $backend"; exit 1; }
+
+          if [ "$GITHUB_REF_TYPE" != tag ]; then
+            echo "Dry run on $GITHUB_REF_NAME at version $frontend: nothing will be pushed."
+            { echo "version=$frontend"; echo "prerelease=false"; echo "push=false"; } >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          tag="$GITHUB_REF_NAME"
+          echo "$tag" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$' \
+            || { echo "::error::$tag is not vMAJOR.MINOR.PATCH[-suffix]"; exit 1; }
+          version="${tag#v}"
+          base="${version%%-*}"
+          [ "$frontend" = "$base" ] \
+            || { echo "::error::the tag says $base, frontend/package.json and backend/pyproject.toml say $frontend"; exit 1; }
+
+          git merge-base --is-ancestor "$GITHUB_SHA" origin/main \
+            || { echo "::error::$tag points at a commit that isn't on main"; exit 1; }
+
+          heading="^## \[${base//./\\.}\]"
+          if [ "$version" = "$base" ]; then
+            grep -Eq "$heading - [0-9]{4}-[0-9]{2}-[0-9]{2}\$" CHANGELOG.md \
+              || { echo "::error::CHANGELOG.md needs a dated section: ## [$base] - YYYY-MM-DD"; exit 1; }
+            prerelease=false
+          else
+            grep -Eq "$heading" CHANGELOG.md \
+              || { echo "::error::CHANGELOG.md has no section for $base"; exit 1; }
+            prerelease=true
+          fi
+          { echo "version=$version"; echo "prerelease=$prerelease"; echo "push=true"; } >> "$GITHUB_OUTPUT"
+
+  # A release is published only from a commit that passes CI and the browser
+  # tests.
+  ci:
+    name: CI
+    needs: verify
+    permissions:
+      contents: read
+      actions: read
+    uses: ./.github/workflows/ci.yml
+
+  e2e:
+    name: E2E
+    needs: verify
+    uses: ./.github/workflows/e2e.yml
+
+  publish:
+    name: Publish ${{ matrix.app }}
+    needs: [verify, ci, e2e]
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      matrix:
+        app: [backend, frontend]
+    steps:
+      - uses: actions/checkout@v7
+
+      - id: commit
+        run: echo "date=$(git log -1 --format=%cI)" >> "$GITHUB_OUTPUT"
+
+      # Each image is published for linux/amd64 and linux/arm64; the arm64
+      # half is built under emulation.
+      - uses: docker/setup-qemu-action@v4
+        with:
+          platforms: arm64
+
+      - uses: docker/setup-buildx-action@v4
+
+      - uses: docker/login-action@v4
+        if: needs.verify.outputs.push == 'true'
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      # X.Y.Z, plus X.Y for a final version (metadata-action leaves X.Y out
+      # for a pre-release). `latest` is moved by the next job.
+      - id: meta
+        uses: docker/metadata-action@v6
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/ttxzone-${{ matrix.app }}
+          flavor: latest=false
+          tags: |
+            type=semver,pattern={{version}},value=v${{ needs.verify.outputs.version }}
+            type=semver,pattern={{major}}.{{minor}},value=v${{ needs.verify.outputs.version }}
+          labels: |
+            org.opencontainers.image.title=ttxzone-${{ matrix.app }}
+            org.opencontainers.image.description=TTX-Zone ${{ matrix.app }}, cybersecurity tabletop exercises
+            org.opencontainers.image.licenses=AGPL-3.0-or-later
+
+      # The images about to be pushed, scanned first, one per platform: CI
+      # scanned the tagged commit, but a rebuild here may take other
+      # packages, and each platform has its own. The push below reuses
+      # these builds' cache.
+      - uses: docker/build-push-action@v7
+        with:
+          context: ${{ matrix.app }}
+          target: prod
+          platforms: linux/amd64
+          load: true
+          tags: ttxzone-${{ matrix.app }}:scan-amd64
+          build-args: |
+            VITE_COMMIT_SHA=${{ github.sha }}
+            VITE_COMMIT_DATE=${{ steps.commit.outputs.date }}
+          cache-from: type=gha,scope=${{ matrix.app }}
+
+      - uses: docker/build-push-action@v7
+        with:
+          context: ${{ matrix.app }}
+          target: prod
+          platforms: linux/arm64
+          load: true
+          tags: ttxzone-${{ matrix.app }}:scan-arm64
+          build-args: |
+            VITE_COMMIT_SHA=${{ github.sha }}
+            VITE_COMMIT_DATE=${{ steps.commit.outputs.date }}
+          cache-from: type=gha,scope=${{ matrix.app }}
+
+      - name: No fixable HIGH or CRITICAL vulnerability
+        run: |
+          for arch in amd64 arm64; do
+            docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+              aquasec/trivy:0.58.2 image --exit-code 1 --no-progress \
+              --severity HIGH,CRITICAL --ignore-unfixed "ttxzone-${{ matrix.app }}:scan-$arch"
+          done
+
+      - uses: docker/build-push-action@v7
+        with:
+          context: ${{ matrix.app }}
+          target: prod
+          platforms: linux/amd64,linux/arm64
+          push: ${{ needs.verify.outputs.push == 'true' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          provenance: mode=max
+          sbom: true
+          build-args: |
+            VITE_COMMIT_SHA=${{ github.sha }}
+            VITE_COMMIT_DATE=${{ steps.commit.outputs.date }}
+          cache-from: type=gha,scope=${{ matrix.app }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.app }}
+
+  latest:
+    name: Move latest
+    needs: [verify, publish]
+    if: needs.verify.outputs.push == 'true' && needs.verify.outputs.prerelease == 'false'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: docker/setup-buildx-action@v4
+
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+
+      - env:
+          VERSION: ${{ needs.verify.outputs.version }}
+          OWNER: ${{ github.repository_owner }}
+        run: |
+          for app in backend frontend; do
+            image="ghcr.io/$OWNER/ttxzone-$app"
+            docker buildx imagetools create -t "$image:latest" "$image:$VERSION"
+          done
+
+  release:
+    name: GitHub Release
+    needs: [verify, publish, latest]
+    if: >-
+      !cancelled() && needs.verify.outputs.push == 'true' && needs.publish.result == 'success'
+      && (needs.latest.result == 'success' || needs.latest.result == 'skipped')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.verify.outputs.version }}
+          PRERELEASE: ${{ needs.verify.outputs.prerelease }}
+          OWNER: ${{ github.repository_owner }}
+        run: |
+          base="${VERSION%%-*}"
+          awk -v h="## [$base]" 'index($0, h) == 1 { f = 1; next } /^## \[/ { if (f) exit } f' CHANGELOG.md > notes.md
+          cat >> notes.md <<EOF
+
+          ### Images
+
+          \`\`\`
+          docker pull ghcr.io/$OWNER/ttxzone-backend:$VERSION
+          docker pull ghcr.io/$OWNER/ttxzone-frontend:$VERSION
+          \`\`\`
+
+          To deploy or upgrade, set \`TTX_VERSION=$VERSION\` in \`deploy/.env\`: https://docs.ttxzone.com/instance/upgrade/
+          EOF
+          if [ "$PRERELEASE" = true ]; then flags="--prerelease --latest=false"; else flags="--latest"; fi
+          # shellcheck disable=SC2086
+          gh release create "$GITHUB_REF_NAME" --verify-tag --title "TTX-Zone $VERSION" --notes-file notes.md $flags

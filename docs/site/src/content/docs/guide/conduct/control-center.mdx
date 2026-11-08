@@ -1,0 +1,48 @@
+---
+title: Control center
+description: Run the session as a Controller.
+sidebar:
+  order: 1
+---
+
+import Screen from '../../../../components/Screen.astro';
+
+Controllers run the session from **Control → Control center**. It's the same view the Players have, plus the control panel. The session can start only when the MSEL and the session plan are both ready, and it plays the version frozen when they were marked ready.
+
+<Screen name="control-center" alt="The Control center during a session: the shared view on the left and the Session panel on the right" />
+
+## Start and pace
+
+Select **Start exercise**. From then on the Controller sets the pace and everyone else reacts.
+
+- **Release** delivers the next inject. You can also jump to a later one, or **Re-send** one.
+- **Skip** passes over an inject, with a reason.
+- **Fire** delivers a contingent inject when its condition is met.
+- **Pause** and **Resume** hold the session. Time paused doesn't count.
+
+The panel shows what's in play, what's next and the storyline. Contingent branches appear where they can fire.
+
+## During an inject
+
+- **Expected actions:** mark what the table did. Your marks feed the evaluation and the report.
+- **Key questions:** put them to the table and mark them covered.
+- **Decisions:** record what the table decided. Players and the Facilitator can too.
+- **Polls:** open a planned poll, or put a question to a vote. When you close it, confirm which option the table settled on, then show the result.
+- **Rooms:** in an exercise with [rooms](/guide/design/rooms/), move Players and project an inject to the main room.
+
+## End the session
+
+1. Select **Send ENDEX** when play is over.
+2. Select **End exercise**, the square button in the Session panel. This can't be undone.
+
+Ticking **Emergency stop** in that dialog stops the session instead, with a mandatory reason shown on every screen. Use it for a real incident.
+
+## Evaluation
+
+**Control → Evaluation** shows the EEG, read-only.
+
+## Afterwards
+
+- **Exports:** the execution log as PDF or CSV, and a draft after-action report as PDF.
+- **Feedback form:** the results appear once there are at least three answers, so nobody can be singled out.
+- **Restart exercise** goes back to Not started. **Start a new run** keeps the previous one under **Previous runs**, or you can delete its data if no report uses it.

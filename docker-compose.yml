@@ -1,0 +1,107 @@
+name: ttx-zone
+
+# Docker keeps each container's stdout too (every log line goes there):
+# capped here, or json-file grows without bound. 10 MB x 3 per container.
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+networks:
+  ttx-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  frontend_node_modules:
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ttxzone-postgres
+    logging: *default-logging
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    # Loopback only: the example password must never reach the network.
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks: [ttx-network]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: dev # prod is the server image (docs/deployment.md)
+    container_name: ttxzone-backend
+    logging: *default-logging
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      POSTGRES_HOST: postgres
+      # The image defaults to production (Secure cookies need HTTPS).
+      ENVIRONMENT: ${ENVIRONMENT:-development}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks: [ttx-network]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: dev # prod is the static build behind Nginx (docs/deployment.md)
+    container_name: ttxzone-frontend
+    logging: *default-logging
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      VITE_API_PROXY_TARGET: http://backend:8000
+      # About's commit and date: git reads the repository mounted below
+      # (owned by the host user, hence the safe.directory override).
+      GIT_DIR: /repo.git
+      GIT_CONFIG_COUNT: "1"
+      GIT_CONFIG_KEY_0: safe.directory
+      GIT_CONFIG_VALUE_0: "*"
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - ./.git:/repo.git:ro
+      - frontend_node_modules:/app/node_modules
+    depends_on: [backend]
+    networks: [ttx-network]
+
+  # Local mail catcher for trying outgoing email (docs/architecture/email.md):
+  # docker compose --profile mail up -d mailpit. The backend reaches it at
+  # mailpit:1025 (unencrypted: needs EMAIL_ALLOW_INSECURE=true); messages
+  # show at http://localhost:8025. Never part of a real deployment.
+  mailpit:
+    image: axllent/mailpit:v1.31.5
+    container_name: ttxzone-mailpit
+    profiles: ["mail"]
+    logging: *default-logging
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8025:8025"
+    networks: [ttx-network]

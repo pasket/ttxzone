@@ -1,0 +1,33 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="size" content="1200x640"><link rel="stylesheet" href="base.css">
+<style>
+  body { background: #e9edf2; position: relative; }
+  .chrome { background: #dfe3e8; padding: 10px 14px; display: flex; gap: 10px; align-items: center; border-bottom: 1px solid #c8cdd4; }
+  .addr { flex: 1; background: #fff; border-radius: 16px; padding: 7px 16px; font: 14px -apple-system, Arial; color: #333; }
+  .addr .host { font-weight: 700; outline: 2px solid #d1373d; outline-offset: 2px; border-radius: 2px; }
+  .dots { color: #8a93a3; letter-spacing: 3px; }
+  .card { width: 420px; margin: 56px auto 0; background: #fff; border: 1px solid #d6d9df; border-radius: 6px; padding: 34px 36px; }
+  .logo { display: flex; gap: 6px; margin-bottom: 18px; }
+  .logo i { width: 18px; height: 18px; display: block; }
+  h1 { font-size: 22px; font-weight: 600; margin-bottom: 6px; }
+  .sub { color: #5a6170; font-size: 14px; margin-bottom: 18px; }
+  .file { background: #f3f5f8; border: 1px solid #e1e3e8; border-radius: 4px; padding: 10px 12px; font-size: 13px; margin-bottom: 18px; }
+  .in { border: 1px solid #b9bfc9; border-radius: 4px; padding: 10px 12px; font-size: 14px; color: #8a93a3; margin-bottom: 12px; }
+  .btn { background: #1f5fd1; color: #fff; text-align: center; padding: 10px; border-radius: 4px; font-weight: 600; }
+  .callout { position: absolute; left: 380px; top: 58px; background: #d1373d; color: #fff; font-size: 12px; font-weight: 600; padding: 4px 9px; border-radius: 3px; }
+</style></head>
+<body>
+<div class="chrome"><span class="dots">●●●</span><div class="addr">🔒 https://<span class="host">docs-share.example.org</span>/s/4f7a2c/review?file=Q3_Invoice.pdf</div></div>
+<div class="callout" data-es="↑ No es el dominio de tu proveedor de nube">↑ Not your cloud provider's domain</div>
+<div class="card">
+  <div class="logo" style="font-size:15px;font-weight:600;color:#5a6170;align-items:center"><svg width="30" height="20" viewBox="0 0 30 20"><path d="M8 18h15a6 6 0 0 0 0-12 8 8 0 0 0-15 2 5 5 0 0 0 0 10z" fill="#9aa3b2"/></svg><span data-es="Documentos compartidos">Shared documents</span></div>
+  <h1 data-es="Inicia sesión para ver el documento">Sign in to view the document</h1>
+  <div class="sub" data-es="Un proveedor ha compartido un archivo contigo.">A supplier has shared a file with you.</div>
+  <div class="file">📄 Q3_Invoice.pdf · 248 KB</div>
+  <div class="in" data-es="Correo corporativo">Work email</div>
+  <div class="in" data-es="Contraseña">Password</div>
+  <div class="btn" data-es="Iniciar sesión">Sign in</div>
+</div>
+<div class="stamp" data-es="Ficticio · material de ejercicio">Fictitious · exercise material</div>
+<script src="i18n.js"></script>
+</body></html>

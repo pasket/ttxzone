@@ -1,0 +1,53 @@
+---
+title: Playground
+description: What the live session looks like for everyone at the table.
+sidebar:
+  order: 2
+---
+
+import Screen from '../../../../components/Screen.astro';
+
+The **Playground** is the live session. Everyone sees the same thing, so an Evaluator rates exactly what the table saw. Only the panel on the right changes with your role.
+
+<Screen name="playground" alt="A Player's Playground during a session" />
+
+## What's on screen
+
+- A band reading **EXERCISE · EXERCISE · EXERCISE**, always visible.
+- The phases, with the scenario's date and time. Future phases have no name, so nobody sees what's ahead.
+- The inject **In play**, with its images, files and **Questions for the table**.
+- Who's present.
+- The decisions recorded so far.
+
+New injects appear on their own and never take focus from what you're typing. If you reload or join late, you see the same state as everyone else.
+
+## Your panel
+
+| Role | Panel |
+|---|---|
+| Player | The table's decisions, and private notes grouped by inject |
+| Facilitator | Inject and general notes, the key questions and the inject's Facilitator notes |
+| Observer | Inject and general notes |
+| Evaluator | The EEG points of the current inject, ratings and notes |
+
+## Files
+
+Files arrive with their inject. Each shows its size, description and SHA-256, so the table can check what it's analysing. Text files can be previewed.
+
+## Decisions and votes
+
+Players, Facilitators and Controllers record what the table decided. A vote shows under the stage: pick an option, and the tally updates. Votes are anonymous. The Controller shows the result when it's time, and impact meters if the exercise has them.
+
+<Screen name="vote" alt="A Player voting on a poll during a session" />
+
+## Stopping for a real incident
+
+The band always shows the stop keyword. **Anyone can use it, Players included.**
+
+While the session runs, the keyword is a button. Press it, type the keyword to confirm, and the session pauses for everyone. Every screen turns red and shows who paused it and when. Only a Controller can resume it.
+
+There's no password prompt, so nothing delays it.
+
+## After the session
+
+A closing screen appears, and the **Feedback form** is in your panel.

@@ -1,0 +1,12 @@
+Hello {{ name }},
+
+It's been a while since your {{ product_name }} account confirmed this email address. To keep using the account, confirm it's still yours by opening this link within {{ days }} days:
+
+{{ link }}
+
+Until then the account works as usual; after that, it waits for the confirmation. If you can't open the link in time, sign in and ask for a new one.
+
+If you don't have a {{ product_name }} account, ignore this message.
+
+--
+Automatic message sent by {{ product_name }}.

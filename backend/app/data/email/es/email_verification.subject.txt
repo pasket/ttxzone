@@ -1,0 +1,1 @@
+{{ product_name }}: confirma tu dirección de correo

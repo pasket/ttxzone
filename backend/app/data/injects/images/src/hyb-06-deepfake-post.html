@@ -1,0 +1,36 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="size" content="700x560"><link rel="stylesheet" href="base.css">
+<style>
+  body { background: #f1f3f5; position: relative; }
+  .post { width: 640px; margin: 24px auto; background: #fff; border: 1px solid #dde1e6; border-radius: 10px; }
+  .who { display: flex; gap: 10px; align-items: center; padding: 14px 16px; }
+  .av { width: 40px; height: 40px; border-radius: 50%; background: #c9ced6; }
+  .who b { display: block; }
+  .who span { font-size: 13px; color: #6b7280; }
+  .text { padding: 0 16px 12px; font-size: 15px; line-height: 1.45; }
+  .video { position: relative; height: 340px; background: linear-gradient(160deg, #3d4552, #1f242c); overflow: hidden; }
+  .face { position: absolute; left: 230px; top: 50px; width: 180px; height: 220px; border-radius: 50% 50% 46% 46%; background: #b9a596; filter: blur(.4px); }
+  .suit { position: absolute; left: 170px; top: 250px; width: 300px; height: 140px; border-radius: 40px 40px 0 0; background: #1d2330; }
+  .glitch { position: absolute; left: 226px; top: 140px; width: 188px; height: 18px; background: rgba(255,255,255,.18); transform: skewX(-12deg); }
+  .play { position: absolute; left: 24px; top: 24px; width: 64px; height: 64px; border-radius: 50%; background: rgba(0,0,0,.55); }
+  .play::after { content: ""; position: absolute; left: 26px; top: 20px; border: 12px solid transparent; border-left: 18px solid #fff; }
+  .sub { position: absolute; left: 0; right: 0; bottom: 16px; text-align: center; color: #fff; font-size: 16px; text-shadow: 0 1px 3px #000; padding: 0 30px; }
+  .stats { padding: 10px 16px 14px; font-size: 14px; color: #6b7280; display: flex; gap: 22px; }
+  .stats b { color: #111; }
+  .tag { position: absolute; background: #d1373d; color: #fff; font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 3px; }
+</style></head>
+<body>
+<div class="post">
+  <div class="who"><div class="av"></div><div><b data-es="Noticias Al Minuto 24h">Breaking News 24h</b><span data-es="@noticias_al_minuto_24 · cuenta creada hace 9 días">@breaking_news_24h · account created 9 days ago</span></div></div>
+  <div class="text" data-es="🚨 EXCLUSIVA: el consejero delegado admite en un vídeo interno filtrado que el servicio está comprometido y que los datos de los clientes «no están a salvo». Compartid antes de que lo borren.">🚨 EXCLUSIVE: the CEO admits in a leaked internal video that the service is compromised and customer data is "not safe". Share before they delete it.</div>
+  <div class="video">
+    <div class="suit"></div><div class="face"></div><div class="glitch"></div><div style="position:absolute;left:290px;top:212px;width:60px;height:10px;border-radius:5px;background:#7d5a50"></div><div style="position:absolute;left:272px;top:140px;width:22px;height:8px;border-radius:4px;background:#4a3b35"></div><div style="position:absolute;left:346px;top:140px;width:22px;height:8px;border-radius:4px;background:#4a3b35"></div><div class="play"></div>
+    <div class="sub" data-es="«…no podemos garantizar que vuestros datos estén a salvo…»">"…we can't guarantee your data is safe…"</div>
+    <span class="tag" style="left:430px;top:146px" data-es="Borde facial inestable">Unstable face edge</span>
+    <span class="tag" style="left:120px;top:208px" data-es="Labios desincronizados">Lips out of sync</span>
+  </div>
+  <div class="stats"><span>▶ <b data-es="200.000">200,000</b> <span data-es="visualizaciones">views</span></span><span>↻ <b data-es="14.300">14,300</b></span><span data-es="hace 2 h">2 h ago</span></div>
+</div>
+<div class="stamp" data-es="Ficticio · material de ejercicio">Fictitious · exercise material</div>
+<script src="i18n.js"></script>
+</body></html>

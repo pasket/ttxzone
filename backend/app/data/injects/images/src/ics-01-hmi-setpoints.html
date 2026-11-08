@@ -1,0 +1,57 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="size" content="1280x640"><link rel="stylesheet" href="base.css">
+<style>
+  body { background: #c9ccd1; color: #111; position: relative; font-family: Arial, sans-serif; }
+  .title { background: #3b4a5c; color: #fff; padding: 8px 14px; display: flex; justify-content: space-between; font-weight: 700; }
+  .grid { display: grid; grid-template-columns: 600px 1fr; gap: 12px; padding: 12px; }
+  .box { background: #dfe2e6; border: 2px solid #8b939e; padding: 10px; }
+  .box h4 { font-size: 13px; margin-bottom: 8px; color: #333; }
+  .tank { position: relative; height: 260px; }
+  .vessel { position: absolute; left: 60px; top: 20px; width: 140px; height: 210px; border: 3px solid #555; border-radius: 10px; background: linear-gradient(#dfe2e6 35%, #5b8fd6 35%); }
+  .pipe { position: absolute; height: 10px; background: #777; }
+  .val { position: absolute; background: #000; color: #3dff6e; font: 16px Menlo, monospace; padding: 4px 8px; border: 1px solid #555; }
+  .sp { position: absolute; font-size: 12px; }
+  table td, table th { border-bottom: 1px solid #b7bcc4; color: #111; font-size: 13px; }
+  table th { color: #333; }
+  tr.chg td { background: #ffe9a8; }
+  svg text { fill: #333; font: 11px Arial; }
+</style></head>
+<body>
+<div class="title"><span data-es="HMI · Línea de proceso 2 · Reactor R-201">HMI · Process line 2 · Reactor R-201</span><span data-es="Operador: turno de mañana · 07:42">Operator: morning shift · 07:42</span></div>
+<div class="grid">
+  <div class="box">
+    <h4 data-es="Sinóptico">Overview</h4>
+    <div class="tank">
+      <div class="vessel"></div>
+      <div class="pipe" style="left:200px;top:120px;width:160px"></div>
+      <div class="pipe" style="left:0;top:70px;width:60px"></div>
+      <div class="val" style="left:230px;top:40px">T 182.6 °C</div>
+      <div class="val" style="left:230px;top:150px">P 8.7 bar</div>
+      <div class="val" style="left:400px;top:100px">F 42.1 m³/h</div>
+      <div class="sp" style="left:230px;top:76px" data-es="SP temperatura: <b>190 °C</b> (antes 175)">SP temperature: <b>190 °C</b> (was 175)</div>
+      <div class="sp" style="left:230px;top:186px" data-es="SP presión: <b>9,2 bar</b> (antes 8,0)">SP pressure: <b>9.2 bar</b> (was 8.0)</div>
+    </div>
+  </div>
+  <div class="box">
+    <h4 data-es="Registro de cambios de consigna (última hora)">Setpoint change log (last hour)</h4>
+    <table>
+      <tr><th data-es="Hora">Time</th><th data-es="Variable">Tag</th><th data-es="Antes">Before</th><th data-es="Después">After</th><th data-es="Usuario">User</th></tr>
+      <tr class="chg"><td>06:58</td><td>TIC-201.SP</td><td>175 °C</td><td>182 °C</td><td>eng_svc</td></tr>
+      <tr class="chg"><td>07:21</td><td>PIC-204.SP</td><td>8.0 bar</td><td>9.2 bar</td><td>eng_svc</td></tr>
+      <tr class="chg"><td>07:33</td><td>TIC-201.SP</td><td>182 °C</td><td>190 °C</td><td>eng_svc</td></tr>
+    </table>
+    <p style="font-size:12px;margin-top:8px;color:#7a1d1d" data-es="Ningún operador del turno reconoce los cambios. Cuenta <b>eng_svc</b>: cuenta de servicio de ingeniería.">No operator on shift recognises the changes. Account <b>eng_svc</b>: engineering service account.</p>
+  </div>
+  <div class="box" style="grid-column:1 / span 2">
+    <h4 data-es="Tendencia de temperatura R-201 (°C)">R-201 temperature trend (°C)</h4>
+    <svg width="1230" height="170" viewBox="0 0 1230 170">
+      <line x1="40" y1="30" x2="1220" y2="30" stroke="#c0392b" stroke-width="2" stroke-dasharray="8 5"/>
+      <text x="46" y="24" style="fill:#c0392b" data-es="Umbral de alarma 195 °C">Alarm threshold 195 °C</text>
+      <polyline fill="none" stroke="#1f5fd1" stroke-width="2.5" points="40,130 200,128 360,131 480,129 520,110 640,100 760,96 840,80 900,60 1000,48 1100,44 1220,40"/>
+      <text x="40" y="160">06:40</text><text x="510" y="160">06:58</text><text x="830" y="160">07:21</text><text x="1180" y="160">07:42</text>
+    </svg>
+  </div>
+</div>
+<div class="stamp" data-es="Ficticio · material de ejercicio">Fictitious · exercise material</div>
+<script src="i18n.js"></script>
+</body></html>

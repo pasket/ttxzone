@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 240" width="640" height="240" role="img" aria-label="TTX-Zone"><title>TTX-Zone — logotipo (light)</title>
+  <g id="logotipo-light">
+    <g id="texto">
+      <text x="40" y="152" font-family="'Helvetica Neue',Helvetica,Arial,sans-serif" font-size="100" letter-spacing="-1" fill="#0B0E14"><tspan font-weight="700">TTX</tspan><tspan font-weight="700" fill="#1A9AD6">-</tspan><tspan font-weight="400" fill="#3A4456">Zone</tspan></text>
+    </g>
+      <g id="glifo">
+        <polygon id="capa-base" points="566,117.43 595.43,134.43 566,151.42 536.57,134.43" fill="#0A5E8A"></polygon>
+        <polygon id="capa-simulacion" points="566,80.58 593,96.17 566,111.76 539,96.17" fill="#1A9AD6"></polygon>
+      </g>
+  </g>
+</svg>

@@ -1,0 +1,1 @@
+{{ inviter }} te invita a un ejercicio en {{ product_name }}

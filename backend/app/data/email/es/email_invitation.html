@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block content %}
+<p style="margin:0 0 16px;">Hola:</p>
+<p style="margin:0 0 16px;">{{ inviter }} ({{ organization }}) te invita a participar como Jugador en el ejercicio de mesa <strong>{{ exercise }}</strong> en {{ product_name }}. Para unirte, abre este enlace antes de {{ days }} días:</p>
+<p style="margin:0 0 24px;"><a href="{{ link }}" style="display:inline-block;padding:10px 20px;background:#00c2d1;color:#0c0d10;text-decoration:none;border-radius:6px;font-weight:bold;">Unirme al ejercicio</a></p>
+<p style="margin:0 0 16px;color:#616e7c;font-size:13px;word-break:break-all;">O copia esta dirección en tu navegador: {{ link }}</p>
+<p style="margin:0 0 16px;">El enlace es solo para ti: funciona únicamente con una cuenta con esta dirección de correo, y puedes crearla al abrirlo. Sirve una sola vez.</p>
+<p style="margin:0;">Si no esperabas este mensaje, ignóralo: no ocurre nada si no abres el enlace.</p>
+{% endblock %}
+{% block footer %}Mensaje automático enviado por {{ product_name }}.{% endblock %}

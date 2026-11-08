@@ -1,0 +1,7 @@
+{% extends "layout.html" %}
+{% block content %}
+<p style="margin:0 0 16px;">This is a test email from {{ product_name }}.</p>
+<p style="margin:0 0 16px;">If you're reading it, the deployment can send email: the configuration in <strong>Instance administration &rarr; Email</strong> works.</p>
+<p style="margin:0;color:#616e7c;">Requested by {{ requested_by }} on {{ sent_at }} (UTC).</p>
+{% endblock %}
+{% block footer %}Automatic message sent by {{ product_name }}.{% endblock %}

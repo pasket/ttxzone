@@ -1,0 +1,81 @@
+/* TTX-Zone's own look (frontend/src/index.css), in Starlight's variables.
+ * Starlight's defaults are its dark theme. */
+:root {
+  --sl-font: 'IBM Plex Sans';
+  --sl-font-mono: 'IBM Plex Mono';
+
+  --sl-color-accent-low: #0e3a41;
+  --sl-color-accent: #17b4c4;
+  --sl-color-accent-high: #b8ebf0;
+  --sl-color-text-accent: #17b4c4;
+
+  --sl-color-bg: #0c0d10;
+  --sl-color-bg-nav: #131722;
+  --sl-color-bg-sidebar: #131722;
+  --sl-color-bg-inline-code: #191c24;
+  --sl-color-hairline: #232838;
+  --sl-color-hairline-light: #2a2e3a;
+  --sl-color-hairline-shade: #0c0d10;
+  --sl-color-text: #b0b8c8;
+  --sl-color-white: #e7eaf0;
+
+  --sl-color-banner-bg: #191c24;
+  --sl-color-banner-text: #e7eaf0;
+
+  /* Flat panels: separation comes from hairlines. */
+  --sl-shadow-sm: none;
+  --sl-shadow-md: none;
+  --sl-shadow-lg: none;
+
+  --sl-text-h1: 2.25rem;
+  --sl-text-h2: 1.625rem;
+  --sl-text-h3: 1.25rem;
+  --sl-text-h4: 1.0625rem;
+  --sl-text-h5: 1rem;
+
+  --ttx-nav-current: rgb(23 180 196 / 12%);
+  --ttx-panel: #191c24;
+  --ttx-line: #2a2e3a;
+  --ttx-ok: #1f9d63;
+  --ttx-branch: #8b7cf0;
+}
+
+:root[data-theme='light'] {
+  --sl-color-accent-low: #cdeef2;
+  --sl-color-accent: #0b6e7b;
+  --sl-color-accent-high: #085661;
+  --sl-color-text-accent: #0b6e7b;
+
+  --sl-color-bg: #ffffff;
+  --sl-color-bg-nav: #f6f7f9;
+  --sl-color-bg-sidebar: #f6f7f9;
+  --sl-color-bg-inline-code: #eff1f4;
+  --sl-color-hairline: #e2e5ea;
+  --sl-color-hairline-light: #e2e5ea;
+  --sl-color-hairline-shade: #e2e5ea;
+  --sl-color-text: #3a3f4b;
+  --sl-color-white: #10131a;
+
+  --sl-color-banner-bg: #eff1f4;
+  --sl-color-banner-text: #10131a;
+
+  --ttx-nav-current: rgb(11 110 123 / 10%);
+  --ttx-panel: #f6f7f9;
+  --ttx-line: #cdd2da;
+  --ttx-ok: #1a7f50;
+  --ttx-branch: #5b4bc4;
+}
+
+/* The current page, as the product's own menu marks it. */
+.sidebar-content a[aria-current='page'],
+.sidebar-content a[aria-current='page']:hover,
+.sidebar-content a[aria-current='page']:focus {
+  color: var(--sl-color-text-accent);
+  background-color: var(--ttx-nav-current);
+  box-shadow: inset 2px 0 0 var(--sl-color-text-accent);
+  border-radius: 0.25rem;
+}
+
+.sl-link-card {
+  box-shadow: none;
+}

@@ -1,0 +1,37 @@
+---
+import Diagram from './Diagram.astro';
+
+const injects = [
+  [70, 'INJ-01'],
+  [230, 'INJ-02'],
+  [390, 'INJ-03'],
+  [620, 'INJ-05'],
+];
+---
+
+<Diagram
+  title="A storyline with a branch"
+  description="Mandatory injects run along the storyline in order. If an expected action of INJ-02 doesn't happen, the contingent inject INJ-04 branches off in the same phase and rejoins the storyline at the later inject INJ-05."
+  width={720}
+  height={196}
+>
+  <rect class="zone" x="8" y="10" width="462" height="176" rx="4"></rect>
+  <rect class="zone" x="482" y="10" width="230" height="176" rx="4"></rect>
+  <text class="small" x="20" y="30">Phase 1</text>
+  <text class="small" x="494" y="30">Phase 2</text>
+
+  <path class="main" d="M20 80H700"></path>
+  <path class="branch" d="M230 80c0 40 40 60 80 60h170c60 0 140-20 140-60"></path>
+  {
+    injects.map(([x, code]) => (
+      <g>
+        <circle class="main" cx={x} cy="80" r="6" />
+        <text class="mid" x={x} y="62">{code}</text>
+      </g>
+    ))
+  }
+  <rect class="branch" x="384" y="134" width="12" height="12" transform="rotate(45 390 140)"></rect>
+  <text class="mid" x="390" y="168">INJ-04, contingent</text>
+  <text class="small" x="130" y="134">If an expected action</text>
+  <text class="small" x="130" y="152">doesn't happen</text>
+</Diagram>

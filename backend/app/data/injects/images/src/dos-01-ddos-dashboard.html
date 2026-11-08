@@ -1,0 +1,33 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="size" content="1280x560"><link rel="stylesheet" href="base.css">
+<style>
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; padding: 14px 14px 0; }
+  .kpi { padding: 12px 14px; }
+  .kpi b { display: block; font-size: 26px; margin-top: 4px; }
+  svg text { fill: #8a93a3; font: 11px -apple-system, Arial; }
+</style></head>
+<body class="dark" style="position:relative">
+<div class="bar"><span data-es="◎ Servicio anti-DDoS">◎ Anti-DDoS service</span><span class="muted" style="font-weight:400" data-es="Mitigación · servicio crítico">Mitigation · critical service</span>
+  <span style="margin-left:auto" class="chip crit" data-es="ATAQUE EN CURSO · 20 MIN">ATTACK IN PROGRESS · 20 MIN</span></div>
+<div class="kpis">
+  <div class="panel kpi"><span class="muted" data-es="Tráfico entrante">Inbound traffic</span><b style="color:#ff5a5f" data-es="×3,1 la capacidad">×3.1 capacity</b></div>
+  <div class="panel kpi"><span class="muted" data-es="Capacidad contratada">Contracted capacity</span><b>100 %</b></div>
+  <div class="panel kpi"><span class="muted" data-es="Errores HTTP 5xx">HTTP 5xx errors</span><b style="color:#ffb547">38 %</b></div>
+  <div class="panel kpi"><span class="muted" data-es="Orígenes únicos">Unique sources</span><b data-es="214.000">214,000</b></div>
+</div>
+<div style="padding:14px">
+  <div class="panel">
+    <h3 data-es="Tráfico entrante frente a capacidad de mitigación contratada">Inbound traffic vs. contracted mitigation capacity</h3>
+    <svg width="1250" height="300" viewBox="0 0 1250 300">
+      <line x1="50" y1="260" x2="1230" y2="260" stroke="#2b313d"/>
+      <line x1="50" y1="190" x2="1230" y2="190" stroke="#ffb547" stroke-width="2" stroke-dasharray="8 6"/>
+      <text x="60" y="182" style="fill:#ffb547" data-es="Capacidad contratada">Contracted capacity</text>
+      <path d="M50,245 L200,243 L350,246 L480,240 L540,150 L600,60 L660,70 L720,40 L780,55 L840,35 L900,50 L960,30 L1020,45 L1080,38 L1140,42 L1230,36 L1230,260 L50,260 Z" fill="rgba(255,90,95,.18)"/>
+      <polyline fill="none" stroke="#ff5a5f" stroke-width="2.5" points="50,245 200,243 350,246 480,240 540,150 600,60 660,70 720,40 780,55 840,35 900,50 960,30 1020,45 1080,38 1140,42 1230,36"/>
+      <text x="50" y="280">09:15</text><text x="470" y="280" data-es="09:50 · inicio">09:50 · start</text><text x="1180" y="280">10:10</text>
+    </svg>
+  </div>
+</div>
+<div class="stamp" data-es="Ficticio · material de ejercicio">Fictitious · exercise material</div>
+<script src="i18n.js"></script>
+</body></html>

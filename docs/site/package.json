@@ -1,0 +1,23 @@
+{
+  "name": "ttx-zone-docs",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/glossary.mjs && astro dev",
+    "build": "node scripts/glossary.mjs && astro build && node scripts/check-pages.mjs",
+    "preview": "astro preview"
+  },
+  "overrides": {
+    "form-data": "^4.0.6"
+  },
+  "dependencies": {
+    "@astrojs/markdown-remark": "7.3.6",
+    "@astrojs/markdown-satteri": "0.4.7",
+    "@astrojs/starlight": "0.42.10",
+    "@fontsource/ibm-plex-mono": "5.3.0",
+    "@fontsource/ibm-plex-sans": "5.3.0",
+    "astro": "7.4.7",
+    "starlight-links-validator": "0.27.0",
+    "starlight-openapi": "0.27.0"
+  }
+}

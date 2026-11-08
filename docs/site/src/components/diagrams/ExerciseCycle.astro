@@ -1,0 +1,36 @@
+---
+import Diagram from './Diagram.astro';
+
+const tip = 'url(#diagram-the-exercise-cycle-a)';
+const stages = [
+  ['Design', 'Exercise Planners'],
+  ['Conduct', 'Controllers, Players'],
+  ['Evaluate', 'Evaluators, authors'],
+  ['Improve', 'Exercise Program', 'Manager'],
+];
+---
+
+<Diagram
+  title="The exercise cycle"
+  description="Four stages in order: design, conduct, evaluate and improve. A line returns from improve to design, because a later exercise re-tests the actions."
+  width={720}
+  height={160}
+>
+  {
+    stages.map(([name, ...who], index) => {
+      const x = 6 + index * 182;
+      return (
+        <g>
+          <rect class="box" x={x} y="8" width="162" height="86" rx="4" />
+          <text class="strong" x={x + 12} y="34">{name}</text>
+          {who.map((line, row) => (
+            <text class="small" x={x + 12} y={58 + row * 18}>{line}</text>
+          ))}
+          {index < 3 && <path class="line" d={`M${x + 162} 51h19`} marker-end={tip} />}
+        </g>
+      );
+    })
+  }
+  <path class="line" d="M633 94v30H87v-28" marker-end={tip}></path>
+  <text class="small mid" x="360" y="146">A later exercise re-tests the actions</text>
+</Diagram>

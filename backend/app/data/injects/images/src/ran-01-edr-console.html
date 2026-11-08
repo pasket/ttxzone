@@ -1,0 +1,51 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="size" content="1280x580"><link rel="stylesheet" href="base.css">
+<style>
+  .grid { display: grid; grid-template-columns: 1fr 360px; gap: 14px; padding: 14px; }
+  .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; padding: 14px 14px 0; }
+  .kpi { padding: 12px 14px; }
+  .kpi b { display: block; font-size: 30px; font-weight: 700; margin-top: 4px; }
+  .kpi.red b { color: #ff5a5f; }
+  svg text { fill: #8a93a3; font: 11px -apple-system, Arial; }
+  td.f { color: #ffb4b6; }
+</style></head>
+<body class="dark" style="position:relative">
+<div class="bar"><span data-es="◆ Consola de protección de endpoints">◆ Endpoint protection console</span><span class="muted" style="font-weight:400" data-es="Incidentes · Vista en vivo">Incidents · Live view</span>
+  <span style="margin-left:auto" class="chip crit" data-es="INCIDENTE CRÍTICO ACTIVO">CRITICAL INCIDENT ACTIVE</span></div>
+<div class="kpis">
+  <div class="panel kpi red"><span class="muted" data-es="Alertas de cifrado (10 min)">Encryption alerts (10 min)</span><b data-es="1.284">1,284</b></div>
+  <div class="panel kpi red"><span class="muted" data-es="Servidores afectados">Servers affected</span><b>37</b></div>
+  <div class="panel kpi"><span class="muted" data-es="Volumen de escritura vs. normal">Write volume vs. baseline</span><b style="color:#ffb547">×20</b></div>
+</div>
+<div class="grid">
+  <div class="panel">
+    <h3 data-es="Alertas recientes — comportamiento de ransomware">Recent alerts — ransomware behaviour</h3>
+    <table>
+      <tr><th data-es="Hora">Time</th><th data-es="Severidad">Severity</th><th>Host</th><th data-es="Detección">Detection</th><th data-es="Fichero">File</th></tr>
+      <tr><td class="mono">03:19:58</td><td><span class="chip crit" data-es="Crítica">Critical</span></td><td class="mono">FS-02</td><td data-es="Cifrado masivo de ficheros">Mass file encryption</td><td class="mono f">contracts_2024.xlsx.lck</td></tr>
+      <tr><td class="mono">03:19:57</td><td><span class="chip crit" data-es="Crítica">Critical</span></td><td class="mono">FS-01</td><td data-es="Cifrado masivo de ficheros">Mass file encryption</td><td class="mono f">payroll_q3.csv.lck</td></tr>
+      <tr><td class="mono">03:19:55</td><td><span class="chip crit" data-es="Crítica">Critical</span></td><td class="mono">APP-DB-01</td><td data-es="Cifrado masivo de ficheros">Mass file encryption</td><td class="mono f">orders.mdf.lck</td></tr>
+      <tr><td class="mono">03:19:51</td><td><span class="chip high" data-es="Alta">High</span></td><td class="mono">FS-03</td><td data-es="Borrado de instantáneas (vssadmin)">Shadow copies deleted (vssadmin)</td><td class="mono muted">—</td></tr>
+      <tr><td class="mono">03:19:49</td><td><span class="chip crit" data-es="Crítica">Critical</span></td><td class="mono">FS-02</td><td data-es="Cifrado masivo de ficheros">Mass file encryption</td><td class="mono f">board_minutes.docx.lck</td></tr>
+      <tr><td class="mono">03:19:44</td><td><span class="chip high" data-es="Alta">High</span></td><td class="mono">APP-01</td><td data-es="Nota de rescate creada">Ransom note dropped</td><td class="mono f">README_RESTORE.txt</td></tr>
+      <tr><td class="mono">03:19:40</td><td><span class="chip crit" data-es="Crítica">Critical</span></td><td class="mono">FS-01</td><td data-es="Cifrado masivo de ficheros">Mass file encryption</td><td class="mono f">invoices_2025.pdf.lck</td></tr>
+      <tr><td class="mono">03:19:38</td><td><span class="chip crit" data-es="Crítica">Critical</span></td><td class="mono">BK-01</td><td data-es="Cifrado masivo de ficheros">Mass file encryption</td><td class="mono f">vm_export.vhdx.lck</td></tr>
+      <tr><td colspan="5" class="muted" data-es="+ 1.276 alertas más">+ 1,276 more alerts</td></tr>
+    </table>
+  </div>
+  <div class="panel">
+    <h3 data-es="Escrituras en disco (MB/s)">Disk writes (MB/s)</h3>
+    <svg width="358" height="250" viewBox="0 0 358 250">
+      <line x1="34" y1="210" x2="350" y2="210" stroke="#2b313d"/>
+      <line x1="34" y1="20" x2="34" y2="210" stroke="#2b313d"/>
+      <line x1="34" y1="190" x2="350" y2="190" stroke="#3a4150" stroke-dasharray="4 4"/>
+      <text x="40" y="184" data-es="normal">baseline</text>
+      <polyline fill="none" stroke="#5aa0ff" stroke-width="2" points="34,192 70,190 106,191 142,189 178,192 214,190 250,180 268,120 286,60 304,34 322,30 340,28"/>
+      <text x="34" y="228">02:50</text><text x="180" y="228">03:05</text><text x="310" y="228">03:20</text>
+    </svg>
+    <div style="padding:0 14px 14px" class="muted" data-es="Extensión nueva detectada: <b style='color:#ffb4b6'>.lck</b> en 4 servidores de ficheros">New extension detected: <b style="color:#ffb4b6">.lck</b> on 4 file servers</div>
+  </div>
+</div>
+<div class="stamp" data-es="Ficticio · material de ejercicio">Fictitious · exercise material</div>
+<script src="i18n.js"></script>
+</body></html>

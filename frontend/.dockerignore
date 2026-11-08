@@ -1,0 +1,12 @@
+node_modules
+dist
+.git
+.env
+.env.*
+coverage
+# Not needed to build (the dev container bind-mounts the whole source).
+tests
+CLAUDE.md
+e2e
+playwright-report
+test-results

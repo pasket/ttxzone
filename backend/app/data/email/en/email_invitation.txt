@@ -1,0 +1,12 @@
+Hello,
+
+{{ inviter }} ({{ organization }}) invites you to take part as a Player in the tabletop exercise "{{ exercise }}" on {{ product_name }}. To join, open this link within {{ days }} days:
+
+{{ link }}
+
+The link is for you alone: it only works with an account under this email address, and you can create one when you open it. It works once.
+
+If you weren't expecting this, ignore this message: nothing happens unless you open the link.
+
+--
+Automatic message sent by {{ product_name }}.

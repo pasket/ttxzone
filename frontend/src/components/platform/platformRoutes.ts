@@ -1,0 +1,11 @@
+// Instance administration: one chunk, loaded on entering it (App.tsx).
+export { PlatformAccountDetail } from './PlatformAccountDetail'
+export { PlatformAccountsSection } from './PlatformAccountsSection'
+export { PlatformActivitySection } from './PlatformActivitySection'
+export { PlatformEmailSection } from './PlatformEmailSection'
+export { PlatformSsoSection } from './PlatformSsoSection'
+export { PlatformAssistantSection } from './PlatformAssistantSection'
+export { PlatformLegalSection } from './PlatformLegalSection'
+export { PlatformOrganizationsSection } from './PlatformOrganizationsSection'
+export { PlatformSecuritySection } from './PlatformSecuritySection'
+export { PlatformTenancySection } from './PlatformTenancySection'

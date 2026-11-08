@@ -1,0 +1,32 @@
+---
+import Diagram from './Diagram.astro';
+
+const tip = 'url(#diagram-authorize-then-assign-a)';
+---
+
+<Diagram
+  title="Authorize, then assign"
+  description="An Exercise Program Manager authorizes a person in the organization. Each exercise's team then assigns that person a role on that exercise, which can differ from one exercise to the next."
+  width={720}
+  height={178}
+>
+  <rect class="box" x="6" y="48" width="176" height="82" rx="4"></rect>
+  <text class="strong" x="18" y="76">Organization</text>
+  <text class="small" x="18" y="98">The Exercise Program</text>
+  <text class="small" x="18" y="116">Manager authorizes</text>
+
+  <rect class="on" x="236" y="48" width="184" height="82" rx="4"></rect>
+  <text class="strong" x="248" y="76">A person</text>
+  <text class="small" x="248" y="98">Holds Exercise Planner</text>
+  <text class="small" x="248" y="116">and Evaluator</text>
+  <path class="line" d="M182 89h53" marker-end={tip}></path>
+
+  <rect class="box" x="478" y="10" width="236" height="70" rx="4"></rect>
+  <text class="strong" x="490" y="36">Exercise A</text>
+  <text class="small" x="490" y="58">Assigned as Exercise Planner</text>
+  <rect class="box" x="478" y="98" width="236" height="70" rx="4"></rect>
+  <text class="strong" x="490" y="124">Exercise B</text>
+  <text class="small" x="490" y="146">Assigned as Evaluator</text>
+  <path class="line" d="M420 76c29 0 29-31 57-31" marker-end={tip}></path>
+  <path class="line" d="M420 102c29 0 29 31 57 31" marker-end={tip}></path>
+</Diagram>

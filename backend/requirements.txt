@@ -1,0 +1,28 @@
+# Pinned to exact versions so every environment (local Docker build, CI)
+# installs the same code the test suite passed on. An unpinned sqlmodel
+# once pulled 0.0.47 into CI, which declares datetime columns with a new
+# UtcDateTime type -- a silent behavior change. Upgrade deliberately: bump
+# a pin, run the full suite (and `alembic check`), then commit.
+fastapi==0.141.1
+uvicorn[standard]==0.52.4
+sqlmodel==0.0.47
+psycopg[binary]==3.3.5
+pydantic-settings==2.15.0
+argon2-cffi==25.1.0
+alembic==1.20.0
+pyjwt==2.15.0
+pyotp==2.10.0
+email-validator==2.3.0
+python-multipart==0.0.32
+Pillow==13.0.0
+dnspython==2.9.0
+# Encrypts the secrets stored in the database (core/crypto.py).
+cryptography==50.0.2
+# Email templates, rendered sandboxed (services/email_service.py).
+Jinja2==3.1.6
+# Needs-analysis PDF export (pure Python, ships its own TrueType fonts).
+reportlab==5.0.1
+# Transitive, but pinned too: the ORM/validation behavior the app depends on.
+SQLAlchemy==2.0.52
+pydantic==2.13.5
+starlette==1.6.0

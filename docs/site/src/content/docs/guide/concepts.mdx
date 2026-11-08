@@ -1,0 +1,101 @@
+---
+title: Concepts
+description: The exercise cycle, the roles and how TTX-Zone is organized.
+---
+
+import ExerciseCycle from '../../../components/diagrams/ExerciseCycle.astro';
+import DesignGates from '../../../components/diagrams/DesignGates.astro';
+import AuthorizeAssign from '../../../components/diagrams/AuthorizeAssign.astro';
+
+A tabletop exercise is a discussion-based exercise: Players walk through a simulated incident without touching real systems. TTX-Zone takes one through its whole life.
+
+## The cycle
+
+<ExerciseCycle />
+
+| Stage | What happens | Where |
+|---|---|---|
+| [Design](/guide/design/needs-analysis/) | Say why you're exercising, write the script, prepare the session | **Design** |
+| [Conduct](/guide/conduct/control-center/) | Run the session | **Control** and **Playground** |
+| [Evaluate](/guide/evaluate/rating/) | Rate it, collect feedback, write the report | **Playground** and **Design** |
+| [Improve](/guide/improve/) | Follow up the actions, and re-test them | **Admin** |
+
+Each design step gates the next. The MSEL opens once the needs analysis is approved, and the session can start only when the MSEL and the session plan are both ready.
+
+<DesignGates />
+
+## Organizations and exercises
+
+An **organization** holds people, exercises and a library. An account can belong to several. An **exercise** belongs to one organization and has its own team.
+
+The bar at the top of the page shows your **organization**, **exercise** and **role**. Everything you do applies to what's selected there, so check it before you make a change.
+
+## Roles
+
+A role comes in two steps. The organization **authorizes** a person, and an exercise's team then **assigns** them.
+
+<AuthorizeAssign />
+
+| Role | Responsible for | Works in | Can see and do | Granted by |
+|---|---|---|---|---|
+| [Exercise Program Manager](/guide/roles/program-manager/) | The organization's exercise programme: people and their roles, allowed domains, library, improvement plan | **Admin** | Reads and deletes every exercise of the organization; designs only with a seat on its team | Organization |
+| [Exercise Planner](/guide/roles/planner/) | Designing an exercise: needs analysis, MSEL, session plan, team, Players, after-action report. The **Lead Planner** coordinates and can delete it | **Design** | Everything about the exercises they plan | Organization, then the exercise |
+| [Controller](/guide/roles/controller/) | Running the session: starting, delivering injects, keeping the Players in scope, stopping | **Control** | The session, its exports, feedback results and report | Organization (as an Exercise Planner), then the exercise |
+| [Facilitator](/guide/roles/facilitator/) | Moderating at the table and keeping it on the objectives. Always a Controller too | **Playground** | The Players' screen plus a panel with key questions and notes the Players never see | Organization (as an Exercise Planner), then the exercise |
+| [Evaluator](/guide/roles/evaluator/) | Rating the session against the Exercise Evaluation Guides. The **Lead Evaluator** organizes the evaluators and can write the report | **Playground** | The Players' screen plus the evaluation panel | Organization, then the exercise |
+| [Observer](/guide/roles/observer/) | Watching and taking notes, without rating | **Playground** | The Players' screen plus notes | Organization, then the exercise |
+| [Player](/guide/roles/player/) | Taking part: discussing, deciding, voting, giving feedback | **Playground** | What's delivered to their room, their own notes | Exercise |
+
+The organization's Exercise Planners make up the **Exercise Planning Team**, and each exercise's **planning and control team** is drawn from it. Nobody sees or acts on an organization or an exercise they haven't joined.
+
+### One person, several roles
+
+In a small exercise a few people cover everything:
+
+- Whoever creates an exercise plans and controls it, and can also facilitate it.
+- A member of the planning and control team can also be the exercise's Evaluator or its Observer, one or the other. The role selector in the top bar picks which they act as.
+- Nobody on the team can be a Player of the same exercise.
+- Whoever founds an organization is both its Exercise Program Manager and an Exercise Planner.
+- Roles are per exercise and per organization: the same person can be a Player in one exercise and an Exercise Planner in another.
+
+### Several people per role
+
+In a large exercise each role can have several people:
+
+- Several Exercise Planners share the design, and one is the Lead Planner.
+- Several Controllers share the session, and with [rooms](/guide/design/rooms/), several teams play at once: each Facilitator, Evaluator and Observer can start in the room they follow.
+- Several Evaluators rate, each room separately, organized by the Lead Evaluator.
+- Any number of Observers and Players.
+
+## Modules
+
+Your role decides what you see.
+
+| Module | For |
+|---|---|
+| **Design** | Exercise Planners |
+| **Control** | Controllers |
+| **Playground** | Players, Facilitators, Evaluators and Observers |
+| **Admin** | Exercise Program Managers |
+
+## Documents and their status
+
+Three documents carry the design, and each has a status.
+
+| Document | Statuses |
+|---|---|
+| Needs analysis | Draft, Ready for approval, Approved |
+| MSEL | Draft, In review, Ready |
+| Session plan | Draft, Ready |
+
+Each page shows a summary of what's blocking the next step, and warnings that don't block. Changing a document that's past Draft takes it back, so a ready plan never hides a change.
+
+## Coded items
+
+Needs, objectives, phases, injects and similar items have a code, such as `OBJ-02` or `INJ-05`. Codes are never reused, so a reference in a report keeps its meaning.
+
+Deleting an item leaves a gap in its series. When codes have gaps or don't follow the order shown, a **Reset … codes** button (for example **Reset phase codes to session order**) puts them back in order and updates the codes named in the text; **Undo** restores them. It's offered while the needs analysis is a first draft, and while the MSEL is a draft. If the MSEL was ready before, you're asked to confirm first: the versions frozen then, and the sessions, evaluations and PDFs made from them, keep the old codes, which no longer match the draft's.
+
+## Sensitivity
+
+Exercise material carries a **Traffic Light Protocol** label: CLEAR, GREEN, AMBER, AMBER+STRICT or RED. It's printed on the exercise's PDFs, and says how widely a document may be shared.

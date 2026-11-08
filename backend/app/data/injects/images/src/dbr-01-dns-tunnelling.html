@@ -1,0 +1,56 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="size" content="1280x480"><link rel="stylesheet" href="base.css">
+<style>
+  .wrap { padding: 14px; display: grid; gap: 14px; }
+  .head { padding: 14px; display: flex; gap: 28px; align-items: center; }
+  .head b { font-size: 18px; }
+  svg text { fill: #8a93a3; font: 11px -apple-system, Arial; }
+  td.q { color: #9ecbff; }
+</style></head>
+<body class="dark" style="position:relative">
+<div class="bar"><span>▲ SIEM</span><span class="muted" style="font-weight:400" data-es="Alerta #48213 · Correlación">Alert #48213 · Correlation</span></div>
+<div class="wrap">
+  <div class="panel head">
+    <span class="chip high" data-es="ALTA">HIGH</span>
+    <b data-es="Posible túnel DNS desde un endpoint">Possible DNS tunnelling from an endpoint</b>
+    <span class="muted">Host <span class="mono">WS-0412</span></span>
+    <span class="muted" data-es="Dominio: <span class='mono'>cdn-sync.example.net</span>">Domain: <span class="mono">cdn-sync.example.net</span></span>
+    <span class="muted" data-es="10.482 consultas / 2 h">10,482 queries / 2 h</span>
+  </div>
+  <div style="display:grid;grid-template-columns:520px 1fr;gap:14px">
+    <div class="panel">
+      <h3 data-es="Consultas DNS por 10 min — WS-0412">DNS queries per 10 min — WS-0412</h3>
+      <svg width="518" height="250" viewBox="0 0 518 250">
+        <line x1="40" y1="215" x2="505" y2="215" stroke="#2b313d"/>
+        <line x1="40" y1="200" x2="505" y2="200" stroke="#3a4150" stroke-dasharray="4 4"/>
+        <text x="46" y="194" data-es="perfil habitual">usual profile</text>
+        <g fill="#5aa0ff">
+          <rect x="50" y="205" width="24" height="10"/><rect x="82" y="207" width="24" height="8"/><rect x="114" y="204" width="24" height="11"/>
+          <rect x="146" y="206" width="24" height="9"/><rect x="178" y="205" width="24" height="10"/>
+        </g>
+        <g fill="#ff8a4c">
+          <rect x="210" y="90" width="24" height="125"/><rect x="242" y="60" width="24" height="155"/><rect x="274" y="52" width="24" height="163"/>
+          <rect x="306" y="70" width="24" height="145"/><rect x="338" y="48" width="24" height="167"/><rect x="370" y="58" width="24" height="157"/>
+          <rect x="402" y="66" width="24" height="149"/><rect x="434" y="44" width="24" height="171"/><rect x="466" y="62" width="24" height="153"/>
+        </g>
+        <text x="50" y="234">13:00</text><text x="250" y="234">14:00</text><text x="460" y="234">15:00</text>
+      </svg>
+    </div>
+    <div class="panel">
+      <h3 data-es="Muestra de consultas">Query sample</h3>
+      <table>
+        <tr><th data-es="Hora">Time</th><th data-es="Consulta (tipo TXT)">Query (TXT type)</th><th data-es="Longitud">Length</th></tr>
+        <tr><td class="mono">14:52:07</td><td class="mono q">a9f3k2qz7v0m1xw8c4r6t5yb2n0p.cdn-sync.example.net</td><td class="mono">52</td></tr>
+        <tr><td class="mono">14:52:07</td><td class="mono q">q0z8m4x1c7v3b9n2k6j5h8g1f4d7.cdn-sync.example.net</td><td class="mono">52</td></tr>
+        <tr><td class="mono">14:52:08</td><td class="mono q">7t2w9e4r1y6u3i8o5p0a2s7d4f9g.cdn-sync.example.net</td><td class="mono">52</td></tr>
+        <tr><td class="mono">14:52:08</td><td class="mono q">k3l8z1x6c9v2b5n7m0q4w8e3r6t1.cdn-sync.example.net</td><td class="mono">52</td></tr>
+        <tr><td class="mono">14:52:09</td><td class="mono q">m5n0b4v8c2x7z3l9k1j6h0g5f8d2.cdn-sync.example.net</td><td class="mono">52</td></tr>
+        <tr><td class="mono">14:52:09</td><td class="mono q">p6o1i7u2y8t3r9e4w0q5a1s6d2f7.cdn-sync.example.net</td><td class="mono">52</td></tr>
+      </table>
+      <p class="muted" style="padding:10px 12px" data-es="Subdominios aleatorios, todos distintos, de longitud máxima y a un único dominio: patrón compatible con exfiltración por DNS.">Random subdomains, all different, at maximum length and to a single domain: a pattern consistent with exfiltration over DNS.</p>
+    </div>
+  </div>
+</div>
+<div class="stamp" data-es="Ficticio · material de ejercicio">Fictitious · exercise material</div>
+<script src="i18n.js"></script>
+</body></html>
