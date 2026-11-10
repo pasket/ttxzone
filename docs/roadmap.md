@@ -37,6 +37,7 @@ Grouped by theme. Section numbers are stable references (other documents cite th
 
 ### 7. Scenarios and library content (Later)
 - More TTX-Zone scenarios; converting a scenario whose ATT&CK release this build doesn't ship (refused); the session plan's content in a scenario (left out of the format); a community exchange beyond files.
+- Keeping the reference data current: each new MITRE ATT&CK release imported (`scripts/import_attack.py`, then the TTX-Zone inject catalog reviewed against it; `docs/architecture/attack.md`; shipped today: v19.2), and the other code-level references re-checked against their sources (the regulatory requirements in `regulatory_catalog.py` against the current consolidated texts).
 - Organization-level objective and risk libraries.
 - Phase-structure sets generalizing the four suggested phases (e.g. a short 2-hour session, a multi-day scenario with long time jumps).
 - "Update from library": offer to refresh a copy when its original changed (origin + `updated_at`).
