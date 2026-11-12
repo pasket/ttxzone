@@ -5,7 +5,7 @@ sidebar:
   order: 5
 ---
 
-You take notes during the session and rate it against the Exercise Evaluation Guides. You work in the **Playground**. An Exercise Program Manager grants the role in the organization, and the exercise's team assigns you.
+You take notes during the session and rate it against the Exercise Evaluation Guides. You work in the **Playground**. An Exercise Program Manager grants the role in the organization, and the exercise's team assigns you. If you're from outside the organization, you may get an invitation instead: accept it from the notice at the top of the page after you sign in.
 
 The **Lead Evaluator** organizes the evaluation team and can also write the after-action report.
 

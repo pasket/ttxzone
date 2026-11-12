@@ -17,6 +17,9 @@ from tests.test_ttx_evaluation import DESIGN_ENDPOINTS
 from tests.test_ttx_needs_form import _create_ttx, _csrf, _manager, _to_approved
 from tests.test_ttx_planning_team import _login, _user
 
+# Grants straight to other domains: see conftest.direct_grants.
+pytestmark = pytest.mark.usefixtures("direct_grants")
+
 
 @pytest.fixture
 def team(client: TestClient, db_session: Session) -> dict:

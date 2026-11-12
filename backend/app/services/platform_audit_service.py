@@ -94,6 +94,10 @@ AuditAction = Literal[
     # session and this trail are the control (who, what, never the content).
     "organization.leave",
     "organization.allowed_domain",
+    "organization.role_invited",
+    "organization.role_invitation_withdrawn",
+    "organization.role_invitation_accepted",
+    "organization.role_invitation_declined",
     "library.item_delete",
     "exercise.delete",
     "exercise.member_joined",

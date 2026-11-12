@@ -10,6 +10,7 @@ import { rememberWorkspace } from '../../lib/lastWorkspace'
 import { isModuleRoute } from '../../lib/moduleAccess'
 
 import { EmailReconfirmBanner } from '../common/EmailReconfirmBanner'
+import { RoleInvitationsNotice } from '../common/RoleInvitationsNotice'
 import { Header } from './Header'
 import { MobileBottomNav, PrimaryNav } from './PrimaryNav'
 
@@ -34,6 +35,7 @@ export function AuthenticatedLayout() {
       </a>
       <Header />
       <EmailReconfirmBanner />
+      <RoleInvitationsNotice />
       <div className="flex flex-1 flex-col lg:flex-row">
         <PrimaryNav collapsed={nav.collapsed} onToggle={nav.toggle} />
         {/* min-w-0: a flex item defaults to its min-content width, so a wide

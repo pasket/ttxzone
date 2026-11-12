@@ -3435,6 +3435,22 @@
         "lastLogin": "Last login",
         "actions": "Actions",
         "giveRole": "Give a role"
+      },
+      "addDescriptionInvite": "Pick every role they'll hold here. Someone with an @{{domain}} account gets them at once; anyone else gets an invitation to accept from their own account, listed under Pending invitations until they answer.",
+      "emailLabelInvite": "Email",
+      "invitedToast": "Invitation sent to {{email}}",
+      "invitations": {
+        "title": "Pending invitations",
+        "description": "Roles offered to people outside your organization's domain. They join when they accept from their own account; an invitation lapses after 14 days. You only see the address you typed, never whether it has an account.",
+        "count_one": "{{count}} invitation",
+        "count_other": "{{count}} invitations",
+        "email": "Email",
+        "roles": "Roles",
+        "invitedBy": "Invited by",
+        "expires": "Expires",
+        "actions": "Actions",
+        "withdrawLabel": "Withdraw the invitation to {{email}}",
+        "withdrawnToast": "Invitation to {{email}} withdrawn"
       }
     },
     "organization": {
@@ -4958,7 +4974,11 @@
           "domain": "Changed organization domain",
           "delete": "Deleted organization",
           "leave": "Left the organization",
-          "allowed_domain": "Changed an allowed domain"
+          "allowed_domain": "Changed an allowed domain",
+          "role_invited": "Invited to a role",
+          "role_invitation_withdrawn": "Withdrew a role invitation",
+          "role_invitation_accepted": "Accepted a role invitation",
+          "role_invitation_declined": "Declined a role invitation"
         },
         "program_manager": {
           "grant": "Added Exercise Program Manager",
@@ -5661,5 +5681,24 @@
     "changeTlp": "Change the classification (TLP)",
     "changeExercise": "Change the exercise's presentation",
     "tlpNote": "The TLP binds how everything about this exercise is handled and shared, the AI's answers included: review it before accepting."
+  },
+  "roleInvitations": {
+    "title_one": "Invitation to an organization",
+    "title_other": "Invitations to organizations",
+    "offer": "{{inviter}} invites you to join {{organization}} as: {{roles}}.",
+    "offerNoInviter": "You're invited to join {{organization}} as: {{roles}}.",
+    "accept": "Accept",
+    "decline": "Decline",
+    "acceptLabel": "Accept the invitation to {{organization}}",
+    "declineLabel": "Decline the invitation to {{organization}}",
+    "acceptedToast": "You joined {{organization}}",
+    "acceptedNothingToast": "{{organization}} no longer allows these roles for your email domain",
+    "declinedToast": "Invitation to {{organization}} declined",
+    "roleNames": {
+      "programManager": "Exercise Program Manager",
+      "planner": "Exercise Planner",
+      "observer": "Observer",
+      "evaluator": "Evaluator"
+    }
   }
 }

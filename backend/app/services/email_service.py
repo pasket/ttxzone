@@ -68,6 +68,7 @@ EmailTemplate = Literal[
     "mfa_code",
     "email_invitation",
     "email_reconfirmation",
+    "role_invitation",
 ]
 TEMPLATES: frozenset[str] = frozenset(
     {
@@ -78,6 +79,7 @@ TEMPLATES: frozenset[str] = frozenset(
         "mfa_code",
         "email_invitation",
         "email_reconfirmation",
+        "role_invitation",
     }
 )
 

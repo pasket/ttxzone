@@ -5,6 +5,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator, model_validator
 
 from app.core.password_policy import StrongPassword
+from app.models.organization_membership import OrgRoleEnum
 from app.schemas.legal import LegalAcceptanceItem
 from app.schemas.organization_tag import OrganizationTagRead
 
@@ -364,3 +365,58 @@ class OrganizationLeaveRequest(BaseModel):
     program_manager_successor_id: uuid.UUID | None = None
     # Exercise id -> the Planner who becomes its Lead Planner.
     lead_successors: dict[uuid.UUID, uuid.UUID] = Field(default_factory=dict, max_length=200)
+
+
+class OrgRoleInvitationCreateRequest(BaseModel):
+    """Admin -> Users and roles -> Add person where roles are offered, not
+    granted (organization_role_invitation_service)."""
+
+    email: EmailStr
+    roles: list[OrgRoleEnum] = Field(min_length=1, max_length=4)
+    tag_ids: list[uuid.UUID] = Field(default_factory=list, max_length=200)
+
+
+class OrgRoleInvitationCreateResponse(BaseModel):
+    # "granted": the person was already in the organization (or in its own
+    # domain) and holds the roles now; "invited": an offer waits for the
+    # address -- the same answer whether an account holds it or not.
+    outcome: Literal["invited", "granted"]
+
+
+class OrgRoleInvitationRead(BaseModel):
+    """An offer as its organization's Program Managers see it: the address
+    they typed, never anything about an account."""
+
+    id: uuid.UUID
+    email: str
+    roles: list[OrgRoleEnum]
+    invited_by_name: str | None
+    sent_at: datetime
+    expires_at: datetime
+
+
+class OrgRoleInvitationListResponse(BaseModel):
+    items: list[OrgRoleInvitationRead]
+
+
+class MyRoleInvitationRead(BaseModel):
+    """An offer as the invited account sees it."""
+
+    id: uuid.UUID
+    organization_id: uuid.UUID
+    organization_name: str
+    organization_domain: str | None
+    roles: list[OrgRoleEnum]
+    invited_by_name: str | None
+    sent_at: datetime
+    expires_at: datetime
+
+
+class MyRoleInvitationListResponse(BaseModel):
+    items: list[MyRoleInvitationRead]
+
+
+class RoleInvitationAcceptResponse(BaseModel):
+    organization_id: uuid.UUID
+    # The roles added (empty when the allowlist no longer accepts them).
+    roles: list[OrgRoleEnum]

@@ -21,6 +21,7 @@ from app.models import (
 from app.schemas.ttx_conduct_prep import FindingRead
 from app.schemas.ttx_msel import action_objective_ids
 from tests.msel_helpers import ACTIONS, example_payload
+from tests.role_helpers import grant_org_role
 from tests.test_ttx_access_requests import _seed_token
 from tests.test_ttx_evaluation import _account
 from tests.test_ttx_msel import _move, _open, _payload_from, _put
@@ -71,12 +72,7 @@ def _ready_msel(client: TestClient, ttx_id: str) -> None:
 
 def _add_evaluator(client: TestClient, db_session: Session, org_id: str, ttx_id: str, email: str):
     evaluator = _account(db_session, email)
-    granted = client.post(
-        f"/api/v1/organizations/{org_id}/evaluators",
-        json={"email": evaluator.email},
-        headers=_csrf(client),
-    )
-    assert granted.status_code == 201, granted.text
+    grant_org_role(client, db_session, org_id, evaluator.email, "evaluator")
     added = client.post(
         f"/api/v1/ttx/{ttx_id}/evaluators", json={"email": evaluator.email}, headers=_csrf(client)
     )

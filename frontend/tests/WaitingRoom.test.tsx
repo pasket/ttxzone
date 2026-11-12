@@ -1,10 +1,11 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, screen } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { describe, expect, it } from 'vitest'
 
 import { AuthProvider } from '../src/lib/AuthContext'
 import { WaitingRoom } from '../src/components/auth/WaitingRoom'
 import { mockFetchOnce } from './mockFetch'
+import { render } from './testUtils'
 
 describe('WaitingRoom', () => {
   it('shows the token input and instructions', async () => {

@@ -200,3 +200,16 @@ def assistant_planner(client: TestClient, db_session: Session) -> dict:
     ttx = _create_ttx(client, owner["organization"]["id"])
     enable_assistant(db_session)
     return {"owner": owner, "ttx": ttx}
+
+
+@pytest.fixture
+def direct_grants(monkeypatch: pytest.MonkeyPatch) -> None:
+    """For tests about the grant itself (domains, lookups, listings): in
+    "open", the suite's tenancy, a role for someone outside the
+    organization's own domain would be an invitation instead
+    (tests/test_org_role_invitations.py covers that rule)."""
+    from app.services import organization_role_invitation_service
+
+    monkeypatch.setattr(
+        organization_role_invitation_service, "requires_invitation", lambda *args: False
+    )

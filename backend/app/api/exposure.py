@@ -229,6 +229,13 @@ INTERNAL_ONLY: frozenset[tuple[str, str]] = frozenset(
         ("PUT", "/organizations/{organization_id}/allowed-domains/{domain_id}/tags"),
         ("GET", "/organizations/{organization_id}/dashboard"),
         ("GET", "/organizations/{organization_id}/domain-accounts"),
+        ("GET", "/organizations/{organization_id}/role-invitations"),
+        ("POST", "/organizations/{organization_id}/role-invitations"),
+        ("DELETE", "/organizations/{organization_id}/role-invitations/{invitation_id}"),
+        # role_invitations (the invited account's own)
+        ("GET", "/role-invitations/mine"),
+        ("POST", "/role-invitations/{invitation_id}/accept"),
+        ("POST", "/role-invitations/{invitation_id}/decline"),
         ("GET", "/organizations/{organization_id}/evaluators"),
         ("POST", "/organizations/{organization_id}/evaluators"),
         ("DELETE", "/organizations/{organization_id}/evaluators/{user_id}"),

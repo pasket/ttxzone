@@ -253,6 +253,12 @@ def deactivate_account(
 
     # Invitations waiting for the address, and the address on accepted ones.
     forget_address(session, user)
+    from app.services.organization_role_invitation_service import (
+        forget_address as forget_role_offers,
+    )
+
+    # Offers of organization roles waiting for the address.
+    forget_role_offers(session, user)
     from app.services.assistant.tokens import forget_user as forget_tokens
 
     # Its AI assistant tokens and their call records.

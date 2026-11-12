@@ -4,12 +4,16 @@ in the organization, and per-person tags."""
 import uuid
 from datetime import UTC, datetime
 
+import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import Session, select
 
 from app.main import app
 from app.models import MembershipTagAssignment, OrganizationMembership, OrgRoleEnum, User
 from tests.test_planner_grant import _csrf_headers, _enable_totp, _signup
+
+# Grants straight to other domains: see conftest.direct_grants.
+pytestmark = pytest.mark.usefixtures("direct_grants")
 
 
 def _account(db_session: Session, email: str, name: str, last_login: datetime | None = None):

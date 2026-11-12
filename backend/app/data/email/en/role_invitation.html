@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block content %}
+<p style="margin:0 0 16px;">Hello,</p>
+<p style="margin:0 0 16px;">{{ inviter }} invites you to join the organization <strong>{{ organization }}</strong> on {{ product_name }} as: {{ roles }}.</p>
+<p style="margin:0 0 16px;">To accept or decline, sign in within {{ days }} days:</p>
+<p style="margin:0 0 24px;"><a href="{{ link }}" style="display:inline-block;padding:10px 20px;background:#00c2d1;color:#0c0d10;text-decoration:none;border-radius:6px;font-weight:bold;">Sign in</a></p>
+<p style="margin:0 0 16px;color:#616e7c;font-size:13px;word-break:break-all;">Or copy this address into your browser: {{ link }}</p>
+<p style="margin:0;">The invitation is waiting in your account; nothing changes until you accept it. If you weren't expecting this, decline it or ignore this message.</p>
+{% endblock %}
+{% block footer %}Automatic message sent by {{ product_name }}.{% endblock %}

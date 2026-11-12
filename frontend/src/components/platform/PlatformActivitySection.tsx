@@ -128,6 +128,10 @@ const ADMIN_ACTIONS: PlatformAuditAction[] = [
 const WORK_ACTIONS: PlatformAuditAction[] = [
   'organization.leave',
   'organization.allowed_domain',
+  'organization.role_invited',
+  'organization.role_invitation_withdrawn',
+  'organization.role_invitation_accepted',
+  'organization.role_invitation_declined',
   'library.item_delete',
   'exercise.delete',
   'exercise.member_joined',
@@ -190,6 +194,13 @@ const AUDIT_ACTION_KEYS = {
   'assistant.proposal_discarded': 'platform.activity.actions.assistant.proposal_discarded',
   'organization.leave': 'platform.activity.actions.organization.leave',
   'organization.allowed_domain': 'platform.activity.actions.organization.allowed_domain',
+  'organization.role_invited': 'platform.activity.actions.organization.role_invited',
+  'organization.role_invitation_withdrawn':
+    'platform.activity.actions.organization.role_invitation_withdrawn',
+  'organization.role_invitation_accepted':
+    'platform.activity.actions.organization.role_invitation_accepted',
+  'organization.role_invitation_declined':
+    'platform.activity.actions.organization.role_invitation_declined',
   'library.item_delete': 'platform.activity.actions.library.item_delete',
   'exercise.delete': 'platform.activity.actions.exercise.delete',
   'exercise.member_joined': 'platform.activity.actions.exercise.member_joined',
@@ -304,6 +315,12 @@ function EventTarget({ event }: { event: PlatformAuditEvent }) {
     extra = typeof details.account === 'string' ? details.account : null
   } else if (event.action === 'organization.allowed_domain') {
     extra = typeof details.domain === 'string' ? details.domain : null
+  } else if (
+    event.action === 'organization.role_invited' ||
+    event.action === 'organization.role_invitation_withdrawn'
+  ) {
+    // The address offered (whoever holds it).
+    extra = typeof details.email === 'string' ? details.email : null
   } else if (event.action === 'exercise.aar_final' || event.action === 'exercise.aar_reopened') {
     extra =
       typeof details.version === 'number'

@@ -455,6 +455,11 @@
     "Anchor the contingent injects first ({codes}): anchoring one moves it in the storyline, and the codes would fall out of order again.": "Ancla antes los injects contingentes ({codes}): anclar uno lo mueve en el storyline y los códigos volverían a desordenarse.",
     "{count} proposals on the MSEL's rows are still pending: reset the codes once they're accepted or discarded.": "Aún quedan {count} propuestas pendientes en las filas del MSEL: reinicia los códigos cuando estén aceptadas o descartadas.",
     "A new actor needs a name.": "Un actor nuevo necesita un nombre.",
-    "A new threat actor needs a name or a MITRE ATT&CK group.": "Un actor de amenaza nuevo necesita un nombre o un grupo de MITRE ATT&CK."
+    "A new threat actor needs a name or a MITRE ATT&CK group.": "Un actor de amenaza nuevo necesita un nombre o un grupo de MITRE ATT&CK.",
+    "This invitation doesn't exist or has expired.": "Esta invitación no existe o ha caducado.",
+    "Outside the organization's own domain, people join by accepting an invitation.": "Fuera del dominio propio de la organización, las personas se unen aceptando una invitación.",
+    "Choose at least one role.": "Elige al menos un rol.",
+    "Too many invitations in the last hour. Try again later.": "Demasiadas invitaciones en la última hora. Vuelve a intentarlo más tarde.",
+    "You were removed from this organization. Ask its Program Manager to enable you.": "Se te retiró de esta organización. Pide a su Responsable del Programa de Ejercicios que te habilite."
   }
 }

@@ -3,11 +3,15 @@ Planner grants, or both -- and each grant checks only its own flag."""
 
 import uuid
 
+import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import Session
 
 from app.core.config import settings
 from app.models import User
+
+# Grants straight to other domains: see conftest.direct_grants.
+pytestmark = pytest.mark.usefixtures("direct_grants")
 
 
 def _signup(client: TestClient, email: str, org_name: str) -> dict:

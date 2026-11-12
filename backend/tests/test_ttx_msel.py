@@ -37,6 +37,9 @@ from tests.test_ttx_needs_form import (
     _transition,
 )
 
+# Grants straight to other domains: see conftest.direct_grants.
+pytestmark = pytest.mark.usefixtures("direct_grants")
+
 
 def _url(ttx_id: str, suffix: str = "") -> str:
     return f"/api/v1/ttx/{ttx_id}/msel{suffix}"

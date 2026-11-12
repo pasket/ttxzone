@@ -1086,6 +1086,11 @@ def delete_organization(
             session.delete(row)
         session.flush()
 
+    from app.services.organization_role_invitation_service import delete_for_organization
+
+    # Offers of roles still waiting to be accepted.
+    delete_for_organization(session, organization_id)
+
     for row in session.exec(
         select(OrganizationTag).where(OrganizationTag.organization_id == organization_id)
     ):

@@ -10,6 +10,7 @@ from sqlmodel import Session, select
 
 from app.core.security import hash_password
 from app.models import RoleEnum, TTXAccess, User
+from tests.role_helpers import grant_org_role
 from tests.test_ttx_needs_form import (
     _complete_payload,
     _create_ttx,
@@ -60,12 +61,7 @@ def exercise(client: TestClient, db_session: Session) -> dict:
     owner = _manager(client, db_session, "planner@acme.com", "Acme")
     ttx = _create_ttx(client, owner["organization"]["id"])
     evaluator = _account(db_session, "auditor@external-audit.org")
-    granted = client.post(
-        f"/api/v1/organizations/{owner['organization']['id']}/evaluators",
-        json={"email": evaluator.email},
-        headers=_csrf(client),
-    )
-    assert granted.status_code == 201, granted.text
+    grant_org_role(client, db_session, owner["organization"]["id"], evaluator.email, "evaluator")
     added = client.post(
         _evaluators_url(ttx["id"]), json={"email": evaluator.email}, headers=_csrf(client)
     )
@@ -380,12 +376,7 @@ def test_each_condition_of_a_success_criterion_is_an_observation_point() -> None
 
 def _second_evaluator(client: TestClient, db_session: Session, exercise: dict) -> User:
     other = _account(db_session, "second@external-audit.org", "Second Evaluator")
-    granted = client.post(
-        f"/api/v1/organizations/{exercise['org_id']}/evaluators",
-        json={"email": other.email},
-        headers=_csrf(client),
-    )
-    assert granted.status_code == 201, granted.text
+    grant_org_role(client, db_session, exercise["org_id"], other.email, "evaluator")
     added = client.post(
         _evaluators_url(exercise["ttx"]["id"]), json={"email": other.email}, headers=_csrf(client)
     )

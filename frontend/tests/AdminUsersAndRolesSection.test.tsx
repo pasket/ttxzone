@@ -16,6 +16,7 @@ vi.mock('../src/hooks/useAuth', () => ({
     activeOrganization: {
       organization_id: 'org-1',
       organization_name: 'Acme',
+      domain: 'acme.com',
       is_program_manager: true,
     },
   }),
@@ -265,8 +266,7 @@ describe('AdminUsersAndRolesSection', () => {
     const fetchMock = stubApi({
       'GET /organizations/org-1/members': () => list([me]),
       'GET /organizations/org-1/tags': noTags,
-      'POST /organizations/org-1/planners': () => json(201, { user_id: 'new' }),
-      'POST /organizations/org-1/observers': () => json(201, { user_id: 'new' }),
+      'POST /organizations/org-1/role-invitations': () => json(200, { outcome: 'granted' }),
     })
     renderSection()
 
@@ -281,17 +281,20 @@ describe('AdminUsersAndRolesSection', () => {
 
     expect(await screen.findByText('2 roles granted')).toBeInTheDocument()
     const posts = fetchMock.mock.calls.filter(([, init]) => init?.method === 'POST')
-    expect(posts.map(([url]) => url)).toEqual([
-      '/api/v1/organizations/org-1/planners',
-      '/api/v1/organizations/org-1/observers',
-    ])
+    expect(posts).toHaveLength(1)
+    expect(posts[0][0]).toBe('/api/v1/organizations/org-1/role-invitations')
+    expect(JSON.parse(String(posts[0][1]?.body))).toEqual({
+      email: 'new@acme.com',
+      roles: ['planner', 'observer'],
+      tag_ids: [],
+    })
   })
 
-  it('reports the role that could not be granted', async () => {
+  it('reports why the roles could not be granted', async () => {
     stubApi({
       'GET /organizations/org-1/members': () => list([me]),
       'GET /organizations/org-1/tags': noTags,
-      'POST /organizations/org-1/program-managers': () =>
+      'POST /organizations/org-1/role-invitations': () =>
         json(403, {
           success: false,
           error: { code: 'DOMAIN_NOT_ALLOWED', message: "This user's email domain isn't allowed." },
@@ -306,8 +309,48 @@ describe('AdminUsersAndRolesSection', () => {
     fireEvent.click(screen.getByRole('checkbox', { name: /Program Manager/ }))
     fireEvent.click(screen.getByRole('button', { name: 'Add' }))
 
+    expect(await screen.findByText("This user's email domain isn't allowed.")).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Add' })).toBeEnabled()
+  })
+
+  it('invites people from outside where accounts found their own organizations', async () => {
+    stubApi({
+      'GET /instance/policy': () => json(200, { tenancy_mode: 'open' }),
+      'GET /organizations/org-1/members': () => list([me]),
+      'GET /organizations/org-1/tags': noTags,
+      'GET /organizations/org-1/role-invitations': [
+        () => json(200, { items: [] }),
+        () =>
+          json(200, {
+            items: [
+              {
+                id: 'inv-1',
+                email: 'auditor@else.com',
+                roles: ['observer', 'evaluator'],
+                invited_by_name: 'Ada Lovelace',
+                sent_at: '2026-11-01T00:00:00+00:00',
+                expires_at: '2026-11-15T00:00:00+00:00',
+              },
+            ],
+          }),
+      ],
+      'POST /organizations/org-1/role-invitations': () => json(200, { outcome: 'invited' }),
+    })
+    renderSection()
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Add person' }))
+    expect(await screen.findByLabelText('Email')).toBeInTheDocument()
+    fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'Auditor@else.com' } })
+    fireEvent.click(screen.getByRole('checkbox', { name: /^Observer/ }))
+    fireEvent.click(screen.getByRole('checkbox', { name: /^Evaluator/ }))
+    fireEvent.click(screen.getByRole('button', { name: 'Add' }))
+
+    expect(await screen.findByText('Invitation sent to auditor@else.com')).toBeInTheDocument()
+    expect(await screen.findByText('Pending invitations')).toBeInTheDocument()
+    const row = screen.getByRole('row', { name: /auditor@else\.com/ })
+    expect(within(row).getByText('Observer, Evaluator')).toBeInTheDocument()
     expect(
-      await screen.findByText("Program Manager: This user's email domain isn't allowed."),
+      within(row).getByRole('button', { name: 'Withdraw the invitation to auditor@else.com' }),
     ).toBeInTheDocument()
   })
 })

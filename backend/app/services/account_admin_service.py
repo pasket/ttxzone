@@ -34,6 +34,7 @@ from app.services import (
     account_email_service,
     email_invitation_service,
     oidc_service,
+    organization_role_invitation_service,
     platform_audit_service,
     session_service,
 )
@@ -76,6 +77,7 @@ DEPENDENCY_CATEGORIES: dict[str, str] = {
     "invitation_token": "invitations",  # nosec B105
     "invitation_token_redemption": "invitations",  # nosec B105
     "email_invitation": "invitations",
+    "organization_role_invitation": "invitations",
     "organization_actor": "library",
     "organization_inject": "library",
     "organization_scenario": "library",
@@ -395,6 +397,7 @@ def delete_account(session: Session, actor: User, user: User) -> None:
     account_email_service.forget_user(session, user_id)
     assistant_tokens.forget_user(session, user_id)
     email_invitation_service.forget_address(session, user)
+    organization_role_invitation_service.forget_address(session, user)
     forget_recipient(session, email)
     session.exec(
         update(PlatformAuditEvent)

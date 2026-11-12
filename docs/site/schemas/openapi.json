@@ -11117,6 +11117,92 @@
         "title": "MyLeaveRequestRead",
         "type": "object"
       },
+      "MyRoleInvitationListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/MyRoleInvitationRead"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "MyRoleInvitationListResponse",
+        "type": "object"
+      },
+      "MyRoleInvitationRead": {
+        "description": "An offer as the invited account sees it.",
+        "properties": {
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "invited_by_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Invited By Name"
+          },
+          "organization_domain": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Organization Domain"
+          },
+          "organization_id": {
+            "format": "uuid",
+            "title": "Organization Id",
+            "type": "string"
+          },
+          "organization_name": {
+            "title": "Organization Name",
+            "type": "string"
+          },
+          "roles": {
+            "items": {
+              "$ref": "#/components/schemas/OrgRoleEnum"
+            },
+            "title": "Roles",
+            "type": "array"
+          },
+          "sent_at": {
+            "format": "date-time",
+            "title": "Sent At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "organization_id",
+          "organization_name",
+          "organization_domain",
+          "roles",
+          "invited_by_name",
+          "sent_at",
+          "expires_at"
+        ],
+        "title": "MyRoleInvitationRead",
+        "type": "object"
+      },
       "NeedInput": {
         "description": "A needs-analysis row. `id` is set for a row that already exists\n(kept, so objectives and future links survive edits); `key` is how\nobjectives in the same payload refer to it -- the id itself for an\nexisting row, any client-chosen temporary string for a new one.",
         "properties": {
@@ -12893,6 +12979,125 @@
         ],
         "title": "OrgRoleEnum",
         "type": "string"
+      },
+      "OrgRoleInvitationCreateRequest": {
+        "description": "Admin -> Users and roles -> Add person where roles are offered, not\ngranted (organization_role_invitation_service).",
+        "properties": {
+          "email": {
+            "format": "email",
+            "title": "Email",
+            "type": "string"
+          },
+          "roles": {
+            "items": {
+              "$ref": "#/components/schemas/OrgRoleEnum"
+            },
+            "maxItems": 4,
+            "minItems": 1,
+            "title": "Roles",
+            "type": "array"
+          },
+          "tag_ids": {
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "maxItems": 200,
+            "title": "Tag Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "email",
+          "roles"
+        ],
+        "title": "OrgRoleInvitationCreateRequest",
+        "type": "object"
+      },
+      "OrgRoleInvitationCreateResponse": {
+        "properties": {
+          "outcome": {
+            "enum": [
+              "invited",
+              "granted"
+            ],
+            "title": "Outcome",
+            "type": "string"
+          }
+        },
+        "required": [
+          "outcome"
+        ],
+        "title": "OrgRoleInvitationCreateResponse",
+        "type": "object"
+      },
+      "OrgRoleInvitationListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/OrgRoleInvitationRead"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "OrgRoleInvitationListResponse",
+        "type": "object"
+      },
+      "OrgRoleInvitationRead": {
+        "description": "An offer as its organization's Program Managers see it: the address\nthey typed, never anything about an account.",
+        "properties": {
+          "email": {
+            "title": "Email",
+            "type": "string"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "invited_by_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Invited By Name"
+          },
+          "roles": {
+            "items": {
+              "$ref": "#/components/schemas/OrgRoleEnum"
+            },
+            "title": "Roles",
+            "type": "array"
+          },
+          "sent_at": {
+            "format": "date-time",
+            "title": "Sent At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "roles",
+          "invited_by_name",
+          "sent_at",
+          "expires_at"
+        ],
+        "title": "OrgRoleInvitationRead",
+        "type": "object"
       },
       "OrganizationActorListResponse": {
         "properties": {
@@ -16363,6 +16568,28 @@
         ],
         "title": "RoleEnum",
         "type": "string"
+      },
+      "RoleInvitationAcceptResponse": {
+        "properties": {
+          "organization_id": {
+            "format": "uuid",
+            "title": "Organization Id",
+            "type": "string"
+          },
+          "roles": {
+            "items": {
+              "$ref": "#/components/schemas/OrgRoleEnum"
+            },
+            "title": "Roles",
+            "type": "array"
+          }
+        },
+        "required": [
+          "organization_id",
+          "roles"
+        ],
+        "title": "RoleInvitationAcceptResponse",
+        "type": "object"
       },
       "RoomAssignment": {
         "properties": {
@@ -32982,6 +33209,182 @@
         ]
       }
     },
+    "/api/v1/organizations/{organization_id}/role-invitations": {
+      "get": {
+        "description": "The organization's offers still waiting for an answer.",
+        "operationId": "list_role_invitations_endpoint_api_v1_organizations__organization_id__role_invitations_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organization_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Organization Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrgRoleInvitationListResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "List role invitations",
+        "tags": [
+          "Role invitations"
+        ]
+      },
+      "post": {
+        "description": "Offer organization roles to an email address.",
+        "operationId": "create_role_invitation_endpoint_api_v1_organizations__organization_id__role_invitations_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organization_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Organization Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "accept-language",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Accept-Language"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrgRoleInvitationCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrgRoleInvitationCreateResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "csrfToken": [],
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Create role invitation",
+        "tags": [
+          "Role invitations"
+        ]
+      }
+    },
+    "/api/v1/organizations/{organization_id}/role-invitations/{invitation_id}": {
+      "delete": {
+        "description": "Withdraw an offer.",
+        "operationId": "withdraw_role_invitation_endpoint_api_v1_organizations__organization_id__role_invitations__invitation_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "invitation_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Invitation Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "organization_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Organization Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "csrfToken": [],
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Withdraw role invitation",
+        "tags": [
+          "Role invitations"
+        ]
+      }
+    },
     "/api/v1/organizations/{organization_id}/scenarios": {
       "get": {
         "description": "The organization's library of scenarios.",
@@ -34489,6 +34892,126 @@
         "summary": "Risk catalog",
         "tags": [
           "Needs analysis"
+        ]
+      }
+    },
+    "/api/v1/role-invitations/mine": {
+      "get": {
+        "description": "The organizations offering the signed-in account a role.",
+        "operationId": "list_my_role_invitations_endpoint_api_v1_role_invitations_mine_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MyRoleInvitationListResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "List my role invitations",
+        "tags": [
+          "Role invitations"
+        ]
+      }
+    },
+    "/api/v1/role-invitations/{invitation_id}/accept": {
+      "post": {
+        "description": "Accept an offer: its roles are granted.",
+        "operationId": "accept_role_invitation_endpoint_api_v1_role_invitations__invitation_id__accept_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "invitation_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Invitation Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoleInvitationAcceptResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "csrfToken": [],
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Accept role invitation",
+        "tags": [
+          "Role invitations"
+        ]
+      }
+    },
+    "/api/v1/role-invitations/{invitation_id}/decline": {
+      "post": {
+        "description": "Decline an offer.",
+        "operationId": "decline_role_invitation_endpoint_api_v1_role_invitations__invitation_id__decline_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "invitation_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Invitation Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "csrfToken": [],
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Decline role invitation",
+        "tags": [
+          "Role invitations"
         ]
       }
     },
@@ -43197,6 +43720,10 @@
     {
       "description": "Personal invitations to join by email.",
       "name": "Email invitations"
+    },
+    {
+      "description": "Organization roles offered to people outside it, and their answers.",
+      "name": "Role invitations"
     },
     {
       "description": "Requests to join an exercise.",

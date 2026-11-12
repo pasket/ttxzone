@@ -1,0 +1,12 @@
+Hello,
+
+{{ inviter }} invites you to join the organization {{ organization }} on {{ product_name }} as: {{ roles }}.
+
+To accept or decline, sign in within {{ days }} days:
+
+{{ link }}
+
+The invitation is waiting in your account; nothing changes until you accept it. If you weren't expecting this, decline it or ignore this message.
+
+--
+Automatic message sent by {{ product_name }}.

@@ -3435,6 +3435,22 @@
         "lastLogin": "Último acceso",
         "actions": "Acciones",
         "giveRole": "Dar un rol"
+      },
+      "addDescriptionInvite": "Elige todos los roles que tendrá aquí. Quien tenga una cuenta @{{domain}} los recibe al momento; cualquier otra persona recibe una invitación que acepta desde su propia cuenta, y aparece en Invitaciones pendientes hasta que responda.",
+      "emailLabelInvite": "Email",
+      "invitedToast": "Invitación enviada a {{email}}",
+      "invitations": {
+        "title": "Invitaciones pendientes",
+        "description": "Roles ofrecidos a personas de fuera del dominio de tu organización. Se unen cuando aceptan desde su propia cuenta; una invitación caduca a los 14 días. Solo ves la dirección que escribiste, nunca si tiene cuenta.",
+        "count_one": "{{count}} invitación",
+        "count_other": "{{count}} invitaciones",
+        "email": "Email",
+        "roles": "Roles",
+        "invitedBy": "Invitado por",
+        "expires": "Caduca",
+        "actions": "Acciones",
+        "withdrawLabel": "Retirar la invitación a {{email}}",
+        "withdrawnToast": "Invitación a {{email}} retirada"
       }
     },
     "organization": {
@@ -4958,7 +4974,11 @@
           "domain": "Cambió el dominio de una organización",
           "delete": "Borró una organización",
           "leave": "Dejó la organización",
-          "allowed_domain": "Cambió un dominio permitido"
+          "allowed_domain": "Cambió un dominio permitido",
+          "role_invited": "Invitó a un rol",
+          "role_invitation_withdrawn": "Retiró una invitación a un rol",
+          "role_invitation_accepted": "Aceptó una invitación a un rol",
+          "role_invitation_declined": "Rechazó una invitación a un rol"
         },
         "program_manager": {
           "grant": "Añadió un Responsable del Programa de Ejercicios",
@@ -5661,5 +5681,24 @@
     "changeTlp": "Cambiar la clasificación (TLP)",
     "changeExercise": "Cambiar la presentación del ejercicio",
     "tlpNote": "El TLP fija cómo se trata y se comparte todo lo de este ejercicio, también las respuestas de la IA: revísalo antes de aceptar."
+  },
+  "roleInvitations": {
+    "title_one": "Invitación a una organización",
+    "title_other": "Invitaciones a organizaciones",
+    "offer": "{{inviter}} te invita a unirte a {{organization}} como: {{roles}}.",
+    "offerNoInviter": "Te invitan a unirte a {{organization}} como: {{roles}}.",
+    "accept": "Aceptar",
+    "decline": "Rechazar",
+    "acceptLabel": "Aceptar la invitación a {{organization}}",
+    "declineLabel": "Rechazar la invitación a {{organization}}",
+    "acceptedToast": "Te has unido a {{organization}}",
+    "acceptedNothingToast": "{{organization}} ya no permite estos roles para el dominio de tu email",
+    "declinedToast": "Invitación a {{organization}} rechazada",
+    "roleNames": {
+      "programManager": "Responsable del Programa de Ejercicios",
+      "planner": "Planificador de ejercicios",
+      "observer": "Observador",
+      "evaluator": "Evaluador"
+    }
   }
 }

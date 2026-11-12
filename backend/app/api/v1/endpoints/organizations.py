@@ -76,6 +76,7 @@ from app.services.library_usage_service import (
 )
 from app.services.login_throttle_service import guarded_signup
 from app.services.organization_logo_service import clear_logo, logo_url, upload_logo
+from app.services.organization_role_invitation_service import require_direct_grant
 from app.services.organization_service import (
     add_allowed_domain,
     create_organization_for_user,
@@ -406,6 +407,7 @@ def _register_member_routes(segment: str, role: OrgRoleEnum) -> None:
         session: Session = Depends(get_session),
     ) -> PlannerRead:
         """Grant this organization role to a person."""
+        require_direct_grant(session, organization_id, payload.email)
         membership, target = grant_member_role(session, organization_id, payload.email, role)
         return _member_read(membership, target, [])
 
@@ -704,6 +706,7 @@ def grant_program_manager_endpoint(
 ) -> ProgramManagerRead:
     """Grant the Exercise Program Manager role to a person."""
     require_program_manager(session, user, organization_id)
+    require_direct_grant(session, organization_id, payload.email)
     membership, target = grant_program_manager(session, organization_id, payload.email, user.id)
     return _program_manager_read(membership, target, [])
 

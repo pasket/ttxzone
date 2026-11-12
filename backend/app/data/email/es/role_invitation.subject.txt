@@ -1,0 +1,1 @@
+{{ inviter }} te invita a {{ organization }} en {{ product_name }}

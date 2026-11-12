@@ -2685,6 +2685,10 @@ export type PlatformAuditAction =
   | 'assistant.proposal_discarded'
   | 'organization.leave'
   | 'organization.allowed_domain'
+  | 'organization.role_invited'
+  | 'organization.role_invitation_withdrawn'
+  | 'organization.role_invitation_accepted'
+  | 'organization.role_invitation_declined'
   | 'library.item_delete'
   | 'exercise.delete'
   | 'exercise.member_joined'
@@ -2848,6 +2852,51 @@ export interface DomainAccount {
 
 export interface DomainAccountListResponse {
   items: DomainAccount[]
+}
+
+/** POST /organizations/{id}/role-invitations: "granted" -- the person was
+ * already in the organization or its own domain and holds the roles now;
+ * "invited" -- an offer waits for the address (the same answer whether an
+ * account holds it or not). */
+export interface OrgRoleInvitationCreateResponse {
+  outcome: 'invited' | 'granted'
+}
+
+/** An offer as the organization's Program Managers see it: the address
+ * they typed, never anything about an account. */
+export interface OrgRoleInvitation {
+  id: string
+  email: string
+  roles: OrgRole[]
+  invited_by_name: string | null
+  sent_at: string
+  expires_at: string
+}
+
+export interface OrgRoleInvitationListResponse {
+  items: OrgRoleInvitation[]
+}
+
+/** GET /role-invitations/mine: an offer as the invited account sees it. */
+export interface MyRoleInvitation {
+  id: string
+  organization_id: string
+  organization_name: string
+  organization_domain: string | null
+  roles: OrgRole[]
+  invited_by_name: string | null
+  sent_at: string
+  expires_at: string
+}
+
+export interface MyRoleInvitationListResponse {
+  items: MyRoleInvitation[]
+}
+
+export interface RoleInvitationAcceptResponse {
+  organization_id: string
+  /** The roles added (empty when the allowlist no longer accepts them). */
+  roles: OrgRole[]
 }
 
 /** The deployment's legal documents (Platform publishes them). */

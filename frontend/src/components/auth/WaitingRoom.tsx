@@ -7,6 +7,7 @@ import { btnPrimary, inputBase, linkAccent } from '../../lib/buttonStyles'
 import { useApiResource } from '../../hooks/useApiResource'
 import { useAuth } from '../../hooks/useAuth'
 import type { DomainOrganizationListResponse, InvitationTokenRedeemResponse } from '../../lib/types'
+import { RoleInvitationsNotice } from '../common/RoleInvitationsNotice'
 
 export function WaitingRoom() {
   const { t } = useTranslation()
@@ -73,6 +74,9 @@ export function WaitingRoom() {
       <h1 className="text-2xl font-semibold tracking-tight text-balance">
         {t('auth.waitingRoom.title')}
       </h1>
+      {/* An organization offering this account a role: accepting it is
+          the way in. */}
+      <RoleInvitationsNotice variant="card" />
       {submitted ? (
         <>
           <p className="text-sm text-paper-ink/60 dark:text-fg-muted">

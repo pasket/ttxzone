@@ -1,0 +1,12 @@
+Hola:
+
+{{ inviter }} te invita a unirte a la organización {{ organization }} en {{ product_name }} como: {{ roles }}.
+
+Para aceptar o rechazar la invitación, inicia sesión antes de {{ days }} días:
+
+{{ link }}
+
+La invitación te espera en tu cuenta; no cambia nada hasta que la aceptes. Si no la esperabas, recházala o ignora este mensaje.
+
+--
+Mensaje automático enviado por {{ product_name }}.

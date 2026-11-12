@@ -6,6 +6,7 @@ import { useApiResource } from '../../hooks/useApiResource'
 import { useAuth } from '../../hooks/useAuth'
 import { usePageFallback, useTableUrlState } from '../../hooks/useTableUrlState'
 import { useToast } from '../../hooks/useToast'
+import { useUndoableAction } from '../../hooks/useUndoableAction'
 import { apiFetch, ApiError } from '../../lib/api'
 import {
   actionsCellClass,
@@ -29,11 +30,16 @@ import {
 } from '../../lib/panelStyles'
 import { PEOPLE_SORT_OPTIONS } from '../../lib/peopleTable'
 import type {
+  DomainAccount,
   DomainAccountListResponse,
+  InstancePolicy,
   OrgMemberExerciseListResponse,
   OrgMemberListResponse,
   OrgMemberRead,
   OrgRole,
+  OrgRoleInvitation,
+  OrgRoleInvitationCreateResponse,
+  OrgRoleInvitationListResponse,
   OrganizationTag,
   OrganizationTagListResponse,
 } from '../../lib/types'
@@ -176,6 +182,15 @@ export function AdminUsersAndRolesSection() {
       ? `${orgBase}/domain-accounts`
       : null,
   )
+  // Where accounts found their own organizations ("open"), people outside
+  // the organization's own domain are invited, not added: their offers
+  // wait here until they answer.
+  const policy = useApiResource<InstancePolicy>('/instance/policy')
+  const invitesOutside =
+    policy.data?.tenancy_mode === 'open' ? (activeOrganization?.domain ?? '') : null
+  const invitations = useApiResource<OrgRoleInvitationListResponse>(
+    activeOrganizationId ? `${orgBase}/role-invitations` : null,
+  )
 
   useEffect(() => {
     if (!activeOrganizationId) return
@@ -283,13 +298,19 @@ export function AdminUsersAndRolesSection() {
         orgBase={orgBase}
         availableTags={availableTags}
         initialEmail={addingEmail}
+        suggestions={newcomers.data?.items ?? []}
+        invitesOutside={invitesOutside}
         onClose={() => {
           setAdding(false)
           setAddingEmail('')
         }}
-        onAdded={() => {
+        onAdded={(outcome) => {
           setAdding(false)
           setAddingEmail('')
+          if (outcome === 'invited') {
+            invitations.refetch()
+            return
+          }
           newcomers.refetch()
           // Newest first, so the new row is on page 1.
           if (page === 1 && sortDir === 'desc' && sortBy === 'created_at') reload()
@@ -578,6 +599,12 @@ export function AdminUsersAndRolesSection() {
         </Panel>
       )}
 
+      <PendingInvitationsPanel
+        orgBase={orgBase}
+        items={invitations.data?.items ?? []}
+        onChanged={invitations.refetch}
+      />
+
       {editing && (
         <EditPersonModal
           member={editing}
@@ -717,13 +744,127 @@ function toggled<T>(set: Set<T>, value: T): Set<T> {
   return next
 }
 
+/** The organization's offers still waiting for an answer: the address the
+ * Program Manager typed and the roles, nothing about any account. Hidden
+ * while there are none. Withdraw with Undo. */
+function PendingInvitationsPanel({
+  orgBase,
+  items,
+  onChanged,
+}: {
+  orgBase: string
+  items: OrgRoleInvitation[]
+  onChanged: () => void
+}) {
+  const { t, i18n } = useTranslation()
+  const { showToast } = useToast()
+  const runUndoable = useUndoableAction()
+  const [hidden, setHidden] = useState<Set<string>>(new Set())
+  const visible = items.filter((item) => !hidden.has(item.id))
+  if (visible.length === 0) return null
+
+  const date = new Intl.DateTimeFormat(i18n.language, { dateStyle: 'medium' })
+  const roleNames = (roles: OrgRole[]) =>
+    ROLES.filter((def) => roles.includes(def.role))
+      .map((def) => t(def.label))
+      .join(', ')
+
+  function withdraw(item: OrgRoleInvitation) {
+    runUndoable({
+      message: t('admin.usersAndRoles.invitations.withdrawnToast', { email: item.email }),
+      undoLabel: t('common.toast.undo'),
+      onRemove: () => setHidden((prev) => new Set(prev).add(item.id)),
+      onRestore: () =>
+        setHidden((prev) => {
+          const next = new Set(prev)
+          next.delete(item.id)
+          return next
+        }),
+      onCommit: async () => {
+        try {
+          await apiFetch(`${orgBase}/role-invitations/${item.id}`, { method: 'DELETE' })
+          onChanged()
+        } catch (err) {
+          setHidden((prev) => {
+            const next = new Set(prev)
+            next.delete(item.id)
+            return next
+          })
+          showToast(errorText(err, t('auth.common.genericError')), { variant: 'error' })
+        }
+      },
+    })
+  }
+
+  return (
+    <Panel
+      title={t('admin.usersAndRoles.invitations.title')}
+      meta={t('admin.usersAndRoles.invitations.count', { count: visible.length })}
+      description={
+        <HelpText
+          id="admin.usersAndRoles.invitations.description"
+          text={t('admin.usersAndRoles.invitations.description')}
+        />
+      }
+      flush
+    >
+      <div className="overflow-x-auto">
+        <table className="w-full text-left text-sm">
+          <thead>
+            <tr className={panelTableHeadRow}>
+              <th scope="col" className={panelTh}>
+                {t('admin.usersAndRoles.invitations.email')}
+              </th>
+              <th scope="col" className={panelTh}>
+                {t('admin.usersAndRoles.invitations.roles')}
+              </th>
+              <th scope="col" className={panelTh}>
+                {t('admin.usersAndRoles.invitations.invitedBy')}
+              </th>
+              <th scope="col" className={panelTh}>
+                {t('admin.usersAndRoles.invitations.expires')}
+              </th>
+              <th scope="col" className={panelActionsTh}>
+                <span className="sr-only">{t('admin.usersAndRoles.invitations.actions')}</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody className={panelTbody}>
+            {visible.map((item) => (
+              <tr key={item.id} className={panelTr}>
+                <td className={`${panelTd} font-medium`}>{item.email}</td>
+                <td className={panelTd}>{roleNames(item.roles)}</td>
+                <td className={panelTd}>{item.invited_by_name ?? '—'}</td>
+                <td className={panelTd}>{date.format(new Date(item.expires_at))}</td>
+                <td className={panelTd}>
+                  <div className={actionsCellClass}>
+                    <IconButton
+                      label={t('admin.usersAndRoles.invitations.withdrawLabel', {
+                        email: item.email,
+                      })}
+                      onClick={() => withdraw(item)}
+                    />
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </Panel>
+  )
+}
+
 /** Create pattern: replaces the list while open. One email, its roles and
- * tags; a role that fails (domain not allowed, already held) is reported
- * without losing the others. */
+ * tags, in one request: the server grants them at once, or -- where
+ * accounts found their own organizations, outside the organization's own
+ * domain -- offers them for the person to accept ("invited"). */
 function AddPersonForm({
   orgBase,
   availableTags,
   initialEmail = '',
+  suggestions = [],
+  invitesOutside = null,
   onClose,
   onAdded,
 }: {
@@ -731,8 +872,14 @@ function AddPersonForm({
   availableTags: OrganizationTag[]
   /** A newcomer picked from the allowed-domain list. */
   initialEmail?: string
+  /** Accounts from the allowed domains without a role, offered as the
+   * email field's suggestions (empty in "open"). */
+  suggestions?: DomainAccount[]
+  /** The organization's own domain where people outside it are invited
+   * rather than added ("open" tenancy); null otherwise. */
+  invitesOutside?: string | null
   onClose: () => void
-  onAdded: () => void
+  onAdded: (outcome: OrgRoleInvitationCreateResponse['outcome']) => void
 }) {
   const { t } = useTranslation()
   const { showToast } = useToast()
@@ -740,7 +887,7 @@ function AddPersonForm({
   const [selected, setSelected] = useState<Set<OrgRole>>(new Set())
   const [tags, setTags] = useState<Set<string>>(new Set())
   const [submitting, setSubmitting] = useState(false)
-  const [errors, setErrors] = useState<string[]>([])
+  const [error, setError] = useState<string | null>(null)
   const emailRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -750,37 +897,27 @@ function AddPersonForm({
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
     setSubmitting(true)
-    setErrors([])
-    const failed: string[] = []
-    let granted = 0
-    let userId: string | null = null
-    for (const r of ROLES.filter((def) => selected.has(def.role))) {
-      try {
-        const created = await apiFetch<{ user_id: string }>(`${orgBase}/${r.path}`, {
+    setError(null)
+    const roles = ROLES.filter((def) => selected.has(def.role)).map((def) => def.role)
+    try {
+      const result = await apiFetch<OrgRoleInvitationCreateResponse>(
+        `${orgBase}/role-invitations`,
+        {
           method: 'POST',
-          body: JSON.stringify({ email }),
-        })
-        userId = created.user_id
-        granted += 1
-      } catch (err) {
-        const message = errorText(err, t('auth.common.genericError'))
-        failed.push(t('admin.usersAndRoles.roleError', { role: t(r.label), message }))
-      }
+          body: JSON.stringify({ email, roles, tag_ids: Array.from(tags) }),
+        },
+      )
+      showToast(
+        result.outcome === 'invited'
+          ? t('admin.usersAndRoles.invitedToast', { email: email.trim().toLowerCase() })
+          : t('admin.usersAndRoles.addedToast', { count: roles.length }),
+      )
+      onAdded(result.outcome)
+    } catch (err) {
+      setError(errorText(err, t('auth.common.genericError')))
+    } finally {
+      setSubmitting(false)
     }
-    if (userId && tags.size > 0) {
-      try {
-        await apiFetch(`${orgBase}/members/${userId}/tags`, {
-          method: 'PUT',
-          body: JSON.stringify({ tag_ids: Array.from(tags) }),
-        })
-      } catch (err) {
-        failed.push(errorText(err, t('auth.common.genericError')))
-      }
-    }
-    setSubmitting(false)
-    if (granted > 0) showToast(t('admin.usersAndRoles.addedToast', { count: granted }))
-    if (failed.length === 0) onAdded()
-    else setErrors(failed)
   }
 
   return (
@@ -792,7 +929,11 @@ function AddPersonForm({
     >
       <Panel
         title={t('admin.usersAndRoles.addTitle')}
-        description={t('admin.usersAndRoles.addDescription')}
+        description={
+          invitesOutside
+            ? t('admin.usersAndRoles.addDescriptionInvite', { domain: invitesOutside })
+            : t('admin.usersAndRoles.addDescription')
+        }
         footer={
           <div className={panelFormActions}>
             <button type="button" onClick={onClose} className={btnSecondary}>
@@ -811,7 +952,9 @@ function AddPersonForm({
         <div className="max-w-xl space-y-6">
           <div className="space-y-2">
             <label className="block text-sm" htmlFor="users-and-roles-email">
-              {t('admin.usersAndRoles.emailLabel')}
+              {invitesOutside
+                ? t('admin.usersAndRoles.emailLabelInvite')
+                : t('admin.usersAndRoles.emailLabel')}
             </label>
             <input
               ref={emailRef}
@@ -826,7 +969,17 @@ function AddPersonForm({
               placeholder={t('admin.usersAndRoles.emailPlaceholder')}
               disabled={submitting}
               className={submitting ? inputDisabled : inputBase}
+              list={suggestions.length > 0 ? 'users-and-roles-email-suggestions' : undefined}
             />
+            {suggestions.length > 0 && (
+              <datalist id="users-and-roles-email-suggestions">
+                {suggestions.map((account) => (
+                  <option key={account.user_id} value={account.email}>
+                    {account.full_name}
+                  </option>
+                ))}
+              </datalist>
+            )}
           </div>
           <RolesFieldset
             selected={selected}
@@ -834,12 +987,10 @@ function AddPersonForm({
             disabled={submitting}
           />
           <TagsFieldset availableTags={availableTags} selected={tags} onChange={setTags} />
-          {errors.length > 0 && (
-            <ul className="space-y-1 text-sm text-danger-fg" aria-live="polite">
-              {errors.map((message) => (
-                <li key={message}>{message}</li>
-              ))}
-            </ul>
+          {error && (
+            <p className="text-sm text-danger-fg" aria-live="polite">
+              {error}
+            </p>
           )}
         </div>
       </Panel>

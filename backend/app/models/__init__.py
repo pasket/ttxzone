@@ -65,6 +65,7 @@ from app.models.organization_membership import (
     OrgRoleEnum,
     active_membership,
 )
+from app.models.organization_role_invitation import OrganizationRoleInvitation
 from app.models.organization_scenario import OrganizationScenario
 from app.models.organization_tag import OrganizationTag
 from app.models.organization_threat_actor import OrganizationThreatActor
@@ -171,6 +172,7 @@ __all__ = [
     "active_membership",
     "OrganizationMembership",
     "OrganizationAllowedDomain",
+    "OrganizationRoleInvitation",
     "OrganizationTag",
     "TagColor",
     "User",

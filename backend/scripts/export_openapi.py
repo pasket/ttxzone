@@ -65,6 +65,10 @@ TAGS = {
     "tag-library": ("Tags", "Tags of an organization and an exercise."),
     "invitation-tokens": ("Invitation tokens", "Tokens that let Players join an exercise."),
     "email-invitations": ("Email invitations", "Personal invitations to join by email."),
+    "role-invitations": (
+        "Role invitations",
+        "Organization roles offered to people outside it, and their answers.",
+    ),
     "access-requests": ("Access requests", "Requests to join an exercise."),
     "assistant": ("AI assistant", "The MCP endpoint and the assistant's proposals."),
     "instance": ("Instance administration", "The operator's workspace above the organizations."),
