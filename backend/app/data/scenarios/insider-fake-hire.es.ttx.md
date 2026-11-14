@@ -507,7 +507,7 @@ Una semana después. Un correo anónimo adjunta muestras del código fuente.
             "code": "INJ-04-A1",
             "description": "Evalúa la exposición a sanciones y si hay que comunicarlo.",
             "responsible_role": "Legal",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 25,
             "objective_codes": [
               "OBJ-03"
             ]

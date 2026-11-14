@@ -638,7 +638,7 @@ Cinco días después. En la sede nadie sabe nada de la operación.
             "code": "INJ-07-A1",
             "description": "Acuerda qué decir a la plantilla, a los auditores y al consejo.",
             "responsible_role": "Consejero delegado",
-            "expected_within_minutes": 15,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-03"
             ]

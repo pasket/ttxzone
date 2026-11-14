@@ -485,7 +485,7 @@ Viernes, 15:00. La tienda funciona tras la mitigación; siguen llegando quejas.
             "code": "INJ-04-A1",
             "description": "Comunicación publica un mensaje de estado y pasa el mismo texto a atención al cliente.",
             "responsible_role": "Dirección de comunicación",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 25,
             "objective_codes": [
               "OBJ-03"
             ]
@@ -532,7 +532,7 @@ Viernes, 15:00. La tienda funciona tras la mitigación; siguen llegando quejas.
             "code": "INJ-05-A1",
             "description": "Comunicación corrige el rumor solo con hechos confirmados.",
             "responsible_role": "Dirección de comunicación",
-            "expected_within_minutes": 15,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-03"
             ]

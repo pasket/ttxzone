@@ -539,7 +539,7 @@ Two weeks later. Systems are being rebuilt; small suppliers are struggling.
             "code": "INJ-05-A1",
             "description": "Sends the notification with the impact on production.",
             "responsible_role": "Compliance officer",
-            "expected_within_minutes": 20,
+            "expected_within_minutes": 15,
             "objective_codes": [
               "OBJ-03"
             ]

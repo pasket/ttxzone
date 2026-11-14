@@ -382,7 +382,7 @@ Wednesday. A journalist asks for comment on the leaked data.
             "code": "INJ-02-A1",
             "description": "The crisis committee is convened and names an incident lead.",
             "responsible_role": "Crisis committee chair",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 25,
             "objective_codes": [
               "OBJ-01"
             ]

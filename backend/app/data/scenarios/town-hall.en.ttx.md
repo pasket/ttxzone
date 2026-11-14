@@ -466,7 +466,7 @@ Two weeks later. Residents' records are published.
             "code": "INJ-03-A1",
             "description": "Decides whether to pay and records the rationale.",
             "responsible_role": "Mayor",
-            "expected_within_minutes": 20,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-02"
             ]

@@ -435,7 +435,7 @@ Two weeks later. The provider refused to pay; patient data is published.
             "code": "INJ-03-A1",
             "description": "Joins a single coordination cell with the other hospitals, practices and the blood service.",
             "responsible_role": "Chief Executive Officer",
-            "expected_within_minutes": 20,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-02"
             ]
@@ -535,7 +535,7 @@ Two weeks later. The provider refused to pay; patient data is published.
             "code": "INJ-05-A1",
             "description": "Agrees with the alternative laboratory how samples and results move.",
             "responsible_role": "Laboratory services manager",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 25,
             "objective_codes": [
               "OBJ-01"
             ]

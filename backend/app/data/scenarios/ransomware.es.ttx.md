@@ -382,7 +382,7 @@ Miércoles. Un periodista pide declaraciones sobre los datos filtrados.
             "code": "INJ-02-A1",
             "description": "Se convoca el comité de crisis y se designa un responsable del incidente.",
             "responsible_role": "Presidencia del comité de crisis",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 25,
             "objective_codes": [
               "OBJ-01"
             ]

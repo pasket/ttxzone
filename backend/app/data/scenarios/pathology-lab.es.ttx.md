@@ -435,7 +435,7 @@ Dos semanas después. El proveedor se negó a pagar; se publican datos de pacien
             "code": "INJ-03-A1",
             "description": "Se integra en una única célula de coordinación con los demás hospitales, centros de salud y el centro de transfusión.",
             "responsible_role": "Dirección gerente",
-            "expected_within_minutes": 20,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-02"
             ]
@@ -535,7 +535,7 @@ Dos semanas después. El proveedor se negó a pagar; se publican datos de pacien
             "code": "INJ-05-A1",
             "description": "Acuerda con el laboratorio alternativo cómo circulan las muestras y los resultados.",
             "responsible_role": "Responsable de servicios de laboratorio",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 25,
             "objective_codes": [
               "OBJ-01"
             ]

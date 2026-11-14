@@ -516,7 +516,7 @@ Friday, 07:00. Twenty-two hours since the advisory.
             "code": "INJ-05-A1",
             "description": "The supplier manager escalates to the vendor's security contact and the agent's credentials are rotated.",
             "responsible_role": "Supplier manager",
-            "expected_within_minutes": 15,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-01"
             ]

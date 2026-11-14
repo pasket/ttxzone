@@ -485,7 +485,7 @@ Friday, 15:00. The shop is up behind mitigation; complaints keep coming.
             "code": "INJ-04-A1",
             "description": "Communications publishes a status message and briefs customer service with the same wording.",
             "responsible_role": "Head of communications",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 25,
             "objective_codes": [
               "OBJ-03"
             ]
@@ -532,7 +532,7 @@ Friday, 15:00. The shop is up behind mitigation; complaints keep coming.
             "code": "INJ-05-A1",
             "description": "Communications corrects the rumour with confirmed facts only.",
             "responsible_role": "Head of communications",
-            "expected_within_minutes": 15,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-03"
             ]

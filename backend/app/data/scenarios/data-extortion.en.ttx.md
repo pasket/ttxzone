@@ -408,7 +408,7 @@ Five days later. The leak site lists {organization} among the campaign's victims
             "code": "INJ-02-A2",
             "description": "Opens a breach record and starts the notification assessment.",
             "responsible_role": "Data Protection Officer",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 25,
             "objective_codes": [
               "OBJ-02"
             ]
