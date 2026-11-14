@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="size" content="1200x700">
+<title>Mail queue</title>
+<link rel="stylesheet" href="../../../injects/images/src/base.css">
+<style>
+  body { position: relative; }
+  .kpis { display: flex; gap: 16px; padding: 16px 18px 0; }
+  .kpi { flex: 1; padding: 14px 16px; }
+  .kpi .v { font-size: 30px; font-weight: 700; }
+  .kpi .l { font-size: 12px; color: #8a93a3; text-transform: uppercase; letter-spacing: .05em; }
+  .wrap { padding: 16px 18px; }
+  .panel svg { display: block; }
+  text { font: 12px -apple-system, "Helvetica Neue", Arial, sans-serif; fill: #8a93a3; }
+  .note { margin: 0 18px; padding: 10px 14px; background: #2c2619; border: 1px solid #6b5420; border-radius: 3px; font-size: 13px; }
+</style>
+</head>
+<body class="dark">
+<div class="bar"><span data-es="Correo · Colas de entrega">Email · Delivery queues</span><span class="chip high" data-es="Entrega retrasada">Delivery delayed</span></div>
+<div class="kpis">
+  <div class="panel kpi"><div class="l" data-es="Cola de entrada">Inbound queue</div><div class="v" data-es="740 mil">740k</div></div>
+  <div class="panel kpi"><div class="l" data-es="Cola de salida">Outbound queue</div><div class="v" data-es="460 mil">460k</div></div>
+  <div class="panel kpi"><div class="l" data-es="Ritmo de entrega">Delivery rate</div><div class="v" data-es="38 mil/h">38k/h</div></div>
+  <div class="panel kpi"><div class="l" data-es="Mensaje más antiguo">Oldest message</div><div class="v">23 h</div></div>
+</div>
+<div class="wrap">
+  <div class="panel">
+    <h3 data-es="Mensajes en cola · últimas 30 horas">Queued messages · last 30 hours</h3>
+    <svg width="1162" height="330" viewBox="0 0 1162 330">
+      <line x1="50" y1="290" x2="1140" y2="290" stroke="#2f3644"/>
+      <line x1="50" y1="200" x2="1140" y2="200" stroke="#1c212b"/>
+      <line x1="50" y1="110" x2="1140" y2="110" stroke="#1c212b"/>
+      <text x="12" y="204">400k</text><text x="12" y="114">800k</text>
+      <path d="M50 288 L120 262 L200 214 L300 160 L400 118 L500 92 L600 76 L700 68 L780 64 L840 66 L900 80 L960 96 L1020 108 L1080 118 L1140 124" fill="none" stroke="#c96a12" stroke-width="3"/>
+      <path d="M50 289 L120 276 L200 250 L300 214 L400 186 L500 168 L600 156 L700 150 L780 147 L840 148 L900 158 L960 168 L1020 176 L1080 182 L1140 187" fill="none" stroke="#5a8fd6" stroke-width="3"/>
+      <line x1="820" y1="30" x2="820" y2="290" stroke="#8a93a3" stroke-dasharray="4 4"/>
+      <text x="828" y="44" data-es="Se reanuda la entrega">Delivery resumes</text>
+      <text x="50" y="312">−30 h</text><text x="560" y="312">−15 h</text><text x="1100" y="312" data-es="ahora">now</text>
+      <line x1="60" y1="20" x2="90" y2="20" stroke="#c96a12" stroke-width="3"/><text x="98" y="24" data-es="Entrada">Inbound</text>
+      <line x1="170" y1="20" x2="200" y2="20" stroke="#5a8fd6" stroke-width="3"/><text x="208" y="24" data-es="Salida">Outbound</text>
+    </svg>
+  </div>
+</div>
+<div class="note"><span class="chip med" data-es="Aviso">Notice</span>&nbsp; <span data-es="El filtrado de correo y la comprobación de enlaces funcionaron degradados durante la incidencia. Los mensajes en cola no se han vuelto a analizar.">Email filtering and link checking ran degraded during the incident. Queued messages have not been scanned again.</span></div>
+<div class="stamp" data-es="Ficticio · material de ejercicio">Fictitious · exercise material</div>
+<script src="../../../injects/images/src/i18n.js"></script>
+</body>
+</html>

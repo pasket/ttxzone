@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="size" content="1200x640">
+<title>Security console</title>
+<link rel="stylesheet" href="../../../injects/images/src/base.css">
+<style>
+  body { position: relative; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 16px 18px; }
+  .panel svg { display: block; }
+  text { font: 12px -apple-system, "Helvetica Neue", Arial, sans-serif; fill: #8a93a3; }
+  .alert { margin: 0 14px 12px; padding: 9px 12px; background: #2a1a1d; border: 1px solid #5a2a2f; border-radius: 3px; font-size: 13px; }
+  .num { text-align: right; }
+</style>
+</head>
+<body class="dark">
+<div class="bar"><span data-es="Consola de seguridad · Últimos 60 minutos">Security console · Last 60 minutes</span><span class="chip crit" data-es="3 alertas críticas">3 critical alerts</span></div>
+<div class="grid">
+  <div class="panel">
+    <h3 data-es="SIEM · Inicios de sesión fallidos por minuto">SIEM · Failed sign-ins per minute</h3>
+    <svg width="560" height="210" viewBox="0 0 560 210">
+      <line x1="40" y1="180" x2="545" y2="180" stroke="#2f3644"/>
+      <line x1="40" y1="164" x2="545" y2="164" stroke="#1f7a4f" stroke-dasharray="4 4"/>
+      <text x="46" y="156" data-es="línea base habitual">usual baseline</text>
+      <g fill="#b3262b">
+        <rect x="45" y="166" width="12" height="14"/><rect x="62" y="165" width="12" height="15"/><rect x="79" y="166" width="12" height="14"/>
+        <rect x="96" y="164" width="12" height="16"/><rect x="113" y="166" width="12" height="14"/><rect x="130" y="150" width="12" height="30"/>
+        <rect x="147" y="110" width="12" height="70"/><rect x="164" y="72" width="12" height="108"/><rect x="181" y="48" width="12" height="132"/>
+        <rect x="198" y="36" width="12" height="144"/><rect x="215" y="30" width="12" height="150"/><rect x="232" y="34" width="12" height="146"/>
+        <rect x="249" y="28" width="12" height="152"/><rect x="266" y="26" width="12" height="154"/><rect x="283" y="32" width="12" height="148"/>
+        <rect x="300" y="24" width="12" height="156"/><rect x="317" y="27" width="12" height="153"/><rect x="334" y="22" width="12" height="158"/>
+        <rect x="351" y="25" width="12" height="155"/><rect x="368" y="20" width="12" height="160"/><rect x="385" y="23" width="12" height="157"/>
+        <rect x="402" y="21" width="12" height="159"/><rect x="419" y="24" width="12" height="156"/><rect x="436" y="19" width="12" height="161"/>
+        <rect x="453" y="22" width="12" height="158"/><rect x="470" y="20" width="12" height="160"/><rect x="487" y="23" width="12" height="157"/>
+        <rect x="504" y="18" width="12" height="162"/><rect x="521" y="21" width="12" height="159"/>
+      </g>
+      <text x="40" y="200">−60′</text><text x="515" y="200" data-es="ahora">now</text>
+      <text x="300" y="14" style="fill:#d8dde6;font-weight:600" data-es="≈ 30 × línea base">≈ 30 × baseline</text>
+    </svg>
+    <div class="alert"><span class="chip crit" data-es="Crítica">Critical</span>&nbsp; <span data-es="Posible fuerza bruta: miles de fallos de inicio de sesión desde orígenes internos">Possible brute force: thousands of sign-in failures from internal sources</span></div>
+  </div>
+  <div class="panel">
+    <h3 data-es="WAF · Peticiones de la app de clientes por minuto">WAF · Customer app requests per minute</h3>
+    <svg width="560" height="210" viewBox="0 0 560 210">
+      <line x1="40" y1="180" x2="545" y2="180" stroke="#2f3644"/>
+      <path d="M40 160 L100 158 L130 150 L150 120 L170 70 L190 52 L215 60 L240 44 L265 58 L290 40 L315 52 L340 38 L365 50 L390 36 L415 48 L440 34 L465 46 L490 32 L515 44 L545 30" fill="none" stroke="#c96a12" stroke-width="3"/>
+      <text x="40" y="200">−60′</text><text x="515" y="200" data-es="ahora">now</text>
+      <text x="230" y="24" style="fill:#d8dde6;font-weight:600" data-es="Reintentos de inicio de sesión de cuentas enlazadas">Linked-account sign-in retries</text>
+    </svg>
+    <div class="alert"><span class="chip high" data-es="Alta">High</span>&nbsp; <span data-es="Anti-DDoS: pico de peticiones hacia la API de inicio de sesión">Anti-DDoS: request peak towards the sign-in API</span></div>
+  </div>
+</div>
+<div style="padding:0 18px">
+  <div class="panel">
+    <h3 data-es="Orígenes más ruidosos">Top sources</h3>
+    <table>
+      <tr><th data-es="Rango de origen">Source range</th><th data-es="Etiqueta">Label</th><th data-es="Usuarios distintos">Distinct users</th><th class="num" data-es="Fallos / min">Failures / min</th><th data-es="Acción propuesta">Proposed action</th></tr>
+      <tr><td class="mono">198.51.100.0/24</td><td data-es="Salida de tiendas · región norte">Store exit · north region</td><td>1 240</td><td class="num">2 310</td><td><span class="chip crit" data-es="Bloquear">Block</span></td></tr>
+      <tr><td class="mono">203.0.113.0/24</td><td data-es="Sede central">Head office</td><td>2 870</td><td class="num">1 960</td><td><span class="chip crit" data-es="Bloquear">Block</span></td></tr>
+      <tr><td class="mono">198.51.100.128/25</td><td data-es="Salida de tiendas · región sur">Store exit · south region</td><td>980</td><td class="num">1 420</td><td><span class="chip high" data-es="Limitar">Rate-limit</span></td></tr>
+      <tr><td class="mono">203.0.113.64/26</td><td data-es="Sede central · Wi-Fi invitados">Head office · guest Wi-Fi</td><td>310</td><td class="num">540</td><td><span class="chip med" data-es="Revisar">Review</span></td></tr>
+    </table>
+  </div>
+</div>
+<div class="stamp" data-es="Ficticio · material de ejercicio">Fictitious · exercise material</div>
+<script src="../../../injects/images/src/i18n.js"></script>
+</body>
+</html>
