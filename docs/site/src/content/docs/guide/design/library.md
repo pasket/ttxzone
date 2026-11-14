@@ -19,7 +19,7 @@ Every use is a copy, so editing or deleting a library item never changes an exer
 
 A scenario is a whole exercise packaged for reuse: its needs analysis, MSEL and library, with images. It never carries people, approvals or dates, so you add those after copying: the needs analysis starts as a draft, and the MSEL stays read-only until you approve it.
 
-TTX-Zone includes scenarios such as ransomware, an executive tabletop, insider threat, supply chain and sector demos.
+TTX-Zone includes scenarios such as ransomware, an executive tabletop, insider threat, supply chain, business continuity when a critical provider goes down, and sector demos.
 
 You can:
 

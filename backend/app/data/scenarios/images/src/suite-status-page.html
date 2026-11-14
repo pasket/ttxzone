@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="size" content="1200x720">
+<title>Service status</title>
+<link rel="stylesheet" href="../../../injects/images/src/base.css">
+<style>
+  body { position: relative; }
+  .wrap { width: 980px; margin: 26px auto 0; }
+  .head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 18px; }
+  .head h1 { font-size: 24px; font-weight: 600; }
+  .banner { background: #fdecec; border: 1px solid #e8b4b6; border-left: 5px solid #b3262b; border-radius: 4px; padding: 16px 20px; margin-bottom: 18px; }
+  .banner h2 { font-size: 18px; margin-bottom: 6px; }
+  .banner p { font-size: 14px; color: #3a404d; }
+  .svc td { font-size: 14px; padding: 11px 14px; }
+  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; }
+  .red { background: #b3262b; } .amber { background: #c96a12; } .green { background: #1f7a4f; }
+  .upd { margin-top: 18px; }
+  .upd .row { padding: 12px 14px; border-bottom: 1px solid #e1e3e8; font-size: 14px; }
+  .upd .row b { display: inline-block; width: 140px; }
+</style>
+</head>
+<body class="light">
+<div class="bar"><span data-es="Estado del servicio · Suite de productividad">Service status · Productivity suite</span><span class="muted" style="margin-left:auto;font-weight:400">status.example.com</span></div>
+<div class="wrap">
+  <div class="head"><h1 data-es="Estado actual">Current status</h1><span class="muted" data-es="Actualizado hace 4 minutos">Updated 4 minutes ago</span></div>
+  <div class="banner">
+    <h2><span class="chip crit" data-es="Investigando">Investigating</span>&nbsp; <span data-es="Incidencia que afecta a varios servicios">Incident affecting multiple services</span></h2>
+    <p data-es="Es posible que los usuarios no puedan acceder a buzones, chat y archivos. Estamos investigando la causa. Sin hora estimada de recuperación.">Users may be unable to access mailboxes, chat and files. We are investigating the cause. No estimated recovery time.</p>
+  </div>
+  <div class="panel">
+    <h3 data-es="Servicios">Services</h3>
+    <table class="svc">
+      <tr><td><span class="dot red"></span><span data-es="Correo">Email</span></td><td class="muted" data-es="Interrupción grave">Major outage</td></tr>
+      <tr><td><span class="dot red"></span><span data-es="Chat y reuniones">Chat and meetings</span></td><td class="muted" data-es="Interrupción grave">Major outage</td></tr>
+      <tr><td><span class="dot red"></span><span data-es="Calendario">Calendar</span></td><td class="muted" data-es="Interrupción grave">Major outage</td></tr>
+      <tr><td><span class="dot red"></span><span data-es="Archivos y sitios documentales">Files and document sites</span></td><td class="muted" data-es="Interrupción grave">Major outage</td></tr>
+      <tr><td><span class="dot amber"></span><span data-es="Inicio de sesión y verificación">Sign-in and verification</span></td><td class="muted" data-es="Rendimiento degradado">Degraded performance</td></tr>
+      <tr><td><span class="dot green"></span><span data-es="Portal de administración">Admin portal</span></td><td class="muted" data-es="Operativo">Operational</td></tr>
+    </table>
+  </div>
+  <div class="panel upd">
+    <h3 data-es="Actualizaciones">Updates</h3>
+    <div class="row"><b data-es="Hace 4 min">4 min ago</b><span data-es="Investigando: es posible que los usuarios no puedan acceder a buzones, chat y archivos.">Investigating: users may be unable to access mailboxes, chat and files.</span></div>
+    <div class="row"><b data-es="Hace 11 min">11 min ago</b><span data-es="Estamos recibiendo informes de problemas de acceso en varias regiones.">We are receiving reports of access issues in several regions.</span></div>
+  </div>
+</div>
+<div class="stamp" data-es="Ficticio · material de ejercicio">Fictitious · exercise material</div>
+<script src="../../../injects/images/src/i18n.js"></script>
+</body>
+</html>

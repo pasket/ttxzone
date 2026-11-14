@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="size" content="1200x700">
+<title>Fake support page</title>
+<link rel="stylesheet" href="../../../injects/images/src/base.css">
+<style>
+  body { background: #e9edf2; position: relative; }
+  .chrome { background: #dfe3e8; padding: 10px 14px; display: flex; gap: 10px; align-items: center; border-bottom: 1px solid #c8cdd4; }
+  .addr { flex: 1; background: #fff; border-radius: 16px; padding: 7px 16px; font: 14px -apple-system, Arial; color: #333; }
+  .addr .host { font-weight: 700; outline: 2px solid #d1373d; outline-offset: 2px; border-radius: 2px; }
+  .dots { color: #8a93a3; letter-spacing: 3px; }
+  .card { width: 440px; margin: 48px auto 0; background: #fff; border: 1px solid #d6d9df; border-radius: 6px; padding: 32px 36px; }
+  h1 { font-size: 22px; font-weight: 600; margin-bottom: 6px; }
+  .sub { color: #5a6170; font-size: 14px; margin-bottom: 16px; }
+  .note { background: #fff6e5; border: 1px solid #f0d49b; border-radius: 4px; padding: 10px 12px; font-size: 13px; margin-bottom: 16px; color: #5a4a1f; }
+  .in { border: 1px solid #b9bfc9; border-radius: 4px; padding: 10px 12px; font-size: 14px; color: #8a93a3; margin-bottom: 12px; }
+  .btn { background: #1f5fd1; color: #fff; text-align: center; padding: 10px; border-radius: 4px; font-weight: 600; }
+  .foot { font-size: 12px; color: #8a93a3; margin-top: 14px; text-align: center; }
+  .callout { position: absolute; left: 400px; top: 58px; background: #d1373d; color: #fff; font-size: 12px; font-weight: 600; padding: 4px 9px; border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="chrome"><span class="dots">●●●</span><div class="addr">🔒 https://<span class="host">support-desk-help.example.net</span>/restore/session?ref=outage</div></div>
+<div class="callout" data-es="↑ No es el dominio de tu proveedor">↑ Not your provider's domain</div>
+<div class="card">
+  <div style="font-size:15px;font-weight:600;color:#5a6170;margin-bottom:16px" data-es="Soporte · Recuperación de cuentas">Support · Account recovery</div>
+  <h1 data-es="Restablece tu acceso tras la caída">Restore your access after the outage</h1>
+  <div class="sub" data-es="Para proteger tu cuenta después de la incidencia, vuelve a validar tus credenciales.">To protect your account after the incident, validate your credentials again.</div>
+  <div class="note" data-es="⚠ Las cuentas que no se validen hoy pueden quedar bloqueadas.">⚠ Accounts not validated today may be locked.</div>
+  <div class="in" data-es="Correo corporativo">Work email</div>
+  <div class="in" data-es="Contraseña">Password</div>
+  <div class="in" data-es="Código de verificación">Verification code</div>
+  <div class="btn" data-es="Restablecer acceso">Restore access</div>
+  <div class="foot" data-es="¿No te ha llegado el código? Aprueba la solicitud en tu móvil.">Didn't get a code? Approve the request on your phone.</div>
+</div>
+<div class="stamp" data-es="Ficticio · material de ejercicio">Fictitious · exercise material</div>
+<script src="../../../injects/images/src/i18n.js"></script>
+</body>
+</html>

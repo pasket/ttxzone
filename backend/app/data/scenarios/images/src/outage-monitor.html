@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="size" content="1200x680">
+<title>Outage monitor</title>
+<link rel="stylesheet" href="../../../injects/images/src/base.css">
+<style>
+  body { position: relative; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 16px 18px; }
+  .panel svg { display: block; }
+  text { font: 12px -apple-system, "Helvetica Neue", Arial, sans-serif; fill: #8a93a3; }
+  .big { font-size: 34px; font-weight: 700; fill: #d8dde6; }
+  .kpis { display: flex; gap: 16px; padding: 0 18px; }
+  .kpi { flex: 1; padding: 14px 16px; }
+  .kpi .v { font-size: 30px; font-weight: 700; }
+  .kpi .l { font-size: 12px; color: #8a93a3; text-transform: uppercase; letter-spacing: .05em; }
+  .land { fill: #232a36; }
+  .hit { fill: #e0683c; opacity: .9; }
+</style>
+</head>
+<body class="dark">
+<div class="bar"><span data-es="Monitor de caídas · Suite de productividad">Outage monitor · Productivity suite</span><span class="chip crit" data-es="Caída generalizada">Widespread outage</span></div>
+<div class="kpis" style="margin-top:16px">
+  <div class="panel kpi"><div class="l" data-es="Informes en la última hora">Reports in the last hour</div><div class="v">48 300</div></div>
+  <div class="panel kpi"><div class="l" data-es="Países con informes">Countries reporting</div><div class="v">57</div></div>
+  <div class="panel kpi"><div class="l" data-es="Problema más citado">Most reported problem</div><div class="v" style="font-size:22px;padding-top:6px" data-es="Acceso al correo">Email access</div></div>
+</div>
+<div class="grid">
+  <div class="panel">
+    <h3 data-es="Informes de usuarios · últimos 90 min">User reports · last 90 min</h3>
+    <svg width="560" height="440" viewBox="0 0 560 440">
+      <line x1="50" y1="390" x2="540" y2="390" stroke="#2f3644"/>
+      <line x1="50" y1="40" x2="50" y2="390" stroke="#2f3644"/>
+      <line x1="50" y1="300" x2="540" y2="300" stroke="#1c212b"/>
+      <line x1="50" y1="210" x2="540" y2="210" stroke="#1c212b"/>
+      <line x1="50" y1="120" x2="540" y2="120" stroke="#1c212b"/>
+      <text x="14" y="304">10k</text><text x="14" y="214">20k</text><text x="14" y="124">30k</text>
+      <path d="M50 386 L110 384 L160 383 L200 380 L230 360 L260 300 L290 230 L320 170 L350 128 L380 98 L410 82 L440 70 L470 66 L500 62 L540 60" fill="none" stroke="#e0683c" stroke-width="3"/>
+      <path d="M50 386 L110 384 L160 383 L200 380 L230 360 L260 300 L290 230 L320 170 L350 128 L380 98 L410 82 L440 70 L470 66 L500 62 L540 60 L540 390 L50 390 Z" fill="#e0683c" opacity=".12"/>
+      <line x1="215" y1="40" x2="215" y2="390" stroke="#8a93a3" stroke-dasharray="4 4"/>
+      <text x="222" y="54" data-es="Primeros fallos">First failures</text>
+      <text x="50" y="412">−90′</text><text x="270" y="412">−45′</text><text x="510" y="412" data-es="ahora">now</text>
+    </svg>
+  </div>
+  <div class="panel">
+    <h3 data-es="Informes por zona">Reports by area</h3>
+    <svg width="560" height="440" viewBox="0 0 560 440">
+      <path class="land" d="M40 90 C70 60 150 55 190 80 C215 100 200 140 175 160 C160 175 150 200 130 205 C100 210 80 180 70 160 C50 140 30 115 40 90 Z"/>
+      <path class="land" d="M140 230 C165 220 190 240 190 270 C192 310 175 350 155 380 C145 395 130 385 128 360 C125 320 115 270 140 230 Z"/>
+      <path class="land" d="M250 80 C280 65 330 70 345 90 C350 110 320 125 300 130 C275 135 250 120 245 105 Z"/>
+      <path class="land" d="M260 150 C295 140 335 155 340 190 C345 240 320 300 295 320 C280 330 265 305 260 280 C250 240 240 175 260 150 Z"/>
+      <path class="land" d="M355 70 C410 55 500 65 525 100 C540 130 510 165 470 175 C430 185 400 170 375 160 C350 145 340 95 355 70 Z"/>
+      <path class="land" d="M440 270 C470 260 515 270 520 295 C522 320 495 335 465 332 C440 328 425 290 440 270 Z"/>
+      <circle class="hit" cx="80" cy="100" r="7"/><circle class="hit" cx="110" cy="90" r="9"/><circle class="hit" cx="140" cy="110" r="6"/>
+      <circle class="hit" cx="100" cy="140" r="8"/><circle class="hit" cx="160" cy="135" r="5"/><circle class="hit" cx="130" cy="175" r="6"/>
+      <circle class="hit" cx="150" cy="255" r="6"/><circle class="hit" cx="165" cy="290" r="5"/><circle class="hit" cx="148" cy="330" r="4"/>
+      <circle class="hit" cx="270" cy="90" r="8"/><circle class="hit" cx="295" cy="85" r="10"/><circle class="hit" cx="320" cy="98" r="7"/>
+      <circle class="hit" cx="285" cy="112" r="6"/><circle class="hit" cx="310" cy="118" r="5"/><circle class="hit" cx="262" cy="104" r="5"/>
+      <circle class="hit" cx="280" cy="170" r="5"/><circle class="hit" cx="310" cy="200" r="4"/><circle class="hit" cx="290" cy="250" r="5"/>
+      <circle class="hit" cx="300" cy="290" r="4"/><circle class="hit" cx="380" cy="90" r="6"/><circle class="hit" cx="420" cy="100" r="7"/>
+      <circle class="hit" cx="460" cy="95" r="5"/><circle class="hit" cx="490" cy="110" r="8"/><circle class="hit" cx="500" cy="140" r="6"/>
+      <circle class="hit" cx="440" cy="140" r="5"/><circle class="hit" cx="400" cy="135" r="4"/><circle class="hit" cx="470" cy="160" r="5"/>
+      <circle class="hit" cx="460" cy="290" r="7"/><circle class="hit" cx="495" cy="300" r="5"/><circle class="hit" cx="475" cy="318" r="4"/>
+      <circle class="hit" cx="365" cy="120" r="4"/><circle class="hit" cx="515" cy="125" r="4"/><circle class="hit" cx="185" cy="95" r="4"/>
+      <circle class="hit" cx="60" cy="125" r="4"/><circle class="hit" cx="335" cy="170" r="4"/><circle class="hit" cx="430" cy="165" r="4"/>
+      <circle class="hit" cx="512" cy="282" r="4"/><circle class="hit" cx="175" cy="235" r="4"/><circle class="hit" cx="245" cy="95" r="4"/>
+      <circle class="hit" cx="270" cy="210" r="4"/>
+      <circle class="hit" cx="40" cy="418" r="5"/><text x="52" y="422" data-es="Zona con informes (tamaño: volumen)">Area reporting (size: volume)</text>
+    </svg>
+  </div>
+</div>
+<div class="stamp" data-es="Ficticio · material de ejercicio">Fictitious · exercise material</div>
+<script src="../../../injects/images/src/i18n.js"></script>
+</body>
+</html>
