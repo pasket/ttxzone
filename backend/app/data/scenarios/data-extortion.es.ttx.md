@@ -408,7 +408,7 @@ Cinco días después. El sitio de filtraciones incluye a {organization} entre la
             "code": "INJ-02-A2",
             "description": "Abre un registro de brecha e inicia la evaluación de notificación.",
             "responsible_role": "Delegado de protección de datos",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 25,
             "objective_codes": [
               "OBJ-02"
             ]

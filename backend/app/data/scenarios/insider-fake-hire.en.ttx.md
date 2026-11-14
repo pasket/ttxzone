@@ -507,7 +507,7 @@ A week later. An anonymous email attaches samples of the source code.
             "code": "INJ-04-A1",
             "description": "Assesses the sanctions exposure and whether to report it.",
             "responsible_role": "Legal",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 25,
             "objective_codes": [
               "OBJ-03"
             ]

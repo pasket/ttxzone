@@ -638,7 +638,7 @@ Five days later. Headquarters knows nothing about the deal.
             "code": "INJ-07-A1",
             "description": "Agrees what to tell staff, auditors and the board.",
             "responsible_role": "Chief Executive Officer",
-            "expected_within_minutes": 15,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-03"
             ]

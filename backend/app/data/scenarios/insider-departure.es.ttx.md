@@ -376,7 +376,7 @@ Viernes. El ingeniero se ha ido; un cliente llama por una oferta de la competenc
             "code": "INJ-02-A1",
             "description": "El responsable del incidente reúne a RR. HH., Legal y Seguridad antes de que nadie contacte con el empleado.",
             "responsible_role": "Responsable del incidente",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 25,
             "objective_codes": [
               "OBJ-03"
             ]

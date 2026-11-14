@@ -539,7 +539,7 @@ Dos semanas después. Los sistemas se están reconstruyendo; los proveedores peq
             "code": "INJ-05-A1",
             "description": "Envía la notificación con el impacto en la producción.",
             "responsible_role": "Responsable de cumplimiento",
-            "expected_within_minutes": 20,
+            "expected_within_minutes": 15,
             "objective_codes": [
               "OBJ-03"
             ]

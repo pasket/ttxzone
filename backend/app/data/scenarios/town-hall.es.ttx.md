@@ -466,7 +466,7 @@ Dos semanas después. Se publican los datos de los vecinos.
             "code": "INJ-03-A1",
             "description": "Decide si paga y deja constancia de los motivos.",
             "responsible_role": "Alcaldía",
-            "expected_within_minutes": 20,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-02"
             ]

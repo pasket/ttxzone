@@ -1348,7 +1348,7 @@ Día 28. Ningún sistema nuevo muestra comportamiento malicioso.
             "code": "INJ-15-A2",
             "description": "Acuerda con los distribuidores qué pasa en el lineal.",
             "responsible_role": "Cuentas de distribución",
-            "expected_within_minutes": 10,
+            "expected_within_minutes": 8,
             "objective_codes": [
               "OBJ-04"
             ]

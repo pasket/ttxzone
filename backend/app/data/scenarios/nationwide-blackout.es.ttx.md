@@ -399,7 +399,7 @@ Noche. Las autoridades dicen que no hay indicios de ciberataque; la electricidad
             "code": "INJ-03-A1",
             "description": "Indica a la plantilla si se va a casa, se queda o se resguarda, y cómo mantenerse en contacto.",
             "responsible_role": "Responsable de Recursos Humanos",
-            "expected_within_minutes": 15,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-03"
             ]

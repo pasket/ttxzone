@@ -399,7 +399,7 @@ Night. Officials say there is no evidence of a cyberattack; power returns region
             "code": "INJ-03-A1",
             "description": "Tells staff whether to go home, stay or shelter, and how to keep in touch.",
             "responsible_role": "Head of HR",
-            "expected_within_minutes": 15,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-03"
             ]

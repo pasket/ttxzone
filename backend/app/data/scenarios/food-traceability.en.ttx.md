@@ -1348,7 +1348,7 @@ Day 28. No new systems show malicious behaviour.
             "code": "INJ-15-A2",
             "description": "Agrees with retailers what happens on the shelf.",
             "responsible_role": "Retail accounts",
-            "expected_within_minutes": 10,
+            "expected_within_minutes": 8,
             "objective_codes": [
               "OBJ-04"
             ]

@@ -516,7 +516,7 @@ Viernes, 07:00. Veintidós horas desde el aviso.
             "code": "INJ-05-A1",
             "description": "El gestor del proveedor escala al contacto de seguridad del proveedor y se rotan las credenciales del agente.",
             "responsible_role": "Gestor del proveedor",
-            "expected_within_minutes": 15,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-01"
             ]

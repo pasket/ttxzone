@@ -376,7 +376,7 @@ Friday. The engineer has left; a customer calls about a competitor's offer.
             "code": "INJ-02-A1",
             "description": "The incident lead convenes HR, Legal and Security before anyone contacts the employee.",
             "responsible_role": "Incident lead",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 25,
             "objective_codes": [
               "OBJ-03"
             ]
