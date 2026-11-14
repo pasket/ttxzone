@@ -15,7 +15,7 @@ pyotp==2.10.0
 email-validator==2.3.0
 python-multipart==0.0.32
 Pillow==13.0.0
-dnspython==2.9.0
+dnspython==2.9.2
 # Encrypts the secrets stored in the database (core/crypto.py).
 cryptography==50.0.2
 # Email templates, rendered sandboxed (services/email_service.py).
