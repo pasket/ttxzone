@@ -46,3 +46,26 @@ curl -sI http://docs.ttxzone.com | grep -i '^location'               # redirects
 ```
 
 Also open the repository's **Security** tab and confirm "Report a vulnerability" is offered. A secret scanning alert means a secret reached the history: rotate it first, then deal with the alert.
+
+## Branch and tag rulesets
+
+Three rulesets (Settings → Rules → Rulesets) balance safety with the direct-to-`main` workflow:
+
+| Ruleset | Target | Rules | Bypass |
+|---|---|---|---|
+| `main: integrity` | default branch | no deletion, no force-push, linear history | nobody, admins included |
+| `main: review and CI` | default branch | pull request (0 approvals, threads resolved) + the five CI jobs green | Admin role |
+| `release tags` | `refs/tags/v*` | creation, update, deletion | Admin role |
+
+- The maintainer keeps pushing straight to `main` through the Admin bypass; GitHub notes each push as "bypassed rules". That push skips the required checks, so running the CI checks locally before committing is still the safeguard.
+- Anyone else (a future collaborator, a pull request from a fork) reaches `main` only through a pull request with the five CI jobs green. The required contexts are the jobs' `name:` in `ci.yml` — renaming a job means updating the ruleset, or every pull request waits for a check that never reports.
+- No approval is required: a sole maintainer can't approve their own pull request. Raise it to 1 when a second maintainer joins.
+- Release tags publish images, the GitHub Release and the documentation site, so only an admin creates them and once pushed they can't be moved or deleted by anyone else. `images.yml` creates the Release from the existing tag (`--verify-tag`); no workflow pushes tags or commits.
+- Merge commits are disabled (squash and rebase remain, matching the linear history) and merged branches are deleted.
+
+Creating the rulesets needs a token with admin rights on the repository (see "On the day"; with a fine-grained token in `GITHUB_TOKEN` lacking **Administration**, `env -u GITHUB_TOKEN gh …` falls back to the keyring login). Check:
+
+```bash
+gh api "repos/$REPO/rulesets" --jq '.[].name'   # main: integrity, main: review and CI, release tags
+gh api "repos/$REPO" --jq '[.allow_merge_commit, .delete_branch_on_merge]'   # [false, true]
+```
