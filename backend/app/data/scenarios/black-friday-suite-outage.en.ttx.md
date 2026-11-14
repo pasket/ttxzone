@@ -563,7 +563,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-01-A1",
             "description": "Declares a crisis and convenes the committee through the pre-agreed alternative channel, naming it",
             "responsible_role": "CEO",
-            "expected_within_minutes": 60,
+            "expected_within_minutes": 20,
             "objective_codes": [
               "OBJ-01"
             ]
@@ -572,7 +572,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-01-A2",
             "description": "Sends store managers the Black Friday instructions through a channel that does not depend on the suite",
             "responsible_role": "Stores",
-            "expected_within_minutes": 90,
+            "expected_within_minutes": 30,
             "objective_codes": [
               "OBJ-01"
             ]
@@ -628,7 +628,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-02-A1",
             "description": "Decides who monitors the provider's updates and how they reach the committee",
             "responsible_role": "CIO",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-05"
             ]
@@ -637,7 +637,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-02-A2",
             "description": "Prepares a first internal message: what fails, what still works, and the channel to use",
             "responsible_role": "Communications",
-            "expected_within_minutes": 60,
+            "expected_within_minutes": 20,
             "objective_codes": [
               "OBJ-05"
             ]
@@ -702,7 +702,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-03-A1",
             "description": "Distinguishes the self-generated storm from an attack using sources, per-user pattern and correlation with the provider's status before blocking",
             "responsible_role": "CISO",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-04"
             ]
@@ -711,7 +711,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-03-A2",
             "description": "Tunes WAF rate limiting instead of blocking store exits or the customer app",
             "responsible_role": "CIO",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-04"
             ]
@@ -720,7 +720,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-03-A3",
             "description": "Puts a recorded message on the service desk line explaining the outage",
             "responsible_role": "CIO",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-04"
             ]
@@ -729,7 +729,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-03-A4",
             "description": "Decides explicitly whether to relax MFA: for whom, until when, and who reverts it",
             "responsible_role": "COO",
-            "expected_within_minutes": 60,
+            "expected_within_minutes": 20,
             "objective_codes": [
               "OBJ-04"
             ]
@@ -787,7 +787,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-04-A1",
             "description": "Recovers the plan and the directory from a copy outside the platform, or records that none exists",
             "responsible_role": "COO",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-01"
             ]
@@ -796,7 +796,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-04-A2",
             "description": "Rebuilds the war room on a channel and dashboards that don't depend on the suite",
             "responsible_role": "CIO",
-            "expected_within_minutes": 60,
+            "expected_within_minutes": 20,
             "objective_codes": [
               "OBJ-01"
             ]
@@ -805,7 +805,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-04-A3",
             "description": "Appoints a single contact with the provider and locates the contract, the SLA and the service credits",
             "responsible_role": "CIO",
-            "expected_within_minutes": 60,
+            "expected_within_minutes": 20,
             "objective_codes": [
               "OBJ-03"
             ]
@@ -814,7 +814,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-04-A4",
             "description": "Starts keeping evidence of impact: times, affected services, lost orders, extra costs",
             "responsible_role": "Legal / DPO",
-            "expected_within_minutes": 60,
+            "expected_within_minutes": 20,
             "objective_codes": [
               "OBJ-03"
             ]
@@ -942,7 +942,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-06-A1",
             "description": "Commissions an hourly impact estimate and opens a cost log from the start of the outage",
             "responsible_role": "CFO",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-02"
             ]
@@ -951,7 +951,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-06-A2",
             "description": "Sets the figure that would trigger a change to the Black Friday plan",
             "responsible_role": "CEO",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-02"
             ]
@@ -960,7 +960,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-06-A3",
             "description": "Raises preventive notification to the cyber insurer within the policy deadline",
             "responsible_role": "CFO",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-03"
             ]
@@ -1072,7 +1072,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-08-A1",
             "description": "Decides that the organization stays on the contingency channels until the service is stable, and sets the criterion for returning",
             "responsible_role": "COO",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-01"
             ]
@@ -1081,7 +1081,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-08-A2",
             "description": "Tells stores and offices the rule through the contingency channel",
             "responsible_role": "Communications",
-            "expected_within_minutes": 60,
+            "expected_within_minutes": 20,
             "objective_codes": [
               "OBJ-01",
               "OBJ-05"
@@ -1142,7 +1142,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-09-A1",
             "description": "Writes down the economic criteria for the go/no-go and names who signs it",
             "responsible_role": "CEO",
-            "expected_within_minutes": 45,
+            "expected_within_minutes": 15,
             "objective_codes": [
               "OBJ-02"
             ]
@@ -1151,7 +1151,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-09-A2",
             "description": "Sets the delivery promise the web will show if the campaign launches",
             "responsible_role": "Commercial",
-            "expected_within_minutes": 45,
+            "expected_within_minutes": 15,
             "objective_codes": [
               "OBJ-02"
             ]
@@ -1204,7 +1204,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-10-A1",
             "description": "Enables an authorized channel with the BPO and the carrier and tells them what customer data may travel through it",
             "responsible_role": "Customer service",
-            "expected_within_minutes": 60,
+            "expected_within_minutes": 20,
             "objective_codes": [
               "OBJ-03",
               "OBJ-05"
@@ -1214,7 +1214,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-10-A2",
             "description": "Records the processing done outside authorized channels and decides whether it is a personal data breach",
             "responsible_role": "Legal / DPO",
-            "expected_within_minutes": 120,
+            "expected_within_minutes": 40,
             "objective_codes": [
               "OBJ-05"
             ]
@@ -1223,7 +1223,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-10-A3",
             "description": "Agrees with the carrier how pick-up notices will be sent tonight",
             "responsible_role": "Logistics",
-            "expected_within_minutes": 60,
+            "expected_within_minutes": 20,
             "objective_codes": [
               "OBJ-03"
             ]
@@ -1484,7 +1484,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-14-A1",
             "description": "Orders that open sessions are not closed and lists which critical systems have local emergency access",
             "responsible_role": "CIO",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-01"
             ]
@@ -1493,7 +1493,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-14-A2",
             "description": "Activates the physically held emergency accounts and logs every use",
             "responsible_role": "CISO",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-01"
             ]
@@ -1502,7 +1502,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-14-A3",
             "description": "Watches those accounts for unexpected use and schedules their rotation after recovery",
             "responsible_role": "CISO",
-            "expected_within_minutes": 60,
+            "expected_within_minutes": 20,
             "objective_codes": [
               "OBJ-01"
             ]
@@ -1555,7 +1555,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-15-A1",
             "description": "Decides which channels return to the suite and which stay on contingency",
             "responsible_role": "COO",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-01"
             ]
@@ -1564,7 +1564,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-15-A2",
             "description": "Tells staff and stores a single rule for which channel to use for what",
             "responsible_role": "Communications",
-            "expected_within_minutes": 60,
+            "expected_within_minutes": 20,
             "objective_codes": [
               "OBJ-01",
               "OBJ-05"
@@ -1574,7 +1574,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-15-A3",
             "description": "Repeats the fraud warning to all staff together with the channel rule",
             "responsible_role": "Communications",
-            "expected_within_minutes": 60,
+            "expected_within_minutes": 20,
             "objective_codes": [
               "OBJ-05"
             ]
@@ -1583,7 +1583,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-15-A4",
             "description": "Decides how online sales continue without stock alerts (caps, safety margin or delisting critical lines)",
             "responsible_role": "Commercial",
-            "expected_within_minutes": 60,
+            "expected_within_minutes": 20,
             "objective_codes": [
               "OBJ-02"
             ]
@@ -1592,7 +1592,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-15-A5",
             "description": "Decides the customer service reinforcement with its cost and timing, and has the CFO approve it",
             "responsible_role": "Customer service",
-            "expected_within_minutes": 60,
+            "expected_within_minutes": 20,
             "objective_codes": [
               "OBJ-02"
             ]
@@ -1643,7 +1643,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-16-A1",
             "description": "Authorizes overtime or extended shifts, with a cost cap",
             "responsible_role": "COO",
-            "expected_within_minutes": 60,
+            "expected_within_minutes": 20,
             "objective_codes": [
               "OBJ-02"
             ]
@@ -1652,7 +1652,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-16-A2",
             "description": "Decides how temporary staff will work without their own accounts, without sharing credentials",
             "responsible_role": "Stores",
-            "expected_within_minutes": 60,
+            "expected_within_minutes": 20,
             "objective_codes": [
               "OBJ-02"
             ]
@@ -1691,7 +1691,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
         "delivery_method": "document",
         "attachment_notes": [],
         "attack_techniques": [],
-        "facilitator_notes": "Close the vote confirming the option chosen, then show the result: the table reads its consequence. The next inject holds whichever option wins. Each decision adds to the meters: show their summary in the hot wash.\n\nRecord whether a reinforcement plan for the call center existed beforehand (contracted capacity, a prepared IVR message) or is being improvised. Expected action, recorded on INJ-15: Customer service decides the reinforcement with cost and timing and the CFO approves it, within 60.",
+        "facilitator_notes": "Close the vote confirming the option chosen, then show the result: the table reads its consequence. The next inject holds whichever option wins. Each decision adds to the meters: show their summary in the hot wash.\n\nRecord whether a reinforcement plan for the call center existed beforehand (contracted capacity, a prepared IVR message) or is being improvised. Expected action, recorded on INJ-15: Customer service decides the reinforcement with cost and timing and the CFO approves it, within 20.",
         "objective_codes": [],
         "expected_actions": [],
         "images": [],
@@ -1784,7 +1784,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-18-A1",
             "description": "Verifies the change through a second independent channel, using a contact already on file, or formally signs an exception",
             "responsible_role": "CFO",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-04"
             ]
@@ -1793,7 +1793,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-18-A2",
             "description": "Applies the freeze on bank detail changes agreed by the committee",
             "responsible_role": "CFO",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-04"
             ]
@@ -1861,7 +1861,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-19-A1",
             "description": "Revokes the account's sessions, resets its credentials and reviews what was accessed",
             "responsible_role": "CISO",
-            "expected_within_minutes": 60,
+            "expected_within_minutes": 20,
             "objective_codes": [
               "OBJ-04"
             ]
@@ -1870,7 +1870,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-19-A2",
             "description": "Sends the warning to all staff through the contingency channel",
             "responsible_role": "Communications",
-            "expected_within_minutes": 60,
+            "expected_within_minutes": 20,
             "objective_codes": [
               "OBJ-05"
             ]
@@ -1879,7 +1879,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-19-A3",
             "description": "Decides whether the access to staff data is a personal data breach (GDPR, 72 h)",
             "responsible_role": "Legal / DPO",
-            "expected_within_minutes": 90,
+            "expected_within_minutes": 30,
             "objective_codes": [
               "OBJ-05"
             ]
@@ -1998,7 +1998,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-21-A1",
             "description": "Appoints a single spokesperson and publishes the impact, the alternatives and the fraud warning, without speculating",
             "responsible_role": "Communications",
-            "expected_within_minutes": 45,
+            "expected_within_minutes": 15,
             "objective_codes": [
               "OBJ-05"
             ]
@@ -2007,7 +2007,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-21-A2",
             "description": "Answers the journalist with facts that are consistent with what investors will hear",
             "responsible_role": "Communications",
-            "expected_within_minutes": 45,
+            "expected_within_minutes": 15,
             "objective_codes": [
               "OBJ-05"
             ]
@@ -2135,7 +2135,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-23-A1",
             "description": "Requests the root cause report and the provider's contractual commitments",
             "responsible_role": "Legal / DPO",
-            "expected_within_minutes": 25,
+            "expected_within_minutes": 9,
             "objective_codes": [
               "OBJ-03"
             ]
@@ -2144,7 +2144,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
             "code": "INJ-23-A2",
             "description": "Closes the cost log up to now and keeps the evidence of impact",
             "responsible_role": "CFO",
-            "expected_within_minutes": 25,
+            "expected_within_minutes": 9,
             "objective_codes": [
               "OBJ-03"
             ]

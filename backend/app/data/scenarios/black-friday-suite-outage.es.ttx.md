@@ -563,7 +563,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-01-A1",
             "description": "Declara la crisis y convoca el comité por el canal alternativo preacordado, nombrándolo",
             "responsible_role": "Dirección general",
-            "expected_within_minutes": 60,
+            "expected_within_minutes": 20,
             "objective_codes": [
               "OBJ-01"
             ]
@@ -572,7 +572,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-01-A2",
             "description": "Hace llegar a los responsables de tienda las instrucciones del Black Friday por un canal que no depende de la suite",
             "responsible_role": "Tiendas",
-            "expected_within_minutes": 90,
+            "expected_within_minutes": 30,
             "objective_codes": [
               "OBJ-01"
             ]
@@ -628,7 +628,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-02-A1",
             "description": "Decide quién sigue las actualizaciones del proveedor y cómo llegan al comité",
             "responsible_role": "CIO",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-05"
             ]
@@ -637,7 +637,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-02-A2",
             "description": "Prepara un primer mensaje interno: qué falla, qué sigue funcionando y qué canal usar",
             "responsible_role": "Comunicación",
-            "expected_within_minutes": 60,
+            "expected_within_minutes": 20,
             "objective_codes": [
               "OBJ-05"
             ]
@@ -702,7 +702,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-03-A1",
             "description": "Distingue la tormenta autogenerada de un ataque por los orígenes, el patrón por usuario y la correlación con el estado del proveedor antes de bloquear",
             "responsible_role": "CISO",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-04"
             ]
@@ -711,7 +711,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-03-A2",
             "description": "Ajusta el rate limiting del WAF en lugar de bloquear las salidas de las tiendas o la app de clientes",
             "responsible_role": "CIO",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-04"
             ]
@@ -720,7 +720,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-03-A3",
             "description": "Pone un mensaje grabado en la línea del service desk explicando la caída",
             "responsible_role": "CIO",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-04"
             ]
@@ -729,7 +729,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-03-A4",
             "description": "Decide de forma explícita si se relaja el MFA: para quién, hasta cuándo y quién lo revierte",
             "responsible_role": "Operaciones",
-            "expected_within_minutes": 60,
+            "expected_within_minutes": 20,
             "objective_codes": [
               "OBJ-04"
             ]
@@ -787,7 +787,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-04-A1",
             "description": "Recupera el plan y el directorio de una copia fuera de la plataforma, o registra que no existe",
             "responsible_role": "Operaciones",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-01"
             ]
@@ -796,7 +796,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-04-A2",
             "description": "Rehace el war room en un canal y unos paneles que no dependen de la suite",
             "responsible_role": "CIO",
-            "expected_within_minutes": 60,
+            "expected_within_minutes": 20,
             "objective_codes": [
               "OBJ-01"
             ]
@@ -805,7 +805,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-04-A3",
             "description": "Designa un interlocutor único con el proveedor y localiza el contrato, el SLA y los créditos de servicio",
             "responsible_role": "CIO",
-            "expected_within_minutes": 60,
+            "expected_within_minutes": 20,
             "objective_codes": [
               "OBJ-03"
             ]
@@ -814,7 +814,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-04-A4",
             "description": "Empieza a guardar evidencias del impacto: tiempos, servicios afectados, pedidos perdidos, costes extra",
             "responsible_role": "Legal / DPO",
-            "expected_within_minutes": 60,
+            "expected_within_minutes": 20,
             "objective_codes": [
               "OBJ-03"
             ]
@@ -942,7 +942,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-06-A1",
             "description": "Encarga una estimación del impacto por hora y abre un registro de costes desde el inicio de la caída",
             "responsible_role": "Dirección Financiera",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-02"
             ]
@@ -951,7 +951,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-06-A2",
             "description": "Fija la cifra que obligaría a cambiar el plan del Black Friday",
             "responsible_role": "Dirección general",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-02"
             ]
@@ -960,7 +960,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-06-A3",
             "description": "Plantea la notificación preventiva a la aseguradora ciber dentro del plazo de la póliza",
             "responsible_role": "Dirección Financiera",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-03"
             ]
@@ -1072,7 +1072,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-08-A1",
             "description": "Decide que la organización sigue en los canales de contingencia hasta que el servicio sea estable y fija el criterio para volver",
             "responsible_role": "Operaciones",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-01"
             ]
@@ -1081,7 +1081,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-08-A2",
             "description": "Comunica la regla a tiendas y oficinas por el canal de contingencia",
             "responsible_role": "Comunicación",
-            "expected_within_minutes": 60,
+            "expected_within_minutes": 20,
             "objective_codes": [
               "OBJ-01",
               "OBJ-05"
@@ -1142,7 +1142,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-09-A1",
             "description": "Pone por escrito los criterios económicos del go/no-go y nombra a quien lo firma",
             "responsible_role": "Dirección general",
-            "expected_within_minutes": 45,
+            "expected_within_minutes": 15,
             "objective_codes": [
               "OBJ-02"
             ]
@@ -1151,7 +1151,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-09-A2",
             "description": "Fija la promesa de entrega que mostrará la web si se lanza la campaña",
             "responsible_role": "Comercial",
-            "expected_within_minutes": 45,
+            "expected_within_minutes": 15,
             "objective_codes": [
               "OBJ-02"
             ]
@@ -1204,7 +1204,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-10-A1",
             "description": "Habilita un canal autorizado con el BPO y el transportista y les dice qué datos de clientes pueden circular",
             "responsible_role": "Atención al cliente",
-            "expected_within_minutes": 60,
+            "expected_within_minutes": 20,
             "objective_codes": [
               "OBJ-03",
               "OBJ-05"
@@ -1214,7 +1214,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-10-A2",
             "description": "Registra los tratamientos hechos fuera de los canales autorizados y decide si son una brecha de datos personales",
             "responsible_role": "Legal / DPO",
-            "expected_within_minutes": 120,
+            "expected_within_minutes": 40,
             "objective_codes": [
               "OBJ-05"
             ]
@@ -1223,7 +1223,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-10-A3",
             "description": "Acuerda con el transportista cómo se enviarán esta noche los avisos de recogida",
             "responsible_role": "Logística",
-            "expected_within_minutes": 60,
+            "expected_within_minutes": 20,
             "objective_codes": [
               "OBJ-03"
             ]
@@ -1484,7 +1484,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-14-A1",
             "description": "Ordena no cerrar las sesiones abiertas y enumera qué sistemas críticos tienen un acceso de emergencia local",
             "responsible_role": "CIO",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-01"
             ]
@@ -1493,7 +1493,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-14-A2",
             "description": "Activa las cuentas de emergencia en custodia física y registra cada uso",
             "responsible_role": "CISO",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-01"
             ]
@@ -1502,7 +1502,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-14-A3",
             "description": "Vigila esas cuentas por si hay usos inesperados y programa su rotación tras la recuperación",
             "responsible_role": "CISO",
-            "expected_within_minutes": 60,
+            "expected_within_minutes": 20,
             "objective_codes": [
               "OBJ-01"
             ]
@@ -1555,7 +1555,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-15-A1",
             "description": "Decide qué canales vuelven a la suite y cuáles siguen en contingencia",
             "responsible_role": "Operaciones",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-01"
             ]
@@ -1564,7 +1564,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-15-A2",
             "description": "Comunica a plantilla y tiendas una única regla de qué canal usar para qué",
             "responsible_role": "Comunicación",
-            "expected_within_minutes": 60,
+            "expected_within_minutes": 20,
             "objective_codes": [
               "OBJ-01",
               "OBJ-05"
@@ -1574,7 +1574,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-15-A3",
             "description": "Repite el aviso de fraude a toda la plantilla junto con la regla de canales",
             "responsible_role": "Comunicación",
-            "expected_within_minutes": 60,
+            "expected_within_minutes": 20,
             "objective_codes": [
               "OBJ-05"
             ]
@@ -1583,7 +1583,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-15-A4",
             "description": "Decide cómo sigue la venta online sin alertas de stock (topes, margen de seguridad o retirada de referencias críticas)",
             "responsible_role": "Comercial",
-            "expected_within_minutes": 60,
+            "expected_within_minutes": 20,
             "objective_codes": [
               "OBJ-02"
             ]
@@ -1592,7 +1592,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-15-A5",
             "description": "Decide el refuerzo de la atención al cliente con su coste y plazo, y lo hace aprobar por el CFO",
             "responsible_role": "Atención al cliente",
-            "expected_within_minutes": 60,
+            "expected_within_minutes": 20,
             "objective_codes": [
               "OBJ-02"
             ]
@@ -1643,7 +1643,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-16-A1",
             "description": "Autoriza horas extra o turnos ampliados, con un tope de coste",
             "responsible_role": "Operaciones",
-            "expected_within_minutes": 60,
+            "expected_within_minutes": 20,
             "objective_codes": [
               "OBJ-02"
             ]
@@ -1652,7 +1652,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-16-A2",
             "description": "Decide cómo trabajarán los refuerzos sin cuenta propia, sin compartir credenciales",
             "responsible_role": "Tiendas",
-            "expected_within_minutes": 60,
+            "expected_within_minutes": 20,
             "objective_codes": [
               "OBJ-02"
             ]
@@ -1691,7 +1691,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
         "delivery_method": "document",
         "attachment_notes": [],
         "attack_techniques": [],
-        "facilitator_notes": "Cierra la votación confirmando la opción elegida y muestra el resultado: la mesa lee su consecuencia. El siguiente inject funciona gane la opción que gane. Cada decisión suma en los medidores: muestra su resumen en el hot wash.\n\nRegistra si existía de antemano un plan de refuerzo del call center (capacidad contratada, un mensaje de IVR preparado) o se improvisa. Acción esperada, registrada en el INJ-15: Atención al cliente decide el refuerzo con coste y plazo y el CFO lo aprueba, en 60.",
+        "facilitator_notes": "Cierra la votación confirmando la opción elegida y muestra el resultado: la mesa lee su consecuencia. El siguiente inject funciona gane la opción que gane. Cada decisión suma en los medidores: muestra su resumen en el hot wash.\n\nRegistra si existía de antemano un plan de refuerzo del call center (capacidad contratada, un mensaje de IVR preparado) o se improvisa. Acción esperada, registrada en el INJ-15: Atención al cliente decide el refuerzo con coste y plazo y el CFO lo aprueba, en 20.",
         "objective_codes": [],
         "expected_actions": [],
         "images": [],
@@ -1784,7 +1784,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-18-A1",
             "description": "Verifica el cambio por una segunda vía independiente, con un contacto que ya consta, o firma una excepción formal",
             "responsible_role": "Dirección Financiera",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-04"
             ]
@@ -1793,7 +1793,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-18-A2",
             "description": "Aplica la congelación de cambios bancarios acordada por el comité",
             "responsible_role": "Dirección Financiera",
-            "expected_within_minutes": 30,
+            "expected_within_minutes": 10,
             "objective_codes": [
               "OBJ-04"
             ]
@@ -1861,7 +1861,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-19-A1",
             "description": "Revoca las sesiones de la cuenta, restablece sus credenciales y revisa a qué se accedió",
             "responsible_role": "CISO",
-            "expected_within_minutes": 60,
+            "expected_within_minutes": 20,
             "objective_codes": [
               "OBJ-04"
             ]
@@ -1870,7 +1870,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-19-A2",
             "description": "Lanza el aviso a toda la plantilla por el canal de contingencia",
             "responsible_role": "Comunicación",
-            "expected_within_minutes": 60,
+            "expected_within_minutes": 20,
             "objective_codes": [
               "OBJ-05"
             ]
@@ -1879,7 +1879,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-19-A3",
             "description": "Decide si el acceso a los datos del personal es una brecha de datos personales (RGPD, 72 h)",
             "responsible_role": "Legal / DPO",
-            "expected_within_minutes": 90,
+            "expected_within_minutes": 30,
             "objective_codes": [
               "OBJ-05"
             ]
@@ -1998,7 +1998,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-21-A1",
             "description": "Designa un portavoz único y publica el impacto, las alternativas y el aviso de fraude, sin especular",
             "responsible_role": "Comunicación",
-            "expected_within_minutes": 45,
+            "expected_within_minutes": 15,
             "objective_codes": [
               "OBJ-05"
             ]
@@ -2007,7 +2007,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-21-A2",
             "description": "Responde al periodista con hechos coherentes con lo que oirán los inversores",
             "responsible_role": "Comunicación",
-            "expected_within_minutes": 45,
+            "expected_within_minutes": 15,
             "objective_codes": [
               "OBJ-05"
             ]
@@ -2135,7 +2135,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-23-A1",
             "description": "Pide al proveedor el informe de causa raíz y sus compromisos contractuales",
             "responsible_role": "Legal / DPO",
-            "expected_within_minutes": 25,
+            "expected_within_minutes": 9,
             "objective_codes": [
               "OBJ-03"
             ]
@@ -2144,7 +2144,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
             "code": "INJ-23-A2",
             "description": "Cierra hasta hoy el registro de costes y conserva las evidencias de impacto",
             "responsible_role": "Dirección Financiera",
-            "expected_within_minutes": 25,
+            "expected_within_minutes": 9,
             "objective_codes": [
               "OBJ-03"
             ]
