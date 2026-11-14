@@ -2,6 +2,18 @@
 
 Notable changes to TTX-Zone, by release. Versions follow [Semantic Versioning](https://semver.org/). Before upgrading a deployment, read the release's entry and [Upgrade](https://docs.ttxzone.com/instance/upgrade/).
 
+## [0.2.0] - 2026-11-15
+
+### Added
+- **Library**: the TTX-Zone scenario "Black Friday eve: operations continuity when a critical third party goes down" (`black-friday-suite-outage`, English and Spanish). A business continuity exercise for a crisis committee chaired by the business: a retailer loses its productivity suite to a public provider outage on the eve of a sales peak. Polls that move four impact meters, three contingent injects (one fired by the Controller), simulated artifacts and six illustrations; the suggested placeholder values are in its first inject's facilitator notes.
+- **AI assistant**: knowledge base case `KB-CAS-011`, a productivity suite provider's global outage, which the scenario plays.
+
+### Fixed
+- **Library**: in thirteen TTX-Zone scenarios, an expected action whose deadline ran past the end of its phase now ends with it, so they open with no MSEL warning.
+
+### Security
+- `dnspython` 2.9.2 (CVE-2026-128089: excessive memory and CPU use).
+
 ## [0.1.0] - 2026-11-09
 
 First release.
