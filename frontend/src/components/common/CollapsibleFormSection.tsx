@@ -39,6 +39,7 @@ export function CollapsibleFormSection({
   triggerTooltip,
   children,
   sectionTitle,
+  sectionLevel = 1,
   sectionDescription,
   triggerRef,
 }: {
@@ -53,6 +54,8 @@ export function CollapsibleFormSection({
   triggerTooltip?: string
   children: ReactNode
   sectionTitle?: ReactNode
+  /** 2 when the page already has its title (a tab under `PageTabs`). */
+  sectionLevel?: 1 | 2
   /** A short plain-language explanation under the title (what this group
    * of people is for), shown whether or not the form is open. */
   sectionDescription?: ReactNode
@@ -66,6 +69,7 @@ export function CollapsibleFormSection({
     return (
       <div className="space-y-4">
         <SectionHeader
+          level={sectionLevel}
           title={sectionTitle}
           action={
             !open && (

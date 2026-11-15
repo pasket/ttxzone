@@ -102,6 +102,9 @@ describe('CreatorInvitationsSection', () => {
     render(<CreatorInvitationsSection />)
 
     await screen.findByText('existing-plaintext-token')
+    // One page title: the tab's own heading sits under it.
+    expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1)
+    expect(screen.getByRole('heading', { level: 2, name: 'Invitations' })).toBeInTheDocument()
     const row = within(screen.getAllByRole('row')[1])
     expect(row.getByText('Planner')).toBeInTheDocument()
     expect(row.getByText('IT team, Q1 drill')).toBeInTheDocument()

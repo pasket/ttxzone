@@ -252,6 +252,10 @@ describe('CreatorExerciseSection', () => {
 
     expect(screen.getByRole('heading', { name: 'Update exercise' })).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Edit exercise' })).not.toBeInTheDocument()
+    // A way out that isn't the form's Cancel, above and below the panels.
+    const back = screen.getAllByRole('link', { name: 'Back to the profile' })
+    expect(back).toHaveLength(2)
+    expect(back[0]).toHaveAttribute('href', '/creator/ttx-1/exercise')
   })
 
   it('redirects away from an exercise the user does not manage', () => {

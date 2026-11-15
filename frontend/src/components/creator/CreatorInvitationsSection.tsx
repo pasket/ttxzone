@@ -304,6 +304,7 @@ export function CreatorInvitationsSection() {
         triggerLabel={t('creator.invitations.createButtonShort')}
         triggerTooltip={t('creator.invitations.createTitle')}
         sectionTitle={t('creator.invitations.listTitle')}
+        sectionLevel={2}
         triggerRef={createTriggerRef}
       >
         <form

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link, Navigate, useParams } from 'react-router-dom'
+import { Link, Navigate, useLocation, useParams } from 'react-router-dom'
 
 import { useApiResource } from '../../hooks/useApiResource'
 import { useAuth } from '../../hooks/useAuth'
@@ -185,6 +185,7 @@ export function CreatorExerciseSection() {
   const [proposed, setProposed] = useState<Partial<ReturnType<typeof exerciseRow>> | null>(null)
 
   const { editing, openEditing, closeEditing } = useEditModeParam()
+  const { pathname } = useLocation()
   // The exercise's own tags, shared by the form's checkboxes and the
   // planning team members' tag picker. Only fetched while editing.
   const tagsResource = useApiResource<TTXTagListResponse>(
@@ -208,9 +209,20 @@ export function CreatorExerciseSection() {
   const title = t('creator.exercise.title')
 
   if (editing) {
+    // A link, so leaving with the form half-filled asks first like any
+    // other; the page's path without `?edit=1` is the profile.
+    const backToProfile = (
+      <Link to={pathname} replace className={`self-start text-sm ${linkAccent}`}>
+        <span aria-hidden="true">← </span>
+        {t('creator.exercise.backToProfile')}
+      </Link>
+    )
     return (
       <div className="space-y-6">
-        <SectionHeader title={title} />
+        <div className="flex flex-col gap-2">
+          {backToProfile}
+          <SectionHeader title={title} />
+        </div>
         <ExerciseIdentityBand exercise={exercise} />
         <ExerciseForm
           exercise={exercise}
@@ -238,8 +250,12 @@ export function CreatorExerciseSection() {
           }}
         />
         {/* Below the form's commit point on purpose: these apply at once. */}
+        <p className="text-sm text-paper-ink/70 dark:text-fg-muted">
+          {t('creator.exercise.appliesAtOnce')}
+        </p>
         <ExerciseTeamPanel ttx={exercise} availableTags={availableTags ?? []} />
         <ExerciseRoomsPanel ttx={exercise} />
+        <div className="flex">{backToProfile}</div>
       </div>
     )
   }

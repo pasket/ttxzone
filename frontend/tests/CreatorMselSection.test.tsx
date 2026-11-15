@@ -2306,7 +2306,7 @@ describe('the storyline strip', () => {
     stub()
     renderPage('/creator/ttx-1/msel?tab=phases')
     const region = await strip()
-    expect(region).toHaveClass('sticky', 'top-0')
+    expect(region).toHaveClass('md:sticky', 'md:top-0')
     expect(within(region).getByRole('button', { name: 'Unpin' })).toHaveAttribute(
       'aria-pressed',
       'true',
@@ -2314,15 +2314,15 @@ describe('the storyline strip', () => {
     // Maximized it lies over the page instead; restored, it's pinned again.
     fireEvent.click(within(region).getByRole('button', { name: 'Maximize' }))
     expect(region).toHaveClass('fixed')
-    expect(region).not.toHaveClass('sticky')
+    expect(region).not.toHaveClass('md:sticky')
     fireEvent.click(within(region).getByRole('button', { name: 'Restore' }))
-    expect(region).toHaveClass('sticky')
+    expect(region).toHaveClass('md:sticky')
 
     fireEvent.click(within(region).getByRole('button', { name: 'Unpin' }))
-    expect(region).not.toHaveClass('sticky')
+    expect(region).not.toHaveClass('md:sticky')
     expect(localStorage.getItem('ttx_msel_storyline_pinned')).toBe('unpinned')
     fireEvent.click(within(region).getByRole('button', { name: 'Pin to the top' }))
-    expect(region).toHaveClass('sticky')
+    expect(region).toHaveClass('md:sticky')
     expect(localStorage.getItem('ttx_msel_storyline_pinned')).toBe('pinned')
     localStorage.removeItem('ttx_msel_storyline_pinned')
   })

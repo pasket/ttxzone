@@ -1006,6 +1006,8 @@
     },
     "exercise": {
       "title": "Exercise profile",
+      "backToProfile": "Back to the profile",
+      "appliesAtOnce": "The team and the rooms below apply as you change them: they don’t wait for the form above to be saved.",
       "createdLabel": "Created",
       "noTags": "No tags",
       "edit": "Edit exercise",

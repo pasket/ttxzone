@@ -1006,6 +1006,8 @@
     },
     "exercise": {
       "title": "Perfil del ejercicio",
+      "backToProfile": "Volver al perfil",
+      "appliesAtOnce": "El equipo y las salas de abajo se aplican al cambiarlos: no esperan a que guardes el formulario de arriba.",
       "createdLabel": "Creado",
       "noTags": "Sin etiquetas",
       "edit": "Editar ejercicio",

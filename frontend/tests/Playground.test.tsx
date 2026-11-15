@@ -1159,7 +1159,7 @@ describe('Control storyline', () => {
       'aria-expanded',
       'false',
     )
-    expect(region).not.toHaveClass('sticky')
+    expect(region).not.toHaveClass('md:sticky')
     expect(within(region).getByRole('button', { name: 'Hide the legend' })).toHaveAttribute(
       'aria-pressed',
       'true',
@@ -1171,7 +1171,7 @@ describe('Control storyline', () => {
     fireEvent.click(within(region).getByRole('button', { name: 'Show' }))
     expect(localStorage.getItem('ttx_control_storyline_strip')).toBe('open')
     fireEvent.click(within(region).getByRole('button', { name: 'Pin to the top' }))
-    expect(region).toHaveClass('sticky')
+    expect(region).toHaveClass('md:sticky')
     expect(localStorage.getItem('ttx_control_storyline_pinned')).toBe('pinned')
 
     expect(within(region).getByText('Delivered')).toBeInTheDocument()

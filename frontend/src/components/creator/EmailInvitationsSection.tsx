@@ -216,6 +216,7 @@ export function EmailInvitationsSection({ ttxId }: { ttxId: string }) {
         triggerLabel={t('creator.emailInvitations.sendButtonShort')}
         triggerTooltip={t('creator.emailInvitations.sendTitle')}
         sectionTitle={t('creator.emailInvitations.listTitle')}
+        sectionLevel={2}
         triggerRef={triggerRef}
       >
         <form

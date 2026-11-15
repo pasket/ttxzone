@@ -7,6 +7,9 @@ import { MaximizeIcon } from '../../common/MaximizeIcon'
 import { InjectKindMark } from './InjectKindMark'
 
 export const mutedClass = 'text-xs text-paper-ink/70 dark:text-fg-muted'
+/** From Tailwind's `md`: below it the frame is never pinned (see `md:sticky`). */
+const PIN_MEDIA = '(min-width: 48rem)'
+
 export const iconButtonClass =
   'flex h-8 w-8 cursor-pointer items-center justify-center rounded-sm text-paper-ink/70 hover:bg-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-fg dark:text-fg-muted'
 /** A header toggle that's on (legend, session time, pinned): the accent,
@@ -139,6 +142,13 @@ export function StorylineFrame({
     const root = document.documentElement
     const previousPadding = root.style.scrollPaddingTop
     const measure = () => {
+      // Pinning is for a screen with room for it: on a phone the frame
+      // scrolls away with the page, so nothing is offset.
+      if (typeof window.matchMedia === 'function' && !window.matchMedia(PIN_MEDIA).matches) {
+        root.style.removeProperty(offsetVar)
+        root.style.scrollPaddingTop = previousPadding
+        return
+      }
       const height = `${section.offsetHeight}px`
       root.style.setProperty(offsetVar, height)
       root.style.scrollPaddingTop = height
@@ -179,7 +189,7 @@ export function StorylineFrame({
           maximized
             ? 'fixed inset-4 z-40 overflow-y-auto overscroll-contain shadow-lg sm:inset-8'
             : pinned
-              ? 'sticky top-0 z-30'
+              ? 'md:sticky md:top-0 md:z-30'
               : ''
         }`}
       >
@@ -255,7 +265,7 @@ export function StorylineFrame({
                 aria-pressed={pinned}
                 aria-label={pinned ? t('creator.msel.strip.unpin') : t('creator.msel.strip.pin')}
                 title={pinned ? t('creator.msel.strip.unpin') : t('creator.msel.strip.pin')}
-                className={`${iconButtonClass} ${pinned ? toggleOnClass : ''}`}
+                className={`${iconButtonClass} max-md:hidden ${pinned ? toggleOnClass : ''}`}
               >
                 <PinIcon pinned={pinned} />
               </button>
