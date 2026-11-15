@@ -33,6 +33,10 @@ Too many failed sign-ins lock the attempt for 15 minutes. Sessions already open 
 
 The versions of the legal documents you've accepted, leaving the active organization, and deleting your account.
 
+When the deployment publishes new terms of service or a new privacy policy while you're signed in, a line under the header asks you to accept them, with a **Review and accept** link here. Each document shows **Pending acceptance**: open it to read it, then use **Accept version N**. You can accept each one separately, but most screens stay unavailable until you've accepted both.
+
+Deleting your account is in a danger zone at the bottom: it removes your access forever and can't be undone.
+
 ## If you've lost your second factor
 
 Use a backup code. Without one, ask an instance administrator to reset it.

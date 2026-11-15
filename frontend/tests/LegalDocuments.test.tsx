@@ -7,6 +7,9 @@ import { FormattedText } from '../src/components/common/FormattedText'
 import { AccountLegalPanel } from '../src/components/account/AccountLegalPanel'
 import { RegisterCard } from '../src/components/auth/RegisterCard'
 import { AuthProvider } from '../src/lib/AuthContext'
+import { LegalPendingBanner } from '../src/components/common/LegalPendingBanner'
+import { LEGAL_ACCEPTANCE_REQUIRED_EVENT, apiFetch } from '../src/lib/api'
+import { render as renderWithToasts } from './testUtils'
 
 function json(body: unknown, status = 200) {
   return { ok: status >= 200 && status < 300, status, json: async () => body } as Response
@@ -398,12 +401,35 @@ describe('Platform -> Legal documents', () => {
   })
 })
 
+const ME = {
+  id: 'u1',
+  email: 'pat@acme.com',
+  full_name: 'Pat',
+  totp_enabled: true,
+  legal_acceptance_pending: [],
+  is_program_manager: false,
+  is_planner: false,
+  is_instance_admin: false,
+  is_last_instance_admin: false,
+}
+
+function renderPanel() {
+  return renderWithToasts(
+    <MemoryRouter>
+      <AuthProvider>
+        <AccountLegalPanel />
+      </AuthProvider>
+    </MemoryRouter>,
+  )
+}
+
 describe('Preferences -> Privacy', () => {
   it('lists the versions the account accepted, and when', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn(async (input: RequestInfo | URL) => {
         const url = String(input)
+        if (url.endsWith('/auth/me')) return json(ME)
         if (url.endsWith('/legal')) return json(PUBLISHED)
         if (url.includes('/auth/legal/acceptances')) {
           return json({
@@ -416,11 +442,7 @@ describe('Preferences -> Privacy', () => {
         return json({ items: [] })
       }),
     )
-    render(
-      <MemoryRouter>
-        <AccountLegalPanel />
-      </MemoryRouter>,
-    )
+    renderPanel()
 
     const table = await screen.findByRole('table', { name: 'Versions you accepted' })
     const rows = within(table).getAllByRole('row')
@@ -430,17 +452,129 @@ describe('Preferences -> Privacy', () => {
     // The current version of each published document, to read.
     expect(screen.getByRole('button', { name: 'Privacy policy' })).toBeInTheDocument()
     expect(screen.getByText('Current version: 1')).toBeInTheDocument()
+    // Nothing pending: nothing to accept.
+    expect(screen.queryByRole('button', { name: /^Accept version/ })).not.toBeInTheDocument()
+  })
+
+  it('accepts each pending document on its own', async () => {
+    let pending = [
+      { kind: 'terms', version: 3, updated: true },
+      { kind: 'privacy', version: 1, updated: false },
+    ]
+    const accepted: unknown[] = []
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+        const url = String(input)
+        if (url.endsWith('/auth/legal/accept')) {
+          const body = JSON.parse(String(init?.body))
+          accepted.push(body)
+          pending = pending.filter((document) => document.kind !== body.acceptances[0].kind)
+          return { ok: true, status: 204, json: async () => undefined } as Response
+        }
+        if (url.endsWith('/auth/me')) return json({ ...ME, legal_acceptance_pending: pending })
+        if (url.endsWith('/legal')) return json(PUBLISHED)
+        return json({ items: [] })
+      }),
+    )
+    renderPanel()
+
+    expect(await screen.findAllByText('Pending acceptance')).toHaveLength(2)
+    fireEvent.click(screen.getByRole('button', { name: 'Accept version 3' }))
+    await waitFor(() => expect(screen.getAllByText('Pending acceptance')).toHaveLength(1))
+    expect(accepted).toEqual([{ acceptances: [{ kind: 'terms', version: 3 }] }])
+    expect(screen.queryByRole('button', { name: 'Accept version 3' })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Accept version 1' })).toBeInTheDocument()
   })
 
   it('shows nothing while nothing is published or accepted', async () => {
-    const fetchMock = vi.fn(async () => json({ items: [] }))
+    const fetchMock = vi.fn(async (input: RequestInfo | URL) =>
+      String(input).endsWith('/auth/me') ? json(ME) : json({ items: [] }),
+    )
     vi.stubGlobal('fetch', fetchMock)
-    const { container } = render(
-      <MemoryRouter>
-        <AccountLegalPanel />
+    renderPanel()
+    await waitFor(() => {
+      const urls = fetchMock.mock.calls.map(([input]) => String(input))
+      expect(urls.some((url) => url.endsWith('/legal'))).toBe(true)
+      expect(urls.some((url) => url.includes('/auth/legal/acceptances'))).toBe(true)
+    })
+    expect(screen.queryByText('Legal documents')).not.toBeInTheDocument()
+  })
+})
+
+describe('LegalPendingBanner', () => {
+  function stubMe(pending: unknown[]) {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (input: RequestInfo | URL) => {
+        const url = String(input)
+        if (url.endsWith('/auth/me')) return json({ ...ME, legal_acceptance_pending: pending })
+        return json({ items: [] })
+      }),
+    )
+  }
+
+  function renderBanner(path = '/admin') {
+    return renderWithToasts(
+      <MemoryRouter initialEntries={[path]}>
+        <AuthProvider>
+          <LegalPendingBanner />
+        </AuthProvider>
       </MemoryRouter>,
     )
-    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(2))
-    expect(container).toBeEmptyDOMElement()
+  }
+
+  it('says what to accept and links to where it is accepted', async () => {
+    stubMe([{ kind: 'privacy', version: 1, updated: false }])
+    renderBanner()
+    expect(await screen.findByText(/Accept the privacy policy to continue\./)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Review and accept' })).toHaveAttribute(
+      'href',
+      '/account/settings/privacy',
+    )
+  })
+
+  it('names both documents when both are pending, and hides on Privacy itself', async () => {
+    const both = [
+      { kind: 'terms', version: 1, updated: false },
+      { kind: 'privacy', version: 1, updated: false },
+    ]
+    stubMe(both)
+    const { unmount } = renderBanner()
+    expect(
+      await screen.findByText(/Accept the terms of service and the privacy policy to continue\./),
+    ).toBeInTheDocument()
+    unmount()
+
+    stubMe(both)
+    renderBanner('/account/settings/privacy')
+    await waitFor(() => expect(fetch).toHaveBeenCalled())
+    expect(screen.queryByRole('link', { name: 'Review and accept' })).not.toBeInTheDocument()
+  })
+})
+
+describe('apiFetch', () => {
+  it('tells the app when a request is refused for legal documents to accept', async () => {
+    const heard = vi.fn()
+    window.addEventListener(LEGAL_ACCEPTANCE_REQUIRED_EVENT, heard)
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () =>
+        json(
+          {
+            success: false,
+            error: {
+              code: 'LEGAL_ACCEPTANCE_REQUIRED',
+              message: 'Accept the terms of service and the privacy policy to continue.',
+              ttx_id: null,
+            },
+          },
+          403,
+        ),
+      ),
+    )
+    await expect(apiFetch('/organizations/mine')).rejects.toThrow()
+    expect(heard).toHaveBeenCalledTimes(1)
+    window.removeEventListener(LEGAL_ACCEPTANCE_REQUIRED_EVENT, heard)
   })
 })

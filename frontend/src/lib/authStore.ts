@@ -54,6 +54,9 @@ export interface AuthContextValue extends AuthSnapshot {
    * user has no access to. */
   followTtx: (ttxId: string) => void
   refresh: () => Promise<void>
+  /** Reads the account again (`/auth/me`) and updates only `user`, never
+   * `status`: what's pending to accept, without sending anyone elsewhere. */
+  syncUser: () => Promise<void>
   logout: () => Promise<void>
   /** End the session because it timed out (session policy): signs out on
    * the server, then goes anonymous the way an expired session does --

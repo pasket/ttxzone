@@ -1,9 +1,10 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
 
 import { AccountSettingsPrivacy } from '../src/components/account/AccountSettingsPrivacy'
 import { AuthProvider } from '../src/lib/AuthContext'
+import { render } from './testUtils'
 
 const mockNavigate = vi.fn()
 vi.mock('react-router-dom', async () => {
@@ -81,6 +82,15 @@ describe('AccountSettingsPrivacy', () => {
 
     await typePhrase()
     expect(screen.queryByText(/only instance administrator/)).toBeNull()
+  })
+
+  it('marks deleting the account as a danger zone', async () => {
+    stubApi(json(204, undefined))
+    renderPrivacy()
+
+    const panel = await screen.findByRole('region', { name: 'Delete account' })
+    expect(panel).toHaveTextContent('Danger zone')
+    expect(panel).toHaveTextContent('removes your access forever')
   })
 
   it('keeps submit disabled until the exact confirmation phrase is typed', async () => {

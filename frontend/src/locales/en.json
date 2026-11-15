@@ -3870,12 +3870,13 @@
       },
       "deleteAccount": {
         "title": "Delete account",
-        "description": "This deactivates your account immediately -- you won't be able to log in again. This cannot be undone from here.",
+        "description": "Deleting your account removes your access forever: you can’t sign in again, and it can’t be undone.",
         "confirmLabel": "Type “{{phrase}}” to confirm",
         "submit": "Delete my account",
         "leadTitle": "Hand over the Lead Planner role",
         "leadDescription": "You lead these exercises. Choose who takes over in each before your account is deleted.",
-        "lastInstanceAdmin": "You're this deployment's only instance administrator. Once your account is deleted, nobody can manage Platform (the tenancy rule, creating organizations) until someone with access to the server grants another account."
+        "lastInstanceAdmin": "You're this deployment's only instance administrator. Once your account is deleted, nobody can manage Platform (the tenancy rule, creating organizations) until someone with access to the server grants another account.",
+        "dangerZone": "Danger zone"
       },
       "avatar": {
         "title": "Avatar",
@@ -5496,7 +5497,7 @@
   "legal": {
     "account": {
       "title": "Legal documents",
-      "description": "The versions of this deployment’s terms of service and privacy policy you accepted, and when.",
+      "description": "The versions of this deployment’s terms of service and privacy policy you accepted, and when. Read the current ones and accept them here.",
       "current": "Current version: {{version}}",
       "noneAccepted": "You haven’t accepted any version yet.",
       "history": "Versions you accepted",
@@ -5504,7 +5505,10 @@
         "document": "Document",
         "version": "Version",
         "accepted": "Accepted on"
-      }
+      },
+      "pending": "Pending acceptance",
+      "accept": "Accept version {{version}}",
+      "accepted": "{{title}} accepted"
     },
     "titles": {
       "terms": "Terms of service",
@@ -5529,6 +5533,12 @@
       "accept": "Accept and continue",
       "decline": "If you don’t accept them, you can stop using the service and delete your account.",
       "deleteAccount": "Delete my account"
+    },
+    "banner": {
+      "both": "Accept the terms of service and the privacy policy to continue.",
+      "terms": "Accept the terms of service to continue.",
+      "privacy": "Accept the privacy policy to continue.",
+      "review": "Review and accept"
     }
   },
   "artifacts": {

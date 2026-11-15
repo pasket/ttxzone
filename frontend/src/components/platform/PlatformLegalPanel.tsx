@@ -7,7 +7,6 @@ import { useToast } from '../../hooks/useToast'
 import { useUnsavedChangesWarning } from '../../hooks/useUnsavedChangesWarning'
 import { API_BASE, apiFetch, ApiError } from '../../lib/api'
 import {
-  badgeNeutral,
   btnPrimary,
   btnSecondary,
   inputBase,
@@ -195,8 +194,10 @@ function LegalDocumentEditor({
     <Panel
       title={title}
       meta={
-        <span className="flex flex-wrap items-center gap-2">
-          <span className={badgeNeutral}>
+        // Plain text, not a chip: a fixed-height pill can't hold the date
+        // once the column is narrow, and the line wraps outside it.
+        <span className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+          <span className="font-medium text-paper-ink/80 tabular-nums dark:text-fg">
             {latest
               ? t('platform.legal.publishedVersion', {
                   version: latest.version,

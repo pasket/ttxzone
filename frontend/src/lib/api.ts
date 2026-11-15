@@ -16,6 +16,12 @@ export const SESSION_EXPIRED_EVENT = 'ttx:session-expired'
  * (INVALID_CREDENTIALS is also a 401, on login and re-auth forms). */
 const SESSION_ERROR_CODES = new Set(['NOT_AUTHENTICATED', 'TOKEN_EXPIRED', 'TOKEN_INVALID'])
 
+/** Fired on `window` when a request is refused because the account has
+ * legal documents to accept -- published while it was signed in, so the
+ * status read at sign-in didn't know. AuthProvider reads the account
+ * again and `LegalPendingBanner` links to where they're accepted. */
+export const LEGAL_ACCEPTANCE_REQUIRED_EVENT = 'ttx:legal-acceptance-required'
+
 export interface ApiErrorBody {
   code: string
   message: string
@@ -124,6 +130,9 @@ function failure(status: number, data: { error?: ApiErrorBody } | null): ApiErro
   )
   if (error.status === 401 && SESSION_ERROR_CODES.has(error.code)) {
     window.dispatchEvent(new Event(SESSION_EXPIRED_EVENT))
+  }
+  if (error.status === 403 && error.code === 'LEGAL_ACCEPTANCE_REQUIRED') {
+    window.dispatchEvent(new Event(LEGAL_ACCEPTANCE_REQUIRED_EVENT))
   }
   return error
 }

@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { Outlet, useLocation } from 'react-router-dom'
 
+import { LegalPendingBanner } from '../common/LegalPendingBanner'
 import { RouteBoundary } from '../common/RouteBoundary'
 
 import { useApiResource } from '../../hooks/useApiResource'
@@ -46,6 +47,7 @@ export function AccountSettingsLayout() {
         {t('common.skipToContent')}
       </a>
       <Header />
+      <LegalPendingBanner />
       <div className="flex flex-1 flex-col lg:flex-row">
         <SectionNav
           collapsed={nav.collapsed}

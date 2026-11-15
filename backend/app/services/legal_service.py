@@ -192,9 +192,21 @@ def record_signup_acceptance(
 
 
 def accept_pending(session: Session, user: User, accepted: list[LegalAcceptanceItem]) -> None:
+    """Some or all of the documents this account has pending, each at its
+    current version (Preferences -> Privacy accepts them one at a time; the
+    acceptance screen, all at once). What's left stays pending."""
     pending = {version.kind: version for version in pending_acceptances(session, user)}
-    _check_accepted(pending, accepted)
-    _record(session, user, [(kind, version.version) for kind, version in pending.items()], "")
+    given = {item.kind for item in accepted}
+    if not given <= pending.keys():
+        raise AppException(
+            "LEGAL_ACCEPTANCE_REQUIRED",
+            "That document has nothing to accept.",
+            400,
+            log_level=logging.WARNING,
+        )
+    chosen = {kind: pending[kind] for kind in given}
+    _check_accepted(chosen, accepted)
+    _record(session, user, [(kind, version.version) for kind, version in chosen.items()], "")
 
 
 def _record(

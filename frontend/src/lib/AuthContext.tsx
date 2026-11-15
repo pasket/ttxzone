@@ -1,11 +1,15 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 
-import { apiFetch, SESSION_EXPIRED_EVENT } from './api'
+import { apiFetch, LEGAL_ACCEPTANCE_REQUIRED_EVENT, SESSION_EXPIRED_EVENT } from './api'
 import { AuthContext, loadAuthSnapshot, markSessionExpired } from './authStore'
 import { forgetWorkspace } from './lastWorkspace'
 import { resolveDefaultContext } from './moduleAccess'
-import { broadcastSessionEnded, subscribeSessionEnded } from './sessionActivity'
+import {
+  BACKGROUND_REQUEST_HEADER,
+  broadcastSessionEnded,
+  subscribeSessionEnded,
+} from './sessionActivity'
 import type { ContextRole, DefaultContext } from './moduleAccess'
 import type { AuthMeResponse, OrganizationSummary, TTXRead } from './types'
 import type { AuthSnapshot, AuthStatus } from './authStore'
@@ -187,6 +191,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => window.removeEventListener(SESSION_EXPIRED_EVENT, handleSessionExpired)
   }, [dropExpiredSession])
 
+  const syncUser = useCallback(async () => {
+    const me = await apiFetch<AuthMeResponse>('/auth/me', {
+      headers: { [BACKGROUND_REQUEST_HEADER]: '1' },
+    })
+    setUser(me)
+  }, [])
+
+  // Legal documents published while this account was signed in: requests
+  // start being refused. Read the account again so the banner knows what's
+  // pending -- without changing the status, which would pull the person
+  // off the page (and an instance administrator out of Platform between
+  // publishing one document and the other).
+  useEffect(() => {
+    let checking = false
+    async function handleLegalAcceptanceRequired() {
+      if (checking || statusRef.current === 'loading' || statusRef.current === 'anonymous') return
+      checking = true
+      try {
+        await syncUser()
+      } catch {
+        // The next refused request tries again.
+      } finally {
+        checking = false
+      }
+    }
+    window.addEventListener(LEGAL_ACCEPTANCE_REQUIRED_EVENT, handleLegalAcceptanceRequired)
+    return () =>
+      window.removeEventListener(LEGAL_ACCEPTANCE_REQUIRED_EVENT, handleLegalAcceptanceRequired)
+  }, [syncUser])
+
   // Another tab signed out (or its session timed out): this one follows.
   useEffect(
     () =>
@@ -220,6 +254,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setExecutionRole,
         followTtx,
         refresh,
+        syncUser,
         logout,
         expireSession,
       }}

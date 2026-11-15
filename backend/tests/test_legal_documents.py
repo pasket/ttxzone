@@ -324,3 +324,36 @@ def test_each_account_sees_what_it_accepted_and_the_operator_exports_the_record(
     db_session.commit()
     stale = admin.get("/api/v1/instance/legal/acceptances.csv")
     assert stale.json()["error"]["code"] == "REAUTHENTICATION_REQUIRED"
+
+
+def test_each_pending_document_can_be_accepted_on_its_own(
+    client: TestClient, db_session: Session
+) -> None:
+    admin = _admin_client(db_session)
+    assert _register(client, "a@acme.com").status_code == 201
+    _publish_both(admin)
+
+    def accept(kind: str, version: int):
+        return client.post(
+            "/api/v1/auth/legal/accept",
+            json={"acceptances": [{"kind": kind, "version": version}]},
+            headers=_csrf(client),
+        )
+
+    assert accept("terms", 2).status_code == 409
+    assert accept("terms", 1).status_code == 204
+    assert client.get("/api/v1/auth/me").json()["legal_acceptance_pending"] == [
+        {"kind": "privacy", "version": 1, "updated": False}
+    ]
+    held = client.get("/api/v1/organizations/mine")
+    assert held.status_code == 403
+    assert held.json()["error"]["code"] == "LEGAL_ACCEPTANCE_REQUIRED"
+
+    # Terms are no longer pending: nothing to accept there.
+    again = accept("terms", 1)
+    assert again.status_code == 400
+    assert again.json()["error"]["code"] == "LEGAL_ACCEPTANCE_REQUIRED"
+
+    assert accept("privacy", 1).status_code == 204
+    assert client.get("/api/v1/auth/me").json()["legal_acceptance_pending"] == []
+    assert client.get("/api/v1/organizations/mine").status_code == 200

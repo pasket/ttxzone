@@ -7,6 +7,7 @@ import { useNavCollapsed } from '../../hooks/useNavCollapsed'
 import { PLATFORM_SECTIONS, type SectionDef } from '../../lib/navSections'
 
 import { EmailReconfirmBanner } from '../common/EmailReconfirmBanner'
+import { LegalPendingBanner } from '../common/LegalPendingBanner'
 import { Header } from './Header'
 import { MobileSectionNav, SectionNav } from './PrimaryNav'
 
@@ -35,6 +36,7 @@ export function PlatformLayout() {
       </a>
       <Header />
       <EmailReconfirmBanner />
+      <LegalPendingBanner />
       <div className="flex flex-1 flex-col lg:flex-row">
         <SectionNav
           collapsed={nav.collapsed}

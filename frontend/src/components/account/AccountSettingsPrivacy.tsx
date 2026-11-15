@@ -66,7 +66,14 @@ export function AccountSettingsPrivacy() {
       {/* Leaving hands over the leads there: what's left to hand over changes. */}
       <LeaveOrganization onLeft={led.refetch} />
       <form onSubmit={handleSubmit}>
+        {/* A danger zone: deleting the account removes its access for good. */}
         <Panel
+          className="border-danger/60!"
+          eyebrow={
+            <span className="text-xs font-semibold tracking-wide text-danger-fg uppercase">
+              {t('account.settings.deleteAccount.dangerZone')}
+            </span>
+          }
           title={t('account.settings.deleteAccount.title')}
           description={
             <HelpText

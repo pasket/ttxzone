@@ -3870,12 +3870,13 @@
       },
       "deleteAccount": {
         "title": "Eliminar cuenta",
-        "description": "Esto desactiva tu cuenta inmediatamente -- no podrás volver a iniciar sesión. Esta acción no se puede deshacer desde aquí.",
+        "description": "Eliminar tu cuenta te quita el acceso para siempre: no podrás volver a iniciar sesión y no se puede deshacer.",
         "confirmLabel": "Escribe «{{phrase}}» para confirmar",
         "submit": "Eliminar mi cuenta",
         "leadTitle": "Traspasar el rol de Lead Planner",
         "leadDescription": "Lideras estos ejercicios. Elige quién te sustituye en cada uno antes de borrar tu cuenta.",
-        "lastInstanceAdmin": "Eres el único administrador de instancia de este despliegue. Cuando borres tu cuenta, nadie podrá gestionar Plataforma (la regla de organizaciones, crear organizaciones) hasta que alguien con acceso al servidor conceda el rol a otra cuenta."
+        "lastInstanceAdmin": "Eres el único administrador de instancia de este despliegue. Cuando borres tu cuenta, nadie podrá gestionar Plataforma (la regla de organizaciones, crear organizaciones) hasta que alguien con acceso al servidor conceda el rol a otra cuenta.",
+        "dangerZone": "Zona de peligro"
       },
       "avatar": {
         "title": "Avatar",
@@ -5496,7 +5497,7 @@
   "legal": {
     "account": {
       "title": "Documentos legales",
-      "description": "Las versiones de los términos del servicio y la política de privacidad de este despliegue que aceptaste, y cuándo.",
+      "description": "Las versiones de los términos del servicio y la política de privacidad de este despliegue que aceptaste, y cuándo. Lee las actuales y acéptalas aquí.",
       "current": "Versión actual: {{version}}",
       "noneAccepted": "Aún no has aceptado ninguna versión.",
       "history": "Versiones que aceptaste",
@@ -5504,7 +5505,10 @@
         "document": "Documento",
         "version": "Versión",
         "accepted": "Aceptada el"
-      }
+      },
+      "pending": "Pendiente de aceptar",
+      "accept": "Aceptar la versión {{version}}",
+      "accepted": "{{title}}: aceptado"
     },
     "titles": {
       "terms": "Términos del servicio",
@@ -5529,6 +5533,12 @@
       "accept": "Aceptar y continuar",
       "decline": "Si no los aceptas, puedes dejar de usar el servicio y borrar tu cuenta.",
       "deleteAccount": "Borrar mi cuenta"
+    },
+    "banner": {
+      "both": "Acepta los términos del servicio y la política de privacidad para continuar.",
+      "terms": "Acepta los términos del servicio para continuar.",
+      "privacy": "Acepta la política de privacidad para continuar.",
+      "review": "Revisar y aceptar"
     }
   },
   "artifacts": {

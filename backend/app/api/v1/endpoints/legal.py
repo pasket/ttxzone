@@ -79,7 +79,7 @@ def accept_endpoint(
     user: User = Depends(get_current_user),
     session: Session = Depends(get_session),
 ) -> None:
-    """Record the caller's acceptance of the current legal documents."""
+    """Record the caller's acceptance of some or all of its pending legal documents."""
     legal_service.accept_pending(session, user, payload.acceptances)
 
 

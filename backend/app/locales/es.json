@@ -29,6 +29,7 @@
     "Authentication required.": "Tienes que iniciar sesión.",
     "Choose a new password to continue.": "Elige una contraseña nueva para continuar.",
     "Accept the terms of service and the privacy policy to continue.": "Acepta los términos del servicio y la política de privacidad para continuar.",
+    "That document has nothing to accept.": "Ese documento no tiene nada que aceptar.",
     "Confirm it's you to continue.": "Confirma que eres tú para continuar.",
     "CSRF token missing or invalid.": "Falta el token CSRF o no es válido.",
     "Program Manager access required for this organization.": "Necesitas ser Responsable del Programa de Ejercicios de esta organización.",
