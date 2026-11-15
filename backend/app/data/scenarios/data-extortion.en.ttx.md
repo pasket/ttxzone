@@ -205,7 +205,7 @@ Five days later. The leak site lists {organization} among the campaign's victims
     "summary": "The vendor of the file-transfer platform publishes an emergency advisory: a vulnerability is being exploited worldwide. {organization} patches, but logs on the server only go back seven days. Three weeks later the extortion email arrives.",
     "attack_version": "19.2",
     "duration_minutes": 170,
-    "time_compression": 60,
+    "time_compression": 1,
     "phases": [
       {
         "code": "PH-01",

@@ -193,7 +193,7 @@ Friday, 15:00. The shop is up behind mitigation; complaints keep coming.
     "summary": "On the eve of the biggest sales weekend of the year, a hacktivist channel lists your brand among its targets. The next morning traffic to the shop explodes.",
     "attack_version": "19.2",
     "duration_minutes": 160,
-    "time_compression": 60,
+    "time_compression": 1,
     "phases": [
       {
         "code": "PH-01",
@@ -218,7 +218,7 @@ Friday, 15:00. The shop is up behind mitigation; complaints keep coming.
         "name": "Under fire",
         "start_offset": 40,
         "end_offset": 110,
-        "incident_jump_minutes": 840,
+        "incident_jump_minutes": 820,
         "situation_update": "Friday, 08:20. Traffic is forty times normal and climbing.",
         "key_questions": [
           "Which mitigation costs us least in sales?"
@@ -244,7 +244,7 @@ Friday, 15:00. The shop is up behind mitigation; complaints keep coming.
         "name": "Extortion",
         "start_offset": 110,
         "end_offset": 160,
-        "incident_jump_minutes": 300,
+        "incident_jump_minutes": 330,
         "situation_update": "Friday, 15:00. The shop is up behind mitigation; complaints keep coming.",
         "key_questions": [
           "What do we tell customers and staff now?"

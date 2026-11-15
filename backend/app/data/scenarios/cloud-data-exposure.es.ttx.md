@@ -197,7 +197,7 @@ Miércoles, 11:00. Veinticuatro horas desde el aviso.
     "summary": "Un mensaje de un investigador independiente dice que un contenedor llamado exports-prod muestra ficheros de clientes a cualquiera en internet. Llegó por el contacto de seguridad de la web.",
     "attack_version": "19.2",
     "duration_minutes": 170,
-    "time_compression": 60,
+    "time_compression": 1,
     "phases": [
       {
         "code": "PH-01",
@@ -222,7 +222,7 @@ Miércoles, 11:00. Veinticuatro horas desde el aviso.
         "name": "¿Lo descargó alguien?",
         "start_offset": 50,
         "end_offset": 110,
-        "incident_jump_minutes": 240,
+        "incident_jump_minutes": 190,
         "situation_update": "Martes, 15:00. Ya están los registros; el delegado de protección de datos se ha unido.",
         "key_questions": [
           "¿Corre el reloj de 72 horas y desde cuándo?"
@@ -240,7 +240,7 @@ Miércoles, 11:00. Veinticuatro horas desde el aviso.
         "name": "Hacerlo público",
         "start_offset": 110,
         "end_offset": 170,
-        "incident_jump_minutes": 1200,
+        "incident_jump_minutes": 1140,
         "situation_update": "Miércoles, 11:00. Veinticuatro horas desde el aviso.",
         "key_questions": [
           "¿Qué podemos decir que no cambie mañana?"

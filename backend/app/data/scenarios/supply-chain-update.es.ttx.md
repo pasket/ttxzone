@@ -198,7 +198,7 @@ Viernes, 07:00. Veintidós horas desde el aviso.
     "summary": "Un proveedor de inteligencia avisa de que la versión 4.2.1 de un agente de monitorización muy extendido, distribuida automáticamente la semana pasada, contiene una puerta trasera. Tus servidores se actualizaron según lo previsto.",
     "attack_version": "19.2",
     "duration_minutes": 170,
-    "time_compression": 60,
+    "time_compression": 1,
     "phases": [
       {
         "code": "PH-01",
@@ -223,7 +223,7 @@ Viernes, 07:00. Veintidós horas desde el aviso.
         "name": "El proveedor y el corte",
         "start_offset": 50,
         "end_offset": 110,
-        "incident_jump_minutes": 360,
+        "incident_jump_minutes": 300,
         "situation_update": "Jueves, 15:00. El proveedor confirma la brecha pero aún no tiene corrección.",
         "key_questions": [
           "¿Qué pedimos al proveedor, por escrito?"
@@ -241,7 +241,7 @@ Viernes, 07:00. Veintidós horas desde el aviso.
         "name": "Notificación",
         "start_offset": 110,
         "end_offset": 170,
-        "incident_jump_minutes": 1080,
+        "incident_jump_minutes": 900,
         "situation_update": "Viernes, 07:00. Veintidós horas desde el aviso.",
         "key_questions": [
           "¿Es significativo para nosotros y quién firma la alerta temprana?"

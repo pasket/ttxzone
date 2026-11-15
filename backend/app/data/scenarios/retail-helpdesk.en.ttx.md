@@ -207,7 +207,7 @@ Ten days later. The investigation confirms customer data was taken.
     "summary": "On the Saturday of a long weekend, stores of {organization} report that contactless payments fail and click-and-collect bookings are lost. The IT duty manager thinks it is a glitch.",
     "attack_version": "19.2",
     "duration_minutes": 170,
-    "time_compression": 60,
+    "time_compression": 1,
     "phases": [
       {
         "code": "PH-01",

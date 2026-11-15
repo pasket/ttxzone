@@ -199,7 +199,7 @@ Night. Officials say there is no evidence of a cyberattack; power returns region
     "summary": "A weekday, 12:33. Power drops everywhere at once. The data centre of {organization} switches to generators; offices go dark, phones still work. On social media the word 'cyberattack' appears within minutes.",
     "attack_version": "19.2",
     "duration_minutes": 170,
-    "time_compression": 60,
+    "time_compression": 1,
     "phases": [
       {
         "code": "PH-01",
@@ -232,7 +232,7 @@ Night. Officials say there is no evidence of a cyberattack; power returns region
         "name": "Batteries run out",
         "start_offset": 50,
         "end_offset": 110,
-        "incident_jump_minutes": 180,
+        "incident_jump_minutes": 127,
         "situation_update": "15:30. Mobile networks are failing; fuel is the bottleneck.",
         "key_questions": [
           "What do we keep alive on the fuel we have?"

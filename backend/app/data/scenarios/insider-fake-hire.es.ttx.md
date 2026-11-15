@@ -199,7 +199,7 @@ Una semana después. Un correo anónimo adjunta muestras del código fuente.
     "summary": "Siete meses después de empezar un contrato remoto, un desarrollador de {organization} trabaja bien pero casi nunca enciende la cámara. Entonces el SOC detecta una herramienta de acceso remoto en su portátil.",
     "attack_version": "19.2",
     "duration_minutes": 170,
-    "time_compression": 60,
+    "time_compression": 1,
     "phases": [
       {
         "code": "PH-01",

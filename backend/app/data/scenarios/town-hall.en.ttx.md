@@ -203,7 +203,7 @@ Two weeks later. Residents' records are published.
     "summary": "Monday, 08:00. Staff of {organization} find a ransom note on their screens. The website and the electronic office are down; the IT team has three people.",
     "attack_version": "19.2",
     "duration_minutes": 170,
-    "time_compression": 60,
+    "time_compression": 1,
     "phases": [
       {
         "code": "PH-01",

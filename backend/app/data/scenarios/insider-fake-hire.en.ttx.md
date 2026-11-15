@@ -199,7 +199,7 @@ A week later. An anonymous email attaches samples of the source code.
     "summary": "Seven months into a remote contract, a developer of {organization} does good work but rarely turns on the camera. Then the SOC notices a remote-access tool on his laptop.",
     "attack_version": "19.2",
     "duration_minutes": 170,
-    "time_compression": 60,
+    "time_compression": 1,
     "phases": [
       {
         "code": "PH-01",

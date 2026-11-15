@@ -193,7 +193,7 @@ Viernes, 15:00. La tienda funciona tras la mitigación; siguen llegando quejas.
     "summary": "En vísperas del mayor fin de semana de ventas del año, un canal hacktivista incluye tu marca entre sus objetivos. A la mañana siguiente el tráfico de la tienda se dispara.",
     "attack_version": "19.2",
     "duration_minutes": 160,
-    "time_compression": 60,
+    "time_compression": 1,
     "phases": [
       {
         "code": "PH-01",
@@ -218,7 +218,7 @@ Viernes, 15:00. La tienda funciona tras la mitigación; siguen llegando quejas.
         "name": "Bajo ataque",
         "start_offset": 40,
         "end_offset": 110,
-        "incident_jump_minutes": 840,
+        "incident_jump_minutes": 820,
         "situation_update": "Viernes, 08:20. El tráfico es cuarenta veces el normal y sigue subiendo.",
         "key_questions": [
           "¿Qué mitigación nos cuesta menos ventas?"
@@ -244,7 +244,7 @@ Viernes, 15:00. La tienda funciona tras la mitigación; siguen llegando quejas.
         "name": "Extorsión",
         "start_offset": 110,
         "end_offset": 160,
-        "incident_jump_minutes": 300,
+        "incident_jump_minutes": 330,
         "situation_update": "Viernes, 15:00. La tienda funciona tras la mitigación; siguen llegando quejas.",
         "key_questions": [
           "¿Qué decimos ahora a clientes y plantilla?"

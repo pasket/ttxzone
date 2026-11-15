@@ -192,7 +192,7 @@ Thursday, 14:00. The supplier's IT has found something.
     "summary": "A message in an existing email thread with the packaging supplier announces new bank details for its next invoice, due this week.",
     "attack_version": "19.2",
     "duration_minutes": 160,
-    "time_compression": 60,
+    "time_compression": 1,
     "phases": [
       {
         "code": "PH-01",
@@ -217,7 +217,7 @@ Thursday, 14:00. The supplier's IT has found something.
         "name": "The money is gone",
         "start_offset": 50,
         "end_offset": 110,
-        "incident_jump_minutes": 4320,
+        "incident_jump_minutes": 4330,
         "situation_update": "Thursday, 10:00. The real supplier asks why it hasn't been paid.",
         "key_questions": [
           "Who calls the bank, and how fast?"

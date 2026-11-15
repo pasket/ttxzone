@@ -213,7 +213,7 @@ Two weeks later. Systems are being rebuilt; small suppliers are struggling.
     "summary": "At the 06:00 shift change, {organization} detects encryption on the servers that plan production and logistics. Plant systems share the same network.",
     "attack_version": "19.2",
     "duration_minutes": 170,
-    "time_compression": 60,
+    "time_compression": 1,
     "phases": [
       {
         "code": "PH-01",

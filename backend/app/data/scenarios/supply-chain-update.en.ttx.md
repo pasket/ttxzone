@@ -198,7 +198,7 @@ Friday, 07:00. Twenty-two hours since the advisory.
     "summary": "A threat intelligence provider warns that version 4.2.1 of a widely used monitoring agent, pushed automatically last week, contains a backdoor. Your servers updated on schedule.",
     "attack_version": "19.2",
     "duration_minutes": 170,
-    "time_compression": 60,
+    "time_compression": 1,
     "phases": [
       {
         "code": "PH-01",
@@ -223,7 +223,7 @@ Friday, 07:00. Twenty-two hours since the advisory.
         "name": "The vendor and the cut",
         "start_offset": 50,
         "end_offset": 110,
-        "incident_jump_minutes": 360,
+        "incident_jump_minutes": 300,
         "situation_update": "Thursday, 15:00. The vendor confirms the breach but has no fix yet.",
         "key_questions": [
           "What do we ask the vendor for, in writing?"
@@ -241,7 +241,7 @@ Friday, 07:00. Twenty-two hours since the advisory.
         "name": "Reporting",
         "start_offset": 110,
         "end_offset": 170,
-        "incident_jump_minutes": 1080,
+        "incident_jump_minutes": 900,
         "situation_update": "Friday, 07:00. Twenty-two hours since the advisory.",
         "key_questions": [
           "Is this significant for us, and who signs the early warning?"

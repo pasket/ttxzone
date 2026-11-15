@@ -205,7 +205,7 @@ Cinco días después. El sitio de filtraciones incluye a {organization} entre la
     "summary": "El fabricante de la plataforma de transferencia de ficheros publica un aviso urgente: una vulnerabilidad se está explotando en todo el mundo. {organization} parchea, pero los registros del servidor solo cubren siete días. Tres semanas después llega el correo de extorsión.",
     "attack_version": "19.2",
     "duration_minutes": 170,
-    "time_compression": 60,
+    "time_compression": 1,
     "phases": [
       {
         "code": "PH-01",

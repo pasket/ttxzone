@@ -203,7 +203,7 @@ Dos semanas después. Se publican los datos de los vecinos.
     "summary": "Lunes, 08:00. La plantilla de {organization} encuentra una nota de rescate en sus pantallas. La web y la sede electrónica están caídas; el equipo de TI son tres personas.",
     "attack_version": "19.2",
     "duration_minutes": 170,
-    "time_compression": 60,
+    "time_compression": 1,
     "phases": [
       {
         "code": "PH-01",

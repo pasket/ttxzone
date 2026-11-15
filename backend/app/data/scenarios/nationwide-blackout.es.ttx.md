@@ -199,7 +199,7 @@ Noche. Las autoridades dicen que no hay indicios de ciberataque; la electricidad
     "summary": "Un día laborable, 12:33. La electricidad cae en todas partes a la vez. El centro de datos de {organization} pasa a generadores; las oficinas se quedan a oscuras y los teléfonos aún funcionan. En las redes sociales aparece la palabra «ciberataque» en cuestión de minutos.",
     "attack_version": "19.2",
     "duration_minutes": 170,
-    "time_compression": 60,
+    "time_compression": 1,
     "phases": [
       {
         "code": "PH-01",
@@ -232,7 +232,7 @@ Noche. Las autoridades dicen que no hay indicios de ciberataque; la electricidad
         "name": "Se agotan las baterías",
         "start_offset": 50,
         "end_offset": 110,
-        "incident_jump_minutes": 180,
+        "incident_jump_minutes": 127,
         "situation_update": "15:30. Las redes móviles fallan; el combustible es el cuello de botella.",
         "key_questions": [
           "¿Qué mantenemos vivo con el combustible que hay?"

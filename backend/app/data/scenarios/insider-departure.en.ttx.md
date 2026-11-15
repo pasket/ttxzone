@@ -192,7 +192,7 @@ Friday. The engineer has left; a customer calls about a competitor's offer.
     "summary": "A data-loss alert flags an engineer syncing gigabytes to personal cloud storage late at night. HR confirms he resigned last week to join a competitor and leaves on Friday.",
     "attack_version": "19.2",
     "duration_minutes": 170,
-    "time_compression": 60,
+    "time_compression": 1,
     "phases": [
       {
         "code": "PH-01",
@@ -221,7 +221,7 @@ Friday. The engineer has left; a customer calls about a competitor's offer.
         "name": "Quiet investigation",
         "start_offset": 50,
         "end_offset": 110,
-        "incident_jump_minutes": 1440,
+        "incident_jump_minutes": 1480,
         "situation_update": "Wednesday, 10:00. The forensic provider has looked at the laptop's activity remotely.",
         "key_questions": [
           "What must be preserved before access is cut?"

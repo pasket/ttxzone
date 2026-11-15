@@ -198,7 +198,7 @@ Wednesday. A journalist asks for comment on the leaked data.
     "summary": "Early on a Monday the service desk receives calls about files that won't open. Within hours the main business applications are encrypted, a ransom note appears and the attackers claim to hold customer data.",
     "attack_version": "19.2",
     "duration_minutes": 170,
-    "time_compression": 60,
+    "time_compression": 1,
     "phases": [
       {
         "code": "PH-01",
@@ -222,7 +222,7 @@ Wednesday. A journalist asks for comment on the leaked data.
         "name": "Containment and notification",
         "start_offset": 50,
         "end_offset": 110,
-        "incident_jump_minutes": 240,
+        "incident_jump_minutes": 270,
         "situation_update": "Monday, 13:00. Backups are partly affected; the attackers publish a sample.",
         "key_questions": [
           "Is an early warning due, and who sends it?"

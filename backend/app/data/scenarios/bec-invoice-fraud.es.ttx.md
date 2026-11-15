@@ -192,7 +192,7 @@ Jueves, 14:00. La informática del proveedor ha encontrado algo.
     "summary": "Un mensaje en un hilo de correo ya existente con el proveedor de embalajes anuncia nuevos datos bancarios para su próxima factura, que vence esta semana.",
     "attack_version": "19.2",
     "duration_minutes": 160,
-    "time_compression": 60,
+    "time_compression": 1,
     "phases": [
       {
         "code": "PH-01",
@@ -217,7 +217,7 @@ Jueves, 14:00. La informática del proveedor ha encontrado algo.
         "name": "El dinero ya no está",
         "start_offset": 50,
         "end_offset": 110,
-        "incident_jump_minutes": 4320,
+        "incident_jump_minutes": 4330,
         "situation_update": "Jueves, 10:00. El proveedor real pregunta por qué no ha cobrado.",
         "key_questions": [
           "¿Quién llama al banco y con qué rapidez?"

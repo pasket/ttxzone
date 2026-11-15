@@ -198,7 +198,7 @@ Miércoles. Un periodista pide declaraciones sobre los datos filtrados.
     "summary": "Un lunes a primera hora el centro de soporte recibe llamadas por archivos que no se abren. En pocas horas las aplicaciones principales están cifradas, aparece una nota de rescate y los atacantes afirman tener datos de clientes.",
     "attack_version": "19.2",
     "duration_minutes": 170,
-    "time_compression": 60,
+    "time_compression": 1,
     "phases": [
       {
         "code": "PH-01",
@@ -222,7 +222,7 @@ Miércoles. Un periodista pide declaraciones sobre los datos filtrados.
         "name": "Contención y notificación",
         "start_offset": 50,
         "end_offset": 110,
-        "incident_jump_minutes": 240,
+        "incident_jump_minutes": 270,
         "situation_update": "Lunes, 13:00. Las copias de seguridad están parcialmente afectadas; los atacantes publican una muestra.",
         "key_questions": [
           "¿Procede una alerta temprana y quién la envía?"

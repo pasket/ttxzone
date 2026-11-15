@@ -192,7 +192,7 @@ Viernes. El ingeniero se ha ido; un cliente llama por una oferta de la competenc
     "summary": "Una alerta de fuga de datos señala a un ingeniero que sincroniza gigabytes con su nube personal de madrugada. RR. HH. confirma que dimitió la semana pasada para irse a la competencia y se va el viernes.",
     "attack_version": "19.2",
     "duration_minutes": 170,
-    "time_compression": 60,
+    "time_compression": 1,
     "phases": [
       {
         "code": "PH-01",
@@ -221,7 +221,7 @@ Viernes. El ingeniero se ha ido; un cliente llama por una oferta de la competenc
         "name": "Investigación discreta",
         "start_offset": 50,
         "end_offset": 110,
-        "incident_jump_minutes": 1440,
+        "incident_jump_minutes": 1480,
         "situation_update": "Miércoles, 10:00. El proveedor forense ha revisado en remoto la actividad del portátil.",
         "key_questions": [
           "¿Qué hay que preservar antes de retirar el acceso?"

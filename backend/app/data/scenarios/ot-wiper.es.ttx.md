@@ -206,7 +206,7 @@ Día 2. Los equipos de campo confirman equipos destruidos; llaman las autoridade
     "summary": "De madrugada, dos días antes de un festivo, la sala de control de {organization} empieza a perder el contacto con sus instalaciones remotas de generación una tras otra. Horas después, la protección de endpoints de la planta de calor detecta un borrado masivo de ficheros. Nadie pide nada: el ataque es puramente destructivo.",
     "attack_version": "19.2",
     "duration_minutes": 170,
-    "time_compression": 60,
+    "time_compression": 1,
     "phases": [
       {
         "code": "PH-01",
@@ -235,7 +235,7 @@ Día 2. Los equipos de campo confirman equipos destruidos; llaman las autoridade
         "name": "Borrado en la planta",
         "start_offset": 50,
         "end_offset": 110,
-        "incident_jump_minutes": 90,
+        "incident_jump_minutes": 40,
         "situation_update": "07:00. La protección de endpoints de la planta de calor detecta un borrado masivo en puestos de operación y servidores.",
         "key_questions": [
           "¿Podemos mantener el calor y la electricidad sin nuestros sistemas?"

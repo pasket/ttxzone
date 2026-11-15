@@ -206,7 +206,7 @@ Day 2. Field crews confirm destroyed devices; the authorities and the press are 
     "summary": "Before dawn, two days before a holiday, the control room of {organization} starts losing contact with its remote generation sites one after another. A few hours later, endpoint protection at the heat plant reports mass file deletion. Nobody has asked for anything: the attack is purely destructive.",
     "attack_version": "19.2",
     "duration_minutes": 170,
-    "time_compression": 60,
+    "time_compression": 1,
     "phases": [
       {
         "code": "PH-01",
@@ -235,7 +235,7 @@ Day 2. Field crews confirm destroyed devices; the authorities and the press are 
         "name": "The plant is wiped",
         "start_offset": 50,
         "end_offset": 110,
-        "incident_jump_minutes": 90,
+        "incident_jump_minutes": 40,
         "situation_update": "07:00. Endpoint protection at the heat plant reports mass file deletion on operator stations and servers.",
         "key_questions": [
           "Can we keep heat and power flowing without our systems?"

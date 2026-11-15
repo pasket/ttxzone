@@ -197,7 +197,7 @@ Wednesday, 11:00. Twenty-four hours since the report.
     "summary": "A message from an independent researcher says a storage bucket named exports-prod lists customer files to anyone on the internet. It came from the security contact on the website.",
     "attack_version": "19.2",
     "duration_minutes": 170,
-    "time_compression": 60,
+    "time_compression": 1,
     "phases": [
       {
         "code": "PH-01",
@@ -222,7 +222,7 @@ Wednesday, 11:00. Twenty-four hours since the report.
         "name": "Was it downloaded?",
         "start_offset": 50,
         "end_offset": 110,
-        "incident_jump_minutes": 240,
+        "incident_jump_minutes": 190,
         "situation_update": "Tuesday, 15:00. The logs are in; the data protection officer has joined.",
         "key_questions": [
           "Does the 72-hour clock run, and from when?"
@@ -240,7 +240,7 @@ Wednesday, 11:00. Twenty-four hours since the report.
         "name": "Going public",
         "start_offset": 110,
         "end_offset": 170,
-        "incident_jump_minutes": 1200,
+        "incident_jump_minutes": 1140,
         "situation_update": "Wednesday, 11:00. Twenty-four hours since the report.",
         "key_questions": [
           "What can we say that won't change tomorrow?"

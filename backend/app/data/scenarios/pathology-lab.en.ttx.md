@@ -203,7 +203,7 @@ Two weeks later. The provider refused to pay; patient data is published.
     "summary": "Monday, 10:00. The laboratory provider stops returning results to {organization}'s records. Emergency, surgery and oncology depend on them.",
     "attack_version": "19.2",
     "duration_minutes": 170,
-    "time_compression": 60,
+    "time_compression": 1,
     "phases": [
       {
         "code": "PH-01",

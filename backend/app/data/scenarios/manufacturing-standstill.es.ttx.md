@@ -213,7 +213,7 @@ Dos semanas después. Los sistemas se están reconstruyendo; los proveedores peq
     "summary": "En el cambio de turno de las 06:00, {organization} detecta cifrado en los servidores que planifican la producción y la logística. Los sistemas de planta comparten la misma red.",
     "attack_version": "19.2",
     "duration_minutes": 170,
-    "time_compression": 60,
+    "time_compression": 1,
     "phases": [
       {
         "code": "PH-01",

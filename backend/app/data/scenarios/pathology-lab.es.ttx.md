@@ -203,7 +203,7 @@ Dos semanas después. El proveedor se negó a pagar; se publican datos de pacien
     "summary": "Lunes, 10:00. El proveedor del laboratorio deja de enviar resultados a la historia clínica de {organization}. Urgencias, quirófanos y oncología dependen de ellos.",
     "attack_version": "19.2",
     "duration_minutes": 170,
-    "time_compression": 60,
+    "time_compression": 1,
     "phases": [
       {
         "code": "PH-01",

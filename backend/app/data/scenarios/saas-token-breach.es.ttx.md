@@ -203,7 +203,7 @@ Día 4. Los clientes empiezan a preguntar.
     "summary": "Un lunes por la mañana, la plataforma de CRM que usa {organization} revoca todos los tokens de la integración de un chatbot de ventas y publica un aviso. El equipo comercial solo quiere que vuelva el chatbot.",
     "attack_version": "19.2",
     "duration_minutes": 170,
-    "time_compression": 60,
+    "time_compression": 1,
     "phases": [
       {
         "code": "PH-01",

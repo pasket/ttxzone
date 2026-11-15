@@ -200,7 +200,7 @@ Five days later. Headquarters knows nothing about the deal.
     "summary": "A regional finance manager of {organization} receives an email from the CFO about a confidential acquisition that needs urgent payments. She suspects phishing, until she joins a video call where the CFO and two colleagues confirm it.",
     "attack_version": "19.2",
     "duration_minutes": 160,
-    "time_compression": 60,
+    "time_compression": 1,
     "phases": [
       {
         "code": "PH-01",
@@ -225,7 +225,7 @@ Five days later. Headquarters knows nothing about the deal.
         "name": "The call",
         "start_offset": 50,
         "end_offset": 100,
-        "incident_jump_minutes": 120,
+        "incident_jump_minutes": 85,
         "situation_update": "12:30. The video call confirms everything; the first transfers are ready.",
         "key_questions": [
           "What check would have exposed the call?"
