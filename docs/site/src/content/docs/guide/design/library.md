@@ -10,7 +10,7 @@ The **Library** holds simulated actors, threat actors, injects, tags and exercis
 | Level | Holds | Who changes it |
 |---|---|---|
 | **TTX-Zone** | A read-only catalog that comes with the product | Nobody |
-| **Organization** | The organization's own items | Exercise Program Managers |
+| **My organization** | The organization's own items | Exercise Program Managers |
 | **This exercise** | The exercise's own copies | Its Exercise Planners |
 
 Every use is a copy, so editing or deleting a library item never changes an exercise. A copy remembers where it came from. Deleting an organization item that's in use disables it instead.

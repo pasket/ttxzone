@@ -406,11 +406,12 @@ export function PhasesTab({
           )}
         </div>
       ) : (
-        <div className="-mx-5">
+        <div className="-mx-5 overflow-x-auto">
           {/* Fixed widths, as in the needs analysis: the objectives (or,
-              grouped by objective, the phase) give way and wrap, so the
-              table never scrolls sideways. */}
-          <table className="w-full table-fixed text-left">
+              grouped by objective, the phase) give way and wrap. Below the
+              width that leaves them room to read, the table scrolls inside
+              its panel instead of squeezing them. */}
+          <table className="w-full min-w-[46rem] table-fixed text-left">
             <colgroup>
               <col className={groupBy === 'session' ? 'w-44 lg:w-56' : undefined} />
               <col className="w-52 lg:w-56" />

@@ -148,14 +148,15 @@ function MarkMenu({
           <li key={action.label}>
             <button
               type="button"
-              className={`${menuItemClass} disabled:cursor-not-allowed disabled:opacity-50`}
+              className={`${menuItemClass} disabled:cursor-not-allowed disabled:hover:bg-transparent`}
               disabled={Boolean(action.blockedBy)}
               title={action.blockedBy ?? undefined}
               onClick={action.onSelect}
             >
-              {action.label}
+              {/* Only the action dims: why it's blocked has to stay readable. */}
+              <span className={action.blockedBy ? 'opacity-50' : undefined}>{action.label}</span>
               {action.blockedBy && (
-                <span className="block text-xs text-paper-ink/60 dark:text-fg-faint">
+                <span className="block text-xs text-paper-ink/70 dark:text-fg-muted">
                   {action.blockedBy}
                 </span>
               )}
@@ -998,13 +999,7 @@ export function StorylineGraph({
             {axisLabel(minutes).map((line, index) => (
               <span
                 key={index}
-                className={`block ${
-                  index === 0
-                    ? 'italic text-paper-ink/80 dark:text-fg-muted'
-                    : incidentStart && index === 1
-                      ? ''
-                      : 'opacity-70'
-                }`}
+                className={`block ${index === 0 ? 'italic text-paper-ink/80 dark:text-fg-muted' : ''}`}
               >
                 {line}
               </span>
