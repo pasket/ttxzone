@@ -1109,15 +1109,22 @@ _SHARED_VIEWS_MAX = 256
 
 
 def player_view(session: Session, ttx: TTX, run: ExerciseRun | None, viewer: User) -> RunRead:
-    """`viewer`'s view as a Player: the part their room's Players share,
-    built at most once per change per process (cached for
-    RUN_VIEW_CACHE_SECONDS, the most a change that leaves no trace in the
-    log -- a room renamed, a Player seated mid-session -- waits), then
-    marked with what is theirs."""
+    """`viewer`'s view as a Player: the part their room's Players share
+    (`shared_player_view`), marked with what is theirs."""
     from app.core.security import ttx_access_of
 
     access = ttx_access_of(session, viewer.id, ttx.id)
     room = str(access.room_id) if access is not None and access.room_id else None
+    return _personalize(shared_player_view(session, ttx, run, room), viewer)
+
+
+def shared_player_view(
+    session: Session, ttx: TTX, run: ExerciseRun | None, room: str | None
+) -> _SharedPlayerView:
+    """What the Players of `room` (a room id; None: no room, or the main
+    room) share, built at most once per change per process (cached for
+    RUN_VIEW_CACHE_SECONDS, the most a change that leaves no trace in the
+    log -- a room renamed, a Player seated mid-session -- waits)."""
     key = (
         ttx.id,
         run.id if run else None,
@@ -1133,23 +1140,55 @@ def player_view(session: Session, ttx: TTX, run: ExerciseRun | None, viewer: Use
     now = time.monotonic()
     hit = _shared_views.get(key)
     if ttl > 0 and hit is not None and now - hit[0] < ttl:
-        shared = hit[1]
-    else:
-        view, log, rooms = _build_view(
-            session,
-            ttx,
-            run,
-            can_control=False,
-            viewer_role=TTXContextRole.PLAYER.value,
-            seat_room_id=room,
+        return hit[1]
+    view, log, rooms = _build_view(
+        session,
+        ttx,
+        run,
+        can_control=False,
+        viewer_role=TTXContextRole.PLAYER.value,
+        seat_room_id=room,
+    )
+    shared = _SharedPlayerView(view=view, log=log, rooms=rooms)
+    if ttl > 0:
+        _shared_views[key] = (now, shared)
+        _shared_views.move_to_end(key)
+        while len(_shared_views) > _SHARED_VIEWS_MAX:
+            _shared_views.popitem(last=False)
+    return shared
+
+
+def player_preview(
+    session: Session, ttx: TTX, run: ExerciseRun | None, room_code: str | None
+) -> RunRead:
+    """What the Players of a room (`room_code`; none: no room, or the main
+    room) see, for the planning and control team's "View as Player": the
+    same shared view a seated Player gets, marked as nobody's -- no
+    decision is theirs, no vote cast, no seat."""
+    room: TTXRoom | None = None
+    if room_code:
+        room = session.exec(
+            select(TTXRoom).where(TTXRoom.ttx_id == ttx.id, TTXRoom.code == room_code)
+        ).first()
+        if room is None:
+            raise AppException("ROOM_NOT_FOUND", "No such room in this exercise.", 404)
+    view = shared_player_view(session, ttx, run, str(room.id) if room else None).view
+    update: dict = {
+        "decisions": [d.model_copy(update={"mine": False}) for d in view.decisions],
+        "polls": [p.model_copy(update={"my_vote": None}) for p in view.polls],
+    }
+    if view.rooms is not None:
+        update["rooms"] = view.rooms.model_copy(
+            update={
+                "me": RunMeRead(
+                    room_code=room.code if room else None,
+                    room_name=room.name if room else None,
+                    location="room" if room else "main",
+                ),
+                "rooms": [r for r in view.rooms.rooms if room and r.code == room.code],
+            }
         )
-        shared = _SharedPlayerView(view=view, log=log, rooms=rooms)
-        if ttl > 0:
-            _shared_views[key] = (now, shared)
-            _shared_views.move_to_end(key)
-            while len(_shared_views) > _SHARED_VIEWS_MAX:
-                _shared_views.popitem(last=False)
-    return _personalize(shared, viewer)
+    return view.model_copy(update=update)
 
 
 def _personalize(shared: _SharedPlayerView, viewer: User) -> RunRead:

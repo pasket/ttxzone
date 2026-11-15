@@ -258,6 +258,7 @@ export function PollCard({
   presenting,
   showCodes,
   onChange,
+  preview = false,
 }: {
   ttxId: string
   run: RunRead
@@ -267,6 +268,8 @@ export function PollCard({
   presenting: boolean
   showCodes: boolean
   onChange: (next: RunRead) => void
+  /** The team's View as Player: the Players' options, not to be picked. */
+  preview?: boolean
 }) {
   const { t } = useTranslation()
   const where = useStageRoom(run.rooms)
@@ -329,7 +332,7 @@ export function PollCard({
                     key={index}
                     type="button"
                     aria-pressed={poll.my_vote === index}
-                    disabled={pending !== null || run.state !== 'live'}
+                    disabled={preview || pending !== null || run.state !== 'live'}
                     onClick={() => void send(poll.id, `${poll.id}/vote`, { option: index })}
                     className={`${poll.my_vote === index ? btnPrimary : btnSecondary} ${
                       poll.planned ? 'min-h-11 w-full justify-start text-left' : ''

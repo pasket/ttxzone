@@ -8,7 +8,7 @@ import { usePresentation } from '../../hooks/usePresentation'
 import { useProjectorFold } from '../../hooks/useProjectorFold'
 import { useRunFeed } from '../../hooks/useRunFeed'
 import { useStageRoom } from '../../hooks/useViewedRoom'
-import { foldToggle } from '../../lib/buttonStyles'
+import { btnSecondary, foldToggle, inputBase } from '../../lib/buttonStyles'
 import type { ContextRole } from '../../lib/moduleAccess'
 import { CONTEXT_ROLE_LABEL_KEYS } from '../../lib/roleLabels'
 import { injectSequence, stageInjects } from '../../lib/run'
@@ -51,6 +51,7 @@ export function PlaygroundPage({
   dockNote,
   wideDock = false,
   top,
+  canPreview = false,
 }: {
   ttxId: string
   /** The role the user takes part as: marks them present as it. */
@@ -60,6 +61,9 @@ export function PlaygroundPage({
   /** The control center: the dock takes up to half the width. */
   wideDock?: boolean
   top?: (run: RunRead) => ReactNode
+  /** The caller is on the exercise's planning and control team: View as
+   * Player (the server refuses anyone else). */
+  canPreview?: boolean
 }) {
   const { t } = useTranslation()
   const { run, error, apply } = useRunFeed(ttxId, role)
@@ -73,6 +77,7 @@ export function PlaygroundPage({
   const presentRef = useRef<HTMLButtonElement>(null)
   const presentation = usePresentation(rootRef, presentRef)
   const presenting = presentation.presenting
+  const [previewing, setPreviewing] = useState(false)
 
   if (!run) {
     return error ? (
@@ -80,6 +85,10 @@ export function PlaygroundPage({
     ) : (
       <p className="text-sm text-paper-ink/60 dark:text-fg-muted">{t('common.loading')}</p>
     )
+  }
+
+  if (previewing && canPreview) {
+    return <PlayerPreview ttxId={ttxId} teamRun={run} onExit={() => setPreviewing(false)} />
   }
 
   const scope = `${run.run_number ?? 0}:${where ?? ''}`
@@ -171,6 +180,18 @@ export function PlaygroundPage({
             aside={run.rooms && run.state !== 'not_started' ? <RoomBar run={run} /> : undefined}
           />
           <SessionNotices run={run} connectionLost={Boolean(error)} />
+          {canPreview && (
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => setPreviewing(true)}
+                className={`${btnSecondary} h-8 text-xs`}
+              >
+                <EyeIcon />
+                {t('playground.preview.toggle')}
+              </button>
+            </div>
+          )}
         </div>
         {/* A new run starts every panel afresh (notes, ratings, feedback). */}
         <div key={run.run_number ?? 0}>
@@ -765,4 +786,136 @@ function SessionState({ run }: { run: RunRead }) {
     )
   }
   return null
+}
+
+/** View as Player, for the planning and control team: what the Players of
+ * a room see (the server's own Player projection: no MSEL codes, no
+ * facilitator notes, only what reached that room), read-only -- their
+ * votes can't be cast from here, and nobody is marked present as a
+ * Player. Its own feed; the team's view stays where it was. */
+function PlayerPreview({
+  ttxId,
+  teamRun,
+  onExit,
+}: {
+  ttxId: string
+  /** The team's view: the rooms to choose from. */
+  teamRun: RunRead
+  onExit: () => void
+}) {
+  const { t } = useTranslation()
+  const rooms = teamRun.rooms?.rooms ?? []
+  const [room, setRoom] = useState<string>(rooms[0]?.code ?? '')
+  const { run, error } = useRunFeed(ttxId, null, { room: room || null })
+  // Nothing done here counts: an action's answer would be the team's view.
+  const ignore = () => {}
+
+  const roomName = rooms.find((r) => r.code === room)?.name
+  const notice = (
+    <div
+      role="status"
+      className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-sm border border-accent/50 bg-panel px-3 py-2 text-sm"
+    >
+      <EyeIcon />
+      <span className="min-w-0 flex-1">
+        {roomName
+          ? t('playground.preview.noticeRoom', { room: roomName })
+          : t('playground.preview.notice')}
+      </span>
+      {rooms.length > 0 && (
+        <label className="flex items-center gap-2 text-xs">
+          <span>{t('playground.preview.room')}</span>
+          <select
+            value={room}
+            onChange={(event) => setRoom(event.target.value)}
+            className={`${inputBase} h-8 w-auto py-0 text-xs`}
+          >
+            {rooms.map((r) => (
+              <option key={r.code} value={r.code}>
+                {r.name}
+              </option>
+            ))}
+            <option value="">{t('playground.preview.mainRoom')}</option>
+          </select>
+        </label>
+      )}
+      <button type="button" onClick={onExit} className={`${btnSecondary} h-8 text-xs`}>
+        {t('playground.preview.exit')}
+      </button>
+    </div>
+  )
+
+  if (!run) {
+    return (
+      <div className="space-y-4">
+        {notice}
+        {error ? (
+          <p className="text-sm text-danger-fg">{t('playground.loadError')}</p>
+        ) : (
+          <p className="text-sm text-paper-ink/60 dark:text-fg-muted">{t('common.loading')}</p>
+        )}
+      </div>
+    )
+  }
+
+  const where = run.rooms?.me
+    ? run.rooms.me.location === 'main'
+      ? 'main'
+      : (run.rooms.me.room_code ?? 'main')
+    : null
+  const injects = stageInjects(run, where)
+  const view: StageView = {
+    sequence: injectSequence(run),
+    showCodes: false,
+    reviewing: null,
+    onReview: ignore,
+  }
+  const inPlayCode =
+    run.rooms && where === 'main'
+      ? run.rooms.main_projected
+      : (injects[injects.length - 1]?.code ?? null)
+
+  return (
+    <div className="space-y-4">
+      <h1 className="sr-only">{t('playground.pageTitle')}</h1>
+      <div className="sticky top-0 z-10 space-y-2 bg-paper pb-2 dark:bg-ink">
+        {notice}
+        <ExerciseBanner ttxId={ttxId} run={run} apply={ignore} />
+        <PhaseTrack run={run} injects={injects} inPlayCode={inPlayCode} view={view} />
+        <PresenceBar presence={run.presence} counts={run.presence_counts} />
+        <SessionNotices run={run} connectionLost={Boolean(error)} />
+      </div>
+      <div className="space-y-4">
+        <SessionState run={run} />
+        {run.state !== 'not_started' && <RoomStage ttxId={ttxId} run={run} view={view} />}
+        <PollCard
+          ttxId={ttxId}
+          run={run}
+          role="player"
+          inPlayCode={inPlayCode}
+          presenting={false}
+          showCodes={false}
+          onChange={ignore}
+          preview
+        />
+        {run.state === 'live' && run.endex_released_at && <HotWash run={run} />}
+      </div>
+    </div>
+  )
+}
+
+function EyeIcon() {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      aria-hidden="true"
+      className="h-4 w-4 shrink-0"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+    >
+      <path d="M1.5 8s2.4-4.5 6.5-4.5S14.5 8 14.5 8 12.1 12.5 8 12.5 1.5 8 1.5 8Z" />
+      <circle cx="8" cy="8" r="2" />
+    </svg>
+  )
 }

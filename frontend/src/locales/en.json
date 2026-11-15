@@ -1775,7 +1775,10 @@
       "leadEvaluatorBadge": "Lead Evaluator",
       "leadEvaluatorDescription": "The Lead Evaluator organizes the evaluation team: assignments, the evaluator briefing and the rated EEGs.",
       "makeLeadEvaluatorLabel": "Make {{name}} the Lead Evaluator",
-      "leadEvaluatorToast": "{{name}} is now the Lead Evaluator"
+      "leadEvaluatorToast": "{{name}} is now the Lead Evaluator",
+      "missingGrantsManager": "No grant in the organization for: {{roles}}. As its Exercise Program Manager, you can grant it here.",
+      "grantInOrganization": "Grant {{role}} in the organization",
+      "grantedToast": "{{role}} granted to {{name}} in the organization"
     },
     "rooms": {
       "title": "Rooms",
@@ -4490,6 +4493,14 @@
       "hide": "Hide the summary",
       "shown": "The Players see this summary.",
       "teamOnly": "Only the team sees this."
+    },
+    "preview": {
+      "toggle": "View as Player",
+      "notice": "Preview: what the Players see. Nothing you do here counts.",
+      "noticeRoom": "Preview: what the Players in {{room}} see. Nothing you do here counts.",
+      "room": "Room",
+      "mainRoom": "Main room",
+      "exit": "Back to my view"
     }
   },
   "aar": {

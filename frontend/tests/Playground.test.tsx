@@ -1937,3 +1937,78 @@ describe('Decisions and votes', () => {
     )
   })
 })
+
+describe('View as Player', () => {
+  const team = run({ can_control: true })
+  // What the server projects for the Players: one inject so far, a vote open.
+  const players = run({
+    injects: [inject('INJ-01', 'SOC alert', 0)],
+    polls: [
+      {
+        id: 'poll-1',
+        question: 'Pay the ransom?',
+        options: [
+          { index: 0, text: 'Yes', votes: 0 },
+          { index: 1, text: 'No', votes: 0 },
+        ],
+        open: true,
+        planned: false,
+        inject_code: 'INJ-01',
+        room_code: null,
+        voters: 0,
+        my_vote: null,
+        results_visible: true,
+      },
+    ] as RunRead['polls'],
+  })
+
+  function renderPage(canPreview: boolean) {
+    const fetchMock = vi.fn(async (url: string) => {
+      const body = String(url).includes('preview=player') ? players : team
+      return { ok: true, status: 200, json: async () => body } as Response
+    })
+    vi.stubGlobal('fetch', fetchMock)
+    render(
+      <PlaygroundPage
+        ttxId="ttx-1"
+        role="controller"
+        canPreview={canPreview}
+        dock={() => <p>Panel</p>}
+      />,
+    )
+    return fetchMock
+  }
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
+    localStorage.clear()
+  })
+
+  it('shows the team what the Players see, without acting as one', async () => {
+    const fetchMock = renderPage(true)
+    fireEvent.click(await screen.findByRole('button', { name: 'View as Player' }))
+
+    // Once the Players' view is in.
+    const vote = await screen.findByRole('button', { name: 'Yes' })
+    expect(
+      screen.getByText('Preview: what the Players see. Nothing you do here counts.'),
+    ).toBeInTheDocument()
+    // The Players' projection, never as a Player: no `as=player`.
+    const urls = fetchMock.mock.calls.map(([url]) => String(url))
+    expect(urls.some((url) => url.includes('preview=player'))).toBe(true)
+    expect(urls.some((url) => url.includes('as=player'))).toBe(false)
+    // No dock, no codes; the Players' vote is shown but can't be cast.
+    expect(screen.queryByText('Panel')).toBeNull()
+    expect(screen.queryByText('INJ-01')).toBeNull()
+    expect(vote).toBeDisabled()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Back to my view' }))
+    expect(await screen.findByText('Panel')).toBeInTheDocument()
+  })
+
+  it('isn’t offered to anyone off the planning and control team', async () => {
+    renderPage(false)
+    expect(await screen.findByText('Panel')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'View as Player' })).toBeNull()
+  })
+})

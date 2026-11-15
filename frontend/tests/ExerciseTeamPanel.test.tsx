@@ -6,11 +6,18 @@ import { ExerciseTeamPanel } from '../src/components/creator/ExerciseTeamPanel'
 import type { ExercisePersonRead, TTXRead } from '../src/lib/types'
 import { render } from './testUtils'
 
+/** The organizations the signed-in user holds roles in: a test makes them
+ * the exercise organization's Program Manager. */
+const mockOrganizations: { organization_id: string; is_program_manager: boolean }[] = []
 vi.mock('../src/hooks/useAuth', () => ({
-  useAuth: () => ({ user: { id: 'me' }, refresh: vi.fn(async () => {}) }),
+  useAuth: () => ({
+    user: { id: 'me' },
+    organizations: mockOrganizations,
+    refresh: vi.fn(async () => {}),
+  }),
 }))
 
-const drill = { id: 'ttx-1', name: 'Ransomware drill' } as TTXRead
+const drill = { id: 'ttx-1', name: 'Ransomware drill', organization_id: 'org-1' } as TTXRead
 
 function tag(id: string, name: string) {
   return { id, name, color: 'violet', custom_hex: null, created_at: '', applied: true }
@@ -137,6 +144,43 @@ describe('ExerciseTeamPanel', () => {
       evaluates: false,
       observes: false,
     })
+  })
+
+  it('lets the organization’s Program Manager grant a missing role from the dialog', async () => {
+    mockOrganizations.splice(0, mockOrganizations.length, {
+      organization_id: 'org-1',
+      is_program_manager: true,
+    })
+    const fetchMock = stubApi({
+      'GET /ttx/ttx-1/people': [json(200, { items: [me, max] })],
+      'GET /ttx/ttx-1/people/candidates': [json(200, { items: [] })],
+      'POST /organizations/org-1/evaluators': [json(201, {})],
+      'PUT /ttx/ttx-1/people/max/role': [json(204, null)],
+    })
+    renderPanel()
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Edit Max Manager' }))
+    const dialog = within(screen.getByRole('dialog'))
+    expect(dialog.getByRole('checkbox', { name: /^Evaluator/ })).toBeDisabled()
+    expect(dialog.getByText(/you can grant it here/)).toBeInTheDocument()
+    fireEvent.click(dialog.getByRole('button', { name: 'Grant Evaluator in the organization' }))
+
+    await waitFor(() => expect(dialog.getByRole('checkbox', { name: /^Evaluator/ })).toBeEnabled())
+    const post = fetchMock.mock.calls.find(([url]) =>
+      String(url).endsWith('/organizations/org-1/evaluators'),
+    )!
+    expect(JSON.parse(post[1]!.body as string)).toEqual({ email: 'max@acme.com' })
+    // Granting doesn't assign: the person's roles change only on Save.
+    expect(dialog.getByRole('checkbox', { name: /^Evaluator/ })).not.toBeChecked()
+    fireEvent.click(dialog.getByRole('checkbox', { name: /^Evaluator/ }))
+    fireEvent.click(dialog.getByRole('button', { name: 'Save' }))
+    await waitFor(() =>
+      expect(fetchMock).toHaveBeenCalledWith(
+        '/api/v1/ttx/ttx-1/people/max/role',
+        expect.objectContaining({ method: 'PUT' }),
+      ),
+    )
+    mockOrganizations.splice(0, mockOrganizations.length)
   })
 
   it('makes a team member also the Evaluator, from their org grant', async () => {

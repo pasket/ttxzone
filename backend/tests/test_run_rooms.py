@@ -10,7 +10,7 @@ from sqlalchemy.orm.attributes import flag_modified
 from sqlmodel import Session, select
 
 from app.main import app
-from app.models import TTX, MselSnapshot, RoleEnum, RunEvent, TTXAccess, TTXRoom
+from app.models import TTX, MselSnapshot, RoleEnum, RunEvent, RunPresence, TTXAccess, TTXRoom
 from app.services.ttx_msel_service import latest_snapshot
 from tests.test_exercise_run import _post, _ready_plan, _url
 from tests.test_ttx_conduct_prep import exercise as exercise  # noqa: F401 (fixture)
@@ -408,3 +408,59 @@ def test_each_room_is_rated_on_its_own(
     assert {(r["room_code"], r["level"]) for r in given} == {("RM-01", "P"), ("RM-02", "M")}
     written = " ".join(o["strengths"] + o["improvements"] for o in report["objectives"])
     assert "RM-01: " in written and "RM-02: " in written
+
+
+def _preview(viewer: TestClient, ttx_id: str, room: str | None = None):
+    params = {"preview": "player"} | ({"room": room} if room else {})
+    return viewer.get(_url(ttx_id), params=params)
+
+
+def test_the_team_previews_what_each_rooms_players_see(
+    client: TestClient,
+    db_session: Session,
+    rooms: dict,
+    exercise: dict,  # noqa: F811
+) -> None:
+    ttx_id, (blue_only, red_only, both, *_) = rooms["ttx_id"], rooms["codes"]
+    for code in (blue_only, red_only, both):
+        assert _post(client, ttx_id, f"/injects/{code}/release").status_code == 200
+
+    # The Controller sees exactly what Blue's Players see, not the team's view.
+    ana = _view(rooms["ana"][1], ttx_id)
+    blue = _preview(client, ttx_id, "RM-01")
+    assert blue.status_code == 200, blue.text
+    assert blue.json() == ana
+    assert blue.json()["control"] is None
+    assert _codes(_preview(client, ttx_id, "RM-02").json()) == [red_only, both]
+    main = _preview(client, ttx_id).json()
+    assert _codes(main) == [] and main["rooms"]["me"]["location"] == "main"
+    assert _preview(client, ttx_id, "RM-99").status_code == 404
+
+    # Previewing doesn't make anyone a Player: nobody is marked present as one.
+    controller = db_session.exec(
+        select(TTXAccess).where(
+            TTXAccess.ttx_id == uuid.UUID(ttx_id), TTXAccess.role == RoleEnum.PLANNER
+        )
+    ).first()
+    present = db_session.exec(
+        select(RunPresence).where(
+            RunPresence.user_id == controller.user_id, RunPresence.role == "player"
+        )
+    ).all()
+    assert present == []
+
+
+def test_only_the_planning_and_control_team_previews(
+    client: TestClient,
+    db_session: Session,
+    rooms: dict,
+    exercise: dict,  # noqa: F811
+) -> None:
+    ttx_id = rooms["ttx_id"]
+    # A Player can't look at another room through it.
+    refused = _preview(rooms["ana"][1], ttx_id, "RM-02")
+    assert refused.status_code == 403
+    assert refused.json()["error"]["code"] == "PREVIEW_NOT_ALLOWED"
+    # Nor can an Evaluator who isn't on the team.
+    _as_evaluator(client, db_session, exercise)
+    assert _preview(client, ttx_id).status_code == 403

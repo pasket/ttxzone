@@ -97,6 +97,7 @@
     "That isn't the stop keyword.": "Esa no es la palabra de parada.",
     "Type \"{phrase}\" to restart the exercise.": "Escribe «{phrase}» para reiniciar el ejercicio.",
     "End the session before restarting it.": "Termina la sesión antes de reiniciarla.",
+    "Only the exercise's planning and control team can preview the Players' view.": "Solo el equipo de planificación y control del ejercicio puede ver la vista de los jugadores.",
     "No such room in this exercise.": "Esa sala no está en este ejercicio.",
     "Only Players and the team record decisions.": "Solo los Jugadores y el equipo registran decisiones.",
     "Decisions go on an inject the table has seen.": "Las decisiones se registran sobre un inject que la mesa ya ha visto.",

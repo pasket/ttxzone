@@ -40742,7 +40742,7 @@
     },
     "/api/v1/ttx/{ttx_id}/run": {
       "get": {
-        "description": "Polled by the Playground as the role the caller acts as (`as`: it\nmarks them present) with the `cursor` it has: 204 while nothing has\nhappened and nobody came or went.",
+        "description": "Polled by the Playground as the role the caller acts as (`as`: it\nmarks them present) with the `cursor` it has: 204 while nothing has\nhappened and nobody came or went. `preview=player` gives the planning\nand control team the Players' view instead.",
         "operationId": "get_run_endpoint_api_v1_ttx__ttx_id__run_get",
         "parameters": [
           {
@@ -40777,6 +40777,44 @@
                 }
               ],
               "title": "As"
+            }
+          },
+          {
+            "description": "`player`: what the Players see (of `room`), for the planning and control team's View as Player -- read-only, and nobody is marked present.",
+            "in": "query",
+            "name": "preview",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "const": "player",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "`player`: what the Players see (of `room`), for the planning and control team's View as Player -- read-only, and nobody is marked present.",
+              "title": "Preview"
+            }
+          },
+          {
+            "description": "With `preview`: a room code.",
+            "in": "query",
+            "name": "room",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 16,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "With `preview`: a room code.",
+              "title": "Room"
             }
           }
         ],

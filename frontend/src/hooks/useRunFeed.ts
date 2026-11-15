@@ -21,7 +21,15 @@ const STREAM_RETRY_MS = 60000
  * are background requests (they don't keep an idle session alive); none
  * while the tab is hidden. `apply` takes the view a Controller's action
  * answered with. */
-export function useRunFeed(ttxId: string, role: string | null) {
+export function useRunFeed(
+  ttxId: string,
+  role: string | null,
+  /** The team's View as Player: what the Players of `room` see (none: no
+   * room, or the main room) instead of `role`'s view. The stream still
+   * goes as `role`. */
+  preview: { room: string | null } | null = null,
+) {
+  const previewRoom = preview ? (preview.room ?? '') : null
   const [run, setRun] = useState<RunRead | null>(null)
   const [error, setError] = useState<Error | null>(null)
   const seen = useRef<string | null>(null)
@@ -45,7 +53,10 @@ export function useRunFeed(ttxId: string, role: string | null) {
       inFlight = true
       lastFetch = Date.now()
       const params = new URLSearchParams()
-      if (role) params.set('as', role)
+      if (previewRoom !== null) {
+        params.set('preview', 'player')
+        if (previewRoom) params.set('room', previewRoom)
+      } else if (role) params.set('as', role)
       if (seen.current) params.set('since', seen.current)
       const query = params.size ? `?${params}` : ''
       try {
@@ -126,7 +137,7 @@ export function useRunFeed(ttxId: string, role: string | null) {
       document.removeEventListener('visibilitychange', onVisibility)
       closeStream()
     }
-  }, [ttxId, role])
+  }, [ttxId, role, previewRoom])
 
   // An action's answer is the Controller's view without presence: the
   // next fetch still takes the whole view once.

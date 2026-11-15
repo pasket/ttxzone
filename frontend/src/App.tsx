@@ -324,6 +324,8 @@ function ControlSectionOutlet() {
           key={ttxId}
           ttxId={ttxId}
           role="controller"
+          // A Controller is on the planning and control team.
+          canPreview
           wideDock
           top={(run) =>
             run.control && run.state !== 'not_started' ? (

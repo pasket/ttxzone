@@ -537,7 +537,8 @@ interface LeadFlags {
  * Facilitator is a Controller, Observer and Evaluator exclude each other
  * (one watches, the other takes notes and rates), and each role
  * needs its organization grant (Planner for the first three) -- a role
- * without one is locked and listed once, with where to get it; one the
+ * without one is locked and listed once, with where to get it (or, for a
+ * Program Manager of the organization, a button giving it); one the
  * person already holds stays available. */
 function RolesFieldset({
   value,
@@ -547,11 +548,19 @@ function RolesFieldset({
   leads,
   heldLeads,
   onLeadsChange,
+  onGrant,
+  granting = null,
   disabled,
 }: {
   value: RoleFlags
   onChange: (next: RoleFlags) => void
   grants: PeopleRole[]
+  /** The editor is a Program Manager of the exercise's organization: a
+   * missing grant is given here (Admin -> Users and roles' own route)
+   * instead of sending them there. */
+  onGrant?: (grant: PeopleRole) => void
+  /** The grant on its way. */
+  granting?: PeopleRole | null
   /** What they hold now: kept available even if its grant is gone. */
   held?: RoleFlags
   /** Editing only: the lead choices, and what they lead now. */
@@ -711,13 +720,41 @@ function RolesFieldset({
         ],
         t('creator.exerciseTeam.groupWatchHint'),
       )}
-      {missing.length > 0 && (
-        <p className="text-xs text-paper-ink/60 dark:text-fg-muted">
-          {t('creator.exerciseTeam.missingGrants', {
-            roles: missing.map((grant) => t(GRANT_LABEL_KEYS[grant])).join(', '),
-          })}
-        </p>
-      )}
+      {missing.length > 0 &&
+        (onGrant ? (
+          <div className="space-y-2">
+            <p className="text-xs text-paper-ink/60 dark:text-fg-muted">
+              {t('creator.exerciseTeam.missingGrantsManager', {
+                roles: missing.map((grant) => t(GRANT_LABEL_KEYS[grant])).join(', '),
+              })}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {missing.map((grant) => (
+                <button
+                  key={grant}
+                  type="button"
+                  onClick={() => onGrant(grant)}
+                  disabled={disabled || granting !== null}
+                  className={btnSecondary}
+                >
+                  {granting === grant ? (
+                    <ButtonSpinner />
+                  ) : (
+                    t('creator.exerciseTeam.grantInOrganization', {
+                      role: t(GRANT_SHORT_KEYS[grant]),
+                    })
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <p className="text-xs text-paper-ink/60 dark:text-fg-muted">
+            {t('creator.exerciseTeam.missingGrants', {
+              roles: missing.map((grant) => t(GRANT_LABEL_KEYS[grant])).join(', '),
+            })}
+          </p>
+        ))}
     </fieldset>
   )
 }
@@ -726,6 +763,20 @@ const GRANT_LABEL_KEYS = {
   planner: 'creator.exerciseTeam.grantNames.planner',
   observer: 'creator.exerciseTeam.grantNames.observer',
   evaluator: 'creator.exerciseTeam.grantNames.evaluator',
+} as const
+
+/** The button's role name: the organization grant, short. */
+const GRANT_SHORT_KEYS = {
+  planner: 'roles.planner',
+  observer: 'roles.observer',
+  evaluator: 'roles.evaluator',
+} as const
+
+/** The organization route granting each role (Admin -> Users and roles). */
+const GRANT_SEGMENTS = {
+  planner: 'planners',
+  observer: 'observers',
+  evaluator: 'evaluators',
 } as const
 
 function LockIcon({ label }: { label: string }) {
@@ -864,6 +915,14 @@ function EditPersonModal({
   onSaved: () => Promise<void>
 }) {
   const { t } = useTranslation()
+  const { organizations } = useAuth()
+  const { showToast } = useToast()
+  const managesOrganization =
+    organizations.find((o) => o.organization_id === ttx.organization_id)?.is_program_manager ??
+    false
+  // Grants given here unlock their roles at once, without reloading.
+  const [grants, setGrants] = useState<PeopleRole[]>(person.grants)
+  const [granting, setGranting] = useState<PeopleRole | null>(null)
   const initial = fromPerson(person)
   const [value, setValue] = useState<RoleFlags>(initial)
   const initialLeads: LeadFlags = { planner: person.is_lead, evaluator: person.leads }
@@ -885,6 +944,28 @@ function EditPersonModal({
   const leadEvaluatorChange =
     value.evaluates && leads.evaluator !== initialLeads.evaluator ? leads.evaluator : null
   const leadsChanged = becomesLeadPlanner || leadEvaluatorChange !== null
+
+  async function grant(role: PeopleRole) {
+    setGranting(role)
+    setError(null)
+    try {
+      await apiFetch(`/organizations/${ttx.organization_id}/${GRANT_SEGMENTS[role]}`, {
+        method: 'POST',
+        body: JSON.stringify({ email: person.email }),
+      })
+      setGrants((previous) => (previous.includes(role) ? previous : [...previous, role]))
+      showToast(
+        t('creator.exerciseTeam.grantedToast', {
+          role: t(GRANT_SHORT_KEYS[role]),
+          name: person.full_name,
+        }),
+      )
+    } catch (err) {
+      setError(errorText(err, t('auth.common.genericError')))
+    } finally {
+      setGranting(null)
+    }
+  }
 
   async function save() {
     setBusy(true)
@@ -936,11 +1017,13 @@ function EditPersonModal({
         <RolesFieldset
           value={value}
           onChange={setValue}
-          grants={person.grants}
+          grants={grants}
           held={initial}
           leads={leads}
           heldLeads={initialLeads}
           onLeadsChange={setLeads}
+          onGrant={managesOrganization ? (role) => void grant(role) : undefined}
+          granting={granting}
           disabled={busy}
         />
         {leadStopsPlanning && (

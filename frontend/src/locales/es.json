@@ -1775,7 +1775,10 @@
       "leadEvaluatorBadge": "Lead Evaluator",
       "leadEvaluatorDescription": "El Lead Evaluator organiza al equipo de evaluación: asignaciones, briefing de evaluadores y EEG valoradas.",
       "makeLeadEvaluatorLabel": "Nombrar a {{name}} Lead Evaluator",
-      "leadEvaluatorToast": "{{name}} es ahora el Lead Evaluator"
+      "leadEvaluatorToast": "{{name}} es ahora el Lead Evaluator",
+      "missingGrantsManager": "Sin permiso en la organización para: {{roles}}. Como Responsable del Programa de Ejercicios, puedes concederlo aquí.",
+      "grantInOrganization": "Conceder {{role}} en la organización",
+      "grantedToast": "{{role}} concedido a {{name}} en la organización"
     },
     "rooms": {
       "title": "Salas",
@@ -4490,6 +4493,14 @@
       "hide": "Ocultar el resumen",
       "shown": "Los Jugadores ven este resumen.",
       "teamOnly": "Solo lo ve el equipo."
+    },
+    "preview": {
+      "toggle": "Ver como jugador",
+      "notice": "Vista previa: lo que ven los jugadores. Nada de lo que hagas aquí cuenta.",
+      "noticeRoom": "Vista previa: lo que ven los jugadores de {{room}}. Nada de lo que hagas aquí cuenta.",
+      "room": "Sala",
+      "mainRoom": "Sala principal",
+      "exit": "Volver a mi vista"
     }
   },
   "aar": {

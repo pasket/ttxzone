@@ -70,6 +70,9 @@ export function PlayerLandingSection() {
     <PlaygroundPage
       ttxId={activeTtx.id}
       role={role}
+      // A Facilitator, or an Evaluator or Observer who is also on the
+      // planning and control team: never a Player.
+      canPreview={activeTtx.role === 'planner' && role !== 'player'}
       dock={dock}
       dockNote={role ? { id: ROLE_NOTES[role], text: t(ROLE_NOTES[role]) } : undefined}
     />

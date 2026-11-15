@@ -3,9 +3,11 @@ view (`GET /ttx/{ttx_id}/run`, projected per role); only its Controllers
 run it: start, pause, release or skip injects, put key questions to the
 table, mark expected actions, end or stop it, and restart it once over."""
 
+import logging
 import uuid
 from collections.abc import Callable
 from pathlib import Path
+from typing import Literal
 
 from fastapi import APIRouter, Depends, Query, Request, Response
 from fastapi import Path as PathParam
@@ -77,6 +79,7 @@ from app.services.exercise_run_service import (
     open_poll,
     past_runs,
     pause_run,
+    player_preview,
     player_view,
     project_inject,
     rate_point,
@@ -184,13 +187,24 @@ def _role(
 def get_run_endpoint(
     since: str | None = Query(None, max_length=64),
     as_: str | None = Query(None, alias="as", max_length=16),
+    preview: Literal["player"] | None = Query(
+        None,
+        description=(
+            "`player`: what the Players see (of `room`), for the planning and control "
+            "team's View as Player -- read-only, and nobody is marked present."
+        ),
+    ),
+    room: str | None = Query(None, max_length=16, description="With `preview`: a room code."),
     ttx: TTX = Depends(_participant),
     user: User = Depends(get_current_user),
     session: Session = Depends(get_session),
 ):
     """Polled by the Playground as the role the caller acts as (`as`: it
     marks them present) with the `cursor` it has: 204 while nothing has
-    happened and nobody came or went."""
+    happened and nobody came or went. `preview=player` gives the planning
+    and control team the Players' view instead."""
+    if preview is not None:
+        return _player_preview(session, ttx, user, room, since)
     role = acting_role(session, user, ttx, as_)
     if role is not None:
         touch_presence(session, ttx, user, role)
@@ -207,6 +221,26 @@ def get_run_endpoint(
         viewer_role=role,
         viewer=user,
     )
+
+
+def _player_preview(session: Session, ttx: TTX, user: User, room: str | None, since: str | None):
+    """View as Player: only the exercise's planning and control team (a
+    team row, never a Program Manager overseeing it or an Evaluator), and
+    never on the public face. It doesn't make anyone a Player: no
+    presence, and every write still checks the role acted as."""
+    access = ttx_access_of(session, user.id, ttx.id)
+    if surface.is_public() or access is None or access.role != RoleEnum.PLANNER:
+        raise AppException(
+            "PREVIEW_NOT_ALLOWED",
+            "Only the exercise's planning and control team can preview the Players' view.",
+            403,
+            ttx_id=str(ttx.id),
+            log_level=logging.WARNING,
+        )
+    run = find_run(session, ttx.id)
+    if run is not None and since == view_cursor(session, ttx, run, TTXContextRole.PLAYER.value):
+        return Response(status_code=204)
+    return player_preview(session, ttx, run, room)
 
 
 @router.get("/{ttx_id}/run/notes", response_model=RunNoteListResponse)
