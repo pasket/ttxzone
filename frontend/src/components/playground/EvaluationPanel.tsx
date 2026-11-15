@@ -235,7 +235,11 @@ function PointRow({
           {point.action_note && ` — ${point.action_note}`}
         </p>
       )}
-      <div role="radiogroup" aria-label={t('playground.evaluation.rate')} className="flex gap-1.5">
+      <div
+        role="radiogroup"
+        aria-label={t('playground.evaluation.rateOf', { point: point.text })}
+        className="flex gap-1.5"
+      >
         {LEVELS.map((l) => (
           <button
             key={l}
@@ -256,7 +260,7 @@ function PointRow({
       </div>
       {level && <p className="text-xs text-paper-ink/70 dark:text-fg-muted">{meaning(level)}</p>}
       <label className="sr-only" htmlFor={`why-${point.id}`}>
-        {t('playground.evaluation.why')}
+        {t('playground.evaluation.whyOf', { point: point.text })}
       </label>
       <textarea
         name={`why-${point.id}`}

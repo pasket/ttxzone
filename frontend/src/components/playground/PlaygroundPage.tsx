@@ -171,8 +171,14 @@ export function PlaygroundPage({
         {top?.(run)}
         {/* Sticks below a pinned `top` (which keeps its height in
           `--playground-top-offset`), else at the top. */}
-        <div className="sticky top-[var(--playground-top-offset,0px)] z-10 space-y-2 bg-paper pb-2 dark:bg-ink">
-          <ExerciseBanner ttxId={ttxId} run={run} apply={apply} />
+        {/* From `md` the whole band stays in view. On a phone it would take
+            most of the screen, so it's no box at all there (`contents`):
+            only the EXERCISE strip, with the stop keyword, sticks, and the
+            phases and who is present scroll away with the page. */}
+        <div className="sticky top-[var(--playground-top-offset,0px)] z-10 space-y-2 bg-paper pb-2 max-md:contents dark:bg-ink">
+          <div className="max-md:sticky max-md:top-0 max-md:z-10">
+            <ExerciseBanner ttxId={ttxId} run={run} apply={apply} />
+          </div>
           <PhaseTrack run={run} injects={injects} inPlayCode={inPlayCode} view={view} />
           <PresenceBar
             presence={run.presence}
@@ -181,6 +187,7 @@ export function PlaygroundPage({
           />
           <SessionNotices run={run} connectionLost={Boolean(error)} />
         </div>
+        <div aria-hidden="true" className="h-2 md:hidden" />
         {/* Under the band, not in it: it scrolls away with the page instead
             of floating over the panels. */}
         {canPreview && (
@@ -880,9 +887,11 @@ function PlayerPreview({
   return (
     <div className="space-y-4">
       <h1 className="sr-only">{t('playground.pageTitle')}</h1>
-      <div className="sticky top-0 z-10 space-y-2 bg-paper pb-2 dark:bg-ink">
-        {notice}
-        <ExerciseBanner ttxId={ttxId} run={run} apply={ignore} />
+      <div className="sticky top-0 z-10 space-y-2 bg-paper pb-2 max-md:contents dark:bg-ink">
+        <div className="space-y-2 bg-paper max-md:sticky max-md:top-0 max-md:z-10 dark:bg-ink">
+          {notice}
+          <ExerciseBanner ttxId={ttxId} run={run} apply={ignore} />
+        </div>
         <PhaseTrack run={run} injects={injects} inPlayCode={inPlayCode} view={view} />
         <PresenceBar presence={run.presence} counts={run.presence_counts} />
         <SessionNotices run={run} connectionLost={Boolean(error)} />

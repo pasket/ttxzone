@@ -332,9 +332,16 @@ export function PollCard({
                     key={index}
                     type="button"
                     aria-pressed={poll.my_vote === index}
-                    disabled={preview || pending !== null || run.state !== 'live'}
-                    onClick={() => void send(poll.id, `${poll.id}/vote`, { option: index })}
-                    className={`${poll.my_vote === index ? btnPrimary : btnSecondary} ${
+                    disabled={preview || run.state !== 'live'}
+                    // Not disabled while the vote is on its way: that would
+                    // drop the focus of whoever votes with the keyboard.
+                    aria-disabled={pending !== null || undefined}
+                    onClick={
+                      pending !== null
+                        ? undefined
+                        : () => void send(poll.id, `${poll.id}/vote`, { option: index })
+                    }
+                    className={`${poll.my_vote === index ? btnPrimary : btnSecondary} aria-disabled:cursor-progress ${
                       poll.planned ? 'min-h-11 w-full justify-start text-left' : ''
                     }`}
                   >
@@ -343,6 +350,16 @@ export function PollCard({
                   </button>
                 ))}
               </div>
+            )}
+            {player && poll.open && !preview && (
+              <p aria-live="polite" className="text-sm text-paper-ink/70 dark:text-fg-muted">
+                {typeof poll.my_vote === 'number' &&
+                  t('playground.polls.votedNote', {
+                    option: poll.planned
+                      ? pollLetter(poll.my_vote)
+                      : (poll.options[poll.my_vote]?.text ?? ''),
+                  })}
+              </p>
             )}
             {showsTally(poll, role, presenting) ? (
               <>

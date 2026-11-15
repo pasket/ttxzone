@@ -9,7 +9,7 @@ You take part in the exercise, working through a simulated incident with your te
 
 ## Join
 
-You'll get a link by email, which adds you at once, or a join code. Enter a code in **Playground → My exercises**, and an Exercise Planner approves your request. You can also ask to leave an exercise from there.
+You'll get a link by email, which adds you at once, or a join code. Enter a code in **Playground → My exercises**, and an Exercise Planner approves your request. That page lists your exercises: select one's name to open its Playground. You can also ask to leave an exercise from there.
 
 ## Before the session
 

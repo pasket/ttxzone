@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
 
 import { useAuth } from '../../hooks/useAuth'
 import { useToast } from '../../hooks/useToast'
@@ -10,6 +11,7 @@ import {
   btnNeutralIconGhost,
   btnPrimary,
   inputBase,
+  linkAccent,
   inputDisabled,
 } from '../../lib/buttonStyles'
 import {
@@ -24,6 +26,7 @@ import {
 import { ButtonSpinner } from '../common/ButtonSpinner'
 import { Pagination } from '../common/Pagination'
 import { Panel } from '../common/Panel'
+import { SectionHeader } from '../common/SectionHeader'
 import { TableToolbar } from '../common/TableToolbar'
 import { ttxOptionsForModule } from '../../lib/moduleAccess'
 import { LeaveRequestDialog } from './LeaveRequestDialog'
@@ -222,6 +225,7 @@ export function EnrollmentsSection() {
 
   return (
     <div className="space-y-6">
+      <SectionHeader title={t('execution.sections.enrollments')} />
       <form onSubmit={handleJoin}>
         <Panel
           title={t('execution.enrollments.joinTitle')}
@@ -367,7 +371,13 @@ export function EnrollmentsSection() {
                 {enrolledSorted.map((ttx) => (
                   <tr key={ttx.id} className={panelTr}>
                     <td className={panelTd}>
-                      <span className="font-semibold text-paper-ink dark:text-fg">{ttx.name}</span>
+                      {/* The way into the exercise: its Playground. */}
+                      <Link
+                        to={`/playground/${ttx.id}/dashboard`}
+                        className={`${linkAccent} font-semibold`}
+                      >
+                        {ttx.name}
+                      </Link>
                       {ttx.description && (
                         <p className="text-sm text-paper-ink/70 dark:text-fg-muted">
                           {ttx.description}
@@ -384,8 +394,12 @@ export function EnrollmentsSection() {
                           <button
                             type="button"
                             onClick={() => setAskingToLeave({ id: ttx.id, name: ttx.name })}
-                            aria-label={t('execution.enrollments.leaveButton')}
-                            title={t('execution.enrollments.leaveButton')}
+                            aria-label={t('execution.enrollments.leaveRequest.title', {
+                              name: ttx.name,
+                            })}
+                            title={t('execution.enrollments.leaveRequest.title', {
+                              name: ttx.name,
+                            })}
                             className={btnNeutralIconGhost}
                           >
                             <ExitIcon />

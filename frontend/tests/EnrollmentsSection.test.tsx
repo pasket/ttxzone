@@ -149,7 +149,13 @@ describe('EnrollmentsSection', () => {
     stubFetchWithPendingCount(fetchMock)
 
     render(<EnrollmentsSection />)
-    fireEvent.click(await screen.findByRole('button', { name: 'Request to leave' }))
+    // The page has its title, and the exercise's name is the way into it.
+    expect(screen.getByRole('heading', { level: 1, name: 'My exercises' })).toBeInTheDocument()
+    expect(await screen.findByRole('link', { name: 'Ransomware Drill' })).toHaveAttribute(
+      'href',
+      '/playground/ttx-9/dashboard',
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Request to leave Ransomware Drill' }))
     fireEvent.change(screen.getByLabelText(/Reason/), { target: { value: 'New team' } })
     fireEvent.click(screen.getByRole('button', { name: 'Send request' }))
 
@@ -158,7 +164,7 @@ describe('EnrollmentsSection', () => {
     expect(url).toContain('/ttx/ttx-9/leave-request')
     expect(init.method).toBe('POST')
     expect(JSON.parse(String(init.body))).toEqual({ reason: 'New team' })
-    expect(screen.queryByRole('button', { name: 'Request to leave' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Request to leave Ransomware Drill' })).toBeNull()
     mockTtxList = []
   })
 })

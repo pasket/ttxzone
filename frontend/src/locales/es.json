@@ -3340,7 +3340,6 @@
       "pendingFor": "Pendiente de aprobación de {{organizationName}}",
       "enrolledTitle": "Tus ejercicios",
       "noEnrollmentsMessage": "Todavía no te has unido a ningún ejercicio.",
-      "leaveButton": "Solicitar la salida",
       "columnExercise": "Ejercicio",
       "columnOrganization": "Organización",
       "columnName": "Nombre",
@@ -4337,8 +4336,8 @@
       "showAll": "Ver todos mis puntos",
       "notStarted": "Valorarás cuando empiece la sesión.",
       "controllerSaw": "El Controlador vio:",
-      "rate": "Valoración",
-      "why": "Por qué",
+      "rateOf": "Valoración: {{point}}",
+      "whyOf": "Por qué: {{point}}",
       "whyPlaceholder": "Lo que viste que lo respalda…",
       "decisions": "Lo que decidió la mesa"
     },
@@ -4456,6 +4455,7 @@
       "fromVote": "de una votación"
     },
     "polls": {
+      "votedNote": "Has votado {{option}}. Puedes cambiarlo hasta que se cierre la votación.",
       "open": "Someter a votación",
       "openTitle": "Someter una pregunta a votación",
       "openDescription": "Los Jugadores votan sobre el inject en juego y pueden cambiar su voto hasta que la cierres. Todos ven el recuento, nunca quién votó.",

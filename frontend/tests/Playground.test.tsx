@@ -1501,6 +1501,9 @@ describe('Live evaluation', () => {
     )
     expect(screen.getByText('0 of 2 rated')).toBeInTheDocument()
 
+    // Each rating says which point it rates.
+    expect(screen.getByRole('radiogroup', { name: 'Rating: Point p1' })).toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: 'Why: Point p1' })).toBeInTheDocument()
     const s = screen.getByRole('radio', { name: 'S' })
     expect(s).toHaveAttribute('title', 'Decided after 30 minutes')
     expect(screen.getByRole('radio', { name: 'P' })).toHaveAttribute(
@@ -1708,6 +1711,10 @@ describe('Decisions and votes', () => {
       <PollCard ttxId="ttx-1" run={run({ polls: [poll] })} role="player" onChange={() => {}} />,
     )
     expect(screen.getByRole('button', { name: 'Refuse' })).toHaveAttribute('aria-pressed', 'true')
+    // In words too, with what can still be done about it.
+    expect(
+      screen.getByText('You voted Refuse. You can change it until the vote closes.'),
+    ).toBeInTheDocument()
     expect(screen.getByText('2 votes')).toBeInTheDocument()
     expect(screen.getByText(/3 have voted/)).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Close the vote' })).toBeNull()

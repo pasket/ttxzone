@@ -3340,7 +3340,6 @@
       "pendingFor": "Awaiting approval from {{organizationName}}",
       "enrolledTitle": "Your exercises",
       "noEnrollmentsMessage": "You haven't joined any exercise yet.",
-      "leaveButton": "Request to leave",
       "columnExercise": "Exercise",
       "columnOrganization": "Organization",
       "columnName": "Name",
@@ -4337,8 +4336,8 @@
       "showAll": "Show all my points",
       "notStarted": "You rate once the session starts.",
       "controllerSaw": "The Controller saw:",
-      "rate": "Rating",
-      "why": "Why",
+      "rateOf": "Rating: {{point}}",
+      "whyOf": "Why: {{point}}",
       "whyPlaceholder": "What you saw that supports it…",
       "decisions": "What the table decided"
     },
@@ -4456,6 +4455,7 @@
       "fromVote": "from a vote"
     },
     "polls": {
+      "votedNote": "You voted {{option}}. You can change it until the vote closes.",
       "open": "Put to a vote",
       "openTitle": "Put a question to the vote",
       "openDescription": "The Players vote on the inject in play and can change their vote until you close it. Everyone sees the tally, never who voted.",
