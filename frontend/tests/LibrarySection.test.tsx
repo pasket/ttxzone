@@ -174,7 +174,7 @@ describe('LibrarySection — injects', () => {
       within(tabs)
         .getAllByRole('link')
         .map((link) => link.textContent),
-    ).toEqual(['Simulated actors', 'Threat actors', 'Injects', 'Scenarios', 'Tags'])
+    ).toEqual(['Simulated actors', 'Threat actors', 'Injects', 'Exercise templates', 'Tags'])
   })
 
   it('opens a catalog inject from its View action, not from its title', async () => {

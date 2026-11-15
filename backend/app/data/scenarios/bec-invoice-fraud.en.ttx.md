@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 A message that looks like it comes from a long-standing supplier asks to change its bank details. The payment goes out, and three days later the real supplier calls. The team stops the bleeding, tries to recover the money and works with the supplier.
 
-> TTX-Zone scenario. Import it from Library → Scenarios. The readable part below is generated on export; only the data block at the end is imported.
+> TTX-Zone exercise template. Import it from Library → Exercise templates. The readable part below is generated on export; only the data block at the end is imported.
 
 ## Objectives
 

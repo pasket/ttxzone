@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 A criminal group encrypts the core business systems and threatens to publish stolen data. The crisis committee decides on containment, notification and communication while the incident unfolds over three days.
 
-> TTX-Zone scenario. Import it from Library → Scenarios. The readable part below is generated on export; only the data block at the end is imported.
+> TTX-Zone exercise template. Import it from Library → Exercise templates. The readable part below is generated on export; only the data block at the end is imported.
 
 ## Objectives
 

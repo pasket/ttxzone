@@ -209,7 +209,7 @@ describe('ScenarioLibrary', () => {
     fireEvent.click(await screen.findByLabelText('Duplicate Ransomware with double extortion'))
     fireEvent.click(screen.getByRole('button', { name: 'To a new exercise' }))
     const dialog = await screen.findByRole('dialog')
-    expect(await within(dialog).findByText('Scenario: Ransomware · English')).toBeInTheDocument()
+    expect(await within(dialog).findByText('Template: Ransomware · English')).toBeInTheDocument()
     // Nothing is lost: no warning, no name to type.
     expect(within(dialog).queryByText(/This replaces everything/)).not.toBeInTheDocument()
     fireEvent.click(within(dialog).getByRole('button', { name: 'Create exercise' }))
@@ -324,7 +324,7 @@ describe('ScenarioLibrary', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'Replace from a file' }))
     const dialog = screen.getByRole('dialog')
     const file = new File(['---'], 'shared.ttx.md', { type: 'text/markdown' })
-    fireEvent.change(within(dialog).getByLabelText('Scenario file (.ttx.md)'), {
+    fireEvent.change(within(dialog).getByLabelText('Exercise template file (.ttx.md)'), {
       target: { files: [file] },
     })
 

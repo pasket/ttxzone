@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 Un grupo de extorsión explota un día cero en la plataforma de transferencia de ficheros que {organization} usa con sus socios y copia ficheros sin que nadie lo note. Semanas después, la dirección recibe un correo de extorsión con la lista de ficheros robados. No se cifra nada: la crisis gira en torno al alcance, las obligaciones de notificación y si pagar para no aparecer en el sitio de filtraciones.
 
-> Escenario de TTX-Zone. Impórtalo desde Biblioteca → Escenarios. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
+> Plantilla de ejercicio de TTX-Zone. Impórtala desde Biblioteca → Plantillas de ejercicio. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
 
 ## Objetivos
 

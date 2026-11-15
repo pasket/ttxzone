@@ -1,6 +1,7 @@
 import type { ActorOrigin, ContentLanguage } from './types'
 
-/** Scenarios: whole exercises packaged for reuse (Library -> Scenarios).
+/** Scenarios, shown as "exercise templates": whole exercises packaged for
+ * reuse (Library -> Exercise templates).
  * The server checks a scenario before anything is written (`dry_run`) and
  * answers with a `ScenarioCheck`; copying one onto an exercise overwrites
  * its content. Files are `.ttx.md` (Markdown with a versioned data block). */

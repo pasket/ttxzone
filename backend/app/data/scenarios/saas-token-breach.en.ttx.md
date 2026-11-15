@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 Attackers breach a SaaS vendor and use its stored integration tokens to export customers' CRM data, including support cases where staff pasted passwords and cloud keys. The exercise tests third-party visibility, scoping with limited logs, rotating secrets and the notification decision.
 
-> TTX-Zone scenario. Import it from Library → Scenarios. The readable part below is generated on export; only the data block at the end is imported.
+> TTX-Zone exercise template. Import it from Library → Exercise templates. The readable part below is generated on export; only the data block at the end is imported.
 
 ## Objectives
 

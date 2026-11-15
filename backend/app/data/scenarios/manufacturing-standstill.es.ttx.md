@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 Un ransomware obliga a un fabricante con producción justo a tiempo a apagar sus sistemas y parar todas sus plantas. Los proveedores se quedan sin pedidos, los concesionarios no pueden pedir y los proveedores pequeños sufren una crisis de liquidez. El ejercicio pone a prueba las decisiones de parada y arranque, la comunicación con la cadena de suministro sin correo y quién habla de empleo y economía.
 
-> Escenario de TTX-Zone. Impórtalo desde Biblioteca → Escenarios. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
+> Plantilla de ejercicio de TTX-Zone. Impórtala desde Biblioteca → Plantillas de ejercicio. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
 
 ## Objetivos
 

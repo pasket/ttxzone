@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 Un fabricante de vehículos afronta dos incidentes en apariencia separados: un proveedor de mantenimiento comprometido con acceso remoto a una planta de montaje y un malware en un servidor de control de línea. Dos equipos los trabajan en salas distintas hasta que convergen en una sola campaña de sabotaje, coacción, extorsión y documentos falsos.
 
-> Escenario de TTX-Zone. Impórtalo desde Biblioteca → Escenarios. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
+> Plantilla de ejercicio de TTX-Zone. Impórtala desde Biblioteca → Plantillas de ejercicio. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
 
 ## Objetivos
 

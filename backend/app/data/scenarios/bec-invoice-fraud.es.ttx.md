@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 Un mensaje que parece de un proveedor de siempre pide cambiar sus datos bancarios. El pago sale y tres días después llama el proveedor real. El equipo corta la hemorragia, intenta recuperar el dinero y trabaja con el proveedor.
 
-> Escenario de TTX-Zone. Impórtalo desde Biblioteca → Escenarios. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
+> Plantilla de ejercicio de TTX-Zone. Impórtala desde Biblioteca → Plantillas de ejercicio. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
 
 ## Objetivos
 

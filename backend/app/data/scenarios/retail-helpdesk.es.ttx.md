@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 Un grupo experto en ingeniería social llama al soporte informático externalizado, consigue el restablecimiento de la contraseña y el MFA de un empleado y, dos meses después, cifra los servidores de virtualización de una cadena minorista durante un puente largo. Se paran tiendas, venta online y almacenes, y se roban datos de clientes. El ejercicio pone a prueba cuándo una avería pasa a ser una crisis, la confianza en el soporte externalizado y la notificación a los clientes.
 
-> Escenario de TTX-Zone. Impórtalo desde Biblioteca → Escenarios. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
+> Plantilla de ejercicio de TTX-Zone. Impórtala desde Biblioteca → Plantillas de ejercicio. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
 
 ## Objetivos
 

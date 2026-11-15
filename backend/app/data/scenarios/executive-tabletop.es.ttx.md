@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 Este es un ejercicio de mesa ejecutivo. Simula una crisis cibernética de alto impacto que golpea a una empresa global en distintos países y entornos a la vez. El escenario empieza con el compromiso de un proveedor de TI, escala a una fuga de datos a gran escala y termina con un ataque de ransomware que interrumpe tanto los entornos corporativos como los operacionales (OT), con una mezcla de actores de amenaza estatales y cibercriminales. El ejercicio no evalúa la contención técnica. Su propósito es entrenar a la alta dirección para gobernar una crisis transfronteriza bajo incertidumbre. Eso significa tomar decisiones críticas bajo presión, aclarar roles, autoridad y vías de escalado, probar la coordinación entre países y áreas de negocio, gestionar reguladores, accionistas, medios y clientes, y poner al descubierto las carencias del gobierno de crisis. El mensaje clave para el Consejo es sencillo: un incidente cibernético ya no es un problema de TI. Es un problema de gobierno.
 
-> Escenario de TTX-Zone. Impórtalo desde Biblioteca → Escenarios. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
+> Plantilla de ejercicio de TTX-Zone. Impórtala desde Biblioteca → Plantillas de ejercicio. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
 
 ## Objetivos
 

@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 An executive crisis simulation for a private hospital group. Ransomware reaches corporate systems and threatens the clinical environment. In three crisis meetings the committee decides whether to cut clinical networks off, how to deal with extortion and leaked patient data, and in which order to recover care.
 
-> TTX-Zone scenario. Import it from Library → Scenarios. The readable part below is generated on export; only the data block at the end is imported.
+> TTX-Zone exercise template. Import it from Library → Exercise templates. The readable part below is generated on export; only the data block at the end is imported.
 
 ## Objectives
 

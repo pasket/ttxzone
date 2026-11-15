@@ -713,22 +713,22 @@
       "disabledToast": "{{name}} sigue en uso: se ha deshabilitado en lugar de borrarse"
     },
     "scenarios": {
-      "title": "Escenarios",
+      "title": "Plantillas de ejercicio",
       "intro": "Ejercicios completos listos para reutilizar: la definición, el análisis de necesidades y el MSEL, con los actores, actores de amenaza, injects y etiquetas propios del ejercicio. Nunca se copian personas, aprobaciones ni fechas: complétalas después de copiar. Compártelos con otros equipos como archivo .ttx.md.",
-      "count_one": "{{count}} escenario",
-      "count_other": "{{count}} escenarios",
-      "systemDescription": "Los escenarios propios de TTX-Zone. De solo lectura: copia uno para adaptarlo.",
-      "organizationDescription": "Los escenarios de tu organización: hechos a partir de los de TTX-Zone, de uno de sus ejercicios o de un archivo compartido por otro equipo. Los gestionan, importan y exportan los Responsables del Programa de Ejercicios; los Planificadores los copian a sus ejercicios.",
-      "exerciseDescription": "Lo que contiene ahora. Saca una copia sin cambiarlo, o trae un escenario, aquí o en un ejercicio nuevo.",
-      "systemEmpty": "TTX-Zone aún no tiene escenarios.",
-      "organizationEmpty": "Aún no tienes escenarios propios.",
-      "organizationForbidden": "Solo los Responsables del Programa de Ejercicios y los Planificadores de tu organización pueden ver sus escenarios.",
+      "count_one": "{{count}} plantilla",
+      "count_other": "{{count}} plantillas",
+      "systemDescription": "Las plantillas de ejercicio propias de TTX-Zone. De solo lectura: copia una para adaptarla.",
+      "organizationDescription": "Las plantillas de ejercicio de tu organización: hechas a partir de las de TTX-Zone, de uno de sus ejercicios o de un archivo compartido por otro equipo. Las gestionan, importan y exportan los Responsables del Programa de Ejercicios; los Planificadores las copian a sus ejercicios.",
+      "exerciseDescription": "Lo que contiene ahora. Saca una copia sin cambiarlo, o trae una plantilla de ejercicio, aquí o en un ejercicio nuevo.",
+      "systemEmpty": "TTX-Zone aún no tiene plantillas de ejercicio.",
+      "organizationEmpty": "Aún no tienes plantillas de ejercicio propias.",
+      "organizationForbidden": "Solo los Responsables del Programa de Ejercicios y los Planificadores de tu organización pueden ver sus plantillas de ejercicio.",
       "filters": {
-        "label": "Filtrar escenarios",
+        "label": "Filtrar plantillas",
         "searchPlaceholder": "Nombre o descripción…"
       },
       "columns": {
-        "scenario": "Escenario",
+        "scenario": "Plantilla",
         "availableIn": "Disponible en"
       },
       "languages": {
@@ -748,13 +748,13 @@
       },
       "origins": {
         "system": {
-          "hint": "Un escenario de TTX-Zone (o una copia). De solo lectura en el catálogo."
+          "hint": "Una plantilla de ejercicio de TTX-Zone (o una copia). De solo lectura en el catálogo."
         },
         "organization": {
-          "hint": "Una copia de otro escenario de tu organización."
+          "hint": "Una copia de otra plantilla de ejercicio de tu organización."
         },
         "exercise": {
-          "hint": "Hecho a partir de uno de los ejercicios de tu organización."
+          "hint": "Hecha a partir de uno de los ejercicios de tu organización."
         }
       },
       "viewLabel": "Ver {{name}}",
@@ -766,8 +766,8 @@
       "fromExercise": "Desde un ejercicio",
       "exportExercise": "Exportar archivo",
       "importExercise": "Sustituir desde un archivo",
-      "copiedToOrganization": "{{name}} añadido a los escenarios de tu organización",
-      "imported": "{{name}} añadido a los escenarios de tu organización",
+      "copiedToOrganization": "{{name}} añadida a las plantillas de ejercicio de tu organización",
+      "imported": "{{name}} añadida a las plantillas de ejercicio de tu organización",
       "applied": "Este ejercicio se ha sustituido por {{name}}",
       "editTitle": "Editar {{name}}",
       "fields": {
@@ -775,47 +775,47 @@
         "description": "Descripción"
       },
       "deleteTitle": "¿Eliminar {{name}}?",
-      "deleteWarning": "El escenario sale de la biblioteca de tu organización. Los ejercicios ya copiados de él conservan su contenido.",
+      "deleteWarning": "La plantilla sale de la biblioteca de tu organización. Los ejercicios ya copiados de ella conservan su contenido.",
       "deleted": "{{name}} eliminado",
-      "fromExerciseTitle": "Escenario desde un ejercicio",
-      "fromExerciseIntro": "Empaqueta el contenido actual del ejercicio como escenario de tu organización. Se dejan fuera personas, aprobaciones y fechas.",
+      "fromExerciseTitle": "Plantilla desde un ejercicio",
+      "fromExerciseIntro": "Empaqueta el contenido actual del ejercicio como plantilla de ejercicio de tu organización. Se dejan fuera personas, aprobaciones y fechas.",
       "exerciseLabel": "Ejercicio",
       "noExercises": "Tu organización aún no tiene ejercicios.",
-      "create": "Crear escenario",
-      "importTitle": "Añadir un escenario desde un archivo",
+      "create": "Crear plantilla",
+      "importTitle": "Añadir una plantilla de ejercicio desde un archivo",
       "importIntro": "Elige un archivo .ttx.md. Primero se comprueba; no se añade nada hasta que confirmes, y un archivo con errores nunca se añade.",
       "addToLibrary": "Añadir a la biblioteca",
-      "fileLabel": "Archivo de escenario (.ttx.md)",
-      "checking": "Comprobando el escenario… aún no se ha cambiado nada.",
+      "fileLabel": "Archivo de plantilla de ejercicio (.ttx.md)",
+      "checking": "Comprobando la plantilla… aún no se ha cambiado nada.",
       "applyTitle": "Sustituir este ejercicio por {{name}}",
       "applyLanguage": "Idioma de la copia",
       "applyLanguageHint": "El contenido del ejercicio quedará en este idioma.",
       "importExerciseTitle": "Sustituir «{{exercise}}» desde un archivo",
       "importExerciseIntro": "Elige un archivo .ttx.md. Primero se comprueba; «{{exercise}}» no cambia hasta que confirmes.",
       "report": {
-        "scenario": "Escenario: {{name}}",
-        "failed": "El escenario tiene errores, así que no se ha cambiado nada. Corrígelos y vuelve a intentarlo.",
+        "scenario": "Plantilla: {{name}}",
+        "failed": "La plantilla tiene errores, así que no se ha cambiado nada. Corrígelos y vuelve a intentarlo.",
         "passed": "No se han encontrado errores. Aún no se ha cambiado nada.",
         "item": "Elemento",
         "now": "Este ejercicio ahora",
         "after": "Tras la copia",
-        "holds": "En el escenario",
+        "holds": "En la plantilla",
         "warnings": "Notas"
       },
-      "overwriteWarning": "Esto sustituye todo lo que «{{exercise}}» tiene diseñado: análisis de necesidades (y sus aprobaciones), MSEL, plan de sesión, actores simulados, actores de amenaza, injects y etiquetas. Su nombre, descripción e idioma pasan a ser los del escenario. No se puede deshacer.",
+      "overwriteWarning": "Esto sustituye todo lo que «{{exercise}}» tiene diseñado: análisis de necesidades (y sus aprobaciones), MSEL, plan de sesión, actores simulados, actores de amenaza, injects y etiquetas. Su nombre, descripción e idioma pasan a ser los de la plantilla. No se puede deshacer.",
       "overwriteKeeps": "Se conservan: el código del ejercicio, su equipo y sus invitaciones. Personas, aprobaciones y fechas quedan en blanco para completarlas de nuevo.",
       "confirmLabel": "Escribe «{{name}}» para confirmar",
       "copyHeading": "Sacar una copia",
-      "copyIntro": "Descarga «{{exercise}}» como archivo .ttx.md o guárdalo como escenario de tu organización. No incluye personas, aprobaciones ni fechas, y el ejercicio no cambia.",
+      "copyIntro": "Descarga «{{exercise}}» como archivo .ttx.md o guárdalo como plantilla de ejercicio de tu organización. No incluye personas, aprobaciones ni fechas, y el ejercicio no cambia.",
       "saveToOrganization": "Guardar en mi organización",
-      "bringHeading": "Traer un escenario",
+      "bringHeading": "Traer una plantilla de ejercicio",
       "newHeading": "En un ejercicio nuevo",
       "newIntro": "«{{exercise}}» no cambia.",
       "newFromFile": "Crear desde un archivo",
       "replaceHeading": "En este ejercicio",
       "replaceIntro": "Borra lo que «{{exercise}}» tiene diseñado. No se puede deshacer.",
       "playedNote": "No se puede sustituir: sus sesiones conservan el diseño que se ejecutó. Usa un ejercicio nuevo.",
-      "fromLibrary": "Para usar un escenario de la biblioteca, elígelo en",
+      "fromLibrary": "Para usar una plantilla de la biblioteca, elígela en",
       "fromLibraryOr": "o",
       "toNewExercise": "A un ejercicio nuevo",
       "replaceExercise": "Sustituir este ejercicio…",
@@ -831,10 +831,21 @@
       "contingent": "contingente",
       "variables": {
         "legend": "Marcadores",
-        "hint": "Los {marcadores} del escenario, de más a menos usados: los primeros son el núcleo del ejercicio. Lo que escribas aquí los sustituye en toda la copia; lo que dejes en blanco se queda como {marcador} para completarlo después.",
+        "hint": "Los {marcadores} de la plantilla, de más a menos usados: los primeros son el núcleo del ejercicio. Lo que escribas aquí los sustituye en toda la copia; lo que dejes en blanco se queda como {marcador} para completarlo después.",
         "used_one": "usado una vez",
         "used_other": "usado {{count}} veces"
       }
+    },
+    "picker": {
+      "title": "Empezar desde una plantilla de ejercicio",
+      "intro": "Un ejercicio completo para adaptar: definición, análisis de necesidades y MSEL. Primero se comprueba y no se crea nada hasta que confirmes.",
+      "search": "Buscar",
+      "empty": "Ninguna plantilla de ejercicio coincide.",
+      "groupSystem": "TTX-Zone",
+      "groupOrganization": "Mi organización",
+      "summary": "{{objectives}} objetivos · {{phases}} fases · {{injects}} injects",
+      "use": "Usar",
+      "useLabel": "Usar {{name}}"
     }
   },
   "creator": {
@@ -884,7 +895,7 @@
       "deleteTitle": "¿Eliminar {{name}}?",
       "deleteWarning": "Esto elimina el ejercicio para siempre, con todo lo que contiene: análisis de necesidades y sus aprobaciones, MSEL e imágenes, plan de sesión, equipo, invitaciones y etiquetas. No se puede deshacer.",
       "exportFirst": "¿Quieres guardar una copia para reutilizarla?",
-      "exportLink": "Expórtalo antes como escenario",
+      "exportLink": "Expórtalo antes como plantilla",
       "confirmLabel": "Escribe «{{name}}» para confirmar",
       "deleteConfirm": "Eliminar ejercicio",
       "deleted": "{{name}} eliminado",
@@ -1001,7 +1012,12 @@
       "duplicate": "Duplicar",
       "newExercise": "Nuevo ejercicio",
       "tagsHint": "Marca las etiquetas que lleva este ejercicio. Son etiquetas propias del ejercicio: cópialas de TTX-Zone o de tu organización, o créalas, en la Biblioteca.",
-      "noTagsYet": "Este ejercicio aún no tiene etiquetas."
+      "noTagsYet": "Este ejercicio aún no tiene etiquetas.",
+      "fromTemplate": {
+        "intro": "O empieza desde una plantilla de ejercicio:",
+        "choose": "Elegir de la biblioteca",
+        "import": "Importar un archivo .ttx.md"
+      }
     },
     "dashboard": {
       "kpis": {
@@ -5073,7 +5089,7 @@
           "member_joined": "Se unió a un ejercicio",
           "needs_approved": "Aprobó el análisis de necesidades",
           "needs_approval_recorded": "Registró una aprobación del análisis de necesidades",
-          "scenario_applied": "Aplicó un escenario a un ejercicio",
+          "scenario_applied": "Aplicó una plantilla de ejercicio a un ejercicio",
           "aar_final": "Marcó como final el informe posterior a la acción",
           "aar_reopened": "Reabrió el informe posterior a la acción"
         }

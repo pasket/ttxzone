@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 En la víspera del Black Friday, una caída global del proveedor de la suite de productividad deja a un grupo de moda sin correo, chat, calendarios ni archivos compartidos durante más de un día. La web sigue vendiendo. El comité, presidido por el negocio, decide qué lanza, cómo sirve y atiende a los clientes y qué alternativas tenía preparadas o tiene que improvisar.
 
-> Escenario de TTX-Zone. Impórtalo desde Biblioteca → Escenarios. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
+> Plantilla de ejercicio de TTX-Zone. Impórtala desde Biblioteca → Plantillas de ejercicio. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
 
 ## Objetivos
 

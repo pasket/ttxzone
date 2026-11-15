@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 Unos atacantes comprometen a un proveedor SaaS y usan sus tokens de integración para exportar los datos del CRM de sus clientes, incluidos casos de soporte donde la plantilla pegó contraseñas y claves cloud. El ejercicio pone a prueba la visibilidad sobre terceros, acotar el alcance con pocos registros, rotar secretos y decidir la notificación.
 
-> Escenario de TTX-Zone. Impórtalo desde Biblioteca → Escenarios. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
+> Plantilla de ejercicio de TTX-Zone. Impórtala desde Biblioteca → Plantillas de ejercicio. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
 
 ## Objetivos
 

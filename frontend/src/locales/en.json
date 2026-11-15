@@ -713,22 +713,22 @@
       "disabledToast": "{{name}} is still in use: disabled instead of deleted"
     },
     "scenarios": {
-      "title": "Scenarios",
+      "title": "Exercise templates",
       "intro": "Whole exercises ready to reuse: the definition, needs analysis and MSEL, with the exercise’s own actors, threat actors, injects and tags. People, approvals and dates are never copied: fill them in after copying. Share them with other teams as a .ttx.md file.",
-      "count_one": "{{count}} scenario",
-      "count_other": "{{count}} scenarios",
-      "systemDescription": "TTX-Zone’s own scenarios. Read-only: copy one to adapt it.",
-      "organizationDescription": "Your organization’s scenarios: made from TTX-Zone’s, from one of its exercises or from a file shared by another team. Exercise Program Managers manage, import and export them; Exercise Planners copy them onto their exercises.",
-      "exerciseDescription": "What it holds now. Take a copy without changing it, or bring in a scenario, here or in a new exercise.",
-      "systemEmpty": "TTX-Zone has no scenarios yet.",
-      "organizationEmpty": "No scenarios of your own yet.",
-      "organizationForbidden": "Only your organization’s Exercise Program Managers and Exercise Planners can see its scenarios.",
+      "count_one": "{{count}} template",
+      "count_other": "{{count}} templates",
+      "systemDescription": "TTX-Zone’s own exercise templates. Read-only: copy one to adapt it.",
+      "organizationDescription": "Your organization’s exercise templates: made from TTX-Zone’s, from one of its exercises or from a file shared by another team. Exercise Program Managers manage, import and export them; Exercise Planners copy them onto their exercises.",
+      "exerciseDescription": "What it holds now. Take a copy without changing it, or bring in an exercise template, here or in a new exercise.",
+      "systemEmpty": "TTX-Zone has no exercise templates yet.",
+      "organizationEmpty": "No exercise templates of your own yet.",
+      "organizationForbidden": "Only your organization’s Exercise Program Managers and Exercise Planners can see its exercise templates.",
       "filters": {
-        "label": "Filter scenarios",
+        "label": "Filter templates",
         "searchPlaceholder": "Name or description…"
       },
       "columns": {
-        "scenario": "Scenario",
+        "scenario": "Template",
         "availableIn": "Available in"
       },
       "languages": {
@@ -748,10 +748,10 @@
       },
       "origins": {
         "system": {
-          "hint": "A TTX-Zone scenario (or a copy of one). Read-only in the catalog."
+          "hint": "A TTX-Zone exercise template (or a copy of one). Read-only in the catalog."
         },
         "organization": {
-          "hint": "A copy of another of your organization’s scenarios."
+          "hint": "A copy of another of your organization’s exercise templates."
         },
         "exercise": {
           "hint": "Made from one of your organization’s exercises."
@@ -766,8 +766,8 @@
       "fromExercise": "From an exercise",
       "exportExercise": "Export file",
       "importExercise": "Replace from a file",
-      "copiedToOrganization": "{{name}} added to your organization’s scenarios",
-      "imported": "{{name}} added to your organization’s scenarios",
+      "copiedToOrganization": "{{name}} added to your organization’s exercise templates",
+      "imported": "{{name}} added to your organization’s exercise templates",
       "applied": "This exercise was replaced by {{name}}",
       "editTitle": "Edit {{name}}",
       "fields": {
@@ -775,47 +775,47 @@
         "description": "Description"
       },
       "deleteTitle": "Delete {{name}}?",
-      "deleteWarning": "The scenario leaves your organization’s library. Exercises already copied from it keep their content.",
+      "deleteWarning": "The template leaves your organization’s library. Exercises already copied from it keep their content.",
       "deleted": "{{name}} deleted",
-      "fromExerciseTitle": "Scenario from an exercise",
-      "fromExerciseIntro": "Packs the exercise’s current content as a scenario of your organization. People, approvals and dates are left out.",
+      "fromExerciseTitle": "Template from an exercise",
+      "fromExerciseIntro": "Packs the exercise’s current content as an exercise template of your organization. People, approvals and dates are left out.",
       "exerciseLabel": "Exercise",
       "noExercises": "Your organization has no exercises yet.",
-      "create": "Create scenario",
-      "importTitle": "Add a scenario from a file",
+      "create": "Create template",
+      "importTitle": "Add an exercise template from a file",
       "importIntro": "Choose a .ttx.md file. It’s checked first; nothing is added until you confirm, and a file with errors is never added.",
       "addToLibrary": "Add to the library",
-      "fileLabel": "Scenario file (.ttx.md)",
-      "checking": "Checking the scenario… nothing is changed yet.",
+      "fileLabel": "Exercise template file (.ttx.md)",
+      "checking": "Checking the template… nothing is changed yet.",
       "applyTitle": "Replace this exercise with {{name}}",
       "applyLanguage": "Language of the copy",
       "applyLanguageHint": "The exercise’s content will be in this language.",
       "importExerciseTitle": "Replace “{{exercise}}” from a file",
       "importExerciseIntro": "Choose a .ttx.md file. It’s checked first; “{{exercise}}” doesn’t change until you confirm.",
       "report": {
-        "scenario": "Scenario: {{name}}",
-        "failed": "The scenario has errors, so nothing was changed. Fix them and try again.",
+        "scenario": "Template: {{name}}",
+        "failed": "The template has errors, so nothing was changed. Fix them and try again.",
         "passed": "No errors found. Nothing has been changed yet.",
         "item": "Item",
         "now": "This exercise now",
         "after": "After the copy",
-        "holds": "In the scenario",
+        "holds": "In the template",
         "warnings": "Notes"
       },
-      "overwriteWarning": "This replaces everything “{{exercise}}” has designed: needs analysis (and its approvals), MSEL, session plan, simulated actors, threat actors, injects and tags. Its name, description and language become the scenario’s. It can’t be undone.",
+      "overwriteWarning": "This replaces everything “{{exercise}}” has designed: needs analysis (and its approvals), MSEL, session plan, simulated actors, threat actors, injects and tags. Its name, description and language become the template’s. It can’t be undone.",
       "overwriteKeeps": "Kept: the exercise’s code, its team and its invitations. People, approvals and dates are left blank to fill in again.",
       "confirmLabel": "Type “{{name}}” to confirm",
       "copyHeading": "Take a copy",
-      "copyIntro": "Download “{{exercise}}” as a .ttx.md file, or save it as a scenario of your organization. People, approvals and dates are left out, and the exercise doesn’t change.",
+      "copyIntro": "Download “{{exercise}}” as a .ttx.md file, or save it as an exercise template of your organization. People, approvals and dates are left out, and the exercise doesn’t change.",
       "saveToOrganization": "Save to my organization",
-      "bringHeading": "Bring in a scenario",
+      "bringHeading": "Bring in an exercise template",
       "newHeading": "In a new exercise",
       "newIntro": "“{{exercise}}” doesn’t change.",
       "newFromFile": "Create from a file",
       "replaceHeading": "In this exercise",
       "replaceIntro": "Deletes what “{{exercise}}” has designed. It can’t be undone.",
       "playedNote": "It can’t be replaced: its sessions keep the design they ran. Use a new exercise.",
-      "fromLibrary": "To use a library scenario, pick it in",
+      "fromLibrary": "To use a library template, pick it in",
       "fromLibraryOr": "or",
       "toNewExercise": "To a new exercise",
       "replaceExercise": "Replace this exercise…",
@@ -831,10 +831,21 @@
       "contingent": "contingent",
       "variables": {
         "legend": "Placeholders",
-        "hint": "The scenario’s {placeholders}, most used first: those are the core of the exercise. What you write here replaces them throughout the copy; anything left blank stays as {placeholder} to complete later.",
+        "hint": "The template’s {placeholders}, most used first: those are the core of the exercise. What you write here replaces them throughout the copy; anything left blank stays as {placeholder} to complete later.",
         "used_one": "used once",
         "used_other": "used {{count}} times"
       }
+    },
+    "picker": {
+      "title": "Start from an exercise template",
+      "intro": "A whole exercise to adapt: definition, needs analysis and MSEL. It’s checked first, and nothing is created until you confirm.",
+      "search": "Search",
+      "empty": "No exercise templates match.",
+      "groupSystem": "TTX-Zone",
+      "groupOrganization": "My organization",
+      "summary": "{{objectives}} objectives · {{phases}} phases · {{injects}} injects",
+      "use": "Use",
+      "useLabel": "Use {{name}}"
     }
   },
   "creator": {
@@ -884,7 +895,7 @@
       "deleteTitle": "Delete {{name}}?",
       "deleteWarning": "This deletes the exercise for good, with everything in it: needs analysis and its approvals, MSEL and images, session plan, team, invitations and tags. It can’t be undone.",
       "exportFirst": "Want to keep a copy to reuse?",
-      "exportLink": "Export it as a scenario first",
+      "exportLink": "Export it as a template first",
       "confirmLabel": "Type “{{name}}” to confirm",
       "deleteConfirm": "Delete exercise",
       "deleted": "{{name}} deleted",
@@ -1001,7 +1012,12 @@
       "duplicate": "Duplicate",
       "newExercise": "New exercise",
       "tagsHint": "Tick the tags this exercise carries. They are this exercise’s own tags: copy them from TTX-Zone or your organization, or create them, in the Library.",
-      "noTagsYet": "This exercise has no tags yet."
+      "noTagsYet": "This exercise has no tags yet.",
+      "fromTemplate": {
+        "intro": "Or start from an exercise template:",
+        "choose": "Choose from the library",
+        "import": "Import a .ttx.md file"
+      }
     },
     "dashboard": {
       "kpis": {
@@ -5073,7 +5089,7 @@
           "member_joined": "Took a seat on an exercise",
           "needs_approved": "Approved the needs analysis",
           "needs_approval_recorded": "Recorded an approval of the needs analysis",
-          "scenario_applied": "Applied a scenario to an exercise",
+          "scenario_applied": "Applied an exercise template to an exercise",
           "aar_final": "Marked the after-action report final",
           "aar_reopened": "Reopened the after-action report"
         }

@@ -33387,7 +33387,7 @@
     },
     "/api/v1/organizations/{organization_id}/scenarios": {
       "get": {
-        "description": "The organization's library of scenarios.",
+        "description": "The organization's library of exercise templates.",
         "operationId": "list_org_scenarios_endpoint_api_v1_organizations__organization_id__scenarios_get",
         "parameters": [
           {
@@ -33596,7 +33596,7 @@
     },
     "/api/v1/organizations/{organization_id}/scenarios/{scenario_id}": {
       "delete": {
-        "description": "Delete a scenario of the organization's library.",
+        "description": "Delete an exercise template of the organization's library.",
         "operationId": "delete_org_scenario_endpoint_api_v1_organizations__organization_id__scenarios__scenario_id__delete",
         "parameters": [
           {
@@ -33654,7 +33654,7 @@
         ]
       },
       "get": {
-        "description": "One scenario of the organization's library.",
+        "description": "One exercise template of the organization's library.",
         "operationId": "get_org_scenario_endpoint_api_v1_organizations__organization_id__scenarios__scenario_id__get",
         "parameters": [
           {
@@ -35017,7 +35017,7 @@
     },
     "/api/v1/scenario-catalog": {
       "get": {
-        "description": "TTX-Zone's own scenarios, in the reader's language when available.",
+        "description": "TTX-Zone's own exercise templates, in the reader's language when available.",
         "operationId": "scenario_catalog_endpoint_api_v1_scenario_catalog_get",
         "parameters": [
           {
@@ -35072,7 +35072,7 @@
     },
     "/api/v1/scenario-catalog/{scenario_id}": {
       "get": {
-        "description": "One scenario of TTX-Zone's catalog.",
+        "description": "One exercise template of TTX-Zone's catalog.",
         "operationId": "scenario_catalog_item_endpoint_api_v1_scenario_catalog__scenario_id__get",
         "parameters": [
           {

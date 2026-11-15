@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 A hacktivist group announces and then launches a denial-of-service attack on the online shop during its busiest weekend, followed by an extortion demand. The team keeps checkout open, uses its protection provider and talks to customers before rumours do.
 
-> TTX-Zone scenario. Import it from Library → Scenarios. The readable part below is generated on export; only the data block at the end is imported.
+> TTX-Zone exercise template. Import it from Library → Exercise templates. The readable part below is generated on export; only the data block at the end is imported.
 
 ## Objectives
 

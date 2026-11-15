@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 Unos atacantes clonan la cara y la voz del director financiero y, en una videollamada con varios «compañeros», convencen a una responsable financiera regional para hacer transferencias urgentes y confidenciales. El ejercicio pone a prueba la verificación de pagos, la respuesta cuando se descubre el fraude y si además es un incidente de ciberseguridad.
 
-> Escenario de TTX-Zone. Impórtalo desde Biblioteca → Escenarios. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
+> Plantilla de ejercicio de TTX-Zone. Impórtala desde Biblioteca → Plantillas de ejercicio. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
 
 ## Objetivos
 

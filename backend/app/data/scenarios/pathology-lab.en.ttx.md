@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 The private company that runs the laboratory for {organization} and other hospitals is hit by ransomware. The hospitals are not compromised, yet they lose a service they cannot work without: no test results, no cross-matching for transfusions. Weeks later patient data is published. The exercise tests clinical continuity, coordination across hospitals and patient notification.
 
-> TTX-Zone scenario. Import it from Library → Scenarios. The readable part below is generated on export; only the data block at the end is imported.
+> TTX-Zone exercise template. Import it from Library → Exercise templates. The readable part below is generated on export; only the data block at the end is imported.
 
 ## Objectives
 

@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 A crew that excels at social engineering calls the outsourced IT help desk, gets an employee's password and MFA reset, and two months later encrypts the virtualization hosts of a retail chain over a long holiday weekend. Stores, online sales and warehouses stop; customer data is stolen. The exercise tests when a glitch becomes a crisis, trust in the outsourced help desk and the customer notification.
 
-> TTX-Zone scenario. Import it from Library → Scenarios. The readable part below is generated on export; only the data block at the end is imported.
+> TTX-Zone exercise template. Import it from Library → Exercise templates. The readable part below is generated on export; only the data block at the end is imported.
 
 ## Objectives
 

@@ -1,6 +1,6 @@
 # Library
 
-Menu **Library** / **Biblioteca** (code in `components/templates/`). Five kinds — simulated actors, threat actors, injects, tags and **scenarios** (whole exercises; see `docs/features/scenarios.md`) — each on **three levels**, all **independent of the needs analysis and the MSEL** (managed at any time):
+Menu **Library** / **Biblioteca** (code in `components/templates/`). Five kinds — simulated actors, threat actors, injects, tags and **exercise templates** (whole exercises, `scenarios` in code; see `docs/features/scenarios.md`) — each on **three levels**, all **independent of the needs analysis and the MSEL** (managed at any time):
 - **TTX-Zone** — a code-level, read-only catalog (both languages, stable slug ids, never real organizations).
 - **Organization** — the org's own items, changed only by its Program Managers (`require_library_manager`); org-scoped Exercise Planners list them (`require_library_reader`, each role with its own TOTP mandate) to copy them into their exercises; cascade-deleted with the org.
 - **Exercise** — the exercise's own copies.

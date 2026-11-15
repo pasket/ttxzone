@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 The national grid collapses at midday without warning. {organization} is not the grid operator: it suddenly depends on generators, batteries and paper, and nobody knows the cause for hours. Everyone asks whether it is a cyberattack. With no adversary to chase, the exercise tests continuity, decisions under uncertainty and crisis communication.
 
-> TTX-Zone scenario. Import it from Library → Scenarios. The readable part below is generated on export; only the data block at the end is imported.
+> TTX-Zone exercise template. Import it from Library → Exercise templates. The readable part below is generated on export; only the data block at the end is imported.
 
 ## Objectives
 

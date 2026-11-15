@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 Un ingeniero que acaba de dimitir para irse a la competencia copia ficheros de diseño y precios de clientes. Seguridad, RR. HH. y Legal deben actuar juntos sin alertarle ni perder las evidencias.
 
-> Escenario de TTX-Zone. Impórtalo desde Biblioteca → Escenarios. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
+> Plantilla de ejercicio de TTX-Zone. Impórtala desde Biblioteca → Plantillas de ejercicio. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
 
 ## Objetivos
 

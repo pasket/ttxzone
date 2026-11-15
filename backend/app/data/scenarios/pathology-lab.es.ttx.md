@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 La empresa privada que gestiona el laboratorio de {organization} y de otros hospitales sufre un ransomware. Los hospitales no están comprometidos, pero pierden un servicio sin el que no pueden trabajar: sin resultados de análisis ni pruebas cruzadas para transfusiones. Semanas después se publican datos de pacientes. El ejercicio pone a prueba la continuidad asistencial, la coordinación entre hospitales y la notificación a pacientes.
 
-> Escenario de TTX-Zone. Impórtalo desde Biblioteca → Escenarios. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
+> Plantilla de ejercicio de TTX-Zone. Impórtala desde Biblioteca → Plantillas de ejercicio. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
 
 ## Objetivos
 

@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 Un investigador de seguridad avisa de que un contenedor de almacenamiento cloud con exportaciones de clientes lleva semanas legible públicamente. El equipo lo cierra, averigua qué se expuso y decide la notificación a la autoridad y a los clientes.
 
-> Escenario de TTX-Zone. Impórtalo desde Biblioteca → Escenarios. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
+> Plantilla de ejercicio de TTX-Zone. Impórtala desde Biblioteca → Plantillas de ejercicio. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
 
 ## Objetivos
 

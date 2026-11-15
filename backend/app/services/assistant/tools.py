@@ -137,7 +137,9 @@ class ScenarioSearchInput(BaseModel):
     query: str = Field(default="", max_length=200, description="Words of its name or description.")
     source: Literal["system", "organization"] = Field(
         default="system",
-        description="TTX-Zone's own scenarios, or your organization's library (needs its id).",
+        description=(
+            "TTX-Zone's own exercise templates, or your organization's library (needs its id)."
+        ),
     )
     organization_id: uuid.UUID | None = None
     language: Literal["en", "es"] = "en"
@@ -148,10 +150,10 @@ class ScenarioInput(BaseModel):
     scenario_id: str = Field(max_length=64, description="From search_scenarios.")
     source: Literal["system", "organization"] = "system"
     organization_id: uuid.UUID | None = Field(
-        default=None, description="Required for an organization's scenario."
+        default=None, description="Required for an organization's exercise template."
     )
     language: Literal["en", "es"] = Field(
-        default="en", description="A TTX-Zone scenario's language; an organization's has one."
+        default="en", description="A TTX-Zone template's language; an organization's has one."
     )
 
 
@@ -738,7 +740,7 @@ def _get_scenario(session: Session, user: User, args: ScenarioInput) -> ToolResu
         "approved the needs analysis, the MSEL (propose_phases, propose_actors, "
         "propose_threat_actors, then propose_injects naming the proposed rows by their ids and "
         "the exercise's own objective codes). For a word-for-word copy, the person applies the "
-        "scenario from Library → Scenarios instead."
+        "template from Library → Exercise templates instead."
     )
     return ToolResult(data, organization_id=args.organization_id)
 
@@ -1459,17 +1461,18 @@ TOOLS: dict[str, ToolSpec] = {
         ),
         ToolSpec(
             "search_scenarios",
-            "Find ready-made exercise scenarios: TTX-Zone's own (ransomware, supply chain, "
-            "hospital network, connected plant...) or your organization's library. Returns ids "
+            "Find exercise templates (whole exercises ready to adapt): TTX-Zone's own "
+            "(ransomware, supply chain, hospital network, connected plant...) or your "
+            "organization's library. Returns ids "
             "and what each holds; read one with get_scenario.",
             ScenarioSearchInput,
             _search_scenarios,
         ),
         ToolSpec(
             "get_scenario",
-            "One scenario in full, as a starting point to adapt: its needs and objectives, "
-            "simulated actors, phases, threat actors and injects with their codes, and how to "
-            "bring it into an exercise through proposals." + _DATA_NOTE,
+            "One exercise template in full, as a starting point to adapt: its needs and "
+            "objectives, simulated actors, phases, threat actors and injects with their codes, "
+            "and how to bring it into an exercise through proposals." + _DATA_NOTE,
             ScenarioInput,
             _get_scenario,
         ),
@@ -1703,7 +1706,7 @@ TOOLS: dict[str, ToolSpec] = {
         ),
         ToolSpec(
             "search_organization_library",
-            "Search your organization's own library of injects or scenarios (by title and "
+            "Search your organization's own library of injects or exercise templates (by title and "
             "text)." + _DATA_NOTE,
             LibrarySearchInput,
             _search_library,

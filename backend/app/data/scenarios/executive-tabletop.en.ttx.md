@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 This is an executive tabletop exercise. It simulates a high-impact cyber crisis that hits a global company in the different countries and environments at the same time. The scenario starts with the compromise of an IT supplier, escalates into a large-scale data leak, and ends with a ransomware attack that disrupts both corporate and operational (OT) environments, with a mix of nation-state and cybercriminal threat actors. The exercise does not test technical containment. Its purpose is to train senior leadership to govern a cross-border crisis under uncertainty. That means making critical decisions under pressure, clarifying roles, authority and escalation paths, testing coordination between countries and business areas, managing regulators, shareholders, the media and customers, and exposing gaps in crisis governance. The key message for the Board is simple: a cyber incident is no longer an IT problem. It is a governance problem.
 
-> TTX-Zone scenario. Import it from Library → Scenarios. The readable part below is generated on export; only the data block at the end is imported.
+> TTX-Zone exercise template. Import it from Library → Exercise templates. The readable part below is generated on export; only the data block at the end is imported.
 
 ## Objectives
 

@@ -57,7 +57,10 @@ def read_upload(upload: UploadFile) -> ScenarioDocument | ScenarioCheck:
     if len(raw) > settings.SCENARIO_MAX_BYTES:
         max_mb = settings.SCENARIO_MAX_BYTES // (1024 * 1024)
         return _failed(
-            "file", "SCENARIO_TOO_LARGE", "A scenario file can be {max_mb} MB.", max_mb=max_mb
+            "file",
+            "SCENARIO_TOO_LARGE",
+            "An exercise template file can be {max_mb} MB.",
+            max_mb=max_mb,
         )
     try:
         text = raw.decode("utf-8-sig")
@@ -103,7 +106,7 @@ def system_read(scenario_id: str, locale: str) -> ScenarioRead:
 def get_system(scenario_id: str) -> SystemScenario:
     scenario = scenario_catalog().get(scenario_id)
     if scenario is None:
-        raise _reject("SCENARIO_NOT_FOUND", "That TTX-Zone scenario doesn't exist.", 404)
+        raise _reject("SCENARIO_NOT_FOUND", "That TTX-Zone exercise template doesn't exist.", 404)
     return scenario
 
 
@@ -290,7 +293,9 @@ def library_document(
     try:
         row_id = uuid.UUID(scenario_id)
     except ValueError:
-        raise _reject("SCENARIO_NOT_FOUND", "That scenario isn't in this library.", 404) from None
+        raise _reject(
+            "SCENARIO_NOT_FOUND", "That exercise template isn't in this library.", 404
+        ) from None
     row = get_scenario(session, organization_id, row_id)
     ensure_not_disabled(session, "scenario", organization_id, ActorOrigin.ORGANIZATION, str(row.id))
     return organization_document(row), (ActorOrigin.ORGANIZATION.value, str(row.id), row.name)

@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 A security researcher reports that a cloud storage bucket with customer exports has been publicly readable for weeks. The team closes it, works out what was exposed and decides on notifying the authority and the customers.
 
-> TTX-Zone scenario. Import it from Library → Scenarios. The readable part below is generated on export; only the data block at the end is imported.
+> TTX-Zone exercise template. Import it from Library → Exercise templates. The readable part below is generated on export; only the data block at the end is imported.
 
 ## Objectives
 

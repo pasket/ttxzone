@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 Simulacro de crisis para el comité ejecutivo de un grupo hospitalario privado. El ransomware alcanza los sistemas corporativos y amenaza el entorno clínico. En tres reuniones de crisis, el comité decide si desconectar las redes clínicas, cómo afrontar la extorsión y la filtración de datos de pacientes y en qué orden recuperar la asistencia.
 
-> Escenario de TTX-Zone. Impórtalo desde Biblioteca → Escenarios. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
+> Plantilla de ejercicio de TTX-Zone. Impórtala desde Biblioteca → Plantillas de ejercicio. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
 
 ## Objetivos
 

@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 Un grupo hacktivista anuncia y después lanza un ataque de denegación de servicio contra la tienda online en su fin de semana de más ventas, seguido de una extorsión. El equipo mantiene el pago abierto, usa a su proveedor de protección y habla con los clientes antes que los rumores.
 
-> Escenario de TTX-Zone. Impórtalo desde Biblioteca → Escenarios. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
+> Plantilla de ejercicio de TTX-Zone. Impórtala desde Biblioteca → Plantillas de ejercicio. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
 
 ## Objetivos
 

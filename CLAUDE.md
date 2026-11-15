@@ -104,7 +104,7 @@ Nested `CLAUDE.md` files load automatically when working in their directory. Fil
 | Playground / Control center (live session) | `docs/features/playground.md` |
 | After-action report and improvement plan | `docs/features/after-action.md` |
 | Library (simulated actors, threat actors, injects, tags, scenarios) | `docs/features/library.md` |
-| Library → Scenarios, `.ttx.md` import/export, scenario format versions | `docs/features/scenarios.md` |
+| Library → Exercise templates (`scenarios` in code), starting a new exercise from one, `.ttx.md` import/export, format versions | `docs/features/scenarios.md` |
 | Tenancy rules (open / single / managed), instance administrator, Platform, account suspension | `docs/features/instance-tenancy.md` |
 | Terms of service and privacy policy (Platform drafts and publishes, signup checkbox, acceptance screen) | `docs/features/legal-documents.md` |
 | MITRE ATT&CK data, releases, conversion | `docs/architecture/attack.md` |

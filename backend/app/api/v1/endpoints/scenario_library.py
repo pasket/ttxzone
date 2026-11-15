@@ -1,4 +1,5 @@
-"""The scenario library (Library -> Scenarios): TTX-Zone's catalog (read
+"""The exercise template library (Library -> Exercise templates; "scenario"
+in code, the API and the `.ttx.md` format): TTX-Zone's catalog (read
 only), the organization's scenarios (Program Managers manage them, import
 and export them; Exercise Planners list them) and the exercise in context
 (its Exercise Planners export it, and overwrite it with a library scenario
@@ -91,7 +92,9 @@ def scenario_schema_endpoint(version: int, _user: User = Depends(get_current_use
         8: ScenarioDocumentV8,
     }
     if version not in models:
-        raise AppException("SCENARIO_FORMAT_NOT_FOUND", "No such scenario format version.", 404)
+        raise AppException(
+            "SCENARIO_FORMAT_NOT_FOUND", "No such exercise template format version.", 404
+        )
     return models[version].model_json_schema()
 
 
@@ -102,7 +105,7 @@ def scenario_schema_endpoint(version: int, _user: User = Depends(get_current_use
 def scenario_catalog_endpoint(
     _user: User = Depends(get_current_user), locale: str = Depends(get_locale)
 ) -> ScenarioListResponse:
-    """TTX-Zone's own scenarios, in the reader's language when available."""
+    """TTX-Zone's own exercise templates, in the reader's language when available."""
     return ScenarioListResponse(
         items=[library.system_summary(s, locale) for s in scenario_catalog().values()]
     )
@@ -114,7 +117,7 @@ def scenario_catalog_item_endpoint(
     _user: User = Depends(get_current_user),
     locale: str = Depends(get_locale),
 ) -> ScenarioRead:
-    """One scenario of TTX-Zone's catalog."""
+    """One exercise template of TTX-Zone's catalog."""
     return library.system_read(scenario_id, locale)
 
 
@@ -127,7 +130,7 @@ def list_org_scenarios_endpoint(
     user: User = Depends(get_current_user),
     session: Session = Depends(get_session),
 ) -> ScenarioListResponse:
-    """The organization's library of scenarios."""
+    """The organization's library of exercise templates."""
     require_library_reader(session, user, organization_id)
     used = usage_counts(session, "scenario", organization_id)
     return ScenarioListResponse(
@@ -145,7 +148,7 @@ def get_org_scenario_endpoint(
     user: User = Depends(get_current_user),
     session: Session = Depends(get_session),
 ) -> ScenarioRead:
-    """One scenario of the organization's library."""
+    """One exercise template of the organization's library."""
     require_library_reader(session, user, organization_id)
     row = library.get_scenario(session, organization_id, scenario_id)
     return ScenarioRead(
@@ -228,7 +231,7 @@ def delete_org_scenario_endpoint(
     user: User = Depends(get_current_user),
     session: Session = Depends(get_session),
 ) -> LibraryDeleteResult:
-    """Delete a scenario of the organization's library."""
+    """Delete an exercise template of the organization's library."""
     require_library_manager(session, user, organization_id)
     row = library.get_scenario(session, organization_id, scenario_id)
     return delete_or_disable(session, "scenario", row, user, lambda: library.delete(session, row))

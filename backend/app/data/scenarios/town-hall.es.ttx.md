@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 Un afiliado de ransomware entra en un ayuntamiento por el acceso remoto de un proveedor sin MFA y cifra servidores y copias de seguridad durante un fin de semana. Los servicios digitales se paran durante semanas y los datos de los vecinos se publican tras negarse el ayuntamiento a pagar. El ejercicio pone a prueba los servicios públicos esenciales en papel, las decisiones políticas y sobre el rescate, y la información a los vecinos.
 
-> Escenario de TTX-Zone. Impórtalo desde Biblioteca → Escenarios. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
+> Plantilla de ejercicio de TTX-Zone. Impórtala desde Biblioteca → Plantillas de ejercicio. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
 
 ## Objetivos
 

@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 A malicious open-source package on a developer's workstation leads, through stolen cloud keys and an internal AI assistant, to customer data leaving a financial entity. At each step the Players vote on a decision, under the DORA and GDPR deadlines.
 
-> TTX-Zone scenario. Import it from Library → Scenarios. The readable part below is generated on export; only the data block at the end is imported.
+> TTX-Zone exercise template. Import it from Library → Exercise templates. The readable part below is generated on export; only the data block at the end is imported.
 
 ## Objectives
 

@@ -248,8 +248,8 @@ def test_a_check_speaks_the_clients_language(client: TestClient, designed: dict)
         )
         return [e["message"] for e in response.json()["errors"]]
 
-    assert errors("en") == [f"{code} names PH-99, which isn't a phase of the scenario."]
-    assert errors("es") == [f"{code} cita PH-99, que no es una fase del escenario."]
+    assert errors("en") == [f"{code} names PH-99, which isn't a phase of the template."]
+    assert errors("es") == [f"{code} cita PH-99, que no es una fase de la plantilla."]
 
 
 def test_unknown_fields_are_refused_rather_than_lost(client: TestClient, designed: dict) -> None:

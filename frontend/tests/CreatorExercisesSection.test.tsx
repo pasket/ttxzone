@@ -143,7 +143,7 @@ describe('CreatorExercisesSection', () => {
 
     fireEvent.click(await screen.findByLabelText('Delete Ransomware drill'))
     const dialog = screen.getByRole('dialog')
-    expect(within(dialog).getByText('Export it as a scenario first')).toBeInTheDocument()
+    expect(within(dialog).getByText('Export it as a template first')).toBeInTheDocument()
     const confirm = within(dialog).getByRole('button', { name: 'Delete exercise' })
     expect(confirm).toBeDisabled()
     fireEvent.change(within(dialog).getByLabelText('Type “Ransomware drill” to confirm'), {

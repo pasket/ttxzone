@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 Ransomware forces a manufacturer running just-in-time production to shut down its systems and stop every plant. Suppliers lose their call-offs, dealers cannot order, and small suppliers face a cash crisis. The exercise tests the shutdown and restart decisions, communication with the supply chain without email, and who speaks about jobs and the economy.
 
-> TTX-Zone scenario. Import it from Library → Scenarios. The readable part below is generated on export; only the data block at the end is imported.
+> TTX-Zone exercise template. Import it from Library → Exercise templates. The readable part below is generated on export; only the data block at the end is imported.
 
 ## Objectives
 

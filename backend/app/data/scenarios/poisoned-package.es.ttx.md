@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 Un paquete malicioso de código abierto en el puesto de un desarrollador lleva, con claves cloud robadas y un asistente interno de IA, a la salida de datos de clientes de una entidad financiera. En cada paso los Jugadores votan una decisión, con los plazos de DORA y RGPD en marcha.
 
-> Escenario de TTX-Zone. Impórtalo desde Biblioteca → Escenarios. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
+> Plantilla de ejercicio de TTX-Zone. Impórtala desde Biblioteca → Plantillas de ejercicio. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
 
 ## Objetivos
 

@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 An engineer who has just resigned to join a competitor copies design files and customer pricing. Security, HR and Legal must act together without tipping him off or losing the evidence.
 
-> TTX-Zone scenario. Import it from Library → Scenarios. The readable part below is generated on export; only the data block at the end is imported.
+> TTX-Zone exercise template. Import it from Library → Exercise templates. The readable part below is generated on export; only the data block at the end is imported.
 
 ## Objectives
 

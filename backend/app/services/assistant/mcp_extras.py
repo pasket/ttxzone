@@ -85,8 +85,8 @@ RESOURCE_KINDS = (
     ResourceKind(
         "scenario",
         "ttx-zone://scenario/{scenario_id}",
-        "TTX-Zone scenario",
-        "One of TTX-Zone's ready-made scenarios, in English.",
+        "TTX-Zone exercise template",
+        "One of TTX-Zone's exercise templates, in English.",
         "application/json",
         "get_scenario",
     ),
@@ -276,18 +276,18 @@ PROMPTS = {
     for p in (
         Prompt(
             "design_from_scenario",
-            "Design an exercise from a scenario",
-            "Start an exercise's design from one of the Library's scenarios, adapted to the "
-            "organization.",
+            "Design an exercise from a template",
+            "Start an exercise's design from one of the Library's exercise templates, adapted "
+            "to the organization.",
             (
                 _EXERCISE_ARG,
                 {
                     "name": "scenario",
-                    "description": "A scenario to start from, or a theme to search for.",
+                    "description": "An exercise template to start from, or a theme to search for.",
                     "required": False,
                 },
             ),
-            "Help me design the exercise {exercise} starting from a ready-made scenario"
+            "Help me design the exercise {exercise} starting from an exercise template"
             "{scenario_hint}. Steps: get_exercise_overview; search_scenarios and get_scenario "
             "to pick one with me; then adapt it to this organization (its sector, areas, "
             "systems) and propose it in stages: needs and objectives with propose_needs and "

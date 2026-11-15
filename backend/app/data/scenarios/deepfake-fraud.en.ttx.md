@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 Attackers clone the face and voice of the Chief Financial Officer and, on a video call with several 'colleagues', convince a regional finance manager to make urgent, confidential transfers. The exercise tests payment verification, the response once the fraud is discovered, and whether it is also a cyber incident.
 
-> TTX-Zone scenario. Import it from Library → Scenarios. The readable part below is generated on export; only the data block at the end is imported.
+> TTX-Zone exercise template. Import it from Library → Exercise templates. The readable part below is generated on export; only the data block at the end is imported.
 
 ## Objectives
 

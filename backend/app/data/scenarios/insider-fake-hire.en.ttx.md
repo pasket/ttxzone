@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 A remote contractor hired through an agency turns out to be a stand-in for a state-backed scheme. Odd signals pile up, the contract is ended, and days later an anonymous email demands payment to keep stolen source code private. Security, HR and legal must act together, lawfully, and decide on extortion that may involve a sanctioned party.
 
-> TTX-Zone scenario. Import it from Library → Scenarios. The readable part below is generated on export; only the data block at the end is imported.
+> TTX-Zone exercise template. Import it from Library → Exercise templates. The readable part below is generated on export; only the data block at the end is imported.
 
 ## Objectives
 

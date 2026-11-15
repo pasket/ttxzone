@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 A food group finds a long-running intrusion on executive laptops. As the attacker reaches recipes, labels and traceability, the question moves from what was stolen to whether anyone can prove that what is on the shelves is safe. What happens next depends on the team: contingent injects fire when containment or communication slips.
 
-> TTX-Zone scenario. Import it from Library → Scenarios. The readable part below is generated on export; only the data block at the end is imported.
+> TTX-Zone exercise template. Import it from Library → Exercise templates. The readable part below is generated on export; only the data block at the end is imported.
 
 ## Objectives
 

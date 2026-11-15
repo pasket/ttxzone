@@ -316,10 +316,12 @@ def render_body(doc: ScenarioDocument) -> str:
     out += [
         "> "
         + label(
-            "TTX-Zone scenario. Import it from Library → Scenarios. The readable part below "
-            "is generated on export; only the data block at the end is imported.",
-            "Escenario de TTX-Zone. Impórtalo desde Biblioteca → Escenarios. La parte legible "
-            "se genera al exportar; solo se importa el bloque de datos del final.",
+            "TTX-Zone exercise template. Import it from Library → Exercise templates. The "
+            "readable part below is generated on export; only the data block at the end is "
+            "imported.",
+            "Plantilla de ejercicio de TTX-Zone. Impórtala desde Biblioteca → Plantillas de "
+            "ejercicio. La parte legible se genera al exportar; solo se importa el bloque de "
+            "datos del final.",
         ),
         "",
     ]

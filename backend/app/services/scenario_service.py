@@ -270,7 +270,8 @@ def export_ttx(session: Session, ttx: TTX, locale: str) -> ScenarioDocument:
     if embedded > settings.SCENARIO_MAX_BYTES:
         raise AppException(
             "SCENARIO_EXPORT_TOO_LARGE",
-            "This exercise's images and files add up to more than a scenario file can hold "
+            "This exercise's images and files add up to more than an exercise template file "
+            "can hold "
             "({max_mb} MB).",
             413,
             log_level=logging.WARNING,
@@ -613,7 +614,7 @@ def check_document(doc: ScenarioDocument) -> _Checked:
                 error(
                     f"needs.objectives[{i}].need_codes",
                     "SCENARIO_UNKNOWN_REFERENCE",
-                    "{row} names {value}, which isn't a need of the scenario.",
+                    "{row} names {value}, which isn't a need of the template.",
                     row=objective.code,
                     value=code,
                 )
@@ -707,7 +708,7 @@ def check_document(doc: ScenarioDocument) -> _Checked:
         error(
             "msel.attack_version",
             "SCENARIO_ATTACK_VERSION",
-            "The scenario uses ATT&CK v{version}, which this TTX-Zone doesn't have.",
+            "The template uses ATT&CK v{version}, which this TTX-Zone doesn't have.",
             version=version,
         )
     rooms = unique("rooms", [r.code for r in doc.rooms])
@@ -732,7 +733,7 @@ def check_document(doc: ScenarioDocument) -> _Checked:
                 error(
                     f"msel.phases[{i}].objectives",
                     "SCENARIO_UNKNOWN_REFERENCE",
-                    "{row} names {value}, which isn't an objective of the scenario.",
+                    "{row} names {value}, which isn't an objective of the template.",
                     row=phase.code,
                     value=ref.code,
                 )
@@ -783,38 +784,38 @@ def check_document(doc: ScenarioDocument) -> _Checked:
             "phase_code",
             inject.phase_code,
             phases,
-            "{row} names {value}, which isn't a phase of the scenario.",
+            "{row} names {value}, which isn't a phase of the template.",
         )
         for code in inject.room_codes:
             ref(
                 "room_codes",
                 code,
                 rooms,
-                "{row} names {value}, which isn't a room of the scenario.",
+                "{row} names {value}, which isn't a room of the template.",
             )
         ref(
             "sender_code",
             inject.sender_code,
             cast,
-            "{row} names {value}, which isn't a simulated actor of the scenario.",
+            "{row} names {value}, which isn't a simulated actor of the template.",
         )
         ref(
             "threat_actor_code",
             inject.threat_actor_code,
             threats,
-            "{row} names {value}, which isn't a threat actor of the scenario.",
+            "{row} names {value}, which isn't a threat actor of the template.",
         )
         ref(
             "branch_from_code",
             inject.branch_from_code,
             injects,
-            "{row} names {value}, which isn't an inject of the scenario.",
+            "{row} names {value}, which isn't an inject of the template.",
         )
         ref(
             "rejoin_code",
             inject.rejoin_code,
             injects,
-            "{row} names {value}, which isn't an inject of the scenario.",
+            "{row} names {value}, which isn't an inject of the template.",
         )
         if inject.branch_action_code is not None:
             owner = inject.branch_from_code
@@ -830,7 +831,7 @@ def check_document(doc: ScenarioDocument) -> _Checked:
                 "objective_codes",
                 code,
                 objectives,
-                "{row} names {value}, which isn't an objective of the scenario.",
+                "{row} names {value}, which isn't an objective of the template.",
             )
         for a, action in enumerate(inject.expected_actions):
             for code in action.objective_codes:
@@ -838,7 +839,7 @@ def check_document(doc: ScenarioDocument) -> _Checked:
                     error(
                         f"{path}.expected_actions[{a}].objective_codes",
                         "SCENARIO_UNKNOWN_REFERENCE",
-                        "{row} names {value}, which isn't an objective of the scenario.",
+                        "{row} names {value}, which isn't an objective of the template.",
                         row=action.code,
                         value=code,
                     )
@@ -847,14 +848,14 @@ def check_document(doc: ScenarioDocument) -> _Checked:
                 "images",
                 link.image,
                 image_keys,
-                "{row} names {value}, which isn't an image of the scenario.",
+                "{row} names {value}, which isn't an image of the template.",
             )
         for link in inject.files:
             ref(
                 "files",
                 link.file,
                 file_keys,
-                "{row} names {value}, which isn't a file of the scenario.",
+                "{row} names {value}, which isn't a file of the template.",
             )
         if attack_ok:
             for t in inject.attack_techniques:
@@ -1409,7 +1410,7 @@ def apply_document(
                 path="exercise",
                 code="SCENARIO_EXERCISE_PLAYED",
                 message="This exercise has a session, live or archived, that keeps "
-                "the design it ran: apply the scenario to a new exercise.",
+                "the design it ran: apply the template to a new exercise.",
             ),
         )
     report = ScenarioCheck(
@@ -1471,7 +1472,7 @@ def apply_document(
             ScenarioIssue(
                 path="data",
                 code="SCENARIO_APPLY_FAILED",
-                message="The scenario couldn't be written to this exercise.",
+                message="The template couldn't be written to this exercise.",
             )
         ]
         return report

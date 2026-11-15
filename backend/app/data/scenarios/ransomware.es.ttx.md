@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 Un grupo criminal cifra los sistemas principales del negocio y amenaza con publicar datos robados. El comité de crisis decide sobre contención, notificación y comunicación mientras el incidente se desarrolla a lo largo de tres días.
 
-> Escenario de TTX-Zone. Impórtalo desde Biblioteca → Escenarios. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
+> Plantilla de ejercicio de TTX-Zone. Impórtala desde Biblioteca → Plantillas de ejercicio. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
 
 ## Objetivos
 

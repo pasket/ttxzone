@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 A state-linked actor destroys remote terminal units across dozens of renewable sites and pushes a wiper through the domain of a heat plant, during a winter cold spell just before a holiday. Operations, cybersecurity and management must keep the service running without remote control, decide what to restore first and inform the authorities.
 
-> TTX-Zone scenario. Import it from Library → Scenarios. The readable part below is generated on export; only the data block at the end is imported.
+> TTX-Zone exercise template. Import it from Library → Exercise templates. The readable part below is generated on export; only the data block at the end is imported.
 
 ## Objectives
 

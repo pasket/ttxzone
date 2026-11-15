@@ -72,7 +72,7 @@ _NOT_FOUND: dict[LibraryKind, tuple[str, str]] = {
     "threat_actor": ("THREAT_ACTOR_NOT_FOUND", "That threat actor isn't in this library."),
     "inject": ("INJECT_NOT_FOUND", "That inject isn't in this library."),
     "tag": ("TAG_NOT_FOUND", "This tag was not found."),
-    "scenario": ("SCENARIO_NOT_FOUND", "That scenario isn't in this library."),
+    "scenario": ("SCENARIO_NOT_FOUND", "That exercise template isn't in this library."),
 }
 
 

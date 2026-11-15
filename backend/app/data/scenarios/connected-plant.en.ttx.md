@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 A vehicle manufacturer deals with two apparently separate incidents: a compromised maintenance supplier with remote access to an assembly plant, and malware on a line-control server. Two teams work them in separate rooms until they meet as one campaign of sabotage, coercion, extortion and forged documents.
 
-> TTX-Zone scenario. Import it from Library → Scenarios. The readable part below is generated on export; only the data block at the end is imported.
+> TTX-Zone exercise template. Import it from Library → Exercise templates. The readable part below is generated on export; only the data block at the end is imported.
 
 ## Objectives
 

@@ -18,7 +18,7 @@ It acts as you, so it reaches only what you can.
 - **Read** the exercises you plan, their needs analysis and MSEL.
 - **Search** the knowledge base, the inject and objective catalogs, MITRE ATT&CK and your organization's library.
 - **Read** the session plan and what's left before each document can move on.
-- **Start from a scenario** of the Library and adapt it, and **remember**: past exercises' reports and the improvement plan, to learn from what happened before.
+- **Start from an exercise template** of the Library and adapt it, and **remember**: past exercises' reports and the improvement plan, to learn from what happened before.
 - **Propose** needs, objectives, the MSEL's phases, simulated actors and threat actors, injects, polls, the session plan's observation points and parts of the report.
 
 It never changes anything by itself. Each proposal waits on the form's page under **AI proposals**, for you to accept it into the draft or discard it. Accepting has the form's usual effects: a ready MSEL reopens, for example.
@@ -37,13 +37,13 @@ It can build an MSEL from an empty one: it proposes the phases and actors first,
 
 ## Guided flows and attachments
 
-Your client's menu offers guided flows that know which steps to take: design an exercise from a scenario, build the MSEL, review before READY, prepare the evaluation, draft the after-action report, and lessons from past exercises. Each asks for the exercise; type part of its code or name and pick it from the suggestions.
+Your client's menu offers guided flows that know which steps to take: design an exercise from a template, build the MSEL, review before READY, prepare the evaluation, draft the after-action report, and lessons from past exercises. Each asks for the exercise; type part of its code or name and pick it from the suggestions.
 
 It can also name a set of proposals, such as "Close MSEL v5": the set shows together on the page, to accept or discard at once. Every answer about an exercise reminds it of the exercise's TLP. Accepting or discarding a proposal is recorded in the activity log, without its content.
 
 Ask it what's left to finish a document: it answers with ordered steps, those it can propose and those only you can take, and where. The *Close a document* flow takes it as far as proposals can.
 
-You can also attach an exercise's documents to the conversation (its needs analysis, MSEL, session plan or after-action report), or a knowledge base entry or scenario, the same way you'd attach a file.
+You can also attach an exercise's documents to the conversation (its needs analysis, MSEL, session plan or after-action report), or a knowledge base entry or exercise template, the same way you'd attach a file.
 
 ## Connect it
 

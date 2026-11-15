@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 Un grupo alimentario descubre una intrusión prolongada en portátiles de directivos. Cuando el atacante llega a recetas, etiquetas y trazabilidad, la pregunta deja de ser qué se robó y pasa a ser si alguien puede demostrar que lo que hay en los lineales es seguro. Lo que ocurre después depende del equipo: los injects contingentes saltan si la contención o la comunicación fallan.
 
-> Escenario de TTX-Zone. Impórtalo desde Biblioteca → Escenarios. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
+> Plantilla de ejercicio de TTX-Zone. Impórtala desde Biblioteca → Plantillas de ejercicio. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
 
 ## Objetivos
 

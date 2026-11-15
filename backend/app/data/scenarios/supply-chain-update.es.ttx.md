@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 El agente de monitorización de un proveedor de confianza distribuye una actualización firmada pero troyanizada a cientos de servidores. El equipo acota la exposición, trabaja con el proveedor y decide la alerta temprana a la autoridad.
 
-> Escenario de TTX-Zone. Impórtalo desde Biblioteca → Escenarios. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
+> Plantilla de ejercicio de TTX-Zone. Impórtala desde Biblioteca → Plantillas de ejercicio. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
 
 ## Objetivos
 

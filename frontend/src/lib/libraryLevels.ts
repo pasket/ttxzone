@@ -47,7 +47,10 @@ export function libraryPermissions(
 }
 
 /** What the Library holds, in tab order (tags last: they label the
- * rest); each kind has its own path under `library/` (the first none). */
+ * rest); each kind has its own path under `library/` (the first none).
+ * `scenarios` is shown as "Exercise templates" (a whole exercise to
+ * reuse): in the UI "scenario" is only the exercise's story. The kind,
+ * its URL, the API and the `.ttx.md` format keep the old name. */
 export type LibraryKind = 'actors' | 'threats' | 'injects' | 'tags' | 'scenarios'
 export const LIBRARY_KINDS: LibraryKind[] = ['actors', 'threats', 'injects', 'scenarios', 'tags']
 

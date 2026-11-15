@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 Un contratista remoto contratado a través de una agencia resulta ser la tapadera de un esquema respaldado por un Estado. Las señales raras se acumulan, se rescinde el contrato y, días después, un correo anónimo exige un pago para no publicar el código fuente robado. Seguridad, Recursos Humanos y Legal deben actuar juntos, dentro de la ley, y decidir sobre una extorsión que puede implicar a una parte sancionada.
 
-> Escenario de TTX-Zone. Impórtalo desde Biblioteca → Escenarios. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
+> Plantilla de ejercicio de TTX-Zone. Impórtala desde Biblioteca → Plantillas de ejercicio. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
 
 ## Objetivos
 

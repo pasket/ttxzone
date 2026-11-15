@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 La red eléctrica nacional cae a mediodía sin aviso. {organization} no es el operador de la red: de repente depende de generadores, baterías y papel, y nadie conoce la causa durante horas. Todo el mundo pregunta si es un ciberataque. Sin un adversario al que perseguir, el ejercicio pone a prueba la continuidad, las decisiones con incertidumbre y la comunicación de crisis.
 
-> Escenario de TTX-Zone. Impórtalo desde Biblioteca → Escenarios. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
+> Plantilla de ejercicio de TTX-Zone. Impórtala desde Biblioteca → Plantillas de ejercicio. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
 
 ## Objetivos
 

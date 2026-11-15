@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 On the eve of Black Friday, a global outage of the productivity suite provider leaves a fashion retailer without email, chat, calendars or shared files for more than a day. The web keeps selling. The committee, chaired by the business, decides what to launch, how to serve and support customers, and which alternatives it had ready or has to improvise.
 
-> TTX-Zone scenario. Import it from Library → Scenarios. The readable part below is generated on export; only the data block at the end is imported.
+> TTX-Zone exercise template. Import it from Library → Exercise templates. The readable part below is generated on export; only the data block at the end is imported.
 
 ## Objectives
 

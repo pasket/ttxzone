@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 A ransomware affiliate enters a municipality through a supplier's remote access without MFA and encrypts servers and backups over a weekend. Digital services stop for weeks and residents' data is published after the town hall refuses to pay. The exercise tests essential public services on paper, the political and ransom decisions, and telling residents.
 
-> TTX-Zone scenario. Import it from Library → Scenarios. The readable part below is generated on export; only the data block at the end is imported.
+> TTX-Zone exercise template. Import it from Library → Exercise templates. The readable part below is generated on export; only the data block at the end is imported.
 
 ## Objectives
 

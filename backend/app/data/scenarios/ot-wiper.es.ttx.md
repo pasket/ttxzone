@@ -12,7 +12,7 @@ attack_version: "19.2"
 
 Un actor vinculado a un Estado destruye las unidades remotas de decenas de instalaciones renovables y despliega un borrado masivo por el dominio de una planta de calor, en plena ola de frío y justo antes de un festivo. Operaciones, ciberseguridad y dirección deben mantener el servicio sin control remoto, decidir qué restaurar primero e informar a las autoridades.
 
-> Escenario de TTX-Zone. Impórtalo desde Biblioteca → Escenarios. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
+> Plantilla de ejercicio de TTX-Zone. Impórtala desde Biblioteca → Plantillas de ejercicio. La parte legible se genera al exportar; solo se importa el bloque de datos del final.
 
 ## Objetivos
 
