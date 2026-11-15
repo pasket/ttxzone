@@ -1778,7 +1778,12 @@
       "leadEvaluatorToast": "{{name}} es ahora el Lead Evaluator",
       "missingGrantsManager": "Sin permiso en la organización para: {{roles}}. Como Responsable del Programa de Ejercicios, puedes concederlo aquí.",
       "grantInOrganization": "Conceder {{role}} en la organización",
-      "grantedToast": "{{role}} concedido a {{name}} en la organización"
+      "grantedToast": "{{role}} concedido a {{name}} en la organización",
+      "groupMembers": "En la organización",
+      "groupNewcomers": "Aún no están en la organización",
+      "newcomerNote": "Al añadirla, también recibe en la organización los roles que marques aquí.",
+      "newcomerInvited": "No se ha podido añadir directamente: se ha enviado una invitación a la organización. Añádela cuando la acepte.",
+      "newcomerPartial": "{{name}} ya tiene los roles en la organización, pero no se ha podido añadir al ejercicio: {{message}} Añádela desde la lista."
     },
     "rooms": {
       "title": "Salas",
@@ -3470,7 +3475,11 @@
         "actions": "Acciones",
         "withdrawLabel": "Retirar la invitación a {{email}}",
         "withdrawnToast": "Invitación a {{email}} retirada"
-      }
+      },
+      "personLabel": "Persona (nombre o correo)",
+      "personPlaceholder": "Empieza a escribir un nombre o correo…",
+      "personHint": "Personas de tus dominios permitidos que aún no tienen un rol aquí. Para añadir a otra persona, escribe su correo.",
+      "joined": "se unió el {{date}}"
     },
     "organization": {
       "title": "Perfil de la organización",

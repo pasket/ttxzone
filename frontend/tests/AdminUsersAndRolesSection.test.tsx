@@ -7,10 +7,12 @@ import type { OrgMemberRead, OrgRole } from '../src/lib/types'
 import { render } from './testUtils'
 
 const mockRefresh = vi.fn(async () => {})
+/** `can_found_organization: false` is single/managed tenancy. */
+const mockUser: { id: string; can_found_organization?: boolean } = { id: 'me' }
 
 vi.mock('../src/hooks/useAuth', () => ({
   useAuth: () => ({
-    user: { id: 'me' },
+    user: mockUser,
     refresh: mockRefresh,
     activeOrganizationId: 'org-1',
     activeOrganization: {
@@ -288,6 +290,59 @@ describe('AdminUsersAndRolesSection', () => {
       roles: ['planner', 'observer'],
       tag_ids: [],
     })
+  })
+
+  it('picks a newcomer by name where founding is controlled, still taking any email', async () => {
+    mockUser.can_found_organization = false
+    const fetchMock = stubApi({
+      'GET /organizations/org-1/members': () => list([me]),
+      'GET /organizations/org-1/tags': noTags,
+      'GET /organizations/org-1/domain-accounts': () =>
+        json(200, {
+          items: [
+            {
+              user_id: 'u-thomas',
+              email: 'thomas@acme.com',
+              full_name: 'Thomas Núñez',
+              created_at: '2026-11-01T00:00:00+00:00',
+              last_login_at: null,
+            },
+            {
+              user_id: 'u-zoe',
+              email: 'zoe@acme.com',
+              full_name: 'Zoe Ruiz',
+              created_at: '2026-11-02T00:00:00+00:00',
+              last_login_at: null,
+            },
+          ],
+        }),
+      'POST /organizations/org-1/role-invitations': () => json(200, { outcome: 'granted' }),
+    })
+    renderSection()
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Add person' }))
+    const field = await screen.findByRole('combobox', { name: 'Person (name or email)' })
+    // By name, accents ignored.
+    fireEvent.change(field, { target: { value: 'nunez' } })
+    const list = screen.getByRole('listbox')
+    expect(within(list).getAllByRole('option')).toHaveLength(1)
+    fireEvent.click(within(list).getByRole('option', { name: /Thomas Núñez/ }))
+    expect(field).toHaveValue('thomas@acme.com')
+
+    fireEvent.click(screen.getByRole('checkbox', { name: /^Evaluator/ }))
+    fireEvent.click(screen.getByRole('button', { name: 'Add' }))
+    await waitFor(() =>
+      expect(
+        fetchMock.mock.calls.some(([url, init]) => {
+          return (
+            String(url).endsWith('/role-invitations') &&
+            init?.method === 'POST' &&
+            JSON.parse(String(init.body)).email === 'thomas@acme.com'
+          )
+        }),
+      ).toBe(true),
+    )
+    mockUser.can_found_organization = undefined
   })
 
   it('reports why the roles could not be granted', async () => {

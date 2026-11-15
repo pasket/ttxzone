@@ -9,9 +9,11 @@ import { render } from './testUtils'
 /** The organizations the signed-in user holds roles in: a test makes them
  * the exercise organization's Program Manager. */
 const mockOrganizations: { organization_id: string; is_program_manager: boolean }[] = []
+/** `can_found_organization: false` is single/managed tenancy. */
+const mockUser: { id: string; can_found_organization?: boolean } = { id: 'me' }
 vi.mock('../src/hooks/useAuth', () => ({
   useAuth: () => ({
-    user: { id: 'me' },
+    user: mockUser,
     organizations: mockOrganizations,
     refresh: vi.fn(async () => {}),
   }),
@@ -353,6 +355,126 @@ describe('ExerciseTeamPanel', () => {
         'The only Controller of this exercise. Make someone else a Controller first.',
       ),
     ).toBeInTheDocument()
+  })
+
+  function asProgramManager(controlledFounding: boolean) {
+    mockOrganizations.splice(0, mockOrganizations.length, {
+      organization_id: 'org-1',
+      is_program_manager: true,
+    })
+    mockUser.can_found_organization = controlledFounding ? false : true
+  }
+
+  function reset() {
+    mockOrganizations.splice(0, mockOrganizations.length)
+    mockUser.can_found_organization = undefined
+  }
+
+  it('lets a Program Manager grant a missing role while adding someone', async () => {
+    asProgramManager(false)
+    const fetchMock = stubApi({
+      'GET /ttx/ttx-1/people': [json(200, { items: [me] })],
+      'GET /ttx/ttx-1/people/candidates': [
+        json(200, {
+          items: [
+            {
+              user_id: 'thomas',
+              email: 'thomas@acme.com',
+              full_name: 'Thomas',
+              grants: ['evaluator'],
+            },
+          ],
+        }),
+      ],
+      'POST /organizations/org-1/observers': [json(201, {})],
+    })
+    renderPanel()
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Add person' }))
+    fireEvent.change(screen.getByLabelText('Person'), { target: { value: 'thomas' } })
+    expect(screen.getByRole('checkbox', { name: /^Observer/ })).toBeDisabled()
+    fireEvent.click(screen.getByRole('button', { name: 'Grant Observer in the organization' }))
+    await waitFor(() => expect(screen.getByRole('checkbox', { name: /^Observer/ })).toBeEnabled())
+    expect(
+      fetchMock.mock.calls.some(([url]) => String(url).endsWith('/organizations/org-1/observers')),
+    ).toBe(true)
+    // "open": no newcomers are asked for.
+    expect(fetchMock.mock.calls.some(([url]) => String(url).includes('domain-accounts'))).toBe(
+      false,
+    )
+    reset()
+  })
+
+  it('adds a newcomer to the organization and the exercise in one step', async () => {
+    asProgramManager(true)
+    const fetchMock = stubApi({
+      'GET /ttx/ttx-1/people': [json(200, { items: [me] })],
+      'GET /ttx/ttx-1/people/candidates': [json(200, { items: [] })],
+      'GET /organizations/org-1/domain-accounts': [
+        json(200, {
+          items: [
+            {
+              user_id: 'nina',
+              email: 'nina@acme.com',
+              full_name: 'Nina New',
+              created_at: '2026-11-01T00:00:00+00:00',
+              last_login_at: null,
+            },
+          ],
+        }),
+      ],
+      'POST /organizations/org-1/role-invitations': [json(200, { outcome: 'granted' })],
+      'POST /ttx/ttx-1/people': [json(201, { user_id: 'nina' })],
+      'PUT /ttx/ttx-1/people/nina/role': [json(204, null)],
+    })
+    renderPanel()
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Add person' }))
+    const select = screen.getByLabelText('Person')
+    await waitFor(() =>
+      expect(
+        within(select).getByRole('group', { name: 'Not in the organization yet' }),
+      ).toBeInTheDocument(),
+    )
+    fireEvent.change(select, { target: { value: 'nina' } })
+    expect(screen.getByText(/also gives them, in the organization/)).toBeInTheDocument()
+    // Every role is open: they're given in the organization as they're added.
+    fireEvent.click(screen.getByRole('checkbox', { name: /^Evaluator/ }))
+    fireEvent.click(screen.getByRole('button', { name: 'Add' }))
+
+    await waitFor(() =>
+      expect(fetchMock).toHaveBeenCalledWith(
+        '/api/v1/ttx/ttx-1/people',
+        expect.objectContaining({ method: 'POST' }),
+      ),
+    )
+    const posts = fetchMock.mock.calls.filter(([, init]) => init?.method === 'POST')
+    expect(posts.map(([url]) => url)).toEqual([
+      '/api/v1/organizations/org-1/role-invitations',
+      '/api/v1/ttx/ttx-1/people',
+    ])
+    expect(JSON.parse(String(posts[0][1]?.body))).toEqual({
+      email: 'nina@acme.com',
+      roles: ['planner', 'evaluator'],
+      tag_ids: [],
+    })
+    reset()
+  })
+
+  it('offers newcomers only to the organization’s Program Managers', async () => {
+    mockUser.can_found_organization = false
+    const fetchMock = stubApi({
+      'GET /ttx/ttx-1/people': [json(200, { items: [me] })],
+      'GET /ttx/ttx-1/people/candidates': [json(200, { items: [] })],
+    })
+    renderPanel()
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Add person' }))
+    expect(screen.getByLabelText('Person')).toBeDisabled()
+    expect(fetchMock.mock.calls.some(([url]) => String(url).includes('domain-accounts'))).toBe(
+      false,
+    )
+    reset()
   })
 
   it('adds someone the organization authorized, as what they may be', async () => {

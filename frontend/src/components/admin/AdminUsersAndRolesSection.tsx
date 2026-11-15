@@ -51,6 +51,7 @@ import { IconButton } from '../common/IconButton'
 import { LastLogin } from '../common/LastLogin'
 import { Modal } from '../common/Modal'
 import { Pagination } from '../common/Pagination'
+import { PersonCombobox } from '../common/PersonCombobox'
 import { Panel } from '../common/Panel'
 import { RestoreIcon } from '../common/RestoreIcon'
 import { RoleColumnHeader, RoleMark } from '../common/RoleMatrix'
@@ -872,8 +873,8 @@ function AddPersonForm({
   availableTags: OrganizationTag[]
   /** A newcomer picked from the allowed-domain list. */
   initialEmail?: string
-  /** Accounts from the allowed domains without a role, offered as the
-   * email field's suggestions (empty in "open"). */
+  /** Accounts from the allowed domains without a role, offered by the
+   * people picker (empty in "open": a plain email field there). */
   suggestions?: DomainAccount[]
   /** The organization's own domain where people outside it are invited
    * rather than added ("open" tenancy); null otherwise. */
@@ -881,8 +882,9 @@ function AddPersonForm({
   onClose: () => void
   onAdded: (outcome: OrgRoleInvitationCreateResponse['outcome']) => void
 }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { showToast } = useToast()
+  const joinedFormat = new Intl.DateTimeFormat(i18n.language, { dateStyle: 'medium' })
   const [email, setEmail] = useState(initialEmail)
   const [selected, setSelected] = useState<Set<OrgRole>>(new Set())
   const [tags, setTags] = useState<Set<string>>(new Set())
@@ -954,31 +956,52 @@ function AddPersonForm({
             <label className="block text-sm" htmlFor="users-and-roles-email">
               {invitesOutside
                 ? t('admin.usersAndRoles.emailLabelInvite')
-                : t('admin.usersAndRoles.emailLabel')}
+                : suggestions.length > 0
+                  ? t('admin.usersAndRoles.personLabel')
+                  : t('admin.usersAndRoles.emailLabel')}
             </label>
-            <input
-              ref={emailRef}
-              id="users-and-roles-email"
-              name="email"
-              type="email"
-              autoComplete="off"
-              spellCheck={false}
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder={t('admin.usersAndRoles.emailPlaceholder')}
-              disabled={submitting}
-              className={submitting ? inputDisabled : inputBase}
-              list={suggestions.length > 0 ? 'users-and-roles-email-suggestions' : undefined}
-            />
-            {suggestions.length > 0 && (
-              <datalist id="users-and-roles-email-suggestions">
-                {suggestions.map((account) => (
-                  <option key={account.user_id} value={account.email}>
-                    {account.full_name}
-                  </option>
-                ))}
-              </datalist>
+            {suggestions.length > 0 ? (
+              <>
+                <PersonCombobox
+                  id="users-and-roles-email"
+                  name="email"
+                  inputRef={emailRef}
+                  required
+                  value={email}
+                  onChange={setEmail}
+                  options={suggestions.map((account) => ({
+                    email: account.email,
+                    full_name: account.full_name,
+                    hint: t('admin.usersAndRoles.joined', {
+                      date: joinedFormat.format(new Date(account.created_at)),
+                    }),
+                  }))}
+                  placeholder={t('admin.usersAndRoles.personPlaceholder')}
+                  disabled={submitting}
+                  describedBy="users-and-roles-email-hint"
+                />
+                <p
+                  id="users-and-roles-email-hint"
+                  className="text-xs text-paper-ink/60 dark:text-fg-muted"
+                >
+                  {t('admin.usersAndRoles.personHint')}
+                </p>
+              </>
+            ) : (
+              <input
+                ref={emailRef}
+                id="users-and-roles-email"
+                name="email"
+                type="email"
+                autoComplete="off"
+                spellCheck={false}
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder={t('admin.usersAndRoles.emailPlaceholder')}
+                disabled={submitting}
+                className={submitting ? inputDisabled : inputBase}
+              />
             )}
           </div>
           <RolesFieldset

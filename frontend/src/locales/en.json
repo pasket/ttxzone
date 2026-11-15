@@ -1778,7 +1778,12 @@
       "leadEvaluatorToast": "{{name}} is now the Lead Evaluator",
       "missingGrantsManager": "No grant in the organization for: {{roles}}. As its Exercise Program Manager, you can grant it here.",
       "grantInOrganization": "Grant {{role}} in the organization",
-      "grantedToast": "{{role}} granted to {{name}} in the organization"
+      "grantedToast": "{{role}} granted to {{name}} in the organization",
+      "groupMembers": "In the organization",
+      "groupNewcomers": "Not in the organization yet",
+      "newcomerNote": "Adding them also gives them, in the organization, the roles you tick here.",
+      "newcomerInvited": "They couldn’t be added directly: an invitation to the organization was sent instead. Add them once they accept.",
+      "newcomerPartial": "{{name}} now has the roles in the organization, but couldn’t be added to the exercise: {{message}} Add them from the list."
     },
     "rooms": {
       "title": "Rooms",
@@ -3470,7 +3475,11 @@
         "actions": "Actions",
         "withdrawLabel": "Withdraw the invitation to {{email}}",
         "withdrawnToast": "Invitation to {{email}} withdrawn"
-      }
+      },
+      "personLabel": "Person (name or email)",
+      "personPlaceholder": "Start typing a name or email…",
+      "personHint": "People from your allowed domains who don’t have a role here yet. To add someone else, type their email.",
+      "joined": "joined {{date}}"
     },
     "organization": {
       "title": "Organization profile",

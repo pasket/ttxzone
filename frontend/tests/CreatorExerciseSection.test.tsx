@@ -13,6 +13,7 @@ vi.mock('../src/hooks/useAuth', () => ({
   useAuth: () => ({
     ttxList: mockTtxList,
     activeOrganizationId: 'org-1',
+    organizations: [],
     refresh,
     setActiveTtxId,
   }),

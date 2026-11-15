@@ -29,6 +29,8 @@ import {
 import { filterAndSortPeople, PEOPLE_SORT_OPTIONS } from '../../lib/peopleTable'
 import type {
   AssignableTag,
+  DomainAccount,
+  DomainAccountListResponse,
   ExercisePeopleListResponse,
   ExercisePersonCandidateListResponse,
   ExercisePersonRead,
@@ -203,6 +205,15 @@ export function ExerciseTeamPanel({
     `${base}/candidates`,
   )
   const items = data?.items ?? []
+  // Single/managed only (the server answers empty in "open"), and only for
+  // a Program Manager of the organization: accounts from its allowed
+  // domains with no role in it yet, whom they can add in one step.
+  const managesOrganization = useGrantInOrganization(ttx).manages
+  const newcomersResource = useApiResource<DomainAccountListResponse>(
+    managesOrganization && user?.can_found_organization === false
+      ? `/organizations/${ttx.organization_id}/domain-accounts`
+      : null,
+  )
   const { sortDir, setSortDir, sortBy, setSortBy, search, setSearch } = useTableUrlState(
     'team_',
     PEOPLE_SORT_OPTIONS,
@@ -223,6 +234,7 @@ export function ExerciseTeamPanel({
   async function changed(userId: string) {
     refetch()
     candidatesResource.refetch()
+    newcomersResource.refetch()
     // Your own roles (and the lead in the identity band) come from the
     // auth snapshot.
     if (userId === user?.id) await refresh()
@@ -258,6 +270,11 @@ export function ExerciseTeamPanel({
       <AddPersonForm
         ttx={ttx}
         candidates={candidatesResource.data?.items ?? []}
+        newcomers={(newcomersResource.data?.items ?? []).filter(
+          (account) =>
+            !items.some((p) => p.user_id === account.user_id) &&
+            !(candidatesResource.data?.items ?? []).some((c) => c.user_id === account.user_id),
+        )}
         availableTags={availableTags}
         onClose={() => setAdding(false)}
         onAdded={async (userId) => {
@@ -898,6 +915,53 @@ function sameSet(a: Set<string>, b: Set<string>) {
   return a.size === b.size && [...a].every((id) => b.has(id))
 }
 
+/** A Program Manager of the exercise's organization gives a missing
+ * organization grant from the team dialogs (Admin -> Users and roles' own
+ * route, with its domain and invitation rules). `manages` is false for
+ * anyone else, who gets the note saying who to ask. */
+function useGrantInOrganization(ttx: TTXRead) {
+  const { t } = useTranslation()
+  const { organizations } = useAuth()
+  const { showToast } = useToast()
+  const manages =
+    organizations.find((o) => o.organization_id === ttx.organization_id)?.is_program_manager ??
+    false
+  const [granting, setGranting] = useState<PeopleRole | null>(null)
+
+  /** Null once granted, else the error to show. */
+  async function grant(role: PeopleRole, person: { email: string; full_name: string }) {
+    setGranting(role)
+    try {
+      await apiFetch(`/organizations/${ttx.organization_id}/${GRANT_SEGMENTS[role]}`, {
+        method: 'POST',
+        body: JSON.stringify({ email: person.email }),
+      })
+      showToast(
+        t('creator.exerciseTeam.grantedToast', {
+          role: t(GRANT_SHORT_KEYS[role]),
+          name: person.full_name,
+        }),
+      )
+      return null
+    } catch (err) {
+      return errorText(err, t('auth.common.genericError'))
+    } finally {
+      setGranting(null)
+    }
+  }
+
+  return { manages, granting, grant }
+}
+
+/** The organization roles the exercise roles ticked need. */
+function orgRolesFor(value: RoleFlags): PeopleRole[] {
+  const roles: PeopleRole[] = []
+  if (value.plans || value.controls || value.facilitates) roles.push('planner')
+  if (value.observes) roles.push('observer')
+  if (value.evaluates) roles.push('evaluator')
+  return roles
+}
+
 /** The person's editor: 1. Role on the exercise, 2. Tags, one Save. */
 function EditPersonModal({
   ttx,
@@ -915,14 +979,9 @@ function EditPersonModal({
   onSaved: () => Promise<void>
 }) {
   const { t } = useTranslation()
-  const { organizations } = useAuth()
-  const { showToast } = useToast()
-  const managesOrganization =
-    organizations.find((o) => o.organization_id === ttx.organization_id)?.is_program_manager ??
-    false
+  const granter = useGrantInOrganization(ttx)
   // Grants given here unlock their roles at once, without reloading.
   const [grants, setGrants] = useState<PeopleRole[]>(person.grants)
-  const [granting, setGranting] = useState<PeopleRole | null>(null)
   const initial = fromPerson(person)
   const [value, setValue] = useState<RoleFlags>(initial)
   const initialLeads: LeadFlags = { planner: person.is_lead, evaluator: person.leads }
@@ -946,25 +1005,10 @@ function EditPersonModal({
   const leadsChanged = becomesLeadPlanner || leadEvaluatorChange !== null
 
   async function grant(role: PeopleRole) {
-    setGranting(role)
     setError(null)
-    try {
-      await apiFetch(`/organizations/${ttx.organization_id}/${GRANT_SEGMENTS[role]}`, {
-        method: 'POST',
-        body: JSON.stringify({ email: person.email }),
-      })
-      setGrants((previous) => (previous.includes(role) ? previous : [...previous, role]))
-      showToast(
-        t('creator.exerciseTeam.grantedToast', {
-          role: t(GRANT_SHORT_KEYS[role]),
-          name: person.full_name,
-        }),
-      )
-    } catch (err) {
-      setError(errorText(err, t('auth.common.genericError')))
-    } finally {
-      setGranting(null)
-    }
+    const failed = await granter.grant(role, person)
+    if (failed) setError(failed)
+    else setGrants((previous) => (previous.includes(role) ? previous : [...previous, role]))
   }
 
   async function save() {
@@ -1022,8 +1066,8 @@ function EditPersonModal({
           leads={leads}
           heldLeads={initialLeads}
           onLeadsChange={setLeads}
-          onGrant={managesOrganization ? (role) => void grant(role) : undefined}
-          granting={granting}
+          onGrant={granter.manages ? (role) => void grant(role) : undefined}
+          granting={granter.granting}
           disabled={busy}
         />
         {leadStopsPlanning && (
@@ -1073,19 +1117,38 @@ function EditPersonModal({
 function AddPersonForm({
   ttx,
   candidates,
+  newcomers = [],
   availableTags,
   onClose,
   onAdded,
 }: {
   ttx: TTXRead
   candidates: ExercisePersonCandidateListResponse['items']
+  /** Accounts with no role in the organization yet (a Program Manager, in
+   * single/managed): adding one grants the organization roles too. */
+  newcomers?: DomainAccount[]
   availableTags: AssignableTag[]
   onClose: () => void
   onAdded: (userId: string) => Promise<void>
 }) {
   const { t } = useTranslation()
   const [userId, setUserId] = useState('')
-  const candidate = candidates.find((c) => c.user_id === userId) ?? null
+  const newcomer = newcomers.find((n) => n.user_id === userId) ?? null
+  const granter = useGrantInOrganization(ttx)
+  // Grants given in this dialog, by person: their roles unlock at once.
+  const [granted, setGranted] = useState<Record<string, PeopleRole[]>>({})
+  const member = candidates.find((c) => c.user_id === userId) ?? null
+  // A newcomer is added with the organization roles they're given here.
+  const candidate = member
+    ? { ...member, grants: [...member.grants, ...(granted[member.user_id] ?? [])] }
+    : newcomer
+      ? {
+          user_id: newcomer.user_id,
+          email: newcomer.email,
+          full_name: newcomer.full_name,
+          grants: ['planner', 'observer', 'evaluator'] as PeopleRole[],
+        }
+      : null
   const [value, setValue] = useState<RoleFlags>({ ...NO_ROLES, plans: true })
   const [tags, setTags] = useState<Set<string>>(new Set())
   const [busy, setBusy] = useState(false)
@@ -1097,9 +1160,24 @@ function AddPersonForm({
     selectRef.current?.focus()
   }, [])
 
+  async function grant(role: PeopleRole) {
+    if (!member) return
+    setError(null)
+    const failed = await granter.grant(role, member)
+    if (failed) setError(failed)
+    else
+      setGranted((previous) => ({
+        ...previous,
+        [member.user_id]: [...(previous[member.user_id] ?? []), role],
+      }))
+  }
+
   function pick(id: string) {
     setUserId(id)
-    const grants = candidates.find((c) => c.user_id === id)?.grants ?? []
+    setError(null)
+    const grants = newcomers.some((n) => n.user_id === id)
+      ? (['planner'] as PeopleRole[])
+      : (candidates.find((c) => c.user_id === id)?.grants ?? [])
     // Start on the first role they're authorized for.
     const role = (['planner', 'observer', 'evaluator'] as const).find((r) => grants.includes(r))
     if (role) {
@@ -1118,28 +1196,60 @@ function AddPersonForm({
     setBusy(true)
     setError(null)
     try {
-      const request = toRoleRequest(value)
-      const { evaluates, observes, ...participation } = request
+      if (newcomer) {
+        // First the organization roles; nothing else unless they're given.
+        const result = await apiFetch<{ outcome: 'granted' | 'invited' }>(
+          `/organizations/${ttx.organization_id}/role-invitations`,
+          {
+            method: 'POST',
+            body: JSON.stringify({ email: newcomer.email, roles: orgRolesFor(value), tag_ids: [] }),
+          },
+        )
+        if (result.outcome !== 'granted') {
+          setError(t('creator.exerciseTeam.newcomerInvited'))
+          setBusy(false)
+          return
+        }
+      }
+    } catch (err) {
+      setError(errorText(err, t('auth.common.genericError')))
+      setBusy(false)
+      return
+    }
+    await addToExercise(candidate)
+  }
+
+  async function addToExercise(person: { user_id: string; email: string }) {
+    const request = toRoleRequest(value)
+    const { evaluates, observes, ...participation } = request
+    try {
       await apiFetch(`/ttx/${ttx.id}/people`, {
         method: 'POST',
-        body: JSON.stringify({ email: candidate.email, ...participation }),
+        body: JSON.stringify({ email: person.email, ...participation }),
       })
       // A team member who also evaluates / observes: set once on the team.
       if (evaluates || observes) {
-        await apiFetch(`/ttx/${ttx.id}/people/${candidate.user_id}/role`, {
+        await apiFetch(`/ttx/${ttx.id}/people/${person.user_id}/role`, {
           method: 'PUT',
           body: JSON.stringify(request),
         })
       }
       if (tags.size > 0) {
-        await apiFetch(`/ttx/${ttx.id}/people/${candidate.user_id}/tags`, {
+        await apiFetch(`/ttx/${ttx.id}/people/${person.user_id}/tags`, {
           method: 'PUT',
           body: JSON.stringify({ tag_ids: Array.from(tags) }),
         })
       }
-      await onAdded(candidate.user_id)
+      await onAdded(person.user_id)
     } catch (err) {
-      setError(errorText(err, t('auth.common.genericError')))
+      const message = errorText(err, t('auth.common.genericError'))
+      // The organization roles were given: they stay (they're legitimate on
+      // their own), and the person is now among the organization's.
+      setError(
+        newcomer
+          ? t('creator.exerciseTeam.newcomerPartial', { name: newcomer.full_name, message })
+          : message,
+      )
       setBusy(false)
     }
   }
@@ -1180,17 +1290,43 @@ function AddPersonForm({
               name="person"
               value={userId}
               onChange={(e) => pick(e.target.value)}
-              disabled={busy || candidates.length === 0}
+              disabled={busy || candidates.length + newcomers.length === 0}
               className={inputBase}
             >
               <option value="">{t('creator.exerciseTeam.personPlaceholder')}</option>
-              {candidates.map((c) => (
-                <option key={c.user_id} value={c.user_id}>
-                  {c.full_name} · {c.email}
-                </option>
-              ))}
+              {newcomers.length > 0 ? (
+                <>
+                  {candidates.length > 0 && (
+                    <optgroup label={t('creator.exerciseTeam.groupMembers')}>
+                      {candidates.map((c) => (
+                        <option key={c.user_id} value={c.user_id}>
+                          {c.full_name} · {c.email}
+                        </option>
+                      ))}
+                    </optgroup>
+                  )}
+                  <optgroup label={t('creator.exerciseTeam.groupNewcomers')}>
+                    {newcomers.map((n) => (
+                      <option key={n.user_id} value={n.user_id}>
+                        {n.full_name} · {n.email}
+                      </option>
+                    ))}
+                  </optgroup>
+                </>
+              ) : (
+                candidates.map((c) => (
+                  <option key={c.user_id} value={c.user_id}>
+                    {c.full_name} · {c.email}
+                  </option>
+                ))
+              )}
             </select>
-            {candidates.length === 0 && (
+            {newcomer && (
+              <p className="text-xs text-paper-ink/60 dark:text-fg-muted">
+                {t('creator.exerciseTeam.newcomerNote')}
+              </p>
+            )}
+            {candidates.length + newcomers.length === 0 && (
               <p className="text-xs text-paper-ink/60 dark:text-fg-faint">
                 {t('creator.exerciseTeam.noCandidates')}
               </p>
@@ -1202,6 +1338,8 @@ function AddPersonForm({
                 value={value}
                 onChange={setValue}
                 grants={candidate.grants}
+                onGrant={granter.manages && member ? (role) => void grant(role) : undefined}
+                granting={granter.granting}
                 disabled={busy}
               />
               <TagsFieldset
