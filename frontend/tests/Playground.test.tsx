@@ -512,6 +512,40 @@ describe('Control center', () => {
     )
   })
 
+  it('makes releasing the inject that is due the one primary, named action', () => {
+    render(<ControlCenterPanel ttxId="ttx-1" run={controlled()} onChange={() => {}} />)
+    const upcoming = screen.getByRole('region', { name: 'Next' })
+    const release = within(upcoming).getByRole('button', { name: 'Release INJ-02' })
+    expect(release).toHaveTextContent('Release')
+    expect(release).toHaveClass('bg-cta')
+  })
+
+  it('shows why a confirmed action failed inside its dialog', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(
+        async () =>
+          ({
+            ok: false,
+            status: 409,
+            json: async () => ({
+              success: false,
+              error: { code: 'RUN_NOT_LIVE', message: 'The session is not live.' },
+            }),
+          }) as Response,
+      ),
+    )
+    render(<ControlCenterPanel ttxId="ttx-1" run={controlled()} onChange={() => {}} />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'End exercise' }))
+    const dialog = screen.getByRole('dialog')
+    fireEvent.click(within(dialog).getByRole('button', { name: 'End exercise' }))
+
+    // Where it was confirmed, not behind the dialog.
+    expect(await within(dialog).findByRole('alert')).toHaveTextContent('The session is not live.')
+    expect(screen.getAllByText('The session is not live.')).toHaveLength(1)
+  })
+
   it('fires a suggested contingent inject only with a reason', async () => {
     const fetchMock = answering(controlled())
     render(<ControlCenterPanel ttxId="ttx-1" run={controlled()} onChange={() => {}} />)

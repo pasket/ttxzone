@@ -45,9 +45,10 @@ export function InjectQueue({
   ) => (
     <button
       type="button"
-      disabled={disabled || pending !== null}
-      onClick={onClick}
-      className={inject.kind === 'contingent' ? btnBranchIconGhost : btnNeutralIconGhost}
+      disabled={disabled}
+      aria-disabled={pending !== null || undefined}
+      onClick={pending !== null ? undefined : onClick}
+      className={`${inject.kind === 'contingent' ? btnBranchIconGhost : btnNeutralIconGhost} aria-disabled:cursor-progress aria-disabled:opacity-60`}
       aria-label={label}
       title={label}
     >

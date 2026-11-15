@@ -12,12 +12,15 @@ import { Modal } from '../common/Modal'
  * (`allowEmergency` false). */
 export function EndDialog({
   pending,
+  error = null,
   onClose,
   onEnd,
   onStop,
   allowEmergency = true,
 }: {
   pending: boolean
+  /** Why the action didn't go through: shown here, where it was confirmed. */
+  error?: string | null
   onClose: () => void
   onEnd: () => void
   onStop: (reason: string) => void
@@ -80,6 +83,11 @@ export function EndDialog({
               className={inputBase}
             />
           </div>
+        )}
+        {error && (
+          <p role="alert" className="text-sm text-danger-fg">
+            {error}
+          </p>
         )}
         <div className="flex justify-end gap-2">
           <button type="button" onClick={onClose} className={btnSecondary}>

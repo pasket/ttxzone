@@ -41,6 +41,11 @@ export const btnDangerGhost = `${compactBase} border border-danger/50 bg-transpa
 /** Compact solid danger -- same size as `btnDangerGhost` so the trigger ->
  * Confirm/Cancel swap doesn't jump in height, but solid since this is the
  * actual committed action, not a resting-state list button. */
+/** Compact primary: the one committing action of a dense row (the Control
+ * center's Release of the inject that is due), where `btnPrimary`'s
+ * padding would make the row taller than its neighbours. */
+export const btnPrimaryCompact = `${compactBase} bg-cta text-ink hover:bg-cta-hover disabled:hover:bg-paper-line dark:disabled:hover:bg-surface`
+
 export const btnDangerCompact = `${compactBase} bg-danger text-white hover:bg-danger-hover`
 
 /** Fixed-size square base for an icon-only button (ConfirmButton's resting

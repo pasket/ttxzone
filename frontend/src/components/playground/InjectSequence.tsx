@@ -5,6 +5,7 @@ import {
   actionsCellClass,
   btnBranchIconGhost,
   btnNeutralIconGhost,
+  btnPrimaryCompact,
   btnSecondary,
 } from '../../lib/buttonStyles'
 import { formatOffset } from '../../lib/msel'
@@ -40,7 +41,11 @@ export function InjectSequence({
   onResend,
   onResetTimer,
   onEndex,
+  releaseId,
 }: {
+  /** The id of the button that releases the inject that is due: where the
+   * panel hands focus on once a release took its row away. */
+  releaseId?: string
   run: RunRead
   control: NonNullable<RunRead['control']>
   live: boolean
@@ -58,6 +63,14 @@ export function InjectSequence({
   const deliveredAt = (iso: string) =>
     new Date(iso).toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' })
 
+  const dueCode = next.find(({ lane, inject }) => lane === 0 && inject.kind !== 'contingent')
+    ?.inject.code
+
+  // While another action is on its way a button says so (`aria-disabled`)
+  // but keeps focus: a disabled one would drop it.
+  const busy = pending !== null
+  const busyClass = 'aria-disabled:cursor-progress aria-disabled:opacity-60'
+
   const action = (
     key: string,
     label: string,
@@ -69,9 +82,10 @@ export function InjectSequence({
     <button
       key={key}
       type="button"
-      disabled={disabled || pending !== null}
-      onClick={onClick}
-      className={branch ? btnBranchIconGhost : btnNeutralIconGhost}
+      disabled={disabled}
+      aria-disabled={busy || undefined}
+      onClick={busy ? undefined : onClick}
+      className={`${branch ? btnBranchIconGhost : btnNeutralIconGhost} ${busyClass}`}
       aria-label={label}
       title={label}
     >
@@ -107,7 +121,7 @@ export function InjectSequence({
           </span>
           {badges}
           {aside}
-          <span className={`${actionsCellClass} w-9 shrink-0`}>{actions}</span>
+          <span className={`${actionsCellClass} min-w-9 shrink-0`}>{actions}</span>
         </div>
         {detail}
       </div>
@@ -319,21 +333,45 @@ export function InjectSequence({
                   </>
                 ),
                 detail: lane > 0 ? branchDetail(entry) : undefined,
-                actions: action(
-                  inject.code,
-                  t(
-                    contingent
-                      ? 'playground.control.fireInject'
-                      : jump
-                        ? 'playground.control.jumpRelease'
-                        : 'playground.control.releaseInject',
-                    { code: inject.code },
+                actions:
+                  inject.code === dueCode ? (
+                    // The inject that is due: the session's one primary action.
+                    <button
+                      id={releaseId}
+                      type="button"
+                      disabled={!live}
+                      aria-disabled={busy || undefined}
+                      onClick={busy ? undefined : () => onRelease(inject, false)}
+                      className={`${btnPrimaryCompact} inline-flex items-center gap-1.5 ${busyClass}`}
+                      aria-label={t('playground.control.releaseInject', { code: inject.code })}
+                      title={t('playground.control.releaseInject', { code: inject.code })}
+                    >
+                      {pending === inject.code ? (
+                        <ButtonSpinner />
+                      ) : (
+                        <>
+                          <ReleaseIcon />
+                          {t('playground.control.release')}
+                        </>
+                      )}
+                    </button>
+                  ) : (
+                    action(
+                      inject.code,
+                      t(
+                        contingent
+                          ? 'playground.control.fireInject'
+                          : jump
+                            ? 'playground.control.jumpRelease'
+                            : 'playground.control.releaseInject',
+                        { code: inject.code },
+                      ),
+                      jump ? <JumpIcon /> : <ReleaseIcon />,
+                      () => onRelease(inject, jump),
+                      !live,
+                      lane > 0,
+                    )
                   ),
-                  jump ? <JumpIcon /> : <ReleaseIcon />,
-                  () => onRelease(inject, jump),
-                  !live,
-                  lane > 0,
-                ),
               })
             })}
           </ul>

@@ -18,12 +18,15 @@ export function RestartDialog({
   runNumber,
   canDelete,
   pending,
+  error = null,
   onClose,
   onRestart,
 }: {
   runNumber: number | null
   canDelete: boolean
   pending: boolean
+  /** Why the action didn't go through: shown here, where it was confirmed. */
+  error?: string | null
   onClose: () => void
   onRestart: (mode: RestartMode, confirmation: string) => void
 }) {
@@ -110,6 +113,11 @@ export function RestartDialog({
             className={`${inputBase} font-mono`}
           />
         </div>
+        {error && (
+          <p role="alert" className="text-sm text-danger-fg">
+            {error}
+          </p>
+        )}
         <div className="flex justify-end gap-2">
           <button type="button" onClick={onClose} className={btnSecondary}>
             {t('playground.control.cancel')}

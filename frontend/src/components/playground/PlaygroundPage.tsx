@@ -180,19 +180,21 @@ export function PlaygroundPage({
             aside={run.rooms && run.state !== 'not_started' ? <RoomBar run={run} /> : undefined}
           />
           <SessionNotices run={run} connectionLost={Boolean(error)} />
-          {canPreview && (
-            <div className="flex justify-end">
-              <button
-                type="button"
-                onClick={() => setPreviewing(true)}
-                className={`${btnSecondary} h-8 text-xs`}
-              >
-                <EyeIcon />
-                {t('playground.preview.toggle')}
-              </button>
-            </div>
-          )}
         </div>
+        {/* Under the band, not in it: it scrolls away with the page instead
+            of floating over the panels. */}
+        {canPreview && (
+          <div className="mb-2 flex justify-end">
+            <button
+              type="button"
+              onClick={() => setPreviewing(true)}
+              className={`${btnSecondary} inline-flex h-8 items-center gap-1.5 text-xs`}
+            >
+              <EyeIcon />
+              {t('playground.preview.toggle')}
+            </button>
+          </div>
+        )}
         {/* A new run starts every panel afresh (notes, ratings, feedback). */}
         <div key={run.run_number ?? 0}>
           {wide ? (

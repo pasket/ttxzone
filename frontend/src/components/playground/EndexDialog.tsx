@@ -12,11 +12,14 @@ import { Modal } from '../common/Modal'
 export function EndexDialog({
   language,
   pending,
+  error = null,
   onClose,
   onSend,
 }: {
   language?: string | null
   pending: boolean
+  /** Why the action didn't go through: shown here, where it was confirmed. */
+  error?: string | null
   onClose: () => void
   onSend: (title: string, content: string) => void
 }) {
@@ -64,6 +67,11 @@ export function EndexDialog({
           maxLength={4000}
           rows={8}
         />
+        {error && (
+          <p role="alert" className="text-sm text-danger-fg">
+            {error}
+          </p>
+        )}
         <div className="flex justify-end gap-2">
           <button type="button" onClick={onClose} className={btnSecondary}>
             {t('playground.control.cancel')}

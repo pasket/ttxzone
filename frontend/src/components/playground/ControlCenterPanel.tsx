@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ApiError, apiFetch } from '../../lib/api'
@@ -68,7 +68,25 @@ export function ControlCenterPanel({
   const { t } = useTranslation()
   const [pending, setPending] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [asking, setAsking] = useState<Asking | null>(null)
+  const [asking, setAskingState] = useState<Asking | null>(null)
+  // A dialog opens without the previous action's error, and shows its own.
+  const setAsking = (next: Asking | null) => {
+    setError(null)
+    setAskingState(next)
+  }
+
+  // Releasing takes the inject's row away, and its button with it: once
+  // the answer is in and any dialog has closed, focus goes to the inject
+  // that is due now instead of falling back to the page.
+  const releaseId = useId()
+  const handOnFocus = useRef(false)
+  useEffect(() => {
+    if (!handOnFocus.current || asking !== null || pending !== null) return
+    handOnFocus.current = false
+    const active = document.activeElement
+    if (active && active !== document.body) return
+    document.getElementById(releaseId)?.focus({ preventScroll: true })
+  }, [run, asking, pending, releaseId])
 
   const aheadOf = (over: RunControlInject[]) =>
     t('playground.control.jumpDescription', { count: over.length })
@@ -101,6 +119,7 @@ export function ControlCenterPanel({
    * those due first asks to confirm (`ahead` unknown, from the queue: any
    * but a suggested contingent). */
   const release = (inject: RunControlInject, ahead = !inject.suggested) => {
+    handOnFocus.current = true
     const over = ahead ? jumpedOver(control?.injects ?? [], inject) : []
     if (inject.kind === 'contingent') setAsking({ kind: 'fire', inject, over })
     else if (over.length) setAsking({ kind: 'jump', inject, over })
@@ -125,8 +144,8 @@ export function ControlCenterPanel({
           {run.state === 'live' ? (
             <button
               type="button"
-              disabled={pending !== null}
-              onClick={() => void act('pause', '/pause')}
+              aria-disabled={pending !== null || undefined}
+              onClick={pending !== null ? undefined : () => void act('pause', '/pause')}
               className={btnNeutralIconGhost}
               aria-label={t('playground.control.pause')}
               title={t('playground.control.pause')}
@@ -136,8 +155,8 @@ export function ControlCenterPanel({
           ) : (
             <button
               type="button"
-              disabled={pending !== null}
-              onClick={() => void act('resume', '/resume')}
+              aria-disabled={pending !== null || undefined}
+              onClick={pending !== null ? undefined : () => void act('resume', '/resume')}
               className={btnPrimaryIcon}
               aria-label={t('playground.control.resume')}
               title={t('playground.control.resume')}
@@ -211,6 +230,7 @@ export function ControlCenterPanel({
         )}
         {running && control && (
           <InjectSequence
+            releaseId={releaseId}
             run={run}
             control={control}
             live={playing}
@@ -221,7 +241,7 @@ export function ControlCenterPanel({
             onEndex={() => setAsking({ kind: 'endex' })}
           />
         )}
-        {error && (
+        {error && !asking && (
           <p className="mt-3 text-sm text-danger-fg" aria-live="polite">
             {error}
           </p>
@@ -255,6 +275,7 @@ export function ControlCenterPanel({
 
       {asking?.kind === 'end' && (
         <EndDialog
+          error={error}
           pending={pending === 'end'}
           onClose={() => setAsking(null)}
           onEnd={async () => {
@@ -268,6 +289,7 @@ export function ControlCenterPanel({
       )}
       {asking?.kind === 'endex' && (
         <EndexDialog
+          error={error}
           language={contentLanguage}
           pending={pending === 'endex'}
           onClose={() => setAsking(null)}
@@ -278,6 +300,7 @@ export function ControlCenterPanel({
       )}
       {asking?.kind === 'restart' && (
         <RestartDialog
+          error={error}
           runNumber={run.run_number ?? null}
           canDelete={run.can_delete ?? false}
           pending={pending === 'restart'}
@@ -289,6 +312,7 @@ export function ControlCenterPanel({
       )}
       {asking && (asking.kind === 'skip' || asking.kind === 'fire') && (
         <ReasonDialog
+          error={error}
           title={t(
             asking.kind === 'fire'
               ? 'playground.control.fireTitle'
@@ -319,6 +343,7 @@ export function ControlCenterPanel({
       )}
       {asking?.kind === 'jump' && (
         <ConfirmActionDialog
+          error={error}
           title={t('playground.control.jumpTitle', { code: asking.inject.code })}
           description={aheadOf(asking.over)}
           items={asking.over}
@@ -333,6 +358,7 @@ export function ControlCenterPanel({
       )}
       {asking?.kind === 'resend' && (
         <ConfirmActionDialog
+          error={error}
           title={t('playground.control.resendTitle', { code: asking.code })}
           description={t('playground.control.resendDescription')}
           confirmLabel={t('playground.control.resend')}

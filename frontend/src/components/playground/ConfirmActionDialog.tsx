@@ -14,6 +14,7 @@ export function ConfirmActionDialog({
   items = [],
   confirmLabel,
   pending,
+  error = null,
   onClose,
   onConfirm,
 }: {
@@ -23,6 +24,8 @@ export function ConfirmActionDialog({
   items?: { code: string; title: string }[]
   confirmLabel: string
   pending: boolean
+  /** Why the action didn't go through: shown here, where it was confirmed. */
+  error?: string | null
   onClose: () => void
   onConfirm: () => void
 }) {
@@ -49,6 +52,11 @@ export function ConfirmActionDialog({
               </li>
             ))}
           </ul>
+        )}
+        {error && (
+          <p role="alert" className="text-sm text-danger-fg">
+            {error}
+          </p>
         )}
         <div className="flex justify-end gap-2">
           <button type="button" onClick={onClose} className={btnSecondary}>

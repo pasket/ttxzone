@@ -13,6 +13,7 @@ export function ReasonDialog({
   confirmLabel,
   danger = false,
   pending,
+  error = null,
   onClose,
   onConfirm,
 }: {
@@ -21,6 +22,8 @@ export function ReasonDialog({
   confirmLabel: string
   danger?: boolean
   pending: boolean
+  /** Why the action didn't go through: shown here, where it was confirmed. */
+  error?: string | null
   onClose: () => void
   onConfirm: (reason: string) => void
 }) {
@@ -54,6 +57,11 @@ export function ReasonDialog({
           required
           className={inputBase}
         />
+        {error && (
+          <p role="alert" className="text-sm text-danger-fg">
+            {error}
+          </p>
+        )}
         <div className="flex justify-end gap-2">
           <button type="button" onClick={onClose} className={btnSecondary}>
             {t('playground.control.cancel')}
