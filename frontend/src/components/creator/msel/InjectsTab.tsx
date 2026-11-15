@@ -417,10 +417,11 @@ export function InjectsTab(props: TabProps) {
                 : t('creator.msel.table.noInjects')}
           </p>
         ) : (
-          <div className="-mx-5">
+          <div className="-mx-5 overflow-x-auto">
             {/* Fixed widths, as in Phases: the inject's title gives way and
-                wraps, so the table never scrolls sideways. */}
-            <table className="w-full table-fixed text-left">
+                wraps. Below the width that leaves it room to read, the
+                table scrolls inside its panel instead of squeezing it. */}
+            <table className="w-full min-w-[50rem] table-fixed text-left">
               <colgroup>
                 <col />
                 {groupBy !== 'objective' && <col className="w-56 lg:w-64" />}

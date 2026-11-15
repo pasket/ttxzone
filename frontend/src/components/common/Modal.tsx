@@ -37,11 +37,16 @@ export function Modal({
   onTop?: boolean
 }) {
   const dialogRef = useRef<HTMLDivElement>(null)
+  // What had focus when the dialog opened. A ref, not a local of the effect:
+  // when the effect runs again while the dialog is up (StrictMode's second
+  // pass), focus is already inside it, and that must not replace the opener.
+  const openerRef = useRef<HTMLElement | null>(null)
 
   // Initial focus, plus a body scroll lock so the page behind the backdrop
   // doesn't scroll while the dialog is open (restored on close).
   useEffect(() => {
-    const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    const focused = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    if (!focused || !dialogRef.current?.contains(focused)) openerRef.current = focused
     dialogRef.current?.focus()
     const previousOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
@@ -53,6 +58,7 @@ export function Modal({
       if (active && active !== document.body) return
       // An item of a menu that folded when picked can't take focus; its
       // summary can.
+      const opener = openerRef.current
       const menu = opener?.closest('details')
       const target =
         menu && !menu.open && opener?.tagName !== 'SUMMARY'

@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { useState } from 'react'
+import { StrictMode, useState } from 'react'
 import { describe, expect, it, vi } from 'vitest'
 
 import { Modal } from '../src/components/common/Modal'
@@ -82,6 +82,21 @@ describe('Modal', () => {
 
     expect(document.activeElement).toBe(opener)
     expect(focus).toHaveBeenCalledWith({ preventScroll: true })
+  })
+
+  it('still knows what opened it when its effect runs twice (StrictMode)', () => {
+    render(
+      <StrictMode>
+        <Opener />
+      </StrictMode>,
+    )
+    const opener = screen.getByRole('button', { name: 'Open' })
+    opener.focus()
+    fireEvent.click(opener)
+
+    fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' })
+
+    expect(document.activeElement).toBe(opener)
   })
 
   it('leaves focus where a caller moved it on close', () => {

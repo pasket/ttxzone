@@ -1710,6 +1710,7 @@
     "exerciseTeam": {
       "title": "Exercise team",
       "intro": "Who plans, runs, watches and rates {{exercise}} — everyone on it except the Players. Only people an Exercise Program Manager granted the role in Admin → Users and roles can be given it. To change someone's role or tags, edit them.",
+      "introView": "Who plans, runs, watches and rates {{exercise}} — everyone on it except the Players.",
       "guide": {
         "planner": "Designs the exercise: needs analysis, MSEL, invitations. Exactly one Planner is the Lead Planner.",
         "controller": "Runs the exercise from Control: delivers the MSEL injects and keeps the Players in scope.",

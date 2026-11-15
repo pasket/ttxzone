@@ -245,49 +245,55 @@ export function CreatorExerciseSection() {
   }
 
   return (
-    <CreatorExerciseDashboard
-      ttxId={exercise.id}
-      title={title}
-      summary={
-        <>
-          <ExerciseIdentityBand
-            exercise={exercise}
-            editButtonRef={editTriggerRef}
-            onEdit={exercise.archived_at ? undefined : openEditing}
-            onDuplicate={
-              // A copy is a new exercise: it takes the org-scoped Planner grant too.
-              exercise.plans && activeOrganization?.is_planner
-                ? () => setDuplicating(true)
-                : undefined
-            }
-          />
-          {duplicating && (
-            <DuplicateExerciseModal exercise={exercise} onClose={() => setDuplicating(false)} />
-          )}
-          {!exercise.archived_at && (
-            <ProposalsPanel<ReturnType<typeof exerciseRow>>
-              ttxId={exercise.id}
-              targets={['ttx_meta']}
-              draftRows={{ ttx_meta: [exerciseRow(exercise)] }}
-              savedRows={{ ttx_meta: [exerciseRow(exercise)] }}
-              codeOf={(id) => (id === exercise.id ? exercise.code : undefined)}
-              merge={(group) => ({
-                patch: Object.assign({}, ...group.map((p) => p.patch)),
-                keys: Object.fromEntries(group.map((p) => [p.id, exercise.id])),
-                conflicts: [],
-                missing: [],
-              })}
-              apply={(patch) => {
-                // Accepting opens the edit form with it, to review and save.
-                setProposed(patch)
-                openEditing()
-              }}
-              disabledReason={null}
-              autoApply={['ttx_meta']}
+    <div className="space-y-6">
+      <CreatorExerciseDashboard
+        ttxId={exercise.id}
+        title={title}
+        summary={
+          <>
+            <ExerciseIdentityBand
+              exercise={exercise}
+              editButtonRef={editTriggerRef}
+              onEdit={exercise.archived_at ? undefined : openEditing}
+              onDuplicate={
+                // A copy is a new exercise: it takes the org-scoped Planner grant too.
+                exercise.plans && activeOrganization?.is_planner
+                  ? () => setDuplicating(true)
+                  : undefined
+              }
             />
-          )}
-        </>
-      }
-    />
+            {duplicating && (
+              <DuplicateExerciseModal exercise={exercise} onClose={() => setDuplicating(false)} />
+            )}
+            {!exercise.archived_at && (
+              <ProposalsPanel<ReturnType<typeof exerciseRow>>
+                ttxId={exercise.id}
+                targets={['ttx_meta']}
+                draftRows={{ ttx_meta: [exerciseRow(exercise)] }}
+                savedRows={{ ttx_meta: [exerciseRow(exercise)] }}
+                codeOf={(id) => (id === exercise.id ? exercise.code : undefined)}
+                merge={(group) => ({
+                  patch: Object.assign({}, ...group.map((p) => p.patch)),
+                  keys: Object.fromEntries(group.map((p) => [p.id, exercise.id])),
+                  conflicts: [],
+                  missing: [],
+                })}
+                apply={(patch) => {
+                  // Accepting opens the edit form with it, to review and save.
+                  setProposed(patch)
+                  openEditing()
+                }}
+                disabledReason={null}
+                autoApply={['ttx_meta']}
+              />
+            )}
+          </>
+        }
+      />
+      {/* To consult here; changed in the edit mode (never on an archived
+          exercise, which has none). */}
+      <ExerciseTeamPanel ttx={exercise} availableTags={[]} readOnly />
+      <ExerciseRoomsPanel ttx={exercise} readOnly />
+    </div>
   )
 }

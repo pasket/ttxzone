@@ -56,7 +56,16 @@ type Filter = 'all' | 'unseated'
  * session with the room their view opens on. Everything applies at once. While
  * the MSEL is ready or the session has started the rooms can't be added,
  * removed or turned off; renaming them and seating Players still can. */
-export function ExerciseRoomsPanel({ ttx }: { ttx: TTXRead }) {
+export function ExerciseRoomsPanel({
+  ttx,
+  readOnly = false,
+}: {
+  ttx: TTXRead
+  /** The rooms and how many Players each one seats, to consult (the
+   * exercise's profile outside its edit mode, an archived exercise):
+   * nothing when the exercise isn't played in rooms. */
+  readOnly?: boolean
+}) {
   const { t } = useTranslation()
   const { showToast } = useToast()
   const base = `/ttx/${ttx.id}/rooms`
@@ -96,6 +105,23 @@ export function ExerciseRoomsPanel({ ttx }: { ttx: TTXRead }) {
         </p>
       </Panel>
     ) : null
+  }
+
+  if (readOnly) {
+    if (!data.uses_rooms) return null
+    return (
+      <Panel
+        title={t('creator.rooms.title')}
+        meta={t('creator.rooms.summary', {
+          rooms: t('creator.rooms.roomCount', { count: data.rooms.length }),
+          players: t('creator.rooms.playerCount', { count: data.players.length }),
+        })}
+        description={t('creator.rooms.intro')}
+        flush
+      >
+        <RoomList rooms={data.rooms} />
+      </Panel>
+    )
   }
 
   const locked = data.structure_locked
@@ -185,16 +211,17 @@ export function ExerciseRoomsPanel({ ttx }: { ttx: TTXRead }) {
 
 function RoomList({
   rooms,
-  locked,
+  locked = false,
   onAdd,
   onEdit,
   onRemove,
 }: {
   rooms: RoomRead[]
-  locked: boolean
-  onAdd: () => void
-  onEdit: (room: RoomRead) => void
-  onRemove: (room: RoomRead) => void
+  locked?: boolean
+  /** Without the three of them the list is read-only: no actions. */
+  onAdd?: () => void
+  onEdit?: (room: RoomRead) => void
+  onRemove?: (room: RoomRead) => void
 }) {
   const { t } = useTranslation()
   return (
@@ -219,21 +246,23 @@ function RoomList({
             <span className="text-sm tabular-nums text-paper-ink/70 dark:text-fg-muted">
               {t('creator.rooms.playerCount', { count: room.player_count })}
             </span>
-            <div className={actionsCellClass}>
-              <EditButton
-                label={t('creator.rooms.editLabel', { name: room.name })}
-                onClick={() => onEdit(room)}
-              />
-              <IconButton
-                label={
-                  locked
-                    ? t('creator.rooms.removeLocked')
-                    : t('creator.rooms.removeLabel', { name: room.name })
-                }
-                disabled={locked}
-                onClick={() => onRemove(room)}
-              />
-            </div>
+            {onEdit && onRemove && (
+              <div className={actionsCellClass}>
+                <EditButton
+                  label={t('creator.rooms.editLabel', { name: room.name })}
+                  onClick={() => onEdit(room)}
+                />
+                <IconButton
+                  label={
+                    locked
+                      ? t('creator.rooms.removeLocked')
+                      : t('creator.rooms.removeLabel', { name: room.name })
+                  }
+                  disabled={locked}
+                  onClick={() => onRemove(room)}
+                />
+              </div>
+            )}
           </li>
         ))}
       </ul>
@@ -242,12 +271,14 @@ function RoomList({
           {t('creator.rooms.noRooms')}
         </p>
       )}
-      <div className="px-5 py-3">
-        <button type="button" onClick={onAdd} disabled={locked} className={btnSecondary}>
-          <span aria-hidden="true">+ </span>
-          {t('creator.rooms.addButton')}
-        </button>
-      </div>
+      {onAdd && (
+        <div className="px-5 py-3">
+          <button type="button" onClick={onAdd} disabled={locked} className={btnSecondary}>
+            <span aria-hidden="true">+ </span>
+            {t('creator.rooms.addButton')}
+          </button>
+        </div>
+      )}
     </div>
   )
 }

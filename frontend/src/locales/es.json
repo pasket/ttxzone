@@ -1710,6 +1710,7 @@
     "exerciseTeam": {
       "title": "Equipo del ejercicio",
       "intro": "Quién planifica, conduce, observa y valora {{exercise}}: todas las personas en él salvo los Jugadores. Solo se le puede dar un rol a quien un Responsable del Programa de Ejercicios se lo haya concedido en Admin → Usuarios y roles. Para cambiar el rol o las etiquetas de alguien, edítalo.",
+      "introView": "Quién planifica, conduce, observa y valora {{exercise}}: todas las personas en él salvo los Jugadores.",
       "guide": {
         "planner": "Diseña el ejercicio: análisis de necesidades, MSEL, invitaciones. Un Planificador es el Lead Planner.",
         "controller": "Conduce el ejercicio desde Control: lanza los injects del MSEL y mantiene a los Jugadores dentro del alcance.",

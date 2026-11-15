@@ -511,4 +511,23 @@ describe('ExerciseTeamPanel', () => {
       facilitates: false,
     })
   })
+
+  it('read-only, is the matrix alone: nothing to add, edit or remove', async () => {
+    stubApi({
+      'GET /ttx/ttx-1/people': [json(200, { items: [me, max, wanda] })],
+      'GET /ttx/ttx-1/people/candidates': [json(200, { items: [] })],
+    })
+
+    render(
+      <MemoryRouter>
+        <ExerciseTeamPanel ttx={drill} availableTags={[]} readOnly />
+      </MemoryRouter>,
+    )
+
+    expect(await screen.findByText('3 people on Ransomware drill')).toBeInTheDocument()
+    expect(mark('Observer', 'Wanda Watcher')).toBeInTheDocument()
+    expect(screen.queryByRole('columnheader', { name: 'Actions' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /Add person/ })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /^(Edit|Remove) / })).not.toBeInTheDocument()
+  })
 })

@@ -190,10 +190,14 @@ const errorText = (err: unknown, fallback: string) =>
 export function ExerciseTeamPanel({
   ttx,
   availableTags,
+  readOnly = false,
 }: {
   ttx: TTXRead
   /** The exercise's tags, owned by the host page. */
   availableTags: AssignableTag[]
+  /** The matrix alone, to consult: nothing to add, edit or remove (the
+   * exercise's profile outside its edit mode, an archived exercise). */
+  readOnly?: boolean
 }) {
   const { t } = useTranslation()
   const { showToast } = useToast()
@@ -293,20 +297,28 @@ export function ExerciseTeamPanel({
         description={
           <RoleGuide
             id="creator.exerciseTeam.intro"
-            intro={t('creator.exerciseTeam.intro', { exercise: ttx.name })}
+            intro={t(readOnly ? 'creator.exerciseTeam.introView' : 'creator.exerciseTeam.intro', {
+              exercise: ttx.name,
+            })}
             items={COLUMNS.map((c) => ({
               role: c.role,
               name: t(c.label),
               description: t(c.guide),
             }))}
-            footnote={`${t('creator.planningTeam.leadDescription')} ${t('common.appliesImmediately')}`}
+            footnote={
+              readOnly
+                ? t('creator.planningTeam.leadDescription')
+                : `${t('creator.planningTeam.leadDescription')} ${t('common.appliesImmediately')}`
+            }
           />
         }
         aside={
-          <button type="button" onClick={() => setAdding(true)} className={btnSecondary}>
-            <span aria-hidden="true">+ </span>
-            {t('creator.exerciseTeam.addButton')}
-          </button>
+          readOnly ? undefined : (
+            <button type="button" onClick={() => setAdding(true)} className={btnSecondary}>
+              <span aria-hidden="true">+ </span>
+              {t('creator.exerciseTeam.addButton')}
+            </button>
+          )
         }
         flush
       >
@@ -361,9 +373,11 @@ export function ExerciseTeamPanel({
                   <th scope="col" className={panelTh}>
                     {t('creator.exerciseTeam.columns.tags')}
                   </th>
-                  <th scope="col" className={`${panelActionsTh} w-36`}>
-                    {t('common.table.actions')}
-                  </th>
+                  {!readOnly && (
+                    <th scope="col" className={`${panelActionsTh} w-36`}>
+                      {t('common.table.actions')}
+                    </th>
+                  )}
                 </tr>
               </thead>
               <tbody className={panelTbody}>
@@ -421,44 +435,51 @@ export function ExerciseTeamPanel({
                         ))}
                       </div>
                     </td>
-                    <td className={panelTd}>
-                      <div className={actionsCellClass}>
-                        {person.role === 'planner' && person.plans && !person.is_lead && (
-                          <LeadButton
-                            label={t('creator.planningTeam.makeLeadLabel', {
+                    {!readOnly && (
+                      <td className={panelTd}>
+                        <div className={actionsCellClass}>
+                          {person.role === 'planner' && person.plans && !person.is_lead && (
+                            <LeadButton
+                              label={t('creator.planningTeam.makeLeadLabel', {
+                                name: person.full_name,
+                              })}
+                              busy={leadBusy === `${person.user_id}-planner`}
+                              disabled={leadBusy !== null}
+                              onClick={() => void makeLead(person, false)}
+                            />
+                          )}
+                          {isEvaluator(person) && !person.leads && (
+                            <LeadButton
+                              label={t('creator.exerciseTeam.makeLeadEvaluatorLabel', {
+                                name: person.full_name,
+                              })}
+                              busy={leadBusy === `${person.user_id}-evaluator`}
+                              disabled={leadBusy !== null}
+                              onClick={() => void makeLead(person, true)}
+                            />
+                          )}
+                          <EditButton
+                            ref={(node) => {
+                              if (node) triggerRefs.current.set(`edit-${person.user_id}`, node)
+                            }}
+                            label={t('creator.exerciseTeam.editLabel', { name: person.full_name })}
+                            onClick={() => setEditing(person)}
+                          />
+                          <IconButton
+                            label={t('creator.exerciseTeam.removeLabel', {
                               name: person.full_name,
                             })}
-                            busy={leadBusy === `${person.user_id}-planner`}
-                            disabled={leadBusy !== null}
-                            onClick={() => void makeLead(person, false)}
+                            onClick={(event) => {
+                              triggerRefs.current.set(
+                                `remove-${person.user_id}`,
+                                event.currentTarget,
+                              )
+                              setRemoving(person)
+                            }}
                           />
-                        )}
-                        {isEvaluator(person) && !person.leads && (
-                          <LeadButton
-                            label={t('creator.exerciseTeam.makeLeadEvaluatorLabel', {
-                              name: person.full_name,
-                            })}
-                            busy={leadBusy === `${person.user_id}-evaluator`}
-                            disabled={leadBusy !== null}
-                            onClick={() => void makeLead(person, true)}
-                          />
-                        )}
-                        <EditButton
-                          ref={(node) => {
-                            if (node) triggerRefs.current.set(`edit-${person.user_id}`, node)
-                          }}
-                          label={t('creator.exerciseTeam.editLabel', { name: person.full_name })}
-                          onClick={() => setEditing(person)}
-                        />
-                        <IconButton
-                          label={t('creator.exerciseTeam.removeLabel', { name: person.full_name })}
-                          onClick={(event) => {
-                            triggerRefs.current.set(`remove-${person.user_id}`, event.currentTarget)
-                            setRemoving(person)
-                          }}
-                        />
-                      </div>
-                    </td>
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>

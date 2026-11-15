@@ -163,4 +163,29 @@ describe('ExerciseRoomsPanel', () => {
     expect(screen.getByRole('button', { name: 'Edit Blue' })).toBeEnabled()
     expect(screen.getByRole('combobox', { name: 'Room of Ana Ruiz' })).toBeEnabled()
   })
+
+  it('read-only, lists the rooms with no controls, and nothing without rooms', async () => {
+    stubApi({ 'GET /ttx/ttx-1/rooms': [json(200, on)] })
+    const { unmount } = render(
+      <MemoryRouter>
+        <ExerciseRoomsPanel ttx={drill} readOnly />
+      </MemoryRouter>,
+    )
+
+    expect(await screen.findByText('Main room')).toBeInTheDocument()
+    expect(screen.getByText('Blue')).toBeInTheDocument()
+    expect(screen.queryByRole('switch')).not.toBeInTheDocument()
+    expect(screen.queryByRole('button')).not.toBeInTheDocument()
+    expect(screen.queryByRole('table')).not.toBeInTheDocument()
+    unmount()
+
+    const fetchMock = stubApi({ 'GET /ttx/ttx-1/rooms': [json(200, off)] })
+    render(
+      <MemoryRouter>
+        <ExerciseRoomsPanel ttx={drill} readOnly />
+      </MemoryRouter>,
+    )
+    await waitFor(() => expect(fetchMock).toHaveBeenCalled())
+    expect(screen.queryByText('Rooms')).not.toBeInTheDocument()
+  })
 })
