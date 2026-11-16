@@ -15,7 +15,6 @@ import {
   btnPrimary,
   btnSecondary,
   inputBase,
-  inputCompact,
   inputDisabled,
   linkAccent,
 } from '../../lib/buttonStyles'
@@ -52,6 +51,7 @@ import { HelpText } from '../common/HelpText'
 import { IconButton } from '../common/IconButton'
 import { LastLogin } from '../common/LastLogin'
 import { CodeRef } from '../common/CodeRef'
+import { FilterRow, FilterSelect } from '../common/FilterRow'
 import { Modal } from '../common/Modal'
 import { Pagination } from '../common/Pagination'
 import { PersonCombobox } from '../common/PersonCombobox'
@@ -356,52 +356,15 @@ export function AdminUsersAndRolesSection() {
         label={t('admin.usersAndRoles.title')}
         meta={loading && !data ? undefined : t('admin.usersAndRoles.count', { count: total })}
         aside={
-          <div className="flex flex-wrap items-center gap-2">
-            <label className="sr-only" htmlFor="users-and-roles-role-filter">
-              {t('admin.usersAndRoles.roleFilter')}
-            </label>
-            <div className="w-56">
-              <select
-                id="users-and-roles-role-filter"
-                name="role"
-                value={roleFilter ?? ''}
-                onChange={(e) => setFilter('role', e.target.value)}
-                className={`${inputCompact} text-sm`}
-              >
-                <option value="">{t('admin.usersAndRoles.allRoles')}</option>
-                {ROLES.map((r) => (
-                  <option key={r.role} value={r.role}>
-                    {t(r.label)}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <label className="sr-only" htmlFor="users-and-roles-status-filter">
-              {t('admin.usersAndRoles.statusFilter')}
-            </label>
-            <div className="w-56">
-              <select
-                id="users-and-roles-status-filter"
-                name="status"
-                value={statusFilter ?? ''}
-                onChange={(e) => setFilter('status', e.target.value)}
-                className={`${inputCompact} text-sm`}
-              >
-                <option value="">{t('admin.usersAndRoles.allStatuses')}</option>
-                <option value="active">{t('admin.usersAndRoles.statusActive')}</option>
-                <option value="disabled">{t('admin.usersAndRoles.statusDisabled')}</option>
-              </select>
-            </div>
-            <TableToolbar
-              sortDir={sortDir}
-              sortBy={sortBy}
-              onSortDirChange={setSortDir}
-              onSortByChange={setSortBy}
-              search={search}
-              onSearchChange={setSearch}
-              sortOptions={PEOPLE_SORT_OPTIONS}
-            />
-          </div>
+          <TableToolbar
+            sortDir={sortDir}
+            sortBy={sortBy}
+            onSortDirChange={setSortDir}
+            onSortByChange={setSortBy}
+            search={search}
+            onSearchChange={setSearch}
+            sortOptions={PEOPLE_SORT_OPTIONS}
+          />
         }
         footer={
           totalPages > 1 ? (
@@ -410,6 +373,28 @@ export function AdminUsersAndRolesSection() {
         }
         flush
       >
+        <FilterRow label={t('common.filters.label')}>
+          <FilterSelect
+            id="users-and-roles-role-filter"
+            label={t('admin.usersAndRoles.roleFilter')}
+            value={roleFilter ?? null}
+            allLabel={t('admin.usersAndRoles.allRoles')}
+            options={ROLES.map((r) => ({ value: r.role, label: t(r.label) }))}
+            onChange={(next) => setFilter('role', next ?? '')}
+            wide
+          />
+          <FilterSelect
+            id="users-and-roles-status-filter"
+            label={t('admin.usersAndRoles.statusFilter')}
+            value={statusFilter ?? null}
+            allLabel={t('admin.usersAndRoles.allStatuses')}
+            options={[
+              { value: 'active', label: t('admin.usersAndRoles.statusActive') },
+              { value: 'disabled', label: t('admin.usersAndRoles.statusDisabled') },
+            ]}
+            onChange={(next) => setFilter('status', next ?? '')}
+          />
+        </FilterRow>
         {loadError && !data && (
           <p role="alert" className="px-5 py-4 text-sm text-danger-fg">
             {t('admin.usersAndRoles.loadError')}

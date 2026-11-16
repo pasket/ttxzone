@@ -1,5 +1,9 @@
 {
   "common": {
+    "filters": {
+      "label": "Filtros",
+      "clear": "Quitar filtros"
+    },
     "app": {
       "name": "TTX-Zone",
       "tagline": "Crea memoria muscular en tu organización",
@@ -4982,8 +4986,7 @@
         "instanceAdmin": "Admin. de instancia",
         "allAdmin": "Administradoras o no",
         "adminYes": "Administradoras de la instancia",
-        "adminNo": "No administradoras",
-        "clear": "Quitar filtros"
+        "adminNo": "No administradoras"
       }
     },
     "legal": {

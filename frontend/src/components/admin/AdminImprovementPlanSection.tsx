@@ -11,6 +11,7 @@ import { RetestDialog } from '../aar/RetestDialog'
 import { RetestRefCell } from '../aar/RetestRefCell'
 import { CodeRef } from '../common/CodeRef'
 import { Pagination } from '../common/Pagination'
+import { FilterRow, FilterSelect } from '../common/FilterRow'
 import { Panel } from '../common/Panel'
 import { SectionHeader } from '../common/SectionHeader'
 
@@ -80,52 +81,6 @@ export function AdminImprovementPlanSection() {
         title={t('admin.improvementPlan.count', { count: data?.total ?? 0 })}
         aside={
           <div className="flex flex-wrap items-center gap-2">
-            <label className="sr-only" htmlFor="plan-status">
-              {t('admin.improvementPlan.status')}
-            </label>
-            <select
-              id="plan-status"
-              value={status}
-              onChange={(e) => {
-                setStatus(e.target.value as ImprovementStatus | '')
-                setPage(1)
-              }}
-              className={`${inputCompact} w-auto max-w-56`}
-            >
-              <option value="">{t('admin.improvementPlan.anyStatus')}</option>
-              {IMPROVEMENT_STATUSES.map((s) => (
-                <option key={s} value={s}>
-                  {t(`aar.status.${s}`)}
-                </option>
-              ))}
-            </select>
-            <label className="sr-only" htmlFor="plan-retest">
-              {t('admin.improvementPlan.retestFilter')}
-            </label>
-            <select
-              id="plan-retest"
-              value={retest}
-              onChange={(e) => {
-                setRetest(e.target.value as '' | 'linked' | 'unlinked')
-                setPage(1)
-              }}
-              className={`${inputCompact} w-auto max-w-56`}
-            >
-              <option value="">{t('admin.improvementPlan.anyRetest')}</option>
-              <option value="linked">{t('admin.improvementPlan.retestLinked')}</option>
-              <option value="unlinked">{t('admin.improvementPlan.retestUnlinked')}</option>
-            </select>
-            <label className="flex items-center gap-1.5 text-sm">
-              <input
-                type="checkbox"
-                checked={overdue}
-                onChange={(e) => {
-                  setOverdue(e.target.checked)
-                  setPage(1)
-                }}
-              />
-              {t('admin.improvementPlan.overdueOnly')}
-            </label>
             <label className="sr-only" htmlFor="plan-search">
               {t('admin.improvementPlan.search')}
             </label>
@@ -150,6 +105,44 @@ export function AdminImprovementPlanSection() {
           ) : undefined
         }
       >
+        <FilterRow label={t('common.filters.label')}>
+          <FilterSelect
+            id="plan-status"
+            label={t('admin.improvementPlan.status')}
+            value={status || null}
+            allLabel={t('admin.improvementPlan.anyStatus')}
+            options={IMPROVEMENT_STATUSES.map((s) => ({ value: s, label: t(`aar.status.${s}`) }))}
+            onChange={(next) => {
+              setStatus((next ?? '') as ImprovementStatus | '')
+              setPage(1)
+            }}
+          />
+          <FilterSelect
+            id="plan-retest"
+            label={t('admin.improvementPlan.retestFilter')}
+            value={retest || null}
+            allLabel={t('admin.improvementPlan.anyRetest')}
+            options={[
+              { value: 'linked', label: t('admin.improvementPlan.retestLinked') },
+              { value: 'unlinked', label: t('admin.improvementPlan.retestUnlinked') },
+            ]}
+            onChange={(next) => {
+              setRetest((next ?? '') as '' | 'linked' | 'unlinked')
+              setPage(1)
+            }}
+          />
+          <label className="flex h-8 items-center gap-1.5 text-sm">
+            <input
+              type="checkbox"
+              checked={overdue}
+              onChange={(e) => {
+                setOverdue(e.target.checked)
+                setPage(1)
+              }}
+            />
+            {t('admin.improvementPlan.overdueOnly')}
+          </label>
+        </FilterRow>
         {!data || data.items.length === 0 ? (
           <p className={`p-6 text-center text-sm ${muted}`}>{t('admin.improvementPlan.empty')}</p>
         ) : (

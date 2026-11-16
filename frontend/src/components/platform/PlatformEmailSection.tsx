@@ -11,7 +11,6 @@ import {
   btnPrimary,
   btnSecondary,
   inputBase,
-  inputCompact,
   linkAccent,
   optionalSuffix,
 } from '../../lib/buttonStyles'
@@ -36,6 +35,7 @@ import { ButtonSpinner } from '../common/ButtonSpinner'
 import { HelpText } from '../common/HelpText'
 import { Modal } from '../common/Modal'
 import { Pagination } from '../common/Pagination'
+import { FilterRow, FilterSelect } from '../common/FilterRow'
 import { Panel } from '../common/Panel'
 import { SectionHeader } from '../common/SectionHeader'
 import { badgeBase, labelClass, useErrorMessage, useUrlFilter } from './platformCommon'
@@ -636,27 +636,6 @@ function OutboxPanel() {
           ? t('platform.email.outbox.description', { count: outbox.data.retention_days })
           : undefined
       }
-      aside={
-        <div className="w-48">
-          <label className="sr-only" htmlFor="platform-email-outbox-status">
-            {t('platform.email.outbox.filterLabel')}
-          </label>
-          <select
-            id="platform-email-outbox-status"
-            name="status"
-            value={status ?? ''}
-            onChange={(e) => setStatus((e.target.value || null) as EmailOutboxStatus | null)}
-            className={`${inputCompact} text-sm`}
-          >
-            <option value="">{t('platform.email.outbox.allStatuses')}</option>
-            {OUTBOX_STATUSES.map((value) => (
-              <option key={value} value={value}>
-                {t(STATUS_LABEL_KEYS[value])}
-              </option>
-            ))}
-          </select>
-        </div>
-      }
       footer={
         totalPages > 1 ? (
           <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
@@ -664,6 +643,16 @@ function OutboxPanel() {
       }
       flush
     >
+      <FilterRow label={t('common.filters.label')}>
+        <FilterSelect
+          id="platform-email-outbox-status"
+          label={t('platform.email.outbox.filterLabel')}
+          value={status}
+          allLabel={t('platform.email.outbox.allStatuses')}
+          options={OUTBOX_STATUSES.map((value) => ({ value, label: t(STATUS_LABEL_KEYS[value]) }))}
+          onChange={(next) => setStatus(next as EmailOutboxStatus | null)}
+        />
+      </FilterRow>
       {outbox.error ? (
         <p role="alert" className="px-5 py-4 text-sm text-danger-fg">
           {outbox.error.message}

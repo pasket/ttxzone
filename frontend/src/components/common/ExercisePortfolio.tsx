@@ -15,7 +15,6 @@ import {
   btnPrimary,
   btnSecondary,
   inputBase,
-  inputCompact,
   linkAccent,
 } from '../../lib/buttonStyles'
 import {
@@ -34,6 +33,7 @@ import { IconButton } from './IconButton'
 import { Modal } from './Modal'
 import { Pagination } from './Pagination'
 import { Panel } from './Panel'
+import { FilterRow, FilterSelect } from './FilterRow'
 import { TableToolbar } from './TableToolbar'
 
 const mutedClass = 'text-sm text-pretty text-paper-ink/70 dark:text-fg-muted'
@@ -170,30 +170,14 @@ export function ExerciseList({
       description={description}
       aside={
         !none ? (
-          <div className="flex flex-wrap items-center gap-2">
-            <label className="sr-only" htmlFor="exercise-archived-filter">
-              {t('creator.exercises.archivedFilter')}
-            </label>
-            <select
-              id="exercise-archived-filter"
-              name="archived"
-              value={archivedFilter}
-              onChange={(e) => setArchivedFilter(e.target.value as ArchivedFilter)}
-              className={`${inputCompact} w-auto text-sm`}
-            >
-              <option value="active">{t('creator.exercises.filterActive')}</option>
-              <option value="archived">{t('creator.exercises.filterArchived')}</option>
-              <option value="all">{t('creator.exercises.filterAll')}</option>
-            </select>
-            <TableToolbar
-              sortDir={sortDir}
-              sortBy={sortBy}
-              onSortDirChange={setSortDir}
-              onSortByChange={setSortBy}
-              search={search}
-              onSearchChange={setSearch}
-            />
-          </div>
+          <TableToolbar
+            sortDir={sortDir}
+            sortBy={sortBy}
+            onSortDirChange={setSortDir}
+            onSortByChange={setSortBy}
+            search={search}
+            onSearchChange={setSearch}
+          />
         ) : undefined
       }
       footer={
@@ -207,6 +191,21 @@ export function ExerciseList({
       }
       flush
     >
+      {!none && (
+        <FilterRow label={t('common.filters.label')}>
+          <FilterSelect
+            id="exercise-archived-filter"
+            label={t('creator.exercises.archivedFilter')}
+            value={archivedFilter}
+            options={[
+              { value: 'active', label: t('creator.exercises.filterActive') },
+              { value: 'archived', label: t('creator.exercises.filterArchived') },
+              { value: 'all', label: t('creator.exercises.filterAll') },
+            ]}
+            onChange={(next) => setArchivedFilter((next ?? 'active') as ArchivedFilter)}
+          />
+        </FilterRow>
+      )}
       {page?.error ? (
         <p role="alert" className="px-5 py-4 text-sm text-danger-fg">
           {page.error.message}

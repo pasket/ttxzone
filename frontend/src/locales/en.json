@@ -1,5 +1,9 @@
 {
   "common": {
+    "filters": {
+      "label": "Filters",
+      "clear": "Clear filters"
+    },
     "app": {
       "name": "TTX-Zone",
       "tagline": "Build muscle memory into your organization",
@@ -4982,8 +4986,7 @@
         "instanceAdmin": "Instance admin",
         "allAdmin": "Administrators or not",
         "adminYes": "Instance administrators",
-        "adminNo": "Not administrators",
-        "clear": "Clear filters"
+        "adminNo": "Not administrators"
       }
     },
     "legal": {

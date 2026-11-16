@@ -28,6 +28,12 @@ import { ReasonDialog } from './ReasonDialog'
 import { RestartDialog } from './RestartDialog'
 import { RoomsControlPanel } from './RoomsControlPanel'
 
+/** Starting a session mounts this panel afresh (a new run starts every
+ * panel clean), and Start goes away with the old one: this carries "the
+ * focus was on Start" across, so it lands on the first inject to release
+ * instead of falling back to the page. */
+let startedFromHere = false
+
 /** What runs a control action: its key (for the spinner), method, path
  * under /ttx/{id}/run and body; true once applied. */
 export type ControlAct = (
@@ -82,6 +88,12 @@ export function ControlCenterPanel({
   // that is due now instead of falling back to the page.
   const releaseId = useId()
   const handOnFocus = useRef(false)
+  useEffect(() => {
+    // Mounted by the Start just confirmed: take over its focus (below).
+    if (!startedFromHere) return
+    startedFromHere = false
+    handOnFocus.current = true
+  }, [])
   useEffect(() => {
     if (!handOnFocus.current || asking !== null || pending !== null) return
     handOnFocus.current = false
@@ -302,7 +314,9 @@ export function ControlCenterPanel({
           pending={pending === 'start'}
           onClose={() => setAsking(null)}
           onConfirm={async () => {
+            startedFromHere = true
             if (await act('start', '/start')) setAsking(null)
+            else startedFromHere = false
           }}
         />
       )}

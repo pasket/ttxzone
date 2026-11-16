@@ -12,7 +12,6 @@ import {
   btnPrimary,
   btnSecondary,
   inputBase,
-  inputCompact,
   linkAccent,
 } from '../../lib/buttonStyles'
 import {
@@ -35,6 +34,7 @@ import { ButtonSpinner } from '../common/ButtonSpinner'
 import { EditButton } from '../common/EditButton'
 import { HelpText } from '../common/HelpText'
 import { LastLogin } from '../common/LastLogin'
+import { FilterRow, FilterSelect } from '../common/FilterRow'
 import { Modal } from '../common/Modal'
 import { Pagination } from '../common/Pagination'
 import { Panel } from '../common/Panel'
@@ -261,49 +261,6 @@ function BulkAccountsModal({
         )}
       </div>
     </Modal>
-  )
-}
-
-/** One of the list's filters: a labelled select whose first option is
- * "all" (no filter); the label stays visible above it, so a picked value
- * still says what it filters. */
-function FilterSelect({
-  id,
-  label,
-  value,
-  allLabel,
-  options,
-  onChange,
-  wide = false,
-}: {
-  id: string
-  label: string
-  value: string | null
-  allLabel: string
-  options: { value: string; label: string }[]
-  onChange: (next: string | null) => void
-  wide?: boolean
-}) {
-  return (
-    <div className={`space-y-1 ${wide ? 'w-60' : 'w-48'}`}>
-      <label htmlFor={id} className="block text-xs text-paper-ink/60 dark:text-fg-muted">
-        {label}
-      </label>
-      <select
-        id={id}
-        name={id}
-        value={value ?? ''}
-        onChange={(e) => onChange(e.target.value || null)}
-        className={`${inputCompact} text-sm`}
-      >
-        <option value="">{allLabel}</option>
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-    </div>
   )
 }
 
@@ -597,10 +554,9 @@ export function PlatformAccountsSection() {
         }
         flush
       >
-        <div
-          role="group"
-          aria-label={t('platform.accounts.filters.label')}
-          className={`flex flex-wrap items-center gap-2 border-b px-5 py-2.5 ${panelDivider}`}
+        <FilterRow
+          label={t('platform.accounts.filters.label')}
+          onClear={filtering ? clearFilters : undefined}
         >
           <FilterSelect
             id="platform-accounts-status"
@@ -641,12 +597,7 @@ export function PlatformAccountsSection() {
             options={ADMIN_FILTERS.map((value) => ({ value, label: t(ADMIN_LABEL_KEYS[value]) }))}
             onChange={(next) => setAdminFilter(next as (typeof ADMIN_FILTERS)[number] | null)}
           />
-          {filtering && (
-            <button type="button" onClick={clearFilters} className={`text-sm ${linkAccent}`}>
-              {t('platform.accounts.filters.clear')}
-            </button>
-          )}
-        </div>
+        </FilterRow>
         {selected.size > 0 && (
           <div
             role="group"

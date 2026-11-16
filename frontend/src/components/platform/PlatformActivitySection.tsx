@@ -11,7 +11,6 @@ import {
   btnPrimary,
   btnSecondary,
   inputBase,
-  inputCompact,
   linkAccent,
   optionalSuffix,
 } from '../../lib/buttonStyles'
@@ -40,6 +39,7 @@ import { ButtonSpinner } from '../common/ButtonSpinner'
 import { HelpText } from '../common/HelpText'
 import { Modal } from '../common/Modal'
 import { Pagination } from '../common/Pagination'
+import { FilterRow, FilterSelect } from '../common/FilterRow'
 import { Panel } from '../common/Panel'
 import { SectionHeader } from '../common/SectionHeader'
 import { TableToolbar } from '../common/TableToolbar'
@@ -475,41 +475,6 @@ export function PlatformActivitySection() {
         meta={log.data ? t('platform.activity.count', { count: total }) : undefined}
         aside={
           <div className="flex flex-wrap items-center gap-2">
-            <label className="sr-only" htmlFor="platform-activity-action">
-              {t('platform.activity.filterLabel')}
-            </label>
-            <div className="w-64">
-              <select
-                id="platform-activity-action"
-                name="action"
-                value={action ?? ''}
-                onChange={(e) => setAction((e.target.value || null) as PlatformAuditAction | null)}
-                className={`${inputCompact} text-sm`}
-              >
-                <option value="">{t('platform.activity.allActions')}</option>
-                <optgroup label={t('platform.activity.groupAuth')}>
-                  {AUTH_ACTIONS.map((a) => (
-                    <option key={a} value={a}>
-                      {t(AUDIT_ACTION_KEYS[a])}
-                    </option>
-                  ))}
-                </optgroup>
-                <optgroup label={t('platform.activity.groupAdmin')}>
-                  {ADMIN_ACTIONS.map((a) => (
-                    <option key={a} value={a}>
-                      {t(AUDIT_ACTION_KEYS[a])}
-                    </option>
-                  ))}
-                </optgroup>
-                <optgroup label={t('platform.activity.groupWork')}>
-                  {WORK_ACTIONS.map((a) => (
-                    <option key={a} value={a}>
-                      {t(AUDIT_ACTION_KEYS[a])}
-                    </option>
-                  ))}
-                </optgroup>
-              </select>
-            </div>
             <TableToolbar
               sortDir={sortDir}
               sortBy={sortBy}
@@ -529,6 +494,38 @@ export function PlatformActivitySection() {
         }
         flush
       >
+        <FilterRow label={t('common.filters.label')}>
+          <FilterSelect
+            id="platform-activity-action"
+            label={t('platform.activity.filterLabel')}
+            value={action}
+            allLabel={t('platform.activity.allActions')}
+            onChange={(next) => setAction(next as PlatformAuditAction | null)}
+            wide
+          >
+            <optgroup label={t('platform.activity.groupAuth')}>
+              {AUTH_ACTIONS.map((a) => (
+                <option key={a} value={a}>
+                  {t(AUDIT_ACTION_KEYS[a])}
+                </option>
+              ))}
+            </optgroup>
+            <optgroup label={t('platform.activity.groupAdmin')}>
+              {ADMIN_ACTIONS.map((a) => (
+                <option key={a} value={a}>
+                  {t(AUDIT_ACTION_KEYS[a])}
+                </option>
+              ))}
+            </optgroup>
+            <optgroup label={t('platform.activity.groupWork')}>
+              {WORK_ACTIONS.map((a) => (
+                <option key={a} value={a}>
+                  {t(AUDIT_ACTION_KEYS[a])}
+                </option>
+              ))}
+            </optgroup>
+          </FilterSelect>
+        </FilterRow>
         {log.error ? (
           <p role="alert" className="px-5 py-4 text-sm text-danger-fg">
             {log.error.message}

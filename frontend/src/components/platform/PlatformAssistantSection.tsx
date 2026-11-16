@@ -3,11 +3,11 @@ import { useTranslation } from 'react-i18next'
 
 import { useApiResource } from '../../hooks/useApiResource'
 import { apiFetch } from '../../lib/api'
-import { inputCompact } from '../../lib/buttonStyles'
 import { panelTableHeadRow, panelTbody, panelTd, panelTh, panelTr } from '../../lib/panelStyles'
 import type { AssistantCallListResponse, AssistantSettings } from '../../lib/types'
 import { CodeRef } from '../common/CodeRef'
 import { HelpText } from '../common/HelpText'
+import { FilterRow, FilterSelect } from '../common/FilterRow'
 import { Panel } from '../common/Panel'
 import { SectionHeader } from '../common/SectionHeader'
 import { Switch } from '../common/Switch'
@@ -127,29 +127,22 @@ function RecentUsePanel() {
           ? t('platform.assistant.recent.description', { count: calls.data.retention_days })
           : undefined
       }
-      aside={
-        <div className="w-56">
-          <label className="sr-only" htmlFor="platform-assistant-caller">
-            {t('platform.assistant.recent.filterLabel')}
-          </label>
-          <select
-            id="platform-assistant-caller"
-            name="caller"
-            value={userId}
-            onChange={(e) => setUserId(e.target.value)}
-            className={`${inputCompact} text-sm`}
-          >
-            <option value="">{t('platform.assistant.recent.everyone')}</option>
-            {(calls.data?.callers ?? []).map((caller) => (
-              <option key={caller.user_id} value={caller.user_id}>
-                {caller.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      }
       flush
     >
+      <FilterRow label={t('common.filters.label')}>
+        <FilterSelect
+          id="platform-assistant-caller"
+          label={t('platform.assistant.recent.filterLabel')}
+          value={userId || null}
+          allLabel={t('platform.assistant.recent.everyone')}
+          options={(calls.data?.callers ?? []).map((caller) => ({
+            value: caller.user_id,
+            label: caller.name,
+          }))}
+          onChange={(next) => setUserId(next ?? '')}
+          wide
+        />
+      </FilterRow>
       {calls.error ? (
         <p role="alert" className="px-5 py-4 text-sm text-danger-fg">
           {calls.error.message}

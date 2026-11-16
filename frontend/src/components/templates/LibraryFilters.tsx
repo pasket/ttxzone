@@ -1,7 +1,9 @@
+import { useId } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { btnSecondary, inputCompact } from '../../lib/buttonStyles'
 import { libraryEmptyClass } from '../../lib/libraryLevels'
+import { filterLabelClass, FilterRow, FilterSelect } from '../common/FilterRow'
 
 export interface LibrarySelectFilter {
   key: string
@@ -29,12 +31,15 @@ export function LibraryFilterBar({
   values: Record<string, string>
   onChange: (key: string, value: string) => void
 }) {
+  const searchId = useId()
   return (
-    <fieldset className="flex flex-wrap items-end gap-3 border-b border-panel-line px-5 py-3">
-      <legend className="sr-only">{legend}</legend>
-      <label className="min-w-48 flex-1 space-y-1 text-xs font-medium">
-        <span className="block">{searchLabel}</span>
+    <FilterRow label={legend}>
+      <div className="min-w-48 flex-1 space-y-1">
+        <label htmlFor={searchId} className={filterLabelClass}>
+          {searchLabel}
+        </label>
         <input
+          id={searchId}
           type="search"
           name="q"
           autoComplete="off"
@@ -44,26 +49,19 @@ export function LibraryFilterBar({
           placeholder={searchPlaceholder}
           className={inputCompact}
         />
-      </label>
+      </div>
       {selects.map((select) => (
-        <label key={select.key} className="space-y-1 text-xs font-medium">
-          <span className="block">{select.label}</span>
-          <select
-            name={select.key}
-            value={values[select.key] ?? ''}
-            onChange={(event) => onChange(select.key, event.target.value)}
-            className={inputCompact}
-          >
-            <option value="">{select.allLabel}</option>
-            {select.options.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </label>
+        <FilterSelect
+          key={select.key}
+          id={`${searchId}-${select.key}`}
+          label={select.label}
+          value={values[select.key] || null}
+          allLabel={select.allLabel}
+          options={select.options}
+          onChange={(next) => onChange(select.key, next ?? '')}
+        />
       ))}
-    </fieldset>
+    </FilterRow>
   )
 }
 
