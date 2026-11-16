@@ -1,23 +1,7 @@
 import type { Ref, ReactNode } from 'react'
 
-import { btnPrimary, btnPrimaryIcon } from '../../lib/buttonStyles'
+import { btnPrimary, btnSecondary } from '../../lib/buttonStyles'
 import { SectionHeader } from './SectionHeader'
-
-function PlusIcon() {
-  return (
-    <svg
-      className="h-4 w-4 shrink-0"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2}
-      strokeLinecap="round"
-      aria-hidden="true"
-    >
-      <path d="M12 5v14M5 12h14" />
-    </svg>
-  )
-}
 
 /** List-first, form-on-demand: collapsed by default to a single trigger
  * button, expands to the caller's form when opened. Fully controlled (no
@@ -77,11 +61,12 @@ export function CollapsibleFormSection({
                 ref={triggerRef}
                 type="button"
                 onClick={() => onOpenChange(true)}
-                aria-label={triggerTooltip ?? triggerLabel}
-                title={triggerTooltip ?? triggerLabel}
-                className={btnPrimaryIcon}
+                // Creating at the page's level is its one primary action;
+                // adding inside a page that already has its title, secondary.
+                className={sectionLevel === 1 ? btnPrimary : btnSecondary}
               >
-                <PlusIcon />
+                <span aria-hidden="true">+ </span>
+                {triggerTooltip ?? triggerLabel}
               </button>
             )
           }

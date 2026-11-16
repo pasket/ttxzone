@@ -386,6 +386,7 @@ export function AfterActionSection({ ttxId }: { ttxId: string }) {
               }}
               className={btnSecondary}
             >
+              <span aria-hidden="true">+ </span>
               {t('aar.addAction')}
             </button>
           )
@@ -707,6 +708,7 @@ function ObjectiveBlock({
       {field('improvements')}
       {editable && (
         <button type="button" onClick={onAddAction} className={`${btnSecondary} h-7 px-2 text-xs`}>
+          <span aria-hidden="true">+ </span>
           {t('aar.addActionFrom')}
         </button>
       )}

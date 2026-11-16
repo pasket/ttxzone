@@ -5,7 +5,6 @@ import { useSearchParams } from 'react-router-dom'
 import {
   actionsCellClass,
   btnNeutralIconGhost,
-  btnPrimary,
   btnSecondary,
   inputCompact,
   linkAccent,
@@ -386,7 +385,7 @@ export function InjectsTab(props: TabProps) {
                   setFocusField(null)
                   setEditing({ inject: newInject(), isNew: true })
                 }}
-                className={btnPrimary}
+                className={btnSecondary}
               >
                 <span aria-hidden="true">+ </span>
                 {t('creator.msel.actions.addInject')}
