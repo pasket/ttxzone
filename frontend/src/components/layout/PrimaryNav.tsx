@@ -164,26 +164,46 @@ export function MobileSectionNav({ sections, activeSection, linkTo, pending = {}
   return (
     <nav
       aria-label="Primary mobile"
-      className="fixed inset-x-0 bottom-0 z-10 flex border-t pb-[env(safe-area-inset-bottom)] border-paper-line bg-paper-surface lg:hidden dark:border-line dark:bg-surface"
+      // Scrolls sideways when a module has more sections than fit (never cut).
+      className="fixed inset-x-0 bottom-0 z-10 flex overflow-x-auto border-t pb-[env(safe-area-inset-bottom)] border-paper-line bg-paper-surface lg:hidden dark:border-line dark:bg-surface"
     >
       {sections.map((s) => {
         const active = s.path === activeSection
+        const waiting = pending[s.key] ?? 0
+        const title = t(s.titleKey)
         return (
           <Link
             key={s.key}
             to={linkTo(s)}
             aria-current={active ? 'page' : undefined}
-            className={`flex-1 py-3 text-center text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent-fg ${
-              active ? 'text-accent-fg' : 'text-paper-ink/60 dark:text-fg-nav'
+            title={title}
+            className={`flex min-w-12 flex-auto flex-col items-center gap-0.5 px-1.5 py-2 text-center text-[11px] whitespace-nowrap leading-tight font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent-fg ${
+              active ? 'text-accent-fg' : 'text-paper-ink/70 dark:text-fg-nav'
             }`}
           >
-            <AcronymText text={t(s.titleKey)} plain />
-            {(pending[s.key] ?? 0) > 0 && (
+            <span className="relative">
+              <SectionIcon sectionKey={s.key} />
+              {waiting > 0 && (
+                <span
+                  aria-hidden="true"
+                  className="absolute -top-1 -right-2 rounded-full bg-accent px-1 text-[10px] leading-4 font-semibold text-ink"
+                >
+                  {waiting}
+                </span>
+              )}
+            </span>
+            {/* The full title is its name; what shows is one word. */}
+            {s.shortKey ? (
               <>
-                <span aria-hidden="true"> · {pending[s.key]}</span>
-                <span className="sr-only">{t('nav.toFix', { count: pending[s.key] ?? 0 })}</span>
+                <span className="sr-only">{title}</span>
+                <span aria-hidden="true">{t(s.shortKey)}</span>
               </>
+            ) : (
+              <span>
+                <AcronymText text={title} plain />
+              </span>
             )}
+            {waiting > 0 && <span className="sr-only">{t('nav.toFix', { count: waiting })}</span>}
           </Link>
         )
       })}

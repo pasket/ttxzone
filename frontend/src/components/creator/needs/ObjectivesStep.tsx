@@ -215,7 +215,7 @@ export function ObjectivesStep({
         ) : (
           <span />
         )}
-        <div className="ml-auto flex items-center gap-3">
+        <div className="ml-auto flex flex-wrap items-center justify-end gap-3">
           <p className="text-xs text-paper-ink/60 dark:text-fg-faint">
             {noCapabilities
               ? t('creator.needs.hints.objectiveCapabilityFromSelection')
@@ -253,10 +253,11 @@ export function ObjectivesStep({
           {t('creator.needs.table.noObjectives')}
         </p>
       ) : (
-        <div className="-mx-5">
-          {/* Fixed widths: the statement gives way (cut), so the table never
-              scrolls sideways. */}
-          <table className="w-full table-fixed text-left">
+        <div className="-mx-5 overflow-x-auto">
+          {/* Fixed widths: the statement gives way (cut). Below the width
+              that leaves it room to read, the table scrolls inside its
+              panel instead of piling its columns on each other. */}
+          <table className="w-full min-w-[44rem] table-fixed text-left">
             <colgroup>
               <col />
               {groupBy !== 'capability' && <col className="w-40 lg:w-52" />}

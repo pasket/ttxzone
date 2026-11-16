@@ -87,7 +87,7 @@ describe('Playground', () => {
     const apply = vi.fn()
     render(<ExerciseBanner ttxId="ttx-1" run={run()} apply={apply} />)
 
-    fireEvent.click(screen.getByRole('button', { name: 'APPLE' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Pause for a real incident: APPLE' }))
     const submit = screen.getByRole('button', { name: 'Pause the exercise' })
     const field = screen.getByLabelText('Type «APPLE» to confirm')
     fireEvent.change(field, { target: { value: 'appl' } })

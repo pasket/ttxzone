@@ -1854,6 +1854,11 @@
       "noDefaultRoom": "— First room —"
     },
     "msel": {
+      "leftover": {
+        "row": "Unfilled:",
+        "review_one": "{{count}} template placeholder is still unfilled; it would reach the table as written:",
+        "review_other": "{{count}} template placeholders are still unfilled; they would reach the table as written:"
+      },
       "title": "Master Scenario Events List (MSEL)",
       "intro": "Build the session here: one simulated incident that moves through 2 to 8 phases, driven by injects. Each phase opens with a situation update and the key questions to discuss. Inside each phase, injects are the messages simulated actors deliver to the players: mandatory injects set the storyline at a fixed T+ (session time; scenario time moves faster, per the time compression), and contingent injects branch off it when an expected action isn’t observed, then rejoin it.",
       "version": "Version {{version}}",
@@ -3815,6 +3820,22 @@
     }
   },
   "nav": {
+    "short": {
+      "needs": "Needs",
+      "conductPrep": "Plan",
+      "afterAction": "Report",
+      "control": "Control",
+      "enrollments": "Exercises",
+      "usersAndRoles": "People",
+      "domains": "Domains",
+      "improvementPlan": "Actions",
+      "tenancy": "Tenancy",
+      "organizations": "Orgs",
+      "security": "Security",
+      "sso": "SSO",
+      "assistant": "AI",
+      "activity": "Activity"
+    },
     "collapseMenu": "Collapse menu",
     "expandMenu": "Expand menu",
     "accountMenu": "Account menu",
@@ -4100,6 +4121,7 @@
     "stopKeyword": "If a real incident happens, say",
     "realWorld": {
       "press": "If a real incident happens, press",
+      "pressLabel": "Pause for a real incident: {{keyword}}",
       "title": "Pause for a real-world event",
       "body": "It pauses the exercise on every screen until the Controller resumes it. Use it only for a real incident.",
       "confirm": "Type «{{keyword}}» to confirm",

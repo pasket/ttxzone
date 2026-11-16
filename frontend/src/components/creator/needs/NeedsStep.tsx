@@ -71,22 +71,26 @@ export function Segmented<T extends string>({
   onChange: (value: T) => void
 }) {
   return (
-    <div className="flex items-center gap-2">
-      <span id={id} className="text-sm text-paper-ink/70 dark:text-fg-muted">
+    <div className="flex max-w-full min-w-0 items-center gap-2">
+      <span id={id} className="shrink-0 text-sm text-paper-ink/70 dark:text-fg-muted">
         {label}
       </span>
-      <div role="group" aria-labelledby={id} className={segmentedControl}>
-        {options.map((option) => (
-          <button
-            key={option.value}
-            type="button"
-            aria-pressed={value === option.value}
-            onClick={() => onChange(option.value)}
-            className={value === option.value ? segmentedOptionActive : segmentedOptionIdle}
-          >
-            {option.label}
-          </button>
-        ))}
+      {/* Long options (a translation) scroll inside this on a phone, never
+          the page: the switch itself doesn't shrink. */}
+      <div className="min-w-0 overflow-x-auto rounded-full">
+        <div role="group" aria-labelledby={id} className={segmentedControl}>
+          {options.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              aria-pressed={value === option.value}
+              onClick={() => onChange(option.value)}
+              className={`${value === option.value ? segmentedOptionActive : segmentedOptionIdle} shrink-0 whitespace-nowrap`}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   )
@@ -205,10 +209,11 @@ export function NeedsStep({
           {t('creator.needs.table.noNeeds')}
         </p>
       ) : (
-        <div className="-mx-5">
-          {/* Fixed widths: the need's text gives way (one line, cut), so the
-              table never scrolls sideways. */}
-          <table className="w-full table-fixed text-left">
+        <div className="-mx-5 overflow-x-auto">
+          {/* Fixed widths: the need's text gives way (one line, cut). Below
+              the width that leaves it room, the table scrolls inside its
+              panel. */}
+          <table className="w-full min-w-[40rem] table-fixed text-left">
             <colgroup>
               <col />
               {groupBy !== 'capability' && <col className="w-44 lg:w-56" />}

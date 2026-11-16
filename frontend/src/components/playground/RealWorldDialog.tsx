@@ -1,4 +1,4 @@
-import { useId, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ApiError, apiFetch } from '../../lib/api'
@@ -27,6 +27,12 @@ export function RealWorldDialog({
   const [pending, setPending] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const matches = typed.trim().toLowerCase() === keyword.trim().toLowerCase()
+  // Straight to the field: in an emergency every tap counts. After Modal's
+  // own focus (a child's effect runs first, this one wins).
+  const fieldRef = useRef<HTMLInputElement>(null)
+  useEffect(() => {
+    fieldRef.current?.focus()
+  }, [])
 
   async function submit() {
     setPending(true)
@@ -66,6 +72,8 @@ export function RealWorldDialog({
             {t('playground.realWorld.confirm', { keyword })}
           </label>
           <input
+            ref={fieldRef}
+            autoCapitalize="characters"
             name={`${titleId}-keyword`}
             id={`${titleId}-keyword`}
             value={typed}

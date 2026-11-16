@@ -95,6 +95,21 @@ export function splitVariables(text: string): { text: string; variable: boolean 
     })
 }
 
+/** The {placeholders} a template left in what was made from it, in
+ * first-use order: every string under `value`, however nested. */
+export function leftoverVariables(value: unknown, found: string[] = []): string[] {
+  if (typeof value === 'string') {
+    for (const part of splitVariables(value)) {
+      if (part.variable && !found.includes(part.text)) found.push(part.text)
+    }
+  } else if (Array.isArray(value)) {
+    for (const item of value) leftoverVariables(item, found)
+  } else if (value && typeof value === 'object') {
+    for (const item of Object.values(value)) leftoverVariables(item, found)
+  }
+  return found
+}
+
 /** Variables that describe the organization: no default value, filled
  * per exercise. Every other {variable} is a scenario one. */
 export const SYSTEM_VARIABLES: ReadonlySet<string> = new Set([

@@ -1854,6 +1854,11 @@
       "noDefaultRoom": "— Primera sala —"
     },
     "msel": {
+      "leftover": {
+        "row": "Sin rellenar:",
+        "review_one": "Queda {{count}} marcador de plantilla sin rellenar; llegaría a la mesa tal cual:",
+        "review_other": "Quedan {{count}} marcadores de plantilla sin rellenar; llegarían a la mesa tal cual:"
+      },
       "title": "Lista maestra de eventos del escenario (MSEL)",
       "intro": "Aquí se construye la sesión: un único incidente simulado que avanza en 2 a 8 fases, impulsado por injects. Cada fase empieza con una actualización de la situación y las preguntas clave para debatir. Dentro de cada fase, los injects son los mensajes que los actores simulados hacen llegar a los jugadores: los obligatorios marcan la historia principal a una hora T+ fija (tiempo de sesión; el tiempo del escenario avanza más rápido según la compresión temporal), y los contingentes se desvían de ella cuando no se observa una acción esperada y luego vuelven.",
       "version": "Versión {{version}}",
@@ -3815,6 +3820,22 @@
     }
   },
   "nav": {
+    "short": {
+      "needs": "Análisis",
+      "conductPrep": "Plan",
+      "afterAction": "Informe",
+      "control": "Control",
+      "enrollments": "Ejercicios",
+      "usersAndRoles": "Personas",
+      "domains": "Dominios",
+      "improvementPlan": "Acciones",
+      "tenancy": "Regla",
+      "organizations": "Orgs.",
+      "security": "Seguridad",
+      "sso": "SSO",
+      "assistant": "IA",
+      "activity": "Actividad"
+    },
     "collapseMenu": "Contraer menú",
     "expandMenu": "Expandir menú",
     "accountMenu": "Menú de cuenta",
@@ -4100,6 +4121,7 @@
     "stopKeyword": "Si ocurre un incidente real, di",
     "realWorld": {
       "press": "Si ocurre un incidente real, pulsa",
+      "pressLabel": "Pausar por un incidente real: {{keyword}}",
       "title": "Pausar por un evento real",
       "body": "Pausa el ejercicio en todas las pantallas hasta que el Controlador lo reanude. Úsalo solo ante un incidente real.",
       "confirm": "Escribe «{{keyword}}» para confirmar",

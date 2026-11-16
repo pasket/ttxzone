@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest'
 
-import { emptyInjectFields, templateTexts, toExerciseInject } from '../src/lib/injectLibrary'
+import {
+  emptyInjectFields,
+  leftoverVariables,
+  templateTexts,
+  toExerciseInject,
+} from '../src/lib/injectLibrary'
 
 const poll = {
   ...emptyInjectFields('en'),
@@ -28,5 +33,20 @@ describe('a poll in the library', () => {
     expect(copy.poll_question).toBe('Does Acme pay?')
     expect(copy.poll_options).toEqual(['Pay 5 BTC', 'Refuse'])
     expect(copy.poll_outcomes).toEqual(['They come back.', ''])
+  })
+})
+
+describe('placeholders a template left unfilled', () => {
+  it('finds each one once, in first-use order, however deep', () => {
+    expect(
+      leftoverVariables([
+        { title: 'Call from {supplier}', content: '{supplier} runs {assembly_plant}' },
+        { poll_options: ['Wait for {supplier}', 'Tell {regulator}'], offset_minutes: 5 },
+        null,
+      ]),
+    ).toEqual(['supplier', 'assembly_plant', 'regulator'])
+    expect(
+      leftoverVariables({ title: 'Nothing to fill', content: 'Braces {not a name} stay' }),
+    ).toEqual([])
   })
 })

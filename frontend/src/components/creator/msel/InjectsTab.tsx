@@ -32,6 +32,7 @@ import {
   type InjectDraft,
   type MselDraft,
 } from '../../../lib/msel'
+import { leftoverVariables } from '../../../lib/injectLibrary'
 import {
   panelActionsTh,
   panelTableHeadRow,
@@ -42,6 +43,7 @@ import {
 } from '../../../lib/panelStyles'
 import type { InjectReviewStatus, MselNeedsContext, MselRoom } from '../../../lib/types'
 import { CodeRef, CodeRefList } from '../../common/CodeRef'
+import { VariableText } from '../../templates/VariableText'
 import { DuplicateIcon } from '../../common/DuplicateIcon'
 import { EditButton } from '../../common/EditButton'
 import { IconButton } from '../../common/IconButton'
@@ -284,6 +286,18 @@ export function InjectsTab(props: TabProps) {
             invalid={rowInvalid(inject)}
           />
         </span>
+        {/* A template's placeholder nobody filled in: it would reach the
+            table as written. */}
+        {leftoverVariables(inject).length > 0 && (
+          <span className="mt-1 block pl-5 text-xs text-paper-ink/70 dark:text-fg-muted">
+            {t('creator.msel.leftover.row')}{' '}
+            <VariableText
+              text={leftoverVariables(inject)
+                .map((name) => `{${name}}`)
+                .join(' ')}
+            />
+          </span>
+        )}
       </td>
       {/* What it evaluates, one per line (not when grouped by it). */}
       {groupBy !== 'objective' && (

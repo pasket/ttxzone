@@ -34,10 +34,30 @@ type SectionTitleKey =
   | 'account.settings.privacyTitle'
   | 'account.settings.assistantTitle'
 
+/** A one-word label for the phone's bottom menu, where the full title
+ * doesn't fit; the link keeps the full title as its name. */
+type SectionShortKey =
+  | 'nav.short.needs'
+  | 'nav.short.conductPrep'
+  | 'nav.short.afterAction'
+  | 'nav.short.control'
+  | 'nav.short.enrollments'
+  | 'nav.short.usersAndRoles'
+  | 'nav.short.domains'
+  | 'nav.short.improvementPlan'
+  | 'nav.short.tenancy'
+  | 'nav.short.organizations'
+  | 'nav.short.security'
+  | 'nav.short.sso'
+  | 'nav.short.assistant'
+  | 'nav.short.activity'
+
 export interface SectionDef {
   key: string
   path: string
   titleKey: SectionTitleKey
+  /** Shown instead of the title in the phone's bottom menu. */
+  shortKey?: SectionShortKey
   /** True for a section that is org-scoped rather than TTX-scoped -- its
    * route has no `:ttxId` segment (e.g. `/creator/players`, not
    * `/creator/:ttxId/players`). PrimaryNav/MobileBottomNav use this to
@@ -68,7 +88,13 @@ export const CREATOR_SECTIONS: SectionDef[] = [
   // themselves (all of them, a new one) are reached from that selector,
   // not from here.
   { key: 'exercise', path: 'exercise', titleKey: 'creator.sections.exercise', group: 'exercise' },
-  { key: 'needs', path: 'needs', titleKey: 'creator.sections.needs', group: 'exercise' },
+  {
+    key: 'needs',
+    path: 'needs',
+    titleKey: 'creator.sections.needs',
+    shortKey: 'nav.short.needs',
+    group: 'exercise',
+  },
   // The scenario -- storyline, phases, timed injects, key questions -- all
   // lives in the MSEL.
   { key: 'msel', path: 'msel', titleKey: 'creator.sections.msel', group: 'exercise' },
@@ -78,6 +104,7 @@ export const CREATOR_SECTIONS: SectionDef[] = [
     key: 'conduct-prep',
     path: 'conduct-prep',
     titleKey: 'creator.sections.conductPrep',
+    shortKey: 'nav.short.conductPrep',
     group: 'exercise',
   },
   // After the session: the after-action report and improvement plan.
@@ -85,6 +112,7 @@ export const CREATOR_SECTIONS: SectionDef[] = [
     key: 'after-action',
     path: 'after-action',
     titleKey: 'creator.sections.afterAction',
+    shortKey: 'nav.short.afterAction',
     group: 'exercise',
   },
   {
@@ -107,9 +135,19 @@ export const CREATOR_SECTIONS: SectionDef[] = [
 /** The Controllers' workspace: they run the exercise -- deliver the
  * MSEL injects, keep the Players in scope -- and read the EEG. */
 export const CONTROL_SECTIONS: SectionDef[] = [
-  { key: 'dashboard', path: 'dashboard', titleKey: 'control.sections.dashboard' },
+  {
+    key: 'dashboard',
+    path: 'dashboard',
+    titleKey: 'control.sections.dashboard',
+    shortKey: 'nav.short.control',
+  },
   { key: 'evaluation', path: 'evaluation', titleKey: 'control.sections.evaluation' },
-  { key: 'after-action', path: 'after-action', titleKey: 'creator.sections.afterAction' },
+  {
+    key: 'after-action',
+    path: 'after-action',
+    titleKey: 'creator.sections.afterAction',
+    shortKey: 'nav.short.afterAction',
+  },
 ]
 
 const AT_THE_TABLE: ContextRole[] = ['player', 'facilitator', 'observer', 'evaluator']
@@ -119,6 +157,7 @@ export const PLAYGROUND_SECTIONS: SectionDef[] = [
     key: 'enrollments',
     path: 'enrollments',
     titleKey: 'execution.sections.enrollments',
+    shortKey: 'nav.short.enrollments',
     orgScoped: true,
     roles: ['player'],
   },
@@ -140,6 +179,7 @@ export const PLAYGROUND_SECTIONS: SectionDef[] = [
     key: 'after-action',
     path: 'after-action',
     titleKey: 'creator.sections.afterAction',
+    shortKey: 'nav.short.afterAction',
     roles: ['evaluator'],
   },
 ]
@@ -147,10 +187,20 @@ export const PLAYGROUND_SECTIONS: SectionDef[] = [
 export const ADMIN_SECTIONS: SectionDef[] = [
   { key: 'organization', path: 'organization', titleKey: 'admin.sections.organization' },
   // Every org grant a Program Manager hands out, as one people x roles matrix.
-  { key: 'usersAndRoles', path: 'users-and-roles', titleKey: 'admin.sections.usersAndRoles' },
+  {
+    key: 'usersAndRoles',
+    path: 'users-and-roles',
+    titleKey: 'admin.sections.usersAndRoles',
+    shortKey: 'nav.short.usersAndRoles',
+  },
   // The organization's exercise portfolio: status, Lead Planner, delete.
   { key: 'exercises', path: 'exercises', titleKey: 'admin.sections.exercises' },
-  { key: 'settings', path: 'settings', titleKey: 'admin.sections.settings' },
+  {
+    key: 'settings',
+    path: 'settings',
+    titleKey: 'admin.sections.settings',
+    shortKey: 'nav.short.domains',
+  },
   // The organization's library -- simulated actors, injects and tags
   // (shared with Creator, which adds the exercise's level).
   { key: 'library', path: 'library', titleKey: 'admin.sections.library' },
@@ -159,6 +209,7 @@ export const ADMIN_SECTIONS: SectionDef[] = [
     key: 'improvement-plan',
     path: 'improvement-plan',
     titleKey: 'admin.sections.improvementPlan',
+    shortKey: 'nav.short.improvementPlan',
   },
 ]
 
@@ -168,24 +219,45 @@ export const ADMIN_SECTIONS: SectionDef[] = [
  * `/platform/${path}`. */
 export const PLATFORM_SECTIONS: SectionDef[] = [
   // Who may found organizations here: set once, rarely changed.
-  { key: 'settings', path: 'tenancy', titleKey: 'platform.sections.tenancy' },
+  {
+    key: 'settings',
+    path: 'tenancy',
+    titleKey: 'platform.sections.tenancy',
+    shortKey: 'nav.short.tenancy',
+  },
   { key: 'accounts', path: 'accounts', titleKey: 'platform.sections.accounts' },
   {
     key: 'organization',
     path: 'organizations',
     titleKey: 'platform.sections.organizations',
+    shortKey: 'nav.short.organizations',
   },
   { key: 'legal', path: 'legal', titleKey: 'platform.sections.legal' },
   // How the instance sends email: the server's configuration, or set here.
   { key: 'email', path: 'email', titleKey: 'platform.sections.email' },
   // Password rules and which roles must have a second factor.
-  { key: 'security', path: 'security', titleKey: 'platform.sections.security' },
+  {
+    key: 'security',
+    path: 'security',
+    titleKey: 'platform.sections.security',
+    shortKey: 'nav.short.security',
+  },
   // Who may sign in through an identity provider: the server's configuration, or set here.
-  { key: 'sso', path: 'sso', titleKey: 'platform.sections.sso' },
+  { key: 'sso', path: 'sso', titleKey: 'platform.sections.sso', shortKey: 'nav.short.sso' },
   // Whether accounts may connect an AI client, and the notice they accept.
-  { key: 'assistant', path: 'assistant', titleKey: 'platform.sections.assistant' },
+  {
+    key: 'assistant',
+    path: 'assistant',
+    titleKey: 'platform.sections.assistant',
+    shortKey: 'nav.short.assistant',
+  },
   // Everything above, as it was done: append-only.
-  { key: 'activity', path: 'activity', titleKey: 'platform.sections.activity' },
+  {
+    key: 'activity',
+    path: 'activity',
+    titleKey: 'platform.sections.activity',
+    shortKey: 'nav.short.activity',
+  },
 ]
 
 /** Preferences (avatar menu): the person's own account, with the same

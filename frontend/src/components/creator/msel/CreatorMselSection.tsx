@@ -13,6 +13,7 @@ import { useToast } from '../../../hooks/useToast'
 import { useUndoableRowRemoval, restoreRow } from '../../../hooks/useUndoableRowRemoval'
 import { useUnsavedChangesWarning } from '../../../hooks/useUnsavedChangesWarning'
 import { apiFetch, ApiError } from '../../../lib/api'
+import { leftoverVariables } from '../../../lib/injectLibrary'
 import { btnPrimary, btnSecondary, linkAccent } from '../../../lib/buttonStyles'
 import {
   adoptSavedIds,
@@ -49,6 +50,7 @@ import { IssueSummary, SectionIssueList, type IssueTarget } from '../../common/I
 import { StatusTrack } from '../../common/StatusTrack'
 import { Modal } from '../../common/Modal'
 import { Panel } from '../../common/Panel'
+import { VariableText } from '../../templates/VariableText'
 import { RenumberButton } from '../../common/RenumberButton'
 import { SaveStatus } from '../../common/SaveStatus'
 import { SectionHeader } from '../../common/SectionHeader'
@@ -1052,6 +1054,9 @@ function ReviewTab({
   const { t, i18n } = useTranslation()
   const disabled = busy || dirty || readOnly
   const { ready: blocking, approved: unvalidated } = msel.validation
+  // What a template left unfilled in the scenario, its phases and injects:
+  // a notice (the server takes the MSEL either way).
+  const leftover = leftoverVariables([msel.title, msel.summary, msel.phases, msel.injects])
   const reason = readOnly
     ? t('creator.msel.review.readOnly')
     : dirty
@@ -1065,6 +1070,12 @@ function ReviewTab({
         {t('creator.msel.version', { version: msel.version })}
       </p>
       {reason && <p className="text-sm text-paper-ink/70 dark:text-fg-muted">{reason}</p>}
+      {leftover.length > 0 && (
+        <p role="note" className="text-sm">
+          {t('creator.msel.leftover.review', { count: leftover.length })}{' '}
+          <VariableText text={leftover.map((name) => `{${name}}`).join(' ')} />
+        </p>
+      )}
       <div className="flex flex-wrap gap-2">
         {msel.status === 'draft' && (
           <button

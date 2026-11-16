@@ -51,6 +51,7 @@ export function ExerciseBanner({
           <button
             type="button"
             onClick={() => setAsking(true)}
+            aria-label={t('playground.realWorld.pressLabel', { keyword })}
             className="rounded-sm border border-current px-2 py-0.5 font-mono font-semibold hover:bg-danger hover:text-white focus-visible:ring-2 focus-visible:ring-accent-fg focus-visible:outline-none"
             translate="no"
           >
