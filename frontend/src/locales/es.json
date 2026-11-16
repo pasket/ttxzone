@@ -863,7 +863,7 @@
     },
     "exercises": {
       "createTitle": "Crear ejercicio",
-      "updateTitle": "Actualizar ejercicio",
+      "updateTitle": "Editar ejercicio",
       "nameLabel": "Nombre",
       "contentLanguageLabel": "Idioma de los contenidos",
       "contentLanguageHint": "El idioma en que están escritos los injects y el resto del material del ejercicio. Lo que se escribe por defecto para la mesa, como el mensaje del ENDEX, lo sigue.",
@@ -872,7 +872,7 @@
       "descriptionPlaceholder": "Objetivo, alcance o notas sobre este ejercicio…",
       "imageLabel": "Imagen",
       "createSubmit": "Crear ejercicio",
-      "updateSubmit": "Actualizar ejercicio",
+      "updateSubmit": "Guardar cambios",
       "nameRequiredError": "El nombre es obligatorio.",
       "uploadImage": "Subir imagen",
       "removeImage": "Quitar imagen",
@@ -1460,7 +1460,7 @@
         "draftNote_one": "Falta {{count}} dato: se descarga como borrador.",
         "draftNote_other": "Faltan {{count}} datos: se descarga como borrador.",
         "downloadDraft": "Descargar borrador PDF",
-        "downloadMarkdown": "Markdown",
+        "downloadMarkdown": "Descargar Markdown",
         "downloadMarkdownLabel": "Descargar en Markdown"
       },
       "noTtxMessage": "Crea un ejercicio primero para cumplimentar su análisis de necesidades.",

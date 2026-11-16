@@ -437,8 +437,8 @@ export function InjectsTab(props: TabProps) {
             <table className="w-full min-w-[50rem] table-fixed text-left">
               <colgroup>
                 <col />
-                {groupBy !== 'objective' && <col className="w-56 lg:w-64" />}
-                <col className="w-56 lg:w-72" />
+                {groupBy !== 'objective' && <col className="w-52 2xl:w-64" />}
+                <col className="w-52 2xl:w-72" />
                 <col className="w-20" />
                 {!readOnly && <col className="w-28" />}
               </colgroup>

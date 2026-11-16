@@ -221,7 +221,7 @@ describe('CreatorExerciseSection', () => {
     fireEvent.change(name, { target: { value: 'Board Drill' } })
     expect(screen.getByLabelText('Content language')).toHaveValue('es')
     fireEvent.change(screen.getByLabelText('Content language'), { target: { value: 'en' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Update exercise' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Save changes' }))
 
     await waitFor(() => expect(refresh).toHaveBeenCalled())
     const patch = fetchMock.mock.calls.find(([, init]) => init?.method === 'PATCH')
@@ -250,7 +250,7 @@ describe('CreatorExerciseSection', () => {
 
     renderExercisePage('/creator/ttx-1/exercise?edit=1')
 
-    expect(screen.getByRole('heading', { name: 'Update exercise' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Edit exercise' })).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Edit exercise' })).not.toBeInTheDocument()
     // A way out that isn't the form's Cancel, above and below the panels.
     const back = screen.getAllByRole('link', { name: 'Back to the profile' })

@@ -89,7 +89,8 @@ export function LastLogin({ value }: { value: string | null }) {
       <time
         dateTime={value}
         title={exact}
-        className="whitespace-nowrap text-sm text-paper-ink/70 dark:text-fg-muted"
+        // A cell's own text, not the middle of a sentence: "This minute".
+        className="inline-block whitespace-nowrap text-sm text-paper-ink/70 first-letter:uppercase dark:text-fg-muted"
       >
         {relative}
       </time>
@@ -103,7 +104,9 @@ export function LastLogin({ value }: { value: string | null }) {
       className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-xs px-1.5 py-0.5 text-xs font-medium ${STALE_CLASS[level]}`}
     >
       <StaleIcon level={level} />
-      <time dateTime={value}>{relative}</time>
+      <time dateTime={value} className="inline-block first-letter:uppercase">
+        {relative}
+      </time>
       <span className="sr-only">({warning})</span>
     </span>
   )

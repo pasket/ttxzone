@@ -220,7 +220,7 @@ function ScaleStrip() {
             rememberChoice(memoryId, !open)
             setOpen(!open)
           }}
-          className={`ml-auto inline-flex items-center gap-1 rounded-xs text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-fg ${linkAccent}`}
+          className={`ml-auto inline-flex min-h-6 items-center gap-1 rounded-xs text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-fg ${linkAccent}`}
         >
           {open
             ? t('creator.conductPrep.eeg.hideDefinitions')
@@ -354,7 +354,7 @@ function ObjectiveLedger({
             onClick={() => {
               focusNext.current = onAdd()
             }}
-            className={`rounded-xs text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-fg ${linkAccent}`}
+            className={`inline-flex min-h-6 items-center rounded-xs text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-fg ${linkAccent}`}
           >
             {t('creator.conductPrep.eeg.addOwnPoint')}
           </button>

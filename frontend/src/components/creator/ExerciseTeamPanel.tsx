@@ -417,6 +417,9 @@ export function ExerciseTeamPanel({
                     </td>
                     <td className={panelTd}>
                       <div className="flex flex-wrap gap-1">
+                        {person.org_tags.length + person.tags.length === 0 && (
+                          <span className="text-sm text-paper-ink/60 dark:text-fg-faint">—</span>
+                        )}
                         {person.org_tags.map((tag) => (
                           <TagChip
                             key={`org-${tag.id}`}

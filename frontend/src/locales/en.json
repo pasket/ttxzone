@@ -863,7 +863,7 @@
     },
     "exercises": {
       "createTitle": "Create exercise",
-      "updateTitle": "Update exercise",
+      "updateTitle": "Edit exercise",
       "nameLabel": "Name",
       "contentLanguageLabel": "Content language",
       "contentLanguageHint": "The language the injects and the rest of the exercise’s material are written in. What’s written for the table by default, like the ENDEX message, follows it.",
@@ -872,7 +872,7 @@
       "descriptionPlaceholder": "Objective, scope, or notes about this exercise…",
       "imageLabel": "Image",
       "createSubmit": "Create exercise",
-      "updateSubmit": "Update exercise",
+      "updateSubmit": "Save changes",
       "nameRequiredError": "Name is required.",
       "uploadImage": "Upload image",
       "removeImage": "Remove image",
@@ -1460,7 +1460,7 @@
         "draftNote_one": "{{count}} item missing: it downloads as a draft.",
         "draftNote_other": "{{count}} items missing: it downloads as a draft.",
         "downloadDraft": "Download draft PDF",
-        "downloadMarkdown": "Markdown",
+        "downloadMarkdown": "Download Markdown",
         "downloadMarkdownLabel": "Download as Markdown"
       },
       "noTtxMessage": "Create an exercise first to fill in its needs analysis.",

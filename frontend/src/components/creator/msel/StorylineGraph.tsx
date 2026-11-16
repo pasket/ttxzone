@@ -61,7 +61,7 @@ const BRANCH_SLANT_PX = 10
  * title its label shows (after the code): the strip, and the strip
  * maximized. */
 const SIZES = {
-  normal: { top: 49, lane: 26, titleChars: 8, text: 'text-[10px]', fillGap: 0.3 },
+  normal: { top: 49, lane: 26, titleChars: 8, text: 'text-[11px]', fillGap: 0.3 },
   // Maximized: a much taller drawing (room above the storyline and each
   // lane), so branches and labels breathe.
   large: { top: 141, lane: 87, titleChars: 30, text: 'text-xs', fillGap: 0.2 },
@@ -776,10 +776,10 @@ export function StorylineGraph({
                 className="pointer-events-none absolute flex -translate-x-1/2 items-center gap-1"
                 style={{ left: pct(addAt), top: 2 }}
               >
-                <span className="flex h-3.5 w-3.5 items-center justify-center rounded-full border border-dashed border-accent bg-panel text-[10px] leading-none text-accent-fg">
+                <span className="flex h-3.5 w-3.5 items-center justify-center rounded-full border border-dashed border-accent bg-panel text-[11px] leading-none text-accent-fg">
                   +
                 </span>
-                <span className="rounded-xs bg-panel/90 px-1 font-mono text-[10px] text-accent-fg">
+                <span className="rounded-xs bg-panel/90 px-1 font-mono text-[11px] text-accent-fg">
                   {timeLabel(addAt)}
                 </span>
               </span>
@@ -929,7 +929,7 @@ export function StorylineGraph({
               }}
             >
               <span className="h-3 w-3 rotate-45 rounded-[2px] border-2 border-dashed border-accent bg-panel" />
-              <span className="rounded-xs bg-panel/90 px-1 font-mono text-[10px] whitespace-nowrap text-accent-fg">
+              <span className="rounded-xs bg-panel/90 px-1 font-mono text-[11px] whitespace-nowrap text-accent-fg">
                 <span translate="no">{code(drag.target.inject)}</span> · {timeLabel(drag.minutes)}
               </span>
             </span>
@@ -962,7 +962,7 @@ export function StorylineGraph({
                 className="pointer-events-none absolute inset-y-0 z-40 rounded-sm border-2 border-dashed border-accent bg-accent/10"
                 style={{ left: pct(start), width: `calc(${pct(end)} - ${pct(start)})` }}
               >
-                <span className="absolute top-1 left-1 rounded-xs bg-panel/90 px-1 font-mono text-[10px] whitespace-nowrap text-accent-fg">
+                <span className="absolute top-1 left-1 rounded-xs bg-panel/90 px-1 font-mono text-[11px] whitespace-nowrap text-accent-fg">
                   {formatOffset(start)} – {formatOffset(end)}
                 </span>
               </div>
@@ -972,7 +972,7 @@ export function StorylineGraph({
       <div
         ref={axisRef}
         translate="no"
-        className="relative font-mono text-[10px] tabular-nums text-paper-ink/60 dark:text-fg-faint"
+        className="relative font-mono text-[11px] tabular-nums text-paper-ink/60 dark:text-fg-faint"
         style={{ height: axisLines * 12 + 4 }}
       >
         {ticks.map(({ minutes, kind }) => (
@@ -987,7 +987,7 @@ export function StorylineGraph({
                 : minutes >= map.duration
                   ? '-translate-x-full text-right'
                   : '-translate-x-1/2 text-center'
-            } ${kind === 'fill' ? 'opacity-60' : ''}`}
+            }`}
             style={{
               left:
                 kind === 'phase'
