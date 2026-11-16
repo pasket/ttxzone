@@ -4,6 +4,7 @@ import { Outlet, useLocation } from 'react-router-dom'
 import { RouteBoundary } from '../common/RouteBoundary'
 
 import { useNavCollapsed } from '../../hooks/useNavCollapsed'
+import { usePageTitle } from '../../hooks/usePageTitle'
 import { PLATFORM_SECTIONS, type SectionDef } from '../../lib/navSections'
 
 import { EmailReconfirmBanner } from '../common/EmailReconfirmBanner'
@@ -25,6 +26,7 @@ export function PlatformLayout() {
   const { pathname } = useLocation()
   const nav = useNavCollapsed()
   const activeSection = pathname.split('/')[2]
+  usePageTitle()
 
   return (
     <div className="flex min-h-screen flex-col bg-paper text-paper-ink dark:bg-ink dark:text-fg">

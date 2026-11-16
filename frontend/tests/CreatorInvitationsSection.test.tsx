@@ -186,7 +186,11 @@ describe('CreatorInvitationsSection', () => {
     stubFetchWithPendingCount(fetchMock)
 
     render(<CreatorInvitationsSection />)
-    await screen.findByText('No invitations generated yet.')
+    await screen.findByText(
+      'No invitations yet. Generate one, share its token, and approve who asks to join.',
+    )
+    // Nothing to search or sort yet: no toolbar over an empty list.
+    expect(screen.queryByLabelText('Search')).not.toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('button', { name: 'Generate invitation' }))
     // No role picker: invitations are always for players.
@@ -392,11 +396,29 @@ describe('CreatorInvitationsSection', () => {
 
   it('sends sort_by and q on the list request once the toolbar changes them', async () => {
     mockTtxList = ttxList
-    const fetchMock = vi.fn().mockResolvedValue(mockAuditList([]))
+    // One invitation: an empty list has nothing to sort or search, so no toolbar.
+    const fetchMock = vi.fn().mockResolvedValue(
+      mockAuditList([
+        {
+          id: 'token-1',
+          ttx_id: 'ttx-1',
+          role: 'player',
+          description: 'IT team',
+          token: 'plain-token',
+          expires_at: '2026-02-01T00:00:00Z',
+          max_uses: null,
+          redemption_count: 0,
+          revoked_at: null,
+          created_at: '2026-01-01T00:00:00Z',
+          created_by_id: 'user-1',
+          tags: [],
+        },
+      ]),
+    )
     stubFetchWithPendingCount(fetchMock)
 
     render(<CreatorInvitationsSection />)
-    await screen.findByText('No invitations generated yet.')
+    await screen.findByText('plain-token')
 
     fireEvent.click(screen.getByRole('button', { name: 'Sort by: Date added' }))
     fireEvent.click(screen.getByRole('menuitemradio', { name: 'Description' }))

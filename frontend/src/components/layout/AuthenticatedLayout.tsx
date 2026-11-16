@@ -6,6 +6,7 @@ import { RouteBoundary } from '../common/RouteBoundary'
 
 import { useAuth } from '../../hooks/useAuth'
 import { useNavCollapsed } from '../../hooks/useNavCollapsed'
+import { usePageTitle } from '../../hooks/usePageTitle'
 import { rememberWorkspace } from '../../lib/lastWorkspace'
 import { isModuleRoute } from '../../lib/moduleAccess'
 
@@ -17,9 +18,11 @@ import { MobileBottomNav, PrimaryNav } from './PrimaryNav'
 
 export function AuthenticatedLayout() {
   const { t } = useTranslation()
-  const { user } = useAuth()
+  const { user, activeTtx } = useAuth()
   const { pathname, search } = useLocation()
   const nav = useNavCollapsed()
+  // The exercise names the tab only on its own pages (its id is in the path).
+  usePageTitle(activeTtx && pathname.includes(activeTtx.id) ? activeTtx.name : null)
 
   // The page being worked on, for coming back to it from Preferences.
   useEffect(() => {

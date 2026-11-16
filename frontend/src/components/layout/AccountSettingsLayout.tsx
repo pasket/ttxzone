@@ -7,6 +7,7 @@ import { RouteBoundary } from '../common/RouteBoundary'
 import { useApiResource } from '../../hooks/useApiResource'
 import { useAuth } from '../../hooks/useAuth'
 import { useNavCollapsed } from '../../hooks/useNavCollapsed'
+import { usePageTitle } from '../../hooks/usePageTitle'
 import { hasContextChoices } from '../../lib/moduleAccess'
 import { ACCOUNT_SECTIONS, type SectionDef } from '../../lib/navSections'
 import type { InstancePolicy } from '../../lib/types'
@@ -27,6 +28,7 @@ export function AccountSettingsLayout() {
   const { pathname } = useLocation()
   const nav = useNavCollapsed()
   const section = pathname.split('/').pop()
+  usePageTitle()
   const { organizations, allTtxList } = useAuth()
   // Workspace: only when there's a default to choose (hasContextChoices).
   const showDefaults = hasContextChoices(organizations, allTtxList)

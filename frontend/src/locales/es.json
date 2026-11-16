@@ -722,6 +722,7 @@
       "exerciseDescription": "Lo que contiene ahora. Saca una copia sin cambiarlo, o trae una plantilla de ejercicio, aquí o en un ejercicio nuevo.",
       "systemEmpty": "TTX-Zone aún no tiene plantillas de ejercicio.",
       "organizationEmpty": "Aún no tienes plantillas de ejercicio propias.",
+      "organizationEmptyReader": "Tu organización aún no tiene plantillas de ejercicio. Las añade un Responsable del Programa de Ejercicios; las de TTX-Zone están en el nivel TTX-Zone.",
       "organizationForbidden": "Solo los Responsables del Programa de Ejercicios y los Planificadores de tu organización pueden ver sus plantillas de ejercicio.",
       "filters": {
         "label": "Filtrar plantillas",
@@ -929,7 +930,7 @@
     "invitations": {
       "ttxLabel": "Ejercicio",
       "noTtxMessage": "Crea un ejercicio primero para generar invitaciones.",
-      "noTokensMessage": "Todavía no se han generado invitaciones.",
+      "noTokensMessage": "Aún no hay invitaciones. Genera una, comparte su token y aprueba a quien pida unirse.",
       "createTitle": "Generar invitación",
       "roleLabel": "Rol",
       "descriptionLabel": "Descripción",
@@ -3659,7 +3660,7 @@
       "chooseOrgTitle": "Configurar mi organización",
       "chooseOrgSubtitle": "Crea una nueva organización y conviértete en su Responsable del Programa de Ejercicios.",
       "chooseTokenTitle": "Tengo un token de invitación",
-      "chooseTokenSubtitle": "Únete a un ejercicio existente con un token de tu coordinador.",
+      "chooseTokenSubtitle": "Únete a un ejercicio existente con un token de uno de sus Planificadores.",
       "orgNameLabel": "Nombre de la empresa",
       "orgEmailDomainHint": "Usa tu correo corporativo -- no se puede crear una organización con un proveedor de correo personal. El nombre de la empresa se rellena a partir del dominio de tu correo, a modo informativo.",
       "fullNameLabel": "Nombre completo",
@@ -3678,7 +3679,7 @@
     },
     "waitingRoom": {
       "title": "Tu perfil está activo",
-      "description": "Introduce un token de invitación válido proporcionado por tu coordinador para acceder a un Ejercicio de Simulación de Ciberseguridad.",
+      "description": "Introduce un token de invitación válido proporcionado por uno de sus Planificadores para acceder a un Ejercicio de Simulación de Ciberseguridad.",
       "tokenLabel": "Token de invitación",
       "submit": "Unirse al ejercicio",
       "submittedTitle": "Solicitud enviada",
@@ -4021,7 +4022,7 @@
       }
     },
     "assistant": {
-      "off": "El asistente de IA está desactivado en este servidor.",
+      "off": "El asistente de IA está desactivado en este servidor. Lo activa un administrador de la instancia, en Plataforma → Asistente de IA.",
       "noticeTitle": "Uso responsable del asistente de IA",
       "notice": "Todo lo que el asistente lee de TTX-Zone (los análisis de necesidades, los MSEL y los informes posteriores de tus ejercicios, con su contenido clasificado con TLP; lo que registraron sus sesiones, como decisiones, valoraciones, notas del equipo y respuestas al formulario de feedback; y los catálogos) se envía al proveedor de IA que usa tu cliente (Anthropic, en Claude Desktop) y se trata según las condiciones de ese proveedor, no las de TTX-Zone. TTX-Zone no lo filtra ni lo anonimiza. Úsalo solo si tu organización permite compartir esta información con ese proveedor, respeta la etiqueta TLP de cada ejercicio y revisa todo lo que te sugiera antes de usarlo: puede equivocarse. Un token actúa como tú: quien lo tenga lee lo que tú puedes leer.",
       "createTitle": "Nuevo token",

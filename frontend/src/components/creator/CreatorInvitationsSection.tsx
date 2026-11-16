@@ -404,15 +404,18 @@ export function CreatorInvitationsSection() {
           label={t('creator.invitations.listTitle')}
           meta={loading ? undefined : t('creator.invitations.count', { count: total })}
           aside={
-            <TableToolbar
-              sortDir={sortDir}
-              sortBy={sortBy}
-              onSortDirChange={handleSortDirChange}
-              onSortByChange={handleSortByChange}
-              search={search}
-              onSearchChange={handleSearchChange}
-              sortLabels={{ name: t('creator.invitations.descriptionLabel') }}
-            />
+            // Nothing to search or sort in an empty list.
+            (total > 0 || search !== '') && (
+              <TableToolbar
+                sortDir={sortDir}
+                sortBy={sortBy}
+                onSortDirChange={handleSortDirChange}
+                onSortByChange={handleSortByChange}
+                search={search}
+                onSearchChange={handleSearchChange}
+                sortLabels={{ name: t('creator.invitations.descriptionLabel') }}
+              />
+            )
           }
           footer={
             totalPages > 1 ? (

@@ -347,7 +347,13 @@ export function ScenarioLibrary({
         {forbidden ? (
           <p className={libraryEmptyClass}>{t('templates.scenarios.organizationForbidden')}</p>
         ) : organization.data && all.length === 0 ? (
-          <p className={libraryEmptyClass}>{t('templates.scenarios.organizationEmpty')}</p>
+          <p className={libraryEmptyClass}>
+            {t(
+              manage
+                ? 'templates.scenarios.organizationEmpty'
+                : 'templates.scenarios.organizationEmptyReader',
+            )}
+          </p>
         ) : organization.data && items.length === 0 ? (
           <LibraryNoMatches active={filter.active} onClear={filter.clear} />
         ) : (

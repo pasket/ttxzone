@@ -123,6 +123,7 @@ Status: **built** (all five slices; see Delivery slices and Open items). This is
 
 **Evaluator:**
 
+- With all their points on screen (the **All my points** toggle) each objective folds, saying how many of its points are rated; the ones with points left open first. Their dock opens wider than a Player's (480 px against 360).
 - By default, their assigned EEG points for the current inject (`ConductPrepEegPoint.source_inject_code` + `ConductPrepEvaluatorObjective`). A toggle shows all their points.
 - Each point has a P/S/M/U picker showing the level's definition (`criteria_p..u`, else the common scale) and a rationale.
 - Inject and general notes.

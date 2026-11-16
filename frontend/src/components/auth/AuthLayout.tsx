@@ -3,11 +3,13 @@ import { useTranslation } from 'react-i18next'
 
 import logoModoDark from '../../assets/logos/logo-modo-dark.svg'
 import logoModoLight from '../../assets/logos/logo-modo-light.svg'
+import { usePageTitle } from '../../hooks/usePageTitle'
 import { useTheme } from '../../hooks/useTheme'
 
 export function AuthLayout({ children }: { children: ReactNode }) {
   const { t } = useTranslation()
   const { theme } = useTheme()
+  usePageTitle()
 
   return (
     <div className="flex min-h-screen">

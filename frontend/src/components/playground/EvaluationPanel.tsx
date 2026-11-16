@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { usePlaceName } from '../../hooks/usePlaceName'
@@ -170,20 +170,18 @@ export function EvaluationPanel({ ttxId, run }: { ttxId: string; run: RunRead })
             </p>
           ) : (
             shown.map((objective) => (
-              <section key={objective.id} aria-label={objective.code} className="space-y-3">
-                <h3 className="text-sm font-semibold">
-                  <CodeRef
-                    variant="stacked"
-                    wrap
-                    strong
-                    code={objective.code}
-                    title={objective.title || objective.statement}
-                  />
-                </h3>
+              <ObjectivePoints
+                key={`${scope}-${objective.id}`}
+                code={objective.code}
+                title={objective.title || objective.statement}
+                rated={objective.points.filter((point) => point.rating).length}
+                total={objective.points.length}
+                foldable={scope === 'all'}
+              >
                 {objective.points.map((point) => (
                   <PointRow key={`${where}-${point.id}`} point={point} onRate={rate} />
                 ))}
-              </section>
+              </ObjectivePoints>
             ))
           )}
           {decided.length > 0 && (
@@ -201,6 +199,51 @@ export function EvaluationPanel({ ttxId, run }: { ttxId: string; run: RunRead })
         </div>
       )}
     </Panel>
+  )
+}
+
+/** An objective's points. With all of an Evaluator's points on screen each
+ * objective folds, saying how many of its points are rated: open while
+ * some are left (as it was when the list opened -- rating the last one
+ * doesn't shut it under the hand). */
+function ObjectivePoints({
+  code,
+  title,
+  rated,
+  total,
+  foldable,
+  children,
+}: {
+  code: string
+  title: string
+  rated: number
+  total: number
+  foldable: boolean
+  children: ReactNode
+}) {
+  const { t } = useTranslation()
+  const [open, setOpen] = useState(rated < total)
+  const heading = <CodeRef variant="stacked" wrap strong code={code} title={title} />
+  if (!foldable) {
+    return (
+      <section aria-label={code} className="space-y-3">
+        <h3 className="text-sm font-semibold">{heading}</h3>
+        {children}
+      </section>
+    )
+  }
+  return (
+    <section aria-label={code}>
+      <details open={open} onToggle={(event) => setOpen(event.currentTarget.open)}>
+        <summary className="flex cursor-pointer items-start justify-between gap-3 rounded-sm py-1 focus-visible:outline-2 focus-visible:outline-accent-fg">
+          <h3 className="min-w-0 text-sm font-semibold">{heading}</h3>
+          <span className="shrink-0 text-xs text-paper-ink/70 tabular-nums dark:text-fg-muted">
+            {t('playground.evaluation.progress', { rated, total })}
+          </span>
+        </summary>
+        <div className="mt-3 space-y-3">{children}</div>
+      </details>
+    </section>
   )
 }
 

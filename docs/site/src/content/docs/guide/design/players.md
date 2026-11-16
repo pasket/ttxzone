@@ -15,11 +15,11 @@ If the instance sends email, you can invite up to 50 addresses at a time from **
 
 You can resend or withdraw each invitation.
 
-## With a join code
+## With an invitation token
 
-Create an invitation in **Invitations**, with an optional description, limit and expiry of up to a year. Share the code however you like.
+Create an invitation in **Invitations**, with an optional description, limit and expiry of up to a year. Share its token however you like.
 
-A join code isn't a secret, so anyone holding it only gets a **pending** request. You approve or reject each one in **Pending**. You can revoke a code at any time.
+An invitation token isn't a secret, so anyone holding it only gets a **pending** request. You approve or reject each one in **Pending**. You can revoke a token at any time.
 
 ## Confirmed Players
 

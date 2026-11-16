@@ -226,7 +226,11 @@ describe('CreatorInvitationsSection by email', () => {
     )
     render(<CreatorInvitationsSection />)
 
-    expect(await screen.findByText('No invitations generated yet.')).toBeInTheDocument()
+    expect(
+      await screen.findByText(
+        'No invitations yet. Generate one, share its token, and approve who asks to join.',
+      ),
+    ).toBeInTheDocument()
     expect(screen.queryByText('Invitations by email')).not.toBeInTheDocument()
   })
 

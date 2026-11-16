@@ -486,7 +486,8 @@ function DockedColumns({
   // Half the row (unmeasured -- no ResizeObserver -- as on a 1280 px page).
   const max = Math.max(DOCK_MIN, Math.floor((rowWidth || 1280) / 2))
   const clamp = (value: number) => Math.min(max, Math.max(DOCK_MIN, Math.round(value)))
-  const current = width ?? (wideDock ? null : 360)
+  // An Evaluator works in the dock (the points to rate): it opens wider.
+  const current = width ?? (wideDock ? null : role === 'evaluator' ? 480 : 360)
 
   // The stage stays beside a dock longer than it (the Controller's, an
   // Evaluator's points): under the band while it fits the screen, else

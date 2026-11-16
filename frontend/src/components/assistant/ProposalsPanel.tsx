@@ -5,7 +5,13 @@ import { Link, useLocation } from 'react-router-dom'
 import { useApiResource } from '../../hooks/useApiResource'
 import { useToast } from '../../hooks/useToast'
 import { apiFetch, ApiError } from '../../lib/api'
-import { badgeNeutral, btnPrimary, btnSecondary, linkAccent } from '../../lib/buttonStyles'
+import {
+  badgeNeutral,
+  btnDanger,
+  btnPrimary,
+  btnSecondary,
+  linkAccent,
+} from '../../lib/buttonStyles'
 import { ATTENTION_CHANGED_EVENT, PROPOSALS_ARRIVED_EVENT } from '../../lib/attention'
 import type { IssueMessage } from '../../lib/issueGroups'
 import {
@@ -632,7 +638,10 @@ export function ProposalsPanel<D>({
             <span key={`+${show(field, [v])}`}>+ {show(field, [v])}</span>
           ))}
           {delta.removed.map((v) => (
-            <span key={`-${show(field, [v])}`} className="line-through opacity-60">
+            <span
+              key={`-${show(field, [v])}`}
+              className="line-through text-paper-ink/60 dark:text-fg-muted"
+            >
               − {show(field, [v])}
             </span>
           ))}
@@ -644,7 +653,10 @@ export function ProposalsPanel<D>({
       <>
         {before !== undefined && (
           <>
-            <span className="line-through opacity-60">{show(field, before)}</span> →{' '}
+            <span className="line-through text-paper-ink/60 dark:text-fg-muted">
+              {show(field, before)}
+            </span>{' '}
+            →{' '}
           </>
         )}
         {show(field, after)}
@@ -690,7 +702,9 @@ export function ProposalsPanel<D>({
                   : t('assistant.proposalNumber', { number: position }))}
             </label>
           ) : (
-            <span className="font-medium">{title(proposal)}</span>
+            <span id={`proposal-${proposal.id}`} className="font-medium">
+              {title(proposal)}
+            </span>
           )}
           {proposal.outdated && <span className={badgeNeutral}>{t('assistant.outdated')}</span>}
           {accepted && <span className={badgeNeutral}>{t('assistant.acceptedUnsaved')}</span>}
@@ -849,16 +863,24 @@ export function ProposalsPanel<D>({
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
-              className={btnPrimary}
+              // With "Accept all" on the panel, that is its one primary action.
+              className={actionable.length > 1 ? btnSecondary : btnPrimary}
               disabled={
                 disabledReason !== null || (isAction(proposal) && (actionBlocked ?? null) !== null)
               }
               title={isAction(proposal) ? (actionBlocked ?? undefined) : undefined}
+              // Which proposal it accepts, for whoever hears the button alone.
+              aria-describedby={`proposal-${proposal.id}`}
               onClick={() => (isAction(proposal) ? onAction?.(proposal) : accept(proposal))}
             >
               {deps > 0 ? t('assistant.acceptWith', { count: deps }) : t('assistant.accept')}
             </button>
-            <button type="button" className={btnSecondary} onClick={() => void discard(proposal)}>
+            <button
+              type="button"
+              className={btnSecondary}
+              aria-describedby={`proposal-${proposal.id}`}
+              onClick={() => void discard(proposal)}
+            >
               {t('assistant.discard')}
             </button>
           </div>
@@ -936,7 +958,7 @@ export function ProposalsPanel<D>({
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
-              className={btnPrimary}
+              className={actionable.length > 1 ? btnSecondary : btnPrimary}
               disabled={disabledReason !== null}
               onClick={() => acceptMany(open)}
             >
@@ -1079,7 +1101,7 @@ export function ProposalsPanel<D>({
             >
               {t('common.confirmButton.cancel')}
             </button>
-            <button type="button" className={btnPrimary} onClick={() => void discardAll()}>
+            <button type="button" className={btnDanger} onClick={() => void discardAll()}>
               {t('assistant.discardAll')}
             </button>
           </div>

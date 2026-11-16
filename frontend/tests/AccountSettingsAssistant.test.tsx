@@ -71,7 +71,9 @@ describe('AccountSettingsAssistant', () => {
     render(<AccountSettingsAssistant />)
 
     expect(
-      await screen.findByText('The AI assistant is turned off on this server.'),
+      await screen.findByText(
+        /^The AI assistant is turned off on this server\. An instance administrator/,
+      ),
     ).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Create token' })).not.toBeInTheDocument()
   })
