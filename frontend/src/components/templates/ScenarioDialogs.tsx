@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+
 import { useNavigate } from 'react-router-dom'
+
+import { useDiscardGuard } from '../../hooks/useDiscardGuard'
 
 import { useApiResource } from '../../hooks/useApiResource'
 import { useAuth } from '../../hooks/useAuth'
@@ -20,6 +23,7 @@ import type { ContentLanguage } from '../../lib/types'
 import { ButtonSpinner } from '../common/ButtonSpinner'
 import { CodeRef } from '../common/CodeRef'
 import { Modal } from '../common/Modal'
+import { DiscardConfirm } from '../common/DiscardConfirm'
 import { Field, Select } from '../creator/needs/fields'
 import { VariableFields } from './VariableFields'
 
@@ -172,6 +176,7 @@ export function ScenarioApplyDialog({
   onClose: () => void
 }) {
   const { t, i18n } = useTranslation()
+  const guard = useDiscardGuard(onClose)
   const { showToast } = useToast()
   const { activeTtx, activeOrganization, ttxList, refresh, setActiveTtxId } = useAuth()
   const navigate = useNavigate()
@@ -304,8 +309,8 @@ export function ScenarioApplyDialog({
       : t('templates.scenarios.newExerciseFileTitle')
 
   return (
-    <Modal titleId="scenario-apply-title" onClose={onClose} size="lg">
-      <form onSubmit={submit} className="space-y-4">
+    <Modal titleId="scenario-apply-title" onClose={guard.requestClose} size="lg">
+      <form onSubmit={submit} className="space-y-4" onChange={guard.touch}>
         <h2 id="scenario-apply-title" className="text-balance text-lg font-semibold tracking-tight">
           {title}
         </h2>
@@ -389,21 +394,25 @@ export function ScenarioApplyDialog({
             {error}
           </p>
         )}
-        <div className="flex justify-end gap-2">
-          <button type="button" onClick={onClose} className={btnSecondary}>
-            {ready ? t('common.confirmButton.cancel') : t('templates.scenarios.close')}
-          </button>
-          {ready && replacing && (
-            <button type="submit" disabled={busy || !confirmed} className={btnDanger}>
-              {busy ? <ButtonSpinner /> : t('templates.scenarios.overwrite')}
+        {guard.confirming ? (
+          <DiscardConfirm onKeep={guard.keep} onDiscard={guard.discard} />
+        ) : (
+          <div className="flex justify-end gap-2">
+            <button type="button" onClick={guard.requestClose} className={btnSecondary}>
+              {ready ? t('common.confirmButton.cancel') : t('templates.scenarios.close')}
             </button>
-          )}
-          {ready && !replacing && (
-            <button type="submit" disabled={busy} className={btnPrimary}>
-              {busy ? <ButtonSpinner /> : t('templates.scenarios.createExercise')}
-            </button>
-          )}
-        </div>
+            {ready && replacing && (
+              <button type="submit" disabled={busy || !confirmed} className={btnDanger}>
+                {busy ? <ButtonSpinner /> : t('templates.scenarios.overwrite')}
+              </button>
+            )}
+            {ready && !replacing && (
+              <button type="submit" disabled={busy} className={btnPrimary}>
+                {busy ? <ButtonSpinner /> : t('templates.scenarios.createExercise')}
+              </button>
+            )}
+          </div>
+        )}
       </form>
     </Modal>
   )
@@ -600,6 +609,7 @@ export function ScenarioEditDialog({
   onSaved: () => void
 }) {
   const { t } = useTranslation()
+  const guard = useDiscardGuard(onClose)
   const { showToast } = useToast()
   const [name, setName] = useState(initial.name)
   const [description, setDescription] = useState(initial.description ?? '')
@@ -622,8 +632,8 @@ export function ScenarioEditDialog({
   }
 
   return (
-    <Modal titleId="scenario-edit-title" onClose={onClose}>
-      <form onSubmit={save} className="space-y-4">
+    <Modal titleId="scenario-edit-title" onClose={guard.requestClose}>
+      <form onSubmit={save} className="space-y-4" onChange={guard.touch}>
         <h2 id="scenario-edit-title" className="text-balance text-lg font-semibold tracking-tight">
           {t('templates.scenarios.editTitle', { name: initial.name })}
         </h2>
@@ -656,14 +666,18 @@ export function ScenarioEditDialog({
             className={inputBase}
           />
         </div>
-        <div className="flex justify-end gap-2">
-          <button type="button" onClick={onClose} className={btnSecondary}>
-            {t('common.confirmButton.cancel')}
-          </button>
-          <button type="submit" disabled={busy || !name.trim()} className={btnPrimary}>
-            {busy ? <ButtonSpinner /> : t('common.confirmButton.save')}
-          </button>
-        </div>
+        {guard.confirming ? (
+          <DiscardConfirm onKeep={guard.keep} onDiscard={guard.discard} />
+        ) : (
+          <div className="flex justify-end gap-2">
+            <button type="button" onClick={guard.requestClose} className={btnSecondary}>
+              {t('common.confirmButton.cancel')}
+            </button>
+            <button type="submit" disabled={busy || !name.trim()} className={btnPrimary}>
+              {busy ? <ButtonSpinner /> : t('common.confirmButton.save')}
+            </button>
+          </div>
+        )}
       </form>
     </Modal>
   )

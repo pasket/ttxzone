@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { useDiscardGuard } from '../../hooks/useDiscardGuard'
 import { btnPrimary, btnSecondary, inputBase } from '../../lib/buttonStyles'
 import type { LibraryLevel } from '../../lib/libraryLevels'
 import { hasFinePointer } from '../../lib/pointer'
@@ -14,6 +15,7 @@ import {
 import { TAG_NAME_MAX, type TagFields } from '../../lib/tagLibrary'
 import { ButtonSpinner } from '../common/ButtonSpinner'
 import { Modal } from '../common/Modal'
+import { DiscardConfirm } from '../common/DiscardConfirm'
 import { TagChip } from '../common/TagChip'
 import { Field, TextInput } from '../creator/needs/fields'
 import { CopiedFrom } from './ActorFormModal'
@@ -39,6 +41,7 @@ export function TagFormModal({
   onClose: () => void
 }) {
   const { t } = useTranslation()
+  const guard = useDiscardGuard(onClose)
   const [values, setValues] = useState(initial)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -62,8 +65,8 @@ export function TagFormModal({
   }
 
   return (
-    <Modal titleId="tag-form-title" onClose={onClose}>
-      <form onSubmit={submit} className="space-y-4">
+    <Modal titleId="tag-form-title" onClose={guard.requestClose}>
+      <form onSubmit={submit} className="space-y-4" onChange={guard.touch}>
         <h2 id="tag-form-title" className="text-balance text-lg font-semibold tracking-tight">
           {title}
         </h2>
@@ -128,16 +131,20 @@ export function TagFormModal({
             {error}
           </p>
         )}
-        <div className="flex justify-end gap-2">
-          <button type="button" onClick={onClose} className={btnSecondary}>
-            {readOnly ? t('templates.threats.close') : t('common.confirmButton.cancel')}
-          </button>
-          {!readOnly && (
-            <button type="submit" disabled={busy || !values.name.trim()} className={btnPrimary}>
-              {busy ? <ButtonSpinner /> : t('common.confirmButton.save')}
+        {guard.confirming ? (
+          <DiscardConfirm onKeep={guard.keep} onDiscard={guard.discard} />
+        ) : (
+          <div className="flex justify-end gap-2">
+            <button type="button" onClick={guard.requestClose} className={btnSecondary}>
+              {readOnly ? t('templates.threats.close') : t('common.confirmButton.cancel')}
             </button>
-          )}
-        </div>
+            {!readOnly && (
+              <button type="submit" disabled={busy || !values.name.trim()} className={btnPrimary}>
+                {busy ? <ButtonSpinner /> : t('common.confirmButton.save')}
+              </button>
+            )}
+          </div>
+        )}
       </form>
     </Modal>
   )

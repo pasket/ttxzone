@@ -13,7 +13,7 @@ The **Library** holds simulated actors, threat actors, injects, tags and exercis
 | **My organization** | The organization's own items | Exercise Program Managers |
 | **This exercise** | The exercise's own copies | Its Exercise Planners |
 
-Every use is a copy, so editing or deleting a library item never changes an exercise. A copy remembers where it came from. Deleting an organization item that's in use disables it instead.
+Every use is a copy, so editing or deleting a library item never changes an exercise. A form you close with something typed asks before discarding it. A copy remembers where it came from. Deleting an organization item that's in use disables it instead.
 
 ## Exercise templates
 

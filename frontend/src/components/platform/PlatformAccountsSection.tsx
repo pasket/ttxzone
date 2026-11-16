@@ -752,7 +752,17 @@ export function PlatformAccountsSection() {
                       </td>
                       <td className={panelTd}>
                         <span className="block font-semibold text-paper-ink dark:text-fg">
-                          {name}
+                          <button
+                            type="button"
+                            onClick={() =>
+                              navigate(`/platform/accounts/${account.user_id}`, {
+                                state: { from: location.search },
+                              })
+                            }
+                            className="rounded-sm text-left font-semibold hover:underline focus-visible:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-fg"
+                          >
+                            {name}
+                          </button>
                           {account.user_id === user?.id && (
                             <span className="ml-1.5 text-sm font-normal text-paper-ink/60 dark:text-fg-muted">
                               {t('admin.usersAndRoles.youSuffix')}

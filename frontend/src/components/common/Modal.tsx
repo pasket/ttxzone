@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 
 /** First true overlay dialog in this codebase -- everywhere else
@@ -41,13 +41,21 @@ export function Modal({
   // when the effect runs again while the dialog is up (StrictMode's second
   // pass), focus is already inside it, and that must not replace the opener.
   const openerRef = useRef<HTMLElement | null>(null)
+  // Read while rendering for the first time: a field inside with `autoFocus`
+  // takes the focus on mount, before any effect could see who had it.
+  const [openedFrom] = useState(() =>
+    document.activeElement instanceof HTMLElement ? document.activeElement : null,
+  )
 
   // Initial focus, plus a body scroll lock so the page behind the backdrop
   // doesn't scroll while the dialog is open (restored on close).
   useEffect(() => {
     const focused = document.activeElement instanceof HTMLElement ? document.activeElement : null
-    if (!focused || !dialogRef.current?.contains(focused)) openerRef.current = focused
-    dialogRef.current?.focus()
+    const inside = focused !== null && dialogRef.current?.contains(focused) === true
+    if (!inside) openerRef.current = focused
+    else if (!openerRef.current) openerRef.current = openedFrom
+    // A field that asked for the focus keeps it.
+    if (!inside) dialogRef.current?.focus()
     const previousOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     return () => {
@@ -68,7 +76,7 @@ export function Modal({
             : null
       target?.focus({ preventScroll: true })
     }
-  }, [])
+  }, [openedFrom])
 
   function handleKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
     // A dialog opened from another (the inject dialog's "New actor") sits
@@ -76,6 +84,19 @@ export function Modal({
     if (event.key === 'Escape' || event.key === 'Tab') event.stopPropagation()
     if (event.key === 'Escape') {
       onClose()
+      return
+    }
+    // Cmd/Ctrl+Enter commits the dialog's form, as its submit button would
+    // (never while that button is disabled).
+    if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
+      const submit = dialogRef.current?.querySelector<HTMLButtonElement>(
+        'form button[type="submit"]:not(:disabled)',
+      )
+      if (submit) {
+        event.preventDefault()
+        event.stopPropagation()
+        submit.click()
+      }
       return
     }
     if (event.key !== 'Tab') return

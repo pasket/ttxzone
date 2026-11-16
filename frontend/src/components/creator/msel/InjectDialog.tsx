@@ -1144,7 +1144,8 @@ export function InjectDialog({
         </section>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-panel-line pt-4">
+      {/* Stays in view while a long step scrolls (as in the needs dialogs). */}
+      <div className="sticky -bottom-4 -mx-4 -mb-4 flex flex-wrap items-center justify-between gap-2 border-t border-panel-line bg-paper-surface-raised px-4 py-3 dark:bg-surface-raised">
         <div>
           {isNew && !readOnly && (
             <button

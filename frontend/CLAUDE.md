@@ -84,6 +84,8 @@ Plain `@testing-library/react` `render`/`screen`/`fireEvent` — no `user-event`
 
 ## Forms
 
+- **A form dialog asks before discarding**: `hooks/useDiscardGuard(onClose)` (`touch` on the form's `onChange`, `requestClose` for Escape, the backdrop and Cancel) + `common/DiscardConfirm` in the footer in place of its buttons — the Library's form dialogs; `needs/RowDialog` and `aar/ActionDialog` do the same with their own dirty check. A new dialog holding typed text follows it.
+- **Keyboard**: Escape closes a dialog, **Cmd/Ctrl+Enter** commits its form (`common/Modal` clicks the form's enabled submit button), and **/** takes the focus to the list's search (`common/TableToolbar`, not while typing or under a dialog). None in the Control center: no key releases an inject or pauses.
 - **Unsaved changes**: `useUnsavedChangesWarning(dirty)` (`lib/unsavedChanges.ts`) adds `beforeunload` and confirms same-origin link clicks in the capture phase (`common.unsavedChangesConfirm`); non-link navigation uses `useConfirmDiscardChanges()`.
 - **Edit modes live in the URL** (`hooks/useEditModeParam.ts`, `?edit=1`) so reload/links open them and Back leaves them.
 - **Optional fields** get a muted suffix: `{t('…Label')} <span className={optionalSuffix}>({t('common.optionalSuffix')})</span>`. Conditionally required fields stay plain.

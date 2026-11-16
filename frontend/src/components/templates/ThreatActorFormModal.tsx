@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { useDiscardGuard } from '../../hooks/useDiscardGuard'
 import { useApiResource } from '../../hooks/useApiResource'
 import { btnPrimary, btnSecondary, linkAccent } from '../../lib/buttonStyles'
 import type { LibraryLevel } from '../../lib/libraryLevels'
@@ -17,6 +18,7 @@ import {
 import type { AttackCatalog, SystemThreatActorCatalog, ThreatActorTechnique } from '../../lib/types'
 import { ButtonSpinner } from '../common/ButtonSpinner'
 import { Modal } from '../common/Modal'
+import { DiscardConfirm } from '../common/DiscardConfirm'
 import { AttackPicker } from '../creator/msel/AttackPicker'
 import { Field, ListInput, TextArea } from '../creator/needs/fields'
 import { CopiedFrom } from './ActorFormModal'
@@ -168,6 +170,7 @@ export function ThreatActorFormModal({
   onClose: () => void
 }) {
   const { t, i18n } = useTranslation()
+  const guard = useDiscardGuard(onClose)
   const [values, setValues] = useState(initial)
   const [busy, setBusy] = useState(false)
   const [picking, setPicking] = useState(false)
@@ -186,8 +189,8 @@ export function ThreatActorFormModal({
   }
 
   return (
-    <Modal titleId="threat-actor-form-title" onClose={onClose} size="lg">
-      <form onSubmit={submit} className="space-y-4">
+    <Modal titleId="threat-actor-form-title" onClose={guard.requestClose} size="lg">
+      <form onSubmit={submit} className="space-y-4" onChange={guard.touch}>
         <h2
           id="threat-actor-form-title"
           className="text-balance text-lg font-semibold tracking-tight"
@@ -295,16 +298,20 @@ export function ThreatActorFormModal({
           )}
         </section>
 
-        <div className="flex justify-end gap-2">
-          <button type="button" onClick={onClose} className={btnSecondary}>
-            {readOnly ? t('templates.threats.close') : t('common.confirmButton.cancel')}
-          </button>
-          {!readOnly && (
-            <button type="submit" disabled={busy || !values.name.trim()} className={btnPrimary}>
-              {busy ? <ButtonSpinner /> : t('common.confirmButton.save')}
+        {guard.confirming ? (
+          <DiscardConfirm onKeep={guard.keep} onDiscard={guard.discard} />
+        ) : (
+          <div className="flex justify-end gap-2">
+            <button type="button" onClick={guard.requestClose} className={btnSecondary}>
+              {readOnly ? t('templates.threats.close') : t('common.confirmButton.cancel')}
             </button>
-          )}
-        </div>
+            {!readOnly && (
+              <button type="submit" disabled={busy || !values.name.trim()} className={btnPrimary}>
+                {busy ? <ButtonSpinner /> : t('common.confirmButton.save')}
+              </button>
+            )}
+          </div>
+        )}
       </form>
       {picking && catalog && (
         <ThreatActorTechniquesPicker

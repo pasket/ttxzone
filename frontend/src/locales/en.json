@@ -49,6 +49,7 @@
     "toolbar": {
       "searchLabel": "Search",
       "searchPlaceholder": "Search…",
+      "searchShortcut": "Search (press / to come here)",
       "setNewestFirst": "Sort newest first",
       "setOldestFirst": "Sort oldest first",
       "setAToZ": "Sort A to Z",
@@ -4564,6 +4565,7 @@
       "intro": "Preview: the report starts from the session once it has been held. This is what it will hold and who fills each part.",
       "start": "Start the report from the session",
       "waiting": "Available once the session has started.",
+      "toControl": "Go to the Control center",
       "readerNote": "The exercise's Planners and Lead Evaluator write it; you'll read it here.",
       "howTitle": "How it's filled",
       "steps": {
@@ -4655,7 +4657,7 @@
       "note": "Status note"
     },
     "cancel": "Cancel",
-    "apply": "Apply",
+    "apply": "Save",
     "retest": {
       "title": "Where is {{code}} re-tested?",
       "intro": "A later exercise of the organization that tests this action again, and optionally the objective that does. Linking it doesn’t reopen the report.",

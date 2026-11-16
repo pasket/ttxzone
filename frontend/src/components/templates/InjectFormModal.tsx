@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { useDiscardGuard } from '../../hooks/useDiscardGuard'
 import {
   btnNeutralIconGhost,
   btnPrimary,
@@ -35,6 +36,7 @@ import type {
 } from '../../lib/types'
 import { ButtonSpinner } from '../common/ButtonSpinner'
 import { Modal } from '../common/Modal'
+import { DiscardConfirm } from '../common/DiscardConfirm'
 import {
   CheckboxGroup,
   Field,
@@ -73,6 +75,7 @@ export function InjectFormModal({
   onClose: () => void
 }) {
   const { t, i18n } = useTranslation()
+  const guard = useDiscardGuard(onClose)
   const spanish = i18n.language.startsWith('es')
   const [values, setValues] = useState(initial)
   const [busy, setBusy] = useState(false)
@@ -144,8 +147,8 @@ export function InjectFormModal({
   }
 
   return (
-    <Modal titleId="inject-form-title" onClose={onClose} size="lg">
-      <form onSubmit={submit} className="space-y-4">
+    <Modal titleId="inject-form-title" onClose={guard.requestClose} size="lg">
+      <form onSubmit={submit} className="space-y-4" onChange={guard.touch}>
         <h2 id="inject-form-title" className="text-balance text-lg font-semibold tracking-tight">
           {title}
         </h2>
@@ -581,16 +584,20 @@ export function InjectFormModal({
           </fieldset>
         </fieldset>
 
-        <div className="flex justify-end gap-2">
-          <button type="button" onClick={onClose} className={btnSecondary}>
-            {readOnly ? t('templates.threats.close') : t('common.confirmButton.cancel')}
-          </button>
-          {!readOnly && (
-            <button type="submit" disabled={busy || !values.title.trim()} className={btnPrimary}>
-              {busy ? <ButtonSpinner /> : t('common.confirmButton.save')}
+        {guard.confirming ? (
+          <DiscardConfirm onKeep={guard.keep} onDiscard={guard.discard} />
+        ) : (
+          <div className="flex justify-end gap-2">
+            <button type="button" onClick={guard.requestClose} className={btnSecondary}>
+              {readOnly ? t('templates.threats.close') : t('common.confirmButton.cancel')}
             </button>
-          )}
-        </div>
+            {!readOnly && (
+              <button type="submit" disabled={busy || !values.title.trim()} className={btnPrimary}>
+                {busy ? <ButtonSpinner /> : t('common.confirmButton.save')}
+              </button>
+            )}
+          </div>
+        )}
       </form>
     </Modal>
   )

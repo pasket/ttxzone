@@ -50,8 +50,8 @@ function OpenIcon() {
       strokeLinejoin="round"
       aria-hidden="true"
     >
-      <path d="M14 4h6v6M20 4l-9 9" />
-      <path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" />
+      {/* An arrow in: it opens here, not in another tab. */}
+      <path d="M5 12h14M13 6l6 6-6 6" />
     </svg>
   )
 }
@@ -242,7 +242,8 @@ export function ExerciseList({
                       <button
                         type="button"
                         onClick={() => open(ttx)}
-                        className={`text-left text-sm ${linkAccent}`}
+                        // Its name is the way in: it says so on hover and focus.
+                        className={`rounded-sm text-left text-sm hover:underline focus-visible:underline ${linkAccent}`}
                       >
                         <CodeRef code={ttx.code} title={ttx.name} variant="stacked" strong wrap />
                       </button>

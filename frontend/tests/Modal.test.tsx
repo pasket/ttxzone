@@ -99,6 +99,33 @@ describe('Modal', () => {
     expect(document.activeElement).toBe(opener)
   })
 
+  it('hands focus back even when a field inside took it on opening', () => {
+    function WithAutoFocus() {
+      const [open, setOpen] = useState(false)
+      return (
+        <>
+          <button type="button" onClick={() => setOpen(true)}>
+            Edit
+          </button>
+          {open && (
+            <Modal titleId="af-title" onClose={() => setOpen(false)}>
+              <h2 id="af-title">Edit actor</h2>
+              <input aria-label="Name" autoFocus />
+            </Modal>
+          )}
+        </>
+      )
+    }
+    render(<WithAutoFocus />)
+    const opener = screen.getByRole('button', { name: 'Edit' })
+    opener.focus()
+    fireEvent.click(opener)
+    expect(screen.getByLabelText('Name')).toHaveFocus()
+
+    fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' })
+    expect(document.activeElement).toBe(opener)
+  })
+
   it('leaves focus where a caller moved it on close', () => {
     render(<Opener moveFocusOnClose />)
     const opener = screen.getByRole('button', { name: 'Open' })

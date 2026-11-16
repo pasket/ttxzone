@@ -2,7 +2,15 @@ import { useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { runLabel } from '../../lib/aar'
-import { badgeNeutral, btnPrimary, inputCompact, segmentedControl } from '../../lib/buttonStyles'
+import { Link } from 'react-router-dom'
+
+import {
+  badgeNeutral,
+  btnPrimary,
+  inputCompact,
+  linkAccent,
+  segmentedControl,
+} from '../../lib/buttonStyles'
 import { panelTableHeadRow, panelTh } from '../../lib/panelStyles'
 import type { AarPreview as AarPreviewData, RatingLevel } from '../../lib/types'
 import { ButtonSpinner } from '../common/ButtonSpinner'
@@ -22,11 +30,14 @@ export function AarPreview({
   busy,
   error,
   onStart,
+  controlTo,
 }: {
   preview: AarPreviewData
   busy: boolean
   error: string | null
   onStart: (runId: string | null) => void
+  /** The exercise's Control center, for whoever runs its session. */
+  controlTo?: string
 }) {
   const { t, i18n } = useTranslation()
   const steps = ['session', 'start', 'write', 'final'] as const
@@ -72,6 +83,14 @@ export function AarPreview({
         {preview.can_edit && !preview.session_started && (
           <p id="aar-start-waiting" className={`text-sm ${muted}`}>
             {t('aar.preview.waiting')}
+            {controlTo && (
+              <>
+                {' '}
+                <Link to={controlTo} className={linkAccent}>
+                  {t('aar.preview.toControl')}
+                </Link>
+              </>
+            )}
           </p>
         )}
         {!preview.can_edit && <p className={`text-sm ${muted}`}>{t('aar.preview.readerNote')}</p>}

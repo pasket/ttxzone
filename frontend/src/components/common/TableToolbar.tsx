@@ -270,6 +270,27 @@ export function TableToolbar({
 }) {
   const { t } = useTranslation()
   const searchInputId = useId()
+  // "/" brings the keyboard to the search, from anywhere that isn't typing.
+  const searchRef = useRef<HTMLInputElement>(null)
+  useEffect(() => {
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key !== '/' || event.defaultPrevented) return
+      if (event.metaKey || event.ctrlKey || event.altKey) return
+      const target = event.target
+      if (
+        target instanceof HTMLElement &&
+        (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName))
+      )
+        return
+      // Behind an open dialog the list isn't the place to type.
+      if (document.querySelector('[role="dialog"]')) return
+      if (!searchRef.current) return
+      event.preventDefault()
+      searchRef.current.focus()
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [])
   const [rawSearch, setRawSearch] = useState(search)
 
   // Mirror an externally-driven `search` change back into the uncommitted
@@ -325,6 +346,9 @@ export function TableToolbar({
           {t('common.toolbar.searchLabel')}
         </label>
         <input
+          ref={searchRef}
+          aria-keyshortcuts="/"
+          title={t('common.toolbar.searchShortcut')}
           name="q"
           autoComplete="off"
           id={searchInputId}

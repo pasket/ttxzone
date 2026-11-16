@@ -49,6 +49,7 @@
     "toolbar": {
       "searchLabel": "Buscar",
       "searchPlaceholder": "Buscar…",
+      "searchShortcut": "Buscar (pulsa / para venir aquí)",
       "setNewestFirst": "Ordenar por más recientes",
       "setOldestFirst": "Ordenar por más antiguos",
       "setAToZ": "Ordenar de A a Z",
@@ -4564,6 +4565,7 @@
       "intro": "Vista previa: el informe parte de la sesión una vez celebrada. Esto es lo que contendrá y quién rellena cada parte.",
       "start": "Iniciar el informe desde la sesión",
       "waiting": "Disponible cuando la sesión haya empezado.",
+      "toControl": "Ir al Centro de control",
       "readerNote": "Lo escriben los Planificadores y el Lead Evaluator del ejercicio; tú lo leerás aquí.",
       "howTitle": "Cómo se rellena",
       "steps": {
@@ -4655,7 +4657,7 @@
       "note": "Nota de estado"
     },
     "cancel": "Cancelar",
-    "apply": "Aplicar",
+    "apply": "Guardar",
     "retest": {
       "title": "¿Dónde se vuelve a probar {{code}}?",
       "intro": "Un ejercicio posterior de la organización que vuelve a probar esta acción y, si quieres, el objetivo que lo hace. Enlazarlo no reabre el informe.",

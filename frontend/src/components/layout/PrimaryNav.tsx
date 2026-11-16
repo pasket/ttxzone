@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
 import { useActiveSections } from '../../hooks/useActiveSections'
 import { useDocumentAttention } from '../../hooks/useDocumentAttention'
@@ -34,14 +34,20 @@ interface SectionMenu {
   linkTo: (s: SectionDef) => string
   /** By section key: the issues to fix there before it moves on (Creator). */
   pending?: Partial<Record<string, number>>
+  /** Whose sections these are, where the page itself doesn't say (Creator's
+   * list of exercises, a new one): the exercise in context. */
+  caption?: string
 }
 
 /** The active module's sections, as the menus link them. */
 function useModuleMenu(): SectionMenu {
   const { sections, base, activeSection, module } = useActiveSections()
-  const { activeTtxId } = useAuth()
+  const { activeTtxId, activeTtx } = useAuth()
+  const { pathname } = useLocation()
   const pending = useDocumentAttention(module === 'creator' ? activeTtxId : null)
-  return { sections, activeSection, linkTo: (s) => hrefFor(module, base, s), pending }
+  const caption =
+    module === 'creator' && pathname.startsWith('/creator/exercises') ? activeTtx?.name : undefined
+  return { sections, activeSection, linkTo: (s) => hrefFor(module, base, s), pending, caption }
 }
 
 /** Desktop Primary Menu of the active module. */
@@ -61,6 +67,7 @@ export function SectionNav({
   activeSection,
   linkTo,
   pending = {},
+  caption,
 }: SectionMenu & { collapsed: boolean; onToggle: () => void }) {
   const { t } = useTranslation()
   const active = sections.find((s) => s.path === activeSection)
@@ -84,6 +91,14 @@ export function SectionNav({
         <div key={block.group ?? index} className="flex flex-col gap-1">
           {index > 0 && (
             <hr aria-hidden="true" className="my-2 border-paper-line dark:border-line" />
+          )}
+          {index === 0 && caption && !collapsed && (
+            <p
+              className="truncate px-3 pb-1 text-xs text-paper-ink/70 dark:text-fg-muted"
+              title={caption}
+            >
+              {caption}
+            </p>
           )}
           {block.sections.map((s) => {
             const isActive = s === active

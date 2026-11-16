@@ -195,4 +195,27 @@ describe('TableToolbar', () => {
     )
     expect(screen.getByRole('menuitemradio', { name: 'Date added' })).toBeInTheDocument()
   })
+
+  it('takes the keyboard to its search on "/", unless something is being typed', () => {
+    render(
+      <>
+        <input aria-label="Elsewhere" />
+        <TableToolbar
+          sortDir="desc"
+          sortBy="created_at"
+          onSortDirChange={vi.fn()}
+          onSortByChange={vi.fn()}
+          search=""
+          onSearchChange={vi.fn()}
+        />
+      </>,
+    )
+    const search = screen.getByLabelText('Search')
+
+    fireEvent.keyDown(screen.getByLabelText('Elsewhere'), { key: '/' })
+    expect(search).not.toHaveFocus()
+
+    fireEvent.keyDown(document.body, { key: '/' })
+    expect(search).toHaveFocus()
+  })
 })

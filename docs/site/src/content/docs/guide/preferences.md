@@ -40,3 +40,11 @@ Deleting your account is in a danger zone at the bottom: it removes your access 
 ## If you've lost your second factor
 
 Use a backup code. Without one, ask an instance administrator to reset it.
+
+## Keyboard
+
+- **Esc** closes a dialog. If you typed something in a form, it asks before discarding it.
+- **Cmd+Enter** (Ctrl+Enter on Windows and Linux) saves the dialog's form.
+- **/** takes you to the search of the list on screen.
+
+The Control center has no shortcuts, so no key can release an inject or pause the session by accident.

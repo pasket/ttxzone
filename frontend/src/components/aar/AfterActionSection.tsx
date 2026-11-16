@@ -62,7 +62,15 @@ type SaveState = 'saved' | 'pending' | 'saving' | 'error' | 'stale'
  * reopened, exported as PDF. The plan's follow-up (status, due date)
  * works in a final report too. Controllers and Program Managers read it.
  * Shared by Creator, the Playground (Lead Evaluator) and Control. */
-export function AfterActionSection({ ttxId }: { ttxId: string }) {
+export function AfterActionSection({
+  ttxId,
+  controlTo,
+}: {
+  ttxId: string
+  /** The exercise's Control center, when whoever reads this runs its
+   * session: offered while the report waits for one. */
+  controlTo?: string
+}) {
   const { t, i18n } = useTranslation()
   const download = useApiDownload()
   const runUndoable = useUndoableAction()
@@ -88,6 +96,15 @@ export function AfterActionSection({ ttxId }: { ttxId: string }) {
   // Removals waiting for their Undo window: autosave holds until it closes.
   const [holding, setHolding] = useState(0)
   const revision = useRef(0)
+  // Starting the report swaps the preview (and its Start button) for the
+  // editor: the focus goes to the page's title instead of being dropped.
+  const headingRef = useRef<HTMLHeadingElement>(null)
+  const started = useRef(false)
+  useEffect(() => {
+    if (state !== 'ready' || !started.current) return
+    started.current = false
+    headingRef.current?.focus()
+  }, [state])
   const dirty = useRef(false)
   // Bumped on every edit: a save only clears `dirty` if nothing changed
   // while it was in flight.
@@ -195,6 +212,7 @@ export function AfterActionSection({ ttxId }: { ttxId: string }) {
       setReport(created)
       setSaved(created)
       setState('ready')
+      started.current = true
     } catch (err) {
       setError(err instanceof ApiError ? err.message : t('auth.common.genericError'))
     } finally {
@@ -231,6 +249,7 @@ export function AfterActionSection({ ttxId }: { ttxId: string }) {
           busy={busy}
           error={error}
           onStart={(runId) => void create(runId)}
+          controlTo={controlTo}
         />
         <RetestsPanel ttxId={ttxId} />
       </div>
@@ -272,6 +291,7 @@ export function AfterActionSection({ ttxId }: { ttxId: string }) {
     <div className="space-y-6">
       <SectionHeader
         title={t('aar.title')}
+        headingRef={headingRef}
         action={
           <div className="flex flex-wrap items-center gap-2">
             <span

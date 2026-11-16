@@ -261,6 +261,9 @@ function AdminSectionOutlet() {
 
 function CreatorSectionOutlet() {
   const { ttxId, section } = useParams<{ ttxId?: string; section?: string }>()
+  const { ttxList } = useAuth()
+  // A Planner who also runs the session gets the way to it from the report.
+  const controls = ttxList.some((ttx) => ttx.id === ttxId && ttx.controls)
   if (section === 'exercise') {
     // Keyed by the exercise so a ContextBar switch discards an open edit form.
     return (
@@ -295,7 +298,11 @@ function CreatorSectionOutlet() {
   if (section === 'after-action' && ttxId) {
     return (
       <div className="p-6">
-        <AfterActionSection key={ttxId} ttxId={ttxId} />
+        <AfterActionSection
+          key={ttxId}
+          ttxId={ttxId}
+          controlTo={controls ? `/control/${ttxId}/dashboard` : undefined}
+        />
       </div>
     )
   }
