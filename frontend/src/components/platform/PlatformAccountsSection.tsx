@@ -695,17 +695,20 @@ export function PlatformAccountsSection() {
               <thead>
                 <tr className={panelTableHeadRow}>
                   <th scope="col" className={`${panelTh} w-10`}>
-                    <input
-                      type="checkbox"
-                      checked={allOnPage}
-                      ref={(input) => {
-                        if (input) input.indeterminate = someOnPage && !allOnPage
-                      }}
-                      disabled={selectable.length === 0}
-                      onChange={(e) => toggle(selectable, e.target.checked)}
-                      aria-label={t('platform.accounts.bulk.selectPage')}
-                      className="h-4 w-4 accent-accent-fg"
-                    />
+                    {/* The label is the target: 32px around a 16px box. */}
+                    <label className="-m-2 inline-flex cursor-pointer p-2">
+                      <input
+                        type="checkbox"
+                        checked={allOnPage}
+                        ref={(input) => {
+                          if (input) input.indeterminate = someOnPage && !allOnPage
+                        }}
+                        disabled={selectable.length === 0}
+                        onChange={(e) => toggle(selectable, e.target.checked)}
+                        aria-label={t('platform.accounts.bulk.selectPage')}
+                        className="h-4 w-4 accent-accent-fg"
+                      />
+                    </label>
                   </th>
                   <th scope="col" className={panelTh}>
                     {t('platform.accounts.columns.account')}
@@ -741,13 +744,15 @@ export function PlatformAccountsSection() {
                     >
                       <td className={panelTd}>
                         {account.user_id !== user?.id && (
-                          <input
-                            type="checkbox"
-                            checked={selected.has(account.user_id)}
-                            onChange={(e) => toggle([account], e.target.checked)}
-                            aria-label={t('platform.accounts.bulk.selectOne', { name })}
-                            className="h-4 w-4 accent-accent-fg"
-                          />
+                          <label className="-m-2 inline-flex cursor-pointer p-2">
+                            <input
+                              type="checkbox"
+                              checked={selected.has(account.user_id)}
+                              onChange={(e) => toggle([account], e.target.checked)}
+                              aria-label={t('platform.accounts.bulk.selectOne', { name })}
+                              className="h-4 w-4 accent-accent-fg"
+                            />
+                          </label>
                         )}
                       </td>
                       <td className={panelTd}>

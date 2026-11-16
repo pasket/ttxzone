@@ -94,7 +94,7 @@ Nested `CLAUDE.md` files load automatically when working in their directory. Fil
 | Outgoing email (SMTP, Platform → Email, outbox, templates, `DATA_ENCRYPTION_KEY`) | `docs/architecture/email.md` |
 | Single sign-on (OIDC, Entra ID, Platform → Single sign-on, linked accounts, provider MFA, `PUBLIC_BASE_URL`) | `docs/architecture/sso.md` |
 | Invitation tokens, access requests, Enrollments | `docs/features/invitations-and-enrollment.md` |
-| Admin → Organization / Users and roles / Allowed Domains, dashboards | `docs/features/admin.md` |
+| Admin → Organization / Users and roles / Allowed domains, dashboards | `docs/features/admin.md` |
 | Preferences, logout | `docs/features/preferences.md` |
 | Creator → Exercise, exercise team matrix, Lead Planner | `docs/features/creator-exercise.md` |
 | Rooms (several teams at once, main room, inject targeting, moving Players) | `docs/features/rooms.md` |

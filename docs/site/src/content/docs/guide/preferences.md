@@ -5,6 +5,8 @@ description: Preferences, security and privacy.
 
 Open **Preferences** from the avatar menu.
 
+**Back to your workspace**, above each page, returns to where you were working; so does the logo.
+
 ## General
 
 Language, avatar, and the light or dark theme. The theme is saved per device.
@@ -15,7 +17,7 @@ The organization, exercise and role you land on after signing in.
 
 ## Security
 
-- **Second factor.** Enroll an authenticator app, or use a code by email if the instance sends email. With both, you choose the preferred one. Some roles must use an authenticator app, and the page says so.
+- **Second factor.** Enroll an authenticator app, or use a code by email if the instance sends email. With both, you choose the preferred one. Some roles must use an authenticator app, and the page says so. **Disable two-factor authentication** asks you to confirm before it does anything.
 - **Backup codes.** Keep them safe: they get you in without your phone. Each works once.
 - **Password.** Changing it ends your other sessions.
 - **Active sessions.** See where you're signed in, and end sessions.

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 
 import { useApiResource } from '../../hooks/useApiResource'
 import { useAuth } from '../../hooks/useAuth'
@@ -17,7 +17,9 @@ import {
   inputBase,
   inputCompact,
   inputDisabled,
+  linkAccent,
 } from '../../lib/buttonStyles'
+import { codeRefText } from '../../lib/codeRef'
 import type { ContextRole } from '../../lib/moduleAccess'
 import {
   panelActionsTh,
@@ -49,6 +51,7 @@ import { EditButton } from '../common/EditButton'
 import { HelpText } from '../common/HelpText'
 import { IconButton } from '../common/IconButton'
 import { LastLogin } from '../common/LastLogin'
+import { CodeRef } from '../common/CodeRef'
 import { Modal } from '../common/Modal'
 import { Pagination } from '../common/Pagination'
 import { PersonCombobox } from '../common/PersonCombobox'
@@ -295,33 +298,37 @@ export function AdminUsersAndRolesSection() {
 
   if (adding) {
     return (
-      <AddPersonForm
-        orgBase={orgBase}
-        availableTags={availableTags}
-        initialEmail={addingEmail}
-        suggestions={newcomers.data?.items ?? []}
-        invitesOutside={invitesOutside}
-        onClose={() => {
-          setAdding(false)
-          setAddingEmail('')
-        }}
-        onAdded={(outcome) => {
-          setAdding(false)
-          setAddingEmail('')
-          if (outcome === 'invited') {
-            invitations.refetch()
-            return
-          }
-          newcomers.refetch()
-          // Newest first, so the new row is on page 1.
-          if (page === 1 && sortDir === 'desc' && sortBy === 'created_at') reload()
-          else {
-            setSortBy('created_at')
-            setSortDir('desc')
-          }
-          void refresh()
-        }}
-      />
+      <div className="space-y-6">
+        {/* The form replaces the list, not the page: its title stays. */}
+        <SectionHeader title={t('admin.usersAndRoles.title')} />
+        <AddPersonForm
+          orgBase={orgBase}
+          availableTags={availableTags}
+          initialEmail={addingEmail}
+          suggestions={newcomers.data?.items ?? []}
+          invitesOutside={invitesOutside}
+          onClose={() => {
+            setAdding(false)
+            setAddingEmail('')
+          }}
+          onAdded={(outcome) => {
+            setAdding(false)
+            setAddingEmail('')
+            if (outcome === 'invited') {
+              invitations.refetch()
+              return
+            }
+            newcomers.refetch()
+            // Newest first, so the new row is on page 1.
+            if (page === 1 && sortDir === 'desc' && sortBy === 'created_at') reload()
+            else {
+              setSortBy('created_at')
+              setSortDir('desc')
+            }
+            void refresh()
+          }}
+        />
+      </div>
     )
   }
 
@@ -587,7 +594,7 @@ export function AdminUsersAndRolesSection() {
                           setAddingEmail(account.email)
                           setAdding(true)
                         }}
-                        className={btnSecondary}
+                        className={`${btnSecondary} whitespace-nowrap`}
                       >
                         {t('admin.usersAndRoles.newcomers.giveRole')}
                       </button>
@@ -729,6 +736,14 @@ function TagsFieldset({
       <legend className="mb-2 text-sm font-semibold text-paper-ink dark:text-fg">
         {t('admin.usersAndRoles.sectionTags')}
       </legend>
+      {availableTags.length === 0 && (
+        <p className="text-sm text-paper-ink/60 dark:text-fg-muted">
+          {t('admin.organization.noTagsYet')}{' '}
+          <Link to="/admin/library/tags?tab=organization" className={linkAccent}>
+            {t('common.manageTags')}
+          </Link>
+        </p>
+      )}
       <TagAssignmentField
         availableTags={availableTags}
         selectedTagIds={selected}
@@ -1075,7 +1090,7 @@ function EditPersonModal({
               ((r.exerciseRole === 'evaluator' && e.evaluates) ||
                 (r.exerciseRole === 'observer' && e.observes))),
         )
-        .map((e) => `${e.code} ${e.name}`),
+        .map((e) => codeRefText(e.code, e.name)),
     }))
     .filter((c) => c.codes.length > 0)
   const initialTags = new Set(member.tags.map((tag) => tag.id))
@@ -1159,7 +1174,7 @@ function EditPersonModal({
               <p key={c.role}>
                 {t('admin.usersAndRoles.cascadeWarning', {
                   role: c.role,
-                  exercises: c.codes.join(', '),
+                  exercises: c.codes.join('; '),
                 })}
               </p>
             ))}
@@ -1262,7 +1277,7 @@ function DeletePersonModal({
     }
   }
 
-  const inUse = (exercises ?? []).map((e) => `${e.code} ${e.name}`)
+  const inUse = exercises ?? []
   const alreadyDisabled = member.disabled && inUse.length > 0
 
   return (
@@ -1287,8 +1302,10 @@ function DeletePersonModal({
               )}
             </p>
             <ul className="list-disc space-y-0.5 pl-5">
-              {inUse.map((code) => (
-                <li key={code}>{code}</li>
+              {inUse.map((e) => (
+                <li key={e.code}>
+                  <CodeRef code={e.code} title={e.name} />
+                </li>
               ))}
             </ul>
           </div>

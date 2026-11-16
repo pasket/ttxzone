@@ -20,6 +20,7 @@ import {
 import { Modal } from '../common/Modal'
 import { RadioCards } from '../common/RadioCards'
 import { SectionHeader } from '../common/SectionHeader'
+import { ExerciseDocumentsDialog } from './ExerciseDocumentsDialog'
 
 const mutedClass = 'text-sm text-pretty text-paper-ink/70 dark:text-fg-muted'
 
@@ -67,6 +68,23 @@ function JoinIcon() {
   )
 }
 
+function DocumentsIcon() {
+  return (
+    <svg
+      className="h-4 w-4"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M12 4v11M7 10l5 5 5-5M5 20h14" />
+    </svg>
+  )
+}
+
 const EXERCISES_PAGE_SIZE = 20
 
 /** Admin -> Exercises: the organization's whole exercise portfolio, for
@@ -82,6 +100,7 @@ export function AdminExercisesSection() {
   const { page, setPage, sortDir, sortBy, search } = useTableUrlState()
   const [deleting, setDeleting] = useState<TTXRead | null>(null)
   const [joining, setJoining] = useState<TTXRead | null>(null)
+  const [documentsOf, setDocumentsOf] = useState<TTXRead | null>(null)
   const [archiving, setArchiving] = useState<TTXRead | null>(null)
   const [archivedFilter] = useArchivedFilter()
   const params = new URLSearchParams({
@@ -121,20 +140,34 @@ export function AdminExercisesSection() {
         empty={<p className={mutedClass}>{t('admin.exercises.empty')}</p>}
         canOpen={(ttx) => actsAs(ttx, 'planner')}
         // No seat on it yet: oversight only.
-        action={(ttx) =>
-          ttx.role === 'program_manager' && (
+        action={(ttx) => (
+          <>
             <button
               type="button"
-              onClick={() => setJoining(ttx)}
-              aria-label={t('admin.exercises.joinLabel', { name: ttx.name })}
-              title={t('admin.exercises.joinLabel', { name: ttx.name })}
+              onClick={() => setDocumentsOf(ttx)}
+              aria-label={t('admin.exercises.documents.label', { name: ttx.name })}
+              title={t('admin.exercises.documents.label', { name: ttx.name })}
               className={btnNeutralIconGhost}
             >
-              <JoinIcon />
+              <DocumentsIcon />
             </button>
-          )
-        }
+            {ttx.role === 'program_manager' && (
+              <button
+                type="button"
+                onClick={() => setJoining(ttx)}
+                aria-label={t('admin.exercises.joinLabel', { name: ttx.name })}
+                title={t('admin.exercises.joinLabel', { name: ttx.name })}
+                className={btnNeutralIconGhost}
+              >
+                <JoinIcon />
+              </button>
+            )}
+          </>
+        )}
       />
+      {documentsOf && (
+        <ExerciseDocumentsDialog exercise={documentsOf} onClose={() => setDocumentsOf(null)} />
+      )}
       {archiving && (
         <ArchiveExerciseModal
           exercise={archiving}

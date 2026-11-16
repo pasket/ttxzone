@@ -133,7 +133,7 @@ describe('AdminUsersAndRolesSection', () => {
     fireEvent.click(dialog.getByRole('checkbox', { name: /^Evaluator/ }))
     fireEvent.click(dialog.getByRole('checkbox', { name: /^Observer/ }))
     expect(
-      await dialog.findByText('Removing Observer also takes them off: TTX-2026-01 Drill.'),
+      await dialog.findByText('Removing Observer also takes them off: TTX-2026-01 | Drill.'),
     ).toBeInTheDocument()
     fireEvent.click(dialog.getByRole('button', { name: 'Save' }))
 
@@ -200,7 +200,8 @@ describe('AdminUsersAndRolesSection', () => {
       await screen.findByRole('button', { name: 'Remove Bea Watcher from the organization' }),
     )
     const dialog = within(screen.getByRole('dialog'))
-    expect(await dialog.findByText('TTX-2026-01 Drill')).toBeInTheDocument()
+    expect(await dialog.findByText('TTX-2026-01')).toBeInTheDocument()
+    expect(dialog.getByText('Drill')).toBeInTheDocument()
     fireEvent.change(dialog.getByLabelText('Type Bea Watcher to confirm'), {
       target: { value: 'Bea Watcher' },
     })

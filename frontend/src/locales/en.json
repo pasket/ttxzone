@@ -3388,7 +3388,7 @@
       "usersAndRoles": "Users and roles",
       "exercises": "Exercises",
       "programManagers": "Exercise Program Managers",
-      "settings": "Allowed Domains",
+      "settings": "Allowed domains",
       "planners": "Exercise Planning Team",
       "library": "Library",
       "improvementPlan": "Improvement plan"
@@ -3582,6 +3582,14 @@
       "intro": "Every exercise in {{organization}}, whoever plans it. You can delete any of them. You design only the ones whose planning and control team you're on: to work on another, join it yourself or ask its Lead Planner to add you.",
       "empty": "The organization has no exercises yet. An Exercise Planner creates them in the Creator.",
       "joinLabel": "Join {{name}}",
+      "documents": {
+        "label": "Documents of {{name}}",
+        "title": "Documents",
+        "hint": "Each one downloads as a PDF. A document that hasn’t been written yet says so.",
+        "needs": "Needs analysis",
+        "msel": "MSEL",
+        "report": "After-action report"
+      },
       "joinTitle": "Join {{name}}",
       "joinDescription": "Take a seat on this exercise yourself, from your roles in the organization. Its team can change your functions later.",
       "seatLegend": "Join as",
@@ -3648,6 +3656,7 @@
       "tooManySignIns": "Too many sign-in attempts. Wait 15 minutes and try again.",
       "accountSuspended": "This account is suspended on this platform. Contact its administrator.",
       "forgotPassword": "Forgot your password?",
+      "forgotPasswordNoEmail": "Forgot your password? Ask your instance administrator to reset it.",
       "emailCodeInstructions": "We sent a 6-digit code to {{address}}. It works for 10 minutes.",
       "emailCodeSending": "Sending a code to your email…",
       "useEmailCode": "Send me a code by email instead",
@@ -3702,6 +3711,7 @@
       "disableTitle": "Two-factor authentication",
       "disablePasswordLabel": "Confirm your password",
       "disableButton": "Disable two-factor authentication",
+      "disableConfirm": "You will sign in without a second factor until you set it up again.",
       "disabled": "Two-factor authentication has been disabled."
     },
     "changePassword": {
@@ -3870,6 +3880,7 @@
   "account": {
     "settings": {
       "navTitle": "Preferences",
+      "backToWorkspace": "Back to your workspace",
       "generalTitle": "General",
       "profileTitle": "Profile",
       "appearanceTitle": "Appearance",

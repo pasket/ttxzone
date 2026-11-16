@@ -195,7 +195,7 @@ export const breadcrumbSeparator = 'shrink-0 select-none text-paper-ink/30 dark:
 // inline-flex so the pill can hold a leading icon plus a text node; the
 // text child needs its own `truncate min-w-0`, the icon `shrink-0`.
 const contextChip =
-  'inline-flex h-8 max-w-[11rem] shrink-0 items-center gap-1.5 rounded-full border border-paper-line px-3 text-sm font-medium dark:border-line'
+  'inline-flex h-8 max-w-[13rem] shrink-0 items-center gap-1.5 rounded-full border border-paper-line px-3 text-sm font-medium dark:border-line'
 
 /** Wraps the Role <select> in the same pill as the static Role badge --
  * the border/hover/focus treatment lives here so the role icon can sit

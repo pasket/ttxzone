@@ -3582,6 +3582,14 @@
       "intro": "Todos los ejercicios de {{organization}}, los planifique quien los planifique. Puedes borrar cualquiera. Solo diseñas aquellos en cuyo equipo de planificación y control estás: para trabajar en otro, únete tú o pide a su Planificador principal que te añada.",
       "empty": "La organización aún no tiene ejercicios. Los crea un Planificador desde Creator.",
       "joinLabel": "Unirte a {{name}}",
+      "documents": {
+        "label": "Documentos de {{name}}",
+        "title": "Documentos",
+        "hint": "Cada uno se descarga como PDF. Si un documento aún no se ha escrito, te lo dice.",
+        "needs": "Análisis de necesidades",
+        "msel": "MSEL",
+        "report": "Informe posterior"
+      },
       "joinTitle": "Unirte a {{name}}",
       "joinDescription": "Ocupa tú mismo un puesto en este ejercicio, según tus roles en la organización. Su equipo puede cambiar después tus funciones.",
       "seatLegend": "Unirte como",
@@ -3648,6 +3656,7 @@
       "tooManySignIns": "Demasiados intentos de inicio de sesión. Espera 15 minutos y vuelve a intentarlo.",
       "accountSuspended": "Esta cuenta está suspendida en esta plataforma. Contacta con su administrador.",
       "forgotPassword": "¿Olvidaste tu contraseña?",
+      "forgotPasswordNoEmail": "¿Olvidaste tu contraseña? Pide al administrador de la instancia que la restablezca.",
       "emailCodeInstructions": "Te hemos enviado un código de 6 dígitos a {{address}}. Funciona durante 10 minutos.",
       "emailCodeSending": "Enviando un código a tu correo…",
       "useEmailCode": "Envíame un código por correo",
@@ -3702,6 +3711,7 @@
       "disableTitle": "Autenticación en dos pasos",
       "disablePasswordLabel": "Confirma tu contraseña",
       "disableButton": "Desactivar autenticación en dos pasos",
+      "disableConfirm": "Iniciarás sesión sin segundo factor hasta que lo configures de nuevo.",
       "disabled": "La autenticación en dos pasos ha sido desactivada."
     },
     "changePassword": {
@@ -3870,6 +3880,7 @@
   "account": {
     "settings": {
       "navTitle": "Preferencias",
+      "backToWorkspace": "Volver a tu espacio de trabajo",
       "generalTitle": "General",
       "profileTitle": "Perfil",
       "appearanceTitle": "Apariencia",

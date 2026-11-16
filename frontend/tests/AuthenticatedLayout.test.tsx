@@ -141,7 +141,7 @@ describe('AuthenticatedLayout primary nav shows the active module sections', () 
       'Organization',
       'Users and roles',
       'Exercises',
-      'Allowed Domains',
+      'Allowed domains',
       'Library',
       'Improvement plan',
     ])

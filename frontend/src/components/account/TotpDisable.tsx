@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { apiFetch, ApiError } from '../../lib/api'
-import { btnDanger, inputBase } from '../../lib/buttonStyles'
+import { btnDanger, btnDangerGhost, btnSecondary, inputBase } from '../../lib/buttonStyles'
 import { useAuth } from '../../hooks/useAuth'
 
 export function TotpDisable() {
@@ -15,6 +15,8 @@ export function TotpDisable() {
   const [error, setError] = useState<string | null>(null)
   const [done, setDone] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  // At rest it's an outlined trigger; the solid red is the confirmation's.
+  const [confirming, setConfirming] = useState(false)
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
@@ -38,6 +40,14 @@ export function TotpDisable() {
     return <p className="text-sm text-paper-ink/60 dark:text-fg-muted">{t('auth.totp.disabled')}</p>
   }
 
+  if (!confirming) {
+    return (
+      <button type="button" onClick={() => setConfirming(true)} className={btnDangerGhost}>
+        {t('auth.totp.disableButton')}
+      </button>
+    )
+  }
+
   return (
     <form onSubmit={handleSubmit} className="max-w-sm space-y-2">
       {withPassword && (
@@ -53,6 +63,7 @@ export function TotpDisable() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className={inputBase}
+            autoFocus
             required
           />
         </>
@@ -62,9 +73,19 @@ export function TotpDisable() {
           {error}
         </p>
       )}
-      <button type="submit" disabled={submitting} className={`w-full ${btnDanger}`}>
-        {t('auth.totp.disableButton')}
-      </button>
+      {!withPassword && (
+        <p className="text-sm text-paper-ink/70 dark:text-fg-muted">
+          {t('auth.totp.disableConfirm')}
+        </p>
+      )}
+      <div className="flex gap-2">
+        <button type="submit" disabled={submitting} className={`flex-1 ${btnDanger}`}>
+          {t('auth.totp.disableButton')}
+        </button>
+        <button type="button" onClick={() => setConfirming(false)} className={btnSecondary}>
+          {t('common.confirmButton.cancel')}
+        </button>
+      </div>
     </form>
   )
 }

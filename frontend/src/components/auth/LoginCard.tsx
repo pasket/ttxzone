@@ -309,6 +309,12 @@ export function LoginCard() {
             </Link>
           )}
         </div>
+        {/* No email to reset it with: say who can. */}
+        {policy.data && !policy.data.password_reset_available && (
+          <p id="login-password-help" className="text-xs text-paper-ink/60 dark:text-fg-muted">
+            {t('auth.login.forgotPasswordNoEmail')}
+          </p>
+        )}
         <input
           id="login-password"
           name="password"

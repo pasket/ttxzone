@@ -17,6 +17,13 @@ function renderSection() {
   )
 }
 
+/** Deleting the organization is offered at the end of the edit page. */
+async function openEditing() {
+  expect(screen.queryByRole('button', { name: 'Delete Acme' })).not.toBeInTheDocument()
+  fireEvent.click(screen.getByRole('button', { name: 'Edit profile' }))
+  await screen.findByRole('heading', { name: 'Edit profile' })
+}
+
 // The dashboard (view mode) does its own fetching and has its own test file
 // -- stub it so these tests' fetch mocks only cover the profile's own
 // requests.
@@ -217,7 +224,9 @@ describe('AdminOrganizationProfileSection', () => {
     await waitFor(() => expect(screen.getByLabelText('Name')).toHaveFocus())
     expect(screen.queryByLabelText('Domain')).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Edit profile' })).not.toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: 'Delete Acme' })).not.toBeInTheDocument()
+    // Deleting the organization lives here, in a panel of its own.
+    expect(screen.getByRole('button', { name: 'Delete Acme' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Back to the profile' })).toBeInTheDocument()
 
     fireEvent.change(screen.getByLabelText('Alias (optional)'), {
       target: { value: 'The Acme Team' },
@@ -403,15 +412,17 @@ describe('AdminOrganizationProfileSection', () => {
   it('opens the delete modal, keeps submit disabled until the typed name matches, then deletes and goes home', async () => {
     const fetchMock = stubApi({
       'GET /organizations/org-1/tags': () => tagsResponse(),
+      'GET /organizations/org-1': () => orgProfileResponse(),
       'DELETE /organizations/org-1': () => jsonResponse(204, undefined),
     })
 
     renderSection()
+    await openEditing()
 
     fireEvent.click(screen.getByRole('button', { name: 'Delete Acme' }))
 
-    expect(screen.getByRole('dialog')).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Delete organization' })).toBeInTheDocument()
+    const dialog = within(screen.getByRole('dialog'))
+    expect(dialog.getByRole('heading', { name: 'Delete organization' })).toBeInTheDocument()
 
     const submitButton = screen.getByRole('button', { name: 'Delete organization' })
     expect(submitButton).toBeDisabled()
@@ -441,10 +452,12 @@ describe('AdminOrganizationProfileSection', () => {
     })
     stubApi({
       'GET /organizations/org-1/tags': () => tagsResponse(),
+      'GET /organizations/org-1': () => orgProfileResponse(),
       'DELETE /organizations/org-1': () => deletePromise,
     })
 
     renderSection()
+    await openEditing()
 
     fireEvent.click(screen.getByRole('button', { name: 'Delete Acme' }))
     fireEvent.change(screen.getByLabelText('Type “Acme” to confirm'), {
@@ -461,14 +474,16 @@ describe('AdminOrganizationProfileSection', () => {
   })
 
   it('closes the delete modal on Cancel without deleting', async () => {
-    const fetchMock = stubApi({ 'GET /organizations/org-1/tags': () => tagsResponse() })
+    const fetchMock = stubApi({
+      'GET /organizations/org-1/tags': () => tagsResponse(),
+      'GET /organizations/org-1': () => orgProfileResponse(),
+    })
 
     renderSection()
+    await openEditing()
 
     fireEvent.click(screen.getByRole('button', { name: 'Delete Acme' }))
-    expect(screen.getByRole('dialog')).toBeInTheDocument()
-
-    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Cancel' }))
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     expect(callsTo(fetchMock, 'DELETE', '/organizations/org-1')).toHaveLength(0)

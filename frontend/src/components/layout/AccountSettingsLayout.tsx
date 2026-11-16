@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { Outlet, useLocation } from 'react-router-dom'
+import { Link, Outlet, useLocation } from 'react-router-dom'
 
 import { LegalPendingBanner } from '../common/LegalPendingBanner'
 import { RouteBoundary } from '../common/RouteBoundary'
@@ -8,6 +8,7 @@ import { useApiResource } from '../../hooks/useApiResource'
 import { useAuth } from '../../hooks/useAuth'
 import { useNavCollapsed } from '../../hooks/useNavCollapsed'
 import { usePageTitle } from '../../hooks/usePageTitle'
+import { linkAccent } from '../../lib/buttonStyles'
 import { hasContextChoices } from '../../lib/moduleAccess'
 import { ACCOUNT_SECTIONS, type SectionDef } from '../../lib/navSections'
 import type { InstancePolicy } from '../../lib/types'
@@ -62,6 +63,11 @@ export function AccountSettingsLayout() {
           {/* Panels below are h2s; the menu already shows the page name
               visually, so the page's h1 is for assistive tech only. */}
           {activeSection && <h1 className="sr-only">{t(activeSection.titleKey)}</h1>}
+          {/* The way out of Preferences: where the logo also leads. */}
+          <Link to="/" className={`mb-4 inline-block text-sm ${linkAccent}`}>
+            <span aria-hidden="true">← </span>
+            {t('account.settings.backToWorkspace')}
+          </Link>
           <RouteBoundary>
             <Outlet />
           </RouteBoundary>

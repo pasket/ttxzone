@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { fireEvent, screen } from '@testing-library/react'
 
 import { render } from './testUtils'
 import { describe, expect, it, vi } from 'vitest'
@@ -78,6 +78,12 @@ describe('AccountSettingsSecurity', () => {
 
     render(<AccountSettingsSecurity />)
 
+    // At rest it's a trigger: the password and the confirmation come after.
+    expect(screen.queryByLabelText('Confirm your password')).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Disable two-factor authentication' }))
+    expect(screen.getByLabelText('Confirm your password')).toHaveFocus()
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+    expect(screen.queryByLabelText('Confirm your password')).not.toBeInTheDocument()
     expect(
       screen.getByRole('button', { name: 'Disable two-factor authentication' }),
     ).toBeInTheDocument()

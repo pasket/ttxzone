@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 import { apiFetch, ApiError } from '../../lib/api'
 import { initials } from '../../lib/initials'
 import {
   btnDanger,
+  btnDangerGhost,
   btnPrimary,
   btnSecondary,
   inputBase,
@@ -26,7 +27,7 @@ import type {
 } from '../../lib/types'
 import { ButtonSpinner } from '../common/ButtonSpinner'
 import { PencilIcon } from '../common/EditButton'
-import { IconButton } from '../common/IconButton'
+import { Panel } from '../common/Panel'
 import { ImageUploadField } from '../common/ImageUploadField'
 import { Modal } from '../common/Modal'
 import { SectionHeader } from '../common/SectionHeader'
@@ -48,7 +49,6 @@ function OrganizationIdentityBand({
   programManagerCount,
   editButtonRef,
   onEdit,
-  onDelete,
 }: {
   organization: OrganizationSummary
   appliedTags: OrganizationTag[]
@@ -57,7 +57,6 @@ function OrganizationIdentityBand({
   programManagerCount: number | null
   editButtonRef?: React.Ref<HTMLButtonElement>
   onEdit?: () => void
-  onDelete?: (event: React.MouseEvent<HTMLButtonElement>) => void
 }) {
   const { t } = useTranslation()
   const name = organization.organization_name
@@ -129,7 +128,7 @@ function OrganizationIdentityBand({
           </dl>
         </div>
       </div>
-      {onEdit && onDelete && (
+      {onEdit && (
         <div className="flex shrink-0 items-center gap-2">
           <button
             ref={editButtonRef}
@@ -140,10 +139,6 @@ function OrganizationIdentityBand({
             <PencilIcon />
             {t('admin.organization.editProfile')}
           </button>
-          <IconButton
-            label={t('admin.organization.deleteOrganizationLabel', { name })}
-            onClick={onDelete}
-          />
         </div>
       )}
     </section>
@@ -179,6 +174,7 @@ export function AdminOrganizationProfileSection() {
   const appliedTagIds = appliedTags.map((tag) => tag.id)
 
   const { editing, openEditing, closeEditing: closeEditParam } = useEditModeParam()
+  const { pathname } = useLocation()
   const [profile, setProfile] = useState<OrganizationProfile | null>(null)
   // Edit mode lives in the URL (?edit=1); the form shows once its data is in.
   const open = editing && profile !== null
@@ -407,7 +403,6 @@ export function AdminOrganizationProfileSection() {
                 programManagerCount={programManagerCount}
                 editButtonRef={editTriggerRef}
                 onEdit={openEditing}
-                onDelete={openDeleteModal}
               />
               {error && (
                 <p className="text-sm text-danger-fg" aria-live="polite">
@@ -421,7 +416,13 @@ export function AdminOrganizationProfileSection() {
 
       {open && profile && (
         <>
-          <SectionHeader title={t('admin.organization.title')} />
+          <div className="flex flex-col gap-2">
+            <Link to={pathname} replace className={`self-start text-sm ${linkAccent}`}>
+              <span aria-hidden="true">← </span>
+              {t('creator.exercise.backToProfile')}
+            </Link>
+            <SectionHeader title={t('admin.organization.title')} />
+          </div>
           <OrganizationIdentityBand
             organization={organization}
             appliedTags={appliedTags}
@@ -567,6 +568,20 @@ export function AdminOrganizationProfileSection() {
               </button>
             </div>
           </form>
+          {/* Apart from the profile's own form, and only here: it takes
+              the organization and everything in it. */}
+          <Panel
+            title={t('admin.organization.deleteTitle')}
+            description={t('admin.organization.deleteWarning', {
+              name: organization.organization_name,
+            })}
+          >
+            <button type="button" onClick={openDeleteModal} className={btnDangerGhost}>
+              {t('admin.organization.deleteOrganizationLabel', {
+                name: organization.organization_name,
+              })}
+            </button>
+          </Panel>
         </>
       )}
 

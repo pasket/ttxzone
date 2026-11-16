@@ -59,4 +59,4 @@ Through `auth_event_service.auth_event` (`auth.log` + activity log + SIEM): `aut
 The backend tests fake the provider in process (`tests/test_oidc.py`'s `FakeProvider`: metadata, token endpoint, an RSA key made in the test). For a real round trip, run a Keycloak container as a generic provider (`OIDC_ALLOW_INSECURE=true` for plain http) or use an Entra test tenant, with `PUBLIC_BASE_URL=http://localhost:5173` (the Vite proxy forwards `/api`).
 
 ## Open points (phase 2 and later)
-Per-organization providers tied to Allowed Domains, email-first discovery, enforcing SSO per organization, mapping Entra groups to org grants, deprovisioning (SCIM, or refusing a disabled user at sign-in), an account in several organizations with different providers.
+Per-organization providers tied to Allowed domains, email-first discovery, enforcing SSO per organization, mapping Entra groups to org grants, deprovisioning (SCIM, or refusing a disabled user at sign-in), an account in several organizations with different providers.
