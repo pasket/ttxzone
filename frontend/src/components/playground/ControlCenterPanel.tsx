@@ -1,5 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
 
 import { ApiError, apiFetch } from '../../lib/api'
 import {
@@ -8,6 +9,7 @@ import {
   btnPrimary,
   btnPrimaryIcon,
   btnSecondary,
+  linkAccent,
 } from '../../lib/buttonStyles'
 import { jumpedOver } from '../../lib/run'
 import type { RunControlInject, RunRead } from '../../lib/types'
@@ -216,16 +218,23 @@ export function ControlCenterPanel({
             <p className="text-sm text-paper-ink/70 dark:text-fg-muted">
               {t(run.state === 'ended' ? 'playground.state.ended' : 'playground.state.stopped')}
             </p>
-            {!archived && (
-              <button
-                type="button"
-                disabled={pending !== null}
-                onClick={() => setAsking({ kind: 'restart' })}
-                className={btnSecondary}
-              >
-                {t('playground.control.restart')}
-              </button>
-            )}
+            <div className="flex flex-wrap items-center gap-3">
+              {/* What comes next: the report is written from this session. */}
+              <Link to={`/control/${ttxId}/after-action`} className={`text-sm ${linkAccent}`}>
+                {t('playground.control.toReport')}
+                <span aria-hidden="true"> →</span>
+              </Link>
+              {!archived && (
+                <button
+                  type="button"
+                  disabled={pending !== null}
+                  onClick={() => setAsking({ kind: 'restart' })}
+                  className={btnSecondary}
+                >
+                  {t('playground.control.restart')}
+                </button>
+              )}
+            </div>
           </div>
         )}
         {running && control && (

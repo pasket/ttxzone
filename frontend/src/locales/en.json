@@ -4281,6 +4281,7 @@
       },
       "runNumber": "Run {{number}}",
       "restart": "Restart exercise",
+      "toReport": "After-action report",
       "endDialog": {
         "title": "End the exercise",
         "description": "The exercise ends for everyone now. There's no going back: it can't be resumed, and the feedback form opens. Finish the hot wash first: from then on the table's decisions and votes, the expected actions and the key questions are frozen.",
@@ -4516,6 +4517,16 @@
     }
   },
   "aar": {
+    "markedFinal": "Marked as final — version {{version}}",
+    "reopened": "Reopened as version {{version}}",
+    "finalHint": "Reopen it to edit; following up the plan doesn’t need it.",
+    "finalDialog": {
+      "title": "Mark the report as final?",
+      "body": "This freezes version {{version}}. Editing it later opens the next one.",
+      "noConclusions": "The conclusions are empty.",
+      "noLevel_one": "This objective has no level yet:",
+      "noLevel_other": "These {{count}} objectives have no level yet:"
+    },
     "fromSession": {
       "title": "From the session",
       "description": "What the participants answered and what the team wrote during the session the report starts from, to draw on while you write it. It isn’t part of the report."

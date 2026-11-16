@@ -4281,6 +4281,7 @@
       },
       "runNumber": "Ejecución {{number}}",
       "restart": "Reiniciar ejercicio",
+      "toReport": "Informe posterior",
       "endDialog": {
         "title": "Terminar el ejercicio",
         "description": "El ejercicio termina ahora para todos. No tiene vuelta atrás: no se puede reanudar y se abre el cuestionario de feedback. Termina antes el hot wash: a partir de ahí quedan congelados las decisiones y votaciones de la mesa, las acciones esperadas y las preguntas clave.",
@@ -4516,6 +4517,16 @@
     }
   },
   "aar": {
+    "markedFinal": "Marcado como final — versión {{version}}",
+    "reopened": "Reabierto como versión {{version}}",
+    "finalHint": "Reábrelo para editarlo; el seguimiento del plan no lo necesita.",
+    "finalDialog": {
+      "title": "¿Marcar el informe como final?",
+      "body": "Esto congela la versión {{version}}. Editarlo después abre la siguiente.",
+      "noConclusions": "Las conclusiones están vacías.",
+      "noLevel_one": "Este objetivo aún no tiene nivel:",
+      "noLevel_other": "Estos {{count}} objetivos aún no tienen nivel:"
+    },
     "fromSession": {
       "title": "De la sesión",
       "description": "Lo que respondieron los participantes y lo que anotó el equipo en la sesión de la que parte el informe, para apoyarte al redactarlo. No forma parte del informe."

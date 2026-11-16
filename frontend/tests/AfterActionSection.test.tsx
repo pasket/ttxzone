@@ -299,6 +299,14 @@ describe('The after-action report', () => {
     expect(within(dialog).getByLabelText('Area for improvement')).toHaveValue(
       'Nobody called the regulator — late (Eva)',
     )
+
+    // Closing it with something written asks first, focus on the way back.
+    fireEvent.change(within(dialog).getByLabelText('Owner'), { target: { value: 'Head of SOC' } })
+    fireEvent.keyDown(dialog, { key: 'Escape' })
+    expect(within(dialog).getByText('Discard your changes?')).toBeInTheDocument()
+    expect(within(dialog).getByRole('button', { name: 'Keep editing' })).toHaveFocus()
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Discard' }))
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 
   it('follows an action up without reopening the report', async () => {
@@ -309,7 +317,11 @@ describe('The after-action report', () => {
     )
     vi.stubGlobal('fetch', withRetests(fetchMock))
     render(<AfterActionSection ttxId="ttx-1" />)
-    expect(await screen.findByText('Final — version 1, by Ada.')).toBeInTheDocument()
+    expect(await screen.findByText(/^Final — version 1, by Ada\./)).toBeInTheDocument()
+    // A final report reads as one: reopening is the one way back to editing.
+    expect(screen.queryByRole('textbox', { name: 'Conclusions' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /Add an action/ })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Reopen to edit' })).toBeInTheDocument()
     fireEvent.change(screen.getByLabelText('Status of IP-01'), { target: { value: 'done' } })
     await waitFor(() =>
       expect(fetchMock).toHaveBeenCalledWith(
@@ -317,6 +329,40 @@ describe('The after-action report', () => {
         expect.objectContaining({ method: 'PATCH' }),
       ),
     )
+  })
+
+  it('asks before marking it final, naming what is still empty', async () => {
+    const draft = report({
+      objectives: [{ ...report().objectives[0], overall: null }],
+    })
+    const fetchMock = vi.fn(async (_url: string, init?: RequestInit) =>
+      init?.method === 'POST'
+        ? json({ ...draft, status: 'final', finalized_by: 'Ada' })
+        : json(draft),
+    )
+    vi.stubGlobal('fetch', withRetests(fetchMock))
+    render(<AfterActionSection ttxId="ttx-1" />)
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Mark as final' }))
+    const dialog = screen.getByRole('dialog', { name: 'Mark the report as final?' })
+    expect(within(dialog).getByText(/The conclusions are empty\./)).toBeInTheDocument()
+    expect(within(dialog).getByText(/This objective has no level yet:/)).toBeInTheDocument()
+    expect(within(dialog).getByText('OBJ-01')).toBeInTheDocument()
+    expect(fetchMock).not.toHaveBeenCalledWith(
+      '/api/v1/ttx/ttx-1/aar/transitions',
+      expect.anything(),
+    )
+
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Mark as final' }))
+    await waitFor(() =>
+      expect(fetchMock).toHaveBeenCalledWith(
+        '/api/v1/ttx/ttx-1/aar/transitions',
+        expect.objectContaining({ method: 'POST' }),
+      ),
+    )
+    expect(await screen.findByText('Marked as final — version 1')).toBeInTheDocument()
+    // Each objective's fields say which objective they belong to.
+    expect(screen.getByRole('radiogroup', { name: 'Overall: OBJ-01' })).toBeInTheDocument()
   })
 
   it("keeps the session's feedback and team notes at hand, from the run it starts from", async () => {

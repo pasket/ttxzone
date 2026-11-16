@@ -1,8 +1,8 @@
-import { useId, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { IMPROVEMENT_STATUSES } from '../../lib/aar'
-import { btnPrimary, btnSecondary, inputBase } from '../../lib/buttonStyles'
+import { btnDanger, btnPrimary, btnSecondary, inputBase } from '../../lib/buttonStyles'
 import type { AarObjective, ImprovementAction } from '../../lib/types'
 import { FormattedTextArea } from '../common/FormattedTextArea'
 import { Modal } from '../common/Modal'
@@ -26,17 +26,25 @@ export function ActionDialog({
   const { t } = useTranslation()
   const titleId = useId()
   const [action, setAction] = useState(initial)
+  // Two long texts live here: closing with something written asks first.
+  const [confirming, setConfirming] = useState(false)
+  const dirty = JSON.stringify(action) !== JSON.stringify(initial)
+  const requestClose = () => (dirty ? setConfirming(true) : onClose())
+  const keepRef = useRef<HTMLButtonElement>(null)
+  useEffect(() => {
+    if (confirming) keepRef.current?.focus()
+  }, [confirming])
   const set = (change: Partial<ImprovementAction>) => setAction((a) => ({ ...a, ...change }))
   const id = (key: string) => `${titleId}-${key}`
 
   return (
-    <Modal titleId={titleId} onClose={onClose} size="lg">
+    <Modal titleId={titleId} onClose={requestClose} size="lg">
       <form
         onSubmit={(event) => {
           event.preventDefault()
           onSave(action)
         }}
-        className="space-y-4 p-6"
+        className="space-y-4"
       >
         <h2 id={titleId} className="text-lg font-semibold">
           {action.code ? t('aar.editAction', { code: action.code }) : t('aar.addAction')}
@@ -158,18 +166,41 @@ export function ActionDialog({
             className={inputBase}
           />
         </div>
-        <div className="flex justify-end gap-2">
-          <button type="button" onClick={onClose} className={btnSecondary}>
-            {t('aar.cancel')}
-          </button>
-          <button
-            type="submit"
-            disabled={!action.action.trim() && !action.finding.trim()}
-            className={btnPrimary}
+        {confirming ? (
+          <div
+            role="alertdialog"
+            aria-labelledby={id('discard')}
+            className="flex flex-wrap items-center justify-end gap-2"
           >
-            {t('aar.apply')}
-          </button>
-        </div>
+            <p id={id('discard')} className="mr-auto text-sm font-medium">
+              {t('creator.needs.discard.question')}
+            </p>
+            <button
+              ref={keepRef}
+              type="button"
+              onClick={() => setConfirming(false)}
+              className={btnSecondary}
+            >
+              {t('creator.needs.discard.keep')}
+            </button>
+            <button type="button" onClick={onClose} className={btnDanger}>
+              {t('creator.needs.discard.discard')}
+            </button>
+          </div>
+        ) : (
+          <div className="flex justify-end gap-2">
+            <button type="button" onClick={requestClose} className={btnSecondary}>
+              {t('aar.cancel')}
+            </button>
+            <button
+              type="submit"
+              disabled={!action.action.trim() && !action.finding.trim()}
+              className={btnPrimary}
+            >
+              {t('aar.apply')}
+            </button>
+          </div>
+        )}
       </form>
     </Modal>
   )

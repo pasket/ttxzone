@@ -114,7 +114,7 @@ export function Modal({
         tabIndex={-1}
         onClick={(e) => e.stopPropagation()}
         onKeyDown={handleKeyDown}
-        className={`max-h-full w-full ${size === '2xl' ? 'max-w-6xl' : size === 'xl' ? 'max-w-4xl' : size === 'lg' ? 'max-w-2xl' : 'max-w-sm'} space-y-4 overflow-y-auto overscroll-contain rounded-md border border-paper-line bg-paper-surface-raised p-4 shadow-lg dark:border-line dark:bg-surface-raised dark:shadow-none`}
+        className={`max-h-full w-full ${size === '2xl' ? 'max-w-6xl' : size === 'xl' ? 'max-w-4xl' : size === 'lg' ? 'max-w-2xl' : 'max-w-sm'} space-y-4 overflow-y-auto overscroll-contain rounded-md border focus:outline-none border-paper-line bg-paper-surface-raised p-4 shadow-lg dark:border-line dark:bg-surface-raised dark:shadow-none`}
       >
         {children}
       </div>

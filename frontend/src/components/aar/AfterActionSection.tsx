@@ -2,9 +2,18 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useApiDownload } from '../../hooks/useApiDownload'
+import { useToast } from '../../hooks/useToast'
 import { useUndoableAction } from '../../hooks/useUndoableAction'
 import { emptyAction, IMPROVEMENT_STATUSES, runLabel } from '../../lib/aar'
 import { ApiError, API_BASE, apiFetch } from '../../lib/api'
+import {
+  panelActionsTh,
+  panelTableHeadRow,
+  panelTbody,
+  panelTd,
+  panelTh,
+  panelTr,
+} from '../../lib/panelStyles'
 import { aarRows, mergeAarProposals } from '../../lib/proposals'
 import {
   btnPrimary,
@@ -57,6 +66,7 @@ export function AfterActionSection({ ttxId }: { ttxId: string }) {
   const { t, i18n } = useTranslation()
   const download = useApiDownload()
   const runUndoable = useUndoableAction()
+  const { showToast } = useToast()
   const [report, setReport] = useState<AarRead | null>(null)
   // The report as last saved: what tells an AI proposal it reached the server.
   const [saved, setSaved] = useState<AarRead | null>(null)
@@ -72,6 +82,8 @@ export function AfterActionSection({ ttxId }: { ttxId: string }) {
   const [busy, setBusy] = useState(false)
   const [dialog, setDialog] = useState<ImprovementAction | 'new' | null>(null)
   const [retesting, setRetesting] = useState<ImprovementAction | null>(null)
+  // Marking it final asks first, with what is still empty.
+  const [askingFinal, setAskingFinal] = useState(false)
   const [prefill, setPrefill] = useState<Partial<ImprovementAction>>({})
   // Removals waiting for their Undo window: autosave holds until it closes.
   const [holding, setHolding] = useState(0)
@@ -200,8 +212,10 @@ export function AfterActionSection({ ttxId }: { ttxId: string }) {
       setReport(next)
       setSaved(next)
       setSave('saved')
+      return next
     } catch (err) {
       setError(err instanceof ApiError ? err.message : t('auth.common.genericError'))
+      return null
     } finally {
       setBusy(false)
     }
@@ -227,6 +241,18 @@ export function AfterActionSection({ ttxId }: { ttxId: string }) {
   }
 
   const editable = report.can_edit
+  // A final report reads as one: its text takes edits again once reopened
+  // (the plan's follow-up never needed that).
+  const writable = editable && report.status !== 'final'
+  const waiting = busy || save === 'pending' || save === 'saving'
+  const unrated = report.objectives.filter((objective) => !objective.overall)
+
+  async function transition(to: 'final' | 'draft') {
+    const next = await replace('/transitions', { method: 'POST', body: JSON.stringify({ to }) })
+    if (!next) return false
+    showToast(t(to === 'final' ? 'aar.markedFinal' : 'aar.reopened', { version: next.version }))
+    return true
+  }
   const lang = i18n.language.slice(0, 2)
   const pdf = `/ttx/${ttxId}/aar/export.pdf?lang=${lang}`
 
@@ -260,14 +286,15 @@ export function AfterActionSection({ ttxId }: { ttxId: string }) {
             {editable && (
               <button
                 type="button"
-                disabled={busy || save === 'pending' || save === 'saving'}
-                onClick={() =>
-                  void replace('/transitions', {
-                    method: 'POST',
-                    body: JSON.stringify({ to: report.status === 'final' ? 'draft' : 'final' }),
-                  })
+                // Not disabled while it waits: the button would drop the focus.
+                aria-disabled={waiting || undefined}
+                onClick={
+                  waiting
+                    ? undefined
+                    : () =>
+                        report.status === 'final' ? void transition('draft') : setAskingFinal(true)
                 }
-                className={report.status === 'final' ? btnSecondary : btnPrimary}
+                className={`${report.status === 'final' ? btnSecondary : btnPrimary} aria-disabled:cursor-progress aria-disabled:opacity-60`}
               >
                 {busy ? (
                   <ButtonSpinner />
@@ -283,7 +310,12 @@ export function AfterActionSection({ ttxId }: { ttxId: string }) {
       />
       <p className={`text-sm ${muted}`}>
         {report.status === 'final'
-          ? t('aar.finalLine', { version: report.version, who: report.finalized_by })
+          ? [
+              t('aar.finalLine', { version: report.version, who: report.finalized_by }),
+              editable && t('aar.finalHint'),
+            ]
+              .filter(Boolean)
+              .join(' ')
           : t('aar.draftLine', { version: report.version })}
       </p>
       <RunLine
@@ -299,7 +331,7 @@ export function AfterActionSection({ ttxId }: { ttxId: string }) {
           })
         }
       />
-      {error && (
+      {error && !askingFinal && (
         <p className="text-sm text-danger-fg" aria-live="polite">
           {error}
         </p>
@@ -329,14 +361,14 @@ export function AfterActionSection({ ttxId }: { ttxId: string }) {
           id="aar-executive-summary"
           label={t('aar.executiveSummary')}
           value={report.executive_summary}
-          editable={editable}
+          editable={writable}
           onChange={(executive_summary) => edit((c) => ({ ...c, executive_summary }))}
         />
         <TextBlock
           id="aar-scenario-summary"
           label={t('aar.scenarioSummary')}
           value={report.scenario_summary}
-          editable={editable}
+          editable={writable}
           onChange={(scenario_summary) => edit((c) => ({ ...c, scenario_summary }))}
         />
       </Panel>
@@ -347,7 +379,7 @@ export function AfterActionSection({ ttxId }: { ttxId: string }) {
             <ObjectiveBlock
               key={objective.id}
               objective={objective}
-              editable={editable}
+              editable={writable}
               onChange={(next) =>
                 edit((c) => ({
                   ...c,
@@ -377,7 +409,7 @@ export function AfterActionSection({ ttxId }: { ttxId: string }) {
       <Panel
         title={t('aar.plan')}
         aside={
-          editable && (
+          writable && (
             <button
               type="button"
               onClick={() => {
@@ -396,132 +428,129 @@ export function AfterActionSection({ ttxId }: { ttxId: string }) {
         {report.actions.length === 0 ? (
           <p className={`p-4 text-sm ${muted}`}>{t('aar.noActions')}</p>
         ) : (
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-panel-line text-left text-xs">
-                <th className="px-3 py-2">{t('aar.columns.action')}</th>
-                <th className="px-3 py-2">{t('aar.columns.owner')}</th>
-                <th className="px-3 py-2">{t('aar.columns.due')}</th>
-                <th className="px-3 py-2">{t('aar.columns.status')}</th>
-                <th className="px-3 py-2">{t('aar.columns.retest')}</th>
-                {editable && (
-                  <th className="w-24 px-3 py-2 text-right">{t('aar.columns.actions')}</th>
-                )}
-              </tr>
-            </thead>
-            <tbody>
-              {report.actions.map((action, index) => (
-                <tr
-                  key={action.id ?? `new-${index}`}
-                  className="border-b border-panel-line align-top"
-                >
-                  <td className="px-3 py-2">
-                    <CodeRef
-                      code={action.code || '…'}
-                      title={action.action || action.finding}
-                      wrap
-                    />
-                    {action.finding && <p className={`text-xs ${muted}`}>{action.finding}</p>}
-                  </td>
-                  <td className="px-3 py-2">
-                    {[action.owner, action.owner_area].filter(Boolean).join(' · ') || '—'}
-                  </td>
-                  <td className="px-3 py-2">
-                    {action.due_date ?? '—'}
-                    {action.overdue && (
-                      <span className="ml-1 rounded-xs bg-danger/10 px-1 text-xs text-danger-fg">
-                        {t('aar.overdue')}
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-3 py-2">
-                    {(report.can_follow_up ?? editable) && action.code ? (
-                      <select
-                        aria-label={t('aar.statusOf', { code: action.code })}
-                        value={action.status}
-                        disabled={busy}
-                        onChange={(e) =>
-                          void replace(`/actions/${action.code}`, {
-                            method: 'PATCH',
-                            body: JSON.stringify({
-                              status: e.target.value,
-                              status_note: action.status_note,
-                              due_date: action.due_date,
-                            }),
-                          })
-                        }
-                        className="rounded-sm border border-panel-line bg-field px-1 py-0.5 text-sm"
-                      >
-                        {IMPROVEMENT_STATUSES.map((s) => (
-                          <option key={s} value={s}>
-                            {t(`aar.status.${s}`)}
-                          </option>
-                        ))}
-                      </select>
-                    ) : (
-                      t(`aar.status.${action.status}`)
-                    )}
-                  </td>
-                  <td className="px-3 py-2">
-                    <RetestRefCell retest={action.retest} />
-                    {report.can_follow_up && action.code && (
-                      <button
-                        type="button"
-                        disabled={busy}
-                        onClick={() => setRetesting(action)}
-                        className={`block text-xs ${linkAccent}`}
-                        aria-label={t('aar.retest.changeLabel', { code: action.code })}
-                      >
-                        {action.retest ? t('aar.retest.change') : t('aar.retest.link')}
-                      </button>
-                    )}
-                  </td>
-                  {editable && (
-                    <td className="px-3 py-2">
-                      <div className="flex justify-end gap-1">
-                        <EditButton
-                          label={t('aar.editAction', { code: action.code || '…' })}
-                          onClick={() => setDialog(action)}
-                        />
-                        <IconButton
-                          label={t('aar.removeAction', { code: action.code || '…' })}
-                          onClick={() => {
-                            const removed = action
-                            setHolding((n) => n + 1)
-                            runUndoable({
-                              message: t('aar.removed', { code: action.code || '…' }),
-                              undoLabel: t('common.toast.undo'),
-                              onRemove: () =>
-                                edit((c) => ({
-                                  ...c,
-                                  actions: c.actions.filter((a) => a !== removed),
-                                })),
-                              onRestore: () => {
-                                setReport((c) =>
-                                  c
-                                    ? {
-                                        ...c,
-                                        actions: [
-                                          ...c.actions.slice(0, index),
-                                          removed,
-                                          ...c.actions.slice(index),
-                                        ],
-                                      }
-                                    : c,
-                                )
-                                setHolding((n) => n - 1)
-                              },
-                              onCommit: async () => setHolding((n) => n - 1),
-                            })
-                          }}
-                        />
-                      </div>
-                    </td>
-                  )}
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[46rem] text-left text-sm">
+              <thead>
+                <tr className={panelTableHeadRow}>
+                  <th className={panelTh}>{t('aar.columns.action')}</th>
+                  <th className={panelTh}>{t('aar.columns.owner')}</th>
+                  <th className={panelTh}>{t('aar.columns.due')}</th>
+                  <th className={panelTh}>{t('aar.columns.status')}</th>
+                  <th className={panelTh}>{t('aar.columns.retest')}</th>
+                  {writable && <th className={panelActionsTh}>{t('aar.columns.actions')}</th>}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className={panelTbody}>
+                {report.actions.map((action, index) => (
+                  <tr key={action.id ?? `new-${index}`} className={`${panelTr} align-top`}>
+                    <td className={panelTd}>
+                      <CodeRef
+                        code={action.code || '…'}
+                        title={action.action || action.finding}
+                        wrap
+                      />
+                      {action.finding && <p className={`text-xs ${muted}`}>{action.finding}</p>}
+                    </td>
+                    <td className={panelTd}>
+                      {[action.owner, action.owner_area].filter(Boolean).join(' · ') || '—'}
+                    </td>
+                    <td className={panelTd}>
+                      {action.due_date ?? '—'}
+                      {action.overdue && (
+                        <span className="ml-1 rounded-xs bg-danger/10 px-1 text-xs text-danger-fg">
+                          {t('aar.overdue')}
+                        </span>
+                      )}
+                    </td>
+                    <td className={panelTd}>
+                      {(report.can_follow_up ?? editable) && action.code ? (
+                        <select
+                          aria-label={t('aar.statusOf', { code: action.code })}
+                          value={action.status}
+                          disabled={busy}
+                          onChange={(e) =>
+                            void replace(`/actions/${action.code}`, {
+                              method: 'PATCH',
+                              body: JSON.stringify({
+                                status: e.target.value,
+                                status_note: action.status_note,
+                                due_date: action.due_date,
+                              }),
+                            })
+                          }
+                          className="rounded-sm border border-panel-line bg-field px-1 py-0.5 text-sm"
+                        >
+                          {IMPROVEMENT_STATUSES.map((s) => (
+                            <option key={s} value={s}>
+                              {t(`aar.status.${s}`)}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        t(`aar.status.${action.status}`)
+                      )}
+                    </td>
+                    <td className={panelTd}>
+                      <RetestRefCell retest={action.retest} />
+                      {report.can_follow_up && action.code && (
+                        <button
+                          type="button"
+                          disabled={busy}
+                          onClick={() => setRetesting(action)}
+                          className={`block text-xs ${linkAccent}`}
+                          aria-label={t('aar.retest.changeLabel', { code: action.code })}
+                        >
+                          {action.retest ? t('aar.retest.change') : t('aar.retest.link')}
+                        </button>
+                      )}
+                    </td>
+                    {writable && (
+                      <td className={panelTd}>
+                        <div className="flex justify-end gap-1">
+                          <EditButton
+                            label={t('aar.editAction', { code: action.code || '…' })}
+                            onClick={() => setDialog(action)}
+                          />
+                          <IconButton
+                            label={t('aar.removeAction', { code: action.code || '…' })}
+                            onClick={() => {
+                              const removed = action
+                              setHolding((n) => n + 1)
+                              runUndoable({
+                                message: t('aar.removed', { code: action.code || '…' }),
+                                undoLabel: t('common.toast.undo'),
+                                onRemove: () =>
+                                  edit((c) => ({
+                                    ...c,
+                                    actions: c.actions.filter((a) => a !== removed),
+                                  })),
+                                onRestore: () => {
+                                  setReport((c) =>
+                                    c
+                                      ? {
+                                          ...c,
+                                          actions: [
+                                            ...c.actions.slice(0, index),
+                                            removed,
+                                            ...c.actions.slice(index),
+                                          ],
+                                        }
+                                      : c,
+                                  )
+                                  setHolding((n) => n - 1)
+                                },
+                                onCommit: async () => setHolding((n) => n - 1),
+                              })
+                            }}
+                          />
+                        </div>
+                      </td>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </Panel>
 
@@ -529,8 +558,9 @@ export function AfterActionSection({ ttxId }: { ttxId: string }) {
         <TextBlock
           id="aar-conclusions"
           label={t('aar.conclusions')}
+          hideLabel
           value={report.conclusions}
-          editable={editable}
+          editable={writable}
           onChange={(conclusions) => edit((c) => ({ ...c, conclusions }))}
         />
       </Panel>
@@ -561,14 +591,38 @@ export function AfterActionSection({ ttxId }: { ttxId: string }) {
         />
       )}
 
+      {askingFinal && (
+        <ConfirmActionDialog
+          title={t('aar.finalDialog.title')}
+          description={[
+            t('aar.finalDialog.body', { version: report.version }),
+            !report.conclusions.trim() && t('aar.finalDialog.noConclusions'),
+            unrated.length > 0 && t('aar.finalDialog.noLevel', { count: unrated.length }),
+          ]
+            .filter(Boolean)
+            .join(' ')}
+          items={unrated.map((objective) => ({
+            code: objective.objective_code,
+            title: objective.title,
+          }))}
+          confirmLabel={t('aar.markFinal')}
+          pending={busy}
+          error={error}
+          onClose={() => setAskingFinal(false)}
+          onConfirm={async () => {
+            if (await transition('final')) setAskingFinal(false)
+          }}
+        />
+      )}
+
       {retesting && (
         <RetestDialog
           code={retesting.code}
           current={retesting.retest}
           candidatesPath={`/ttx/${ttxId}/aar/retest-candidates`}
           onClose={() => setRetesting(null)}
-          onSave={(retestTtxId, retestObjectiveId) =>
-            replace(`/actions/${retesting.code}`, {
+          onSave={async (retestTtxId, retestObjectiveId) => {
+            await replace(`/actions/${retesting.code}`, {
               method: 'PATCH',
               body: JSON.stringify({
                 status: retesting.status,
@@ -578,7 +632,7 @@ export function AfterActionSection({ ttxId }: { ttxId: string }) {
                 retest_objective_id: retestObjectiveId,
               }),
             })
-          }
+          }}
         />
       )}
       {dialog && (
@@ -626,20 +680,28 @@ function payload(report: AarRead, revision: number) {
 function TextBlock({
   id,
   label,
+  context,
+  hideLabel = false,
   value,
   editable,
   onChange,
 }: {
   id: string
   label: string
+  /** What the field belongs to (an objective's code), for whoever hears
+   * the label without seeing where it sits. */
+  context?: string
+  /** The panel's title already says it. */
+  hideLabel?: boolean
   value: string
   editable: boolean
   onChange: (value: string) => void
 }) {
   return (
     <div className="space-y-1.5">
-      <label htmlFor={id} className="block text-sm font-medium">
+      <label htmlFor={id} className={hideLabel ? 'sr-only' : 'block text-sm font-medium'}>
         {label}
+        {context && <span className="sr-only">: {context}</span>}
       </label>
       {editable ? (
         <FormattedTextArea id={id} value={value} onChange={onChange} rows={5} maxLength={20000} />
@@ -666,6 +728,7 @@ function ObjectiveBlock({
     <TextBlock
       id={`aar-${objective.id}-${key}`}
       label={t(`aar.fields.${key}`)}
+      context={objective.objective_code}
       value={objective[key]}
       editable={editable}
       onChange={(value) => onChange({ ...objective, [key]: value })}
@@ -681,7 +744,11 @@ function ObjectiveBlock({
       </h3>
       <div className="flex flex-wrap items-center gap-3">
         <span className="text-sm">{t('aar.fields.overall')}</span>
-        <div role="radiogroup" aria-label={t('aar.fields.overall')} className={segmentedControl}>
+        <div
+          role="radiogroup"
+          aria-label={`${t('aar.fields.overall')}: ${objective.objective_code}`}
+          className={segmentedControl}
+        >
           {LEVELS.map((level) => (
             <button
               key={level}
