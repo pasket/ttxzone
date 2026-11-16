@@ -79,10 +79,7 @@ export function InjectQueue({
                         {formatOffset(inject.due_minute)}
                       </span>
                       <span className="min-w-0 flex-1 truncate" title={inject.title}>
-                        <span translate="no" className="font-mono">
-                          {inject.code}
-                        </span>{' '}
-                        {inject.title}
+                        <CodeRef code={inject.code} title={inject.title} />
                       </span>
                       {inject.kind === 'contingent' && (
                         <span className="rounded-xs border border-panel-line px-1.5 text-xs">

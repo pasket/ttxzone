@@ -298,6 +298,11 @@ export function InjectSequence({
           <SequenceRail lanes={lanes} row={headingRail} nodeY={8} />
           <div className="min-w-0 flex-1">
             <h3 className={heading}>{t('playground.control.nextUp')}</h3>
+            {run.state === 'paused' && next.length > 0 && (
+              <p className="text-xs text-paper-ink/70 dark:text-fg-muted">
+                {t('playground.control.pausedNext')}
+              </p>
+            )}
             {inPlay && forking.length > 0 && (
               <p className="text-xs text-paper-ink/70 dark:text-fg-muted">
                 {t('playground.control.forkCaption', {

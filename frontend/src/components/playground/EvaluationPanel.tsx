@@ -13,6 +13,7 @@ import {
 } from '../../lib/buttonStyles'
 import { inPlayAt } from '../../lib/run'
 import type { RatingLevel, RunEvaluation, RunPoint, RunRead } from '../../lib/types'
+import { CodeRef } from '../common/CodeRef'
 import { Panel } from '../common/Panel'
 import { DecisionItem } from './DecisionLog'
 
@@ -171,10 +172,13 @@ export function EvaluationPanel({ ttxId, run }: { ttxId: string; run: RunRead })
             shown.map((objective) => (
               <section key={objective.id} aria-label={objective.code} className="space-y-3">
                 <h3 className="text-sm font-semibold">
-                  <span translate="no" className="font-mono">
-                    {objective.code}
-                  </span>{' '}
-                  {objective.title || objective.statement}
+                  <CodeRef
+                    variant="stacked"
+                    wrap
+                    strong
+                    code={objective.code}
+                    title={objective.title || objective.statement}
+                  />
                 </h3>
                 {objective.points.map((point) => (
                   <PointRow key={`${where}-${point.id}`} point={point} onRate={rate} />

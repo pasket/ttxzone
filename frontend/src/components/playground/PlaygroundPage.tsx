@@ -636,7 +636,9 @@ function SessionNotices({ run, connectionLost }: { run: RunRead; connectionLost:
         tone="accent"
         icon={<PauseIcon />}
         title={t('playground.state.paused')}
-        body={t('playground.state.pausedHint')}
+        body={t(
+          run.can_control ? 'playground.state.pausedHintControl' : 'playground.state.pausedHint',
+        )}
       />,
     )
   } else if (run.state === 'live' && run.endex_released_at) {
@@ -771,7 +773,7 @@ function HotWash({ run }: { run: RunRead }) {
       </ul>
       {ended && (
         <p className="mt-3 text-sm text-paper-ink/70 dark:text-fg-muted">
-          {t('playground.feedback.where')}
+          {t(run.can_control ? 'playground.feedback.whereControl' : 'playground.feedback.where')}
         </p>
       )}
     </Panel>
@@ -789,7 +791,7 @@ function SessionState({ run }: { run: RunRead }) {
       <Panel title={run.scenario_title || t('playground.state.notStarted')}>
         {run.scenario_summary && <FormattedText text={run.scenario_summary} />}
         <p className="mt-3 text-sm text-paper-ink/70 dark:text-fg-muted">
-          {t('playground.state.waiting')}
+          {t(run.can_control ? 'playground.state.waitingControl' : 'playground.state.waiting')}
         </p>
       </Panel>
     )

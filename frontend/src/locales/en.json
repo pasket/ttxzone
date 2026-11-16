@@ -3359,7 +3359,7 @@
     },
     "evaluation": {
       "title": "Evaluation",
-      "intro": "The EEG of this exercise: what to observe for each objective, the evidence to collect and the P/S/M/U scale. Rating arrives with the conduct phase.",
+      "intro": "The EEG of this exercise: what to observe for each objective, the evidence to collect and the P/S/M/U scale. Evaluators rate it during the session, in the Playground.",
       "eegTitle": "EEG",
       "eegDescription": "From version {{version}} of the approved needs analysis.",
       "notApprovedTitle": "The EEG isn't ready yet",
@@ -4181,11 +4181,13 @@
     "state": {
       "notStarted": "The exercise has not started",
       "waiting": "Waiting for the Controller to start the exercise.",
+      "waitingControl": "Start the exercise when the table is ready.",
       "ended": "The exercise has ended",
       "endedNext": "Stay for the hot wash: what went well and what to improve.",
       "stopped": "Exercise stopped",
       "paused": "The exercise is paused",
       "pausedHint": "The Controller will resume it shortly.",
+      "pausedHintControl": "Resume it when the table is ready.",
       "endex": "ENDEX: play is over"
     },
     "control": {
@@ -4202,6 +4204,7 @@
       "releaseAgain": "Release {{code}} again",
       "jumpRelease": "Jump to {{code}} and release it",
       "nextUp": "Next",
+      "pausedNext": "Resume the session to release.",
       "parallel": "Parallel",
       "forkCaption_one": "Two ways on from {{code}}: the storyline or its branch.",
       "forkCaption_other": "{{count}} branches open from {{code}}: carry on with the storyline or take one.",
@@ -4425,6 +4428,7 @@
       "send": "Send my answers",
       "thanks": "Thank you — your answers have been sent.",
       "where": "Then, answer the feedback form in your panel.",
+      "whereControl": "The participants answer the feedback form in their panel; its results show in yours.",
       "results": "Feedback form",
       "count_one": "{{count}} answer ({{players}} Players, {{team}} team)",
       "count_other": "{{count}} answers ({{players}} Players, {{team}} team)",

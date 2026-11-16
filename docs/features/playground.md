@@ -128,7 +128,7 @@ Status: **built** (all five slices; see Delivery slices and Open items). This is
 - Inject and general notes.
 - Progress: rated / assigned.
 
-**Controller — Control center** (the panel can widen to 50 %). An action that fails says why where it was confirmed: in its dialog (`error` on `EndDialog`, `EndexDialog`, `RestartDialog`, `ReasonDialog`, `ConfirmActionDialog`), else under the Session panel. While an action is on its way the other buttons are `aria-disabled`, not `disabled`, so the focused one keeps focus; after a release, focus goes to the inject that is due (`releaseId`). In the sequence window that inject's **Release** is the one primary button with its name (`btnPrimaryCompact`); every other action is an icon.
+**Controller — Control center** (the panel can widen to 50 %). An action that fails says why where it was confirmed: in its dialog (`error` on `EndDialog`, `EndexDialog`, `RestartDialog`, `ReasonDialog`, `ConfirmActionDialog`), else under the Session panel. While an action is on its way the other buttons are `aria-disabled`, not `disabled`, so the focused one keeps focus; after a release, focus goes to the inject that is due (`releaseId`). In the sequence window that inject's **Release** is the one primary button with its name (`btnPrimaryCompact`); every other action is an icon. While paused, the Next band says nothing goes out until the session resumes. Ending is confirmed in the danger colour, emergency stop or not. Where the shared view speaks to the table (waiting for the start, paused, the feedback form), whoever controls reads their own line (`run.can_control`: `playground.state.waitingControl`, `pausedHintControl`, `playground.feedback.whereControl`). Coded rows (the inject in play, its expected actions, the MSEL queue, the Evaluator's objectives) go through `CodeRef`.
 
 1. **Session controls**:
    - StartEx, Pause/Resume (reversible, one click), Next phase. Once started, Pause/Resume and End are icon buttons in the Session panel's header (`ControlIcons`: neutral pause, CTA play while paused, ghost-danger stop), not text buttons in the body: they're pressed once or never.
@@ -191,8 +191,9 @@ Status: **built** (all five slices; see Delivery slices and Open items). This is
 
 - Components in `components/playground/`:
   - Layout and chrome: `PlaygroundPage`, `ExerciseBanner`, `PhaseTrack`, `PresenceBar`.
-  - Content and dock: `InjectStage`, `InjectHistory`, `RoleDock`.
-  - Role panels: `PlayerNotesPanel`, `TeamNotesPanel`, `EvaluationPanel`, `ControlCenterPanel`.
+  - Content and dock: `InjectStage`, `RoomStage`, `DeliveryHeader`, `InjectTimer`, `PollCard`, `DecisionLog`, `MetersPanel`.
+  - Role panels: `NotesPanel` (Player, Facilitator, Observer), `FacilitationPanel`, `EvaluationPanel`, `FeedbackForm`, and the Controller's `ControlCenterPanel` with `InjectSequence`, `InjectQueue`, `InPlayPanel`, `RoomsControlPanel`, `SessionSummaryPanel`, `TeamNotesPanel`, `PastRuns`, `ControlStoryline`.
+  - Dialogs: `EndDialog`, `EndexDialog`, `RestartDialog`, `ReasonDialog`, `ConfirmActionDialog`, `RealWorldDialog`, `LeaveRequestDialog`.
 - Hook `useRunFeed(ttxId)`.
 - Reuse:
   - `StorylineGraph`, with new `runState` / `nowAt` props.

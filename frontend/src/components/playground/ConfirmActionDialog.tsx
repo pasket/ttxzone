@@ -38,7 +38,7 @@ export function ConfirmActionDialog({
           event.preventDefault()
           onConfirm()
         }}
-        className="space-y-3 p-6"
+        className="space-y-3"
       >
         <h2 id={titleId} className="text-lg font-semibold">
           {title}

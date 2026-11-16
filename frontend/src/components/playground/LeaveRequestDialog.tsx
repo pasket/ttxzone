@@ -49,7 +49,7 @@ export function LeaveRequestDialog({
           event.preventDefault()
           void submit()
         }}
-        className="space-y-4 p-6"
+        className="space-y-4"
       >
         <h2 id={titleId} className="text-lg font-semibold">
           {t('execution.enrollments.leaveRequest.title', { name: ttxName })}

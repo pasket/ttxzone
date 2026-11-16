@@ -58,7 +58,7 @@ export function RestartDialog({
           event.preventDefault()
           if (matches) onRestart(mode, typed)
         }}
-        className="space-y-4 p-6"
+        className="space-y-4"
       >
         <h2 id={titleId} className="text-lg font-semibold">
           {t('playground.control.restartDialog.title')}

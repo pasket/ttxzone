@@ -465,7 +465,7 @@ function ClosePollDialog({
   return (
     <Modal titleId={titleId} onClose={onClose}>
       <form
-        className="space-y-4 p-6"
+        className="space-y-4"
         onSubmit={(event) => {
           event.preventDefault()
           onConfirm(record, outcome)
@@ -579,7 +579,7 @@ export function PollDialog({
   return (
     <Modal titleId={titleId} onClose={onClose} size="lg">
       <form
-        className="space-y-3 p-6"
+        className="space-y-3"
         onSubmit={(event) => {
           event.preventDefault()
           onOpen(question.trim(), filled)

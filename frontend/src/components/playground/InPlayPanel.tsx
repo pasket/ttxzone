@@ -12,6 +12,7 @@ import {
 import { ENDEX_CODE, inPlayAt, phaseQuestions } from '../../lib/run'
 import type { ActionMark, RunAction, RunRead } from '../../lib/types'
 import { Panel } from '../common/Panel'
+import { CodeRef } from '../common/CodeRef'
 import type { ControlAct } from './ControlCenterPanel'
 
 const MARKS: { mark: ActionMark; key: 'observed' | 'partial' | 'notObserved' }[] = [
@@ -50,12 +51,7 @@ export function InPlayPanel({
           // Its title already starts with the code.
           inPlay.title
         ) : inPlay ? (
-          <span>
-            <span translate="no" className="font-mono">
-              {inPlay.code}
-            </span>{' '}
-            {inPlay.title}
-          </span>
+          <CodeRef code={inPlay.code} title={inPlay.title} />
         ) : (
           t('playground.control.inPlay')
         )
@@ -107,12 +103,7 @@ function ActionRow({
   const busy = pending === action.code
   return (
     <div className="space-y-2 rounded-sm border border-panel-line p-3">
-      <p className="text-sm">
-        <span translate="no" className="font-mono text-xs text-paper-ink/60 dark:text-fg-muted">
-          {action.code}
-        </span>{' '}
-        {action.description}
-      </p>
+      <CodeRef variant="stacked" wrap strong code={action.code} title={action.description} />
       <p className="text-xs text-paper-ink/60 dark:text-fg-muted">
         {action.responsible_role}
         {action.expected_within_minutes !== null &&

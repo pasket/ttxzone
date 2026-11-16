@@ -37,7 +37,7 @@ export function ReasonDialog({
           event.preventDefault()
           onConfirm(reason.trim())
         }}
-        className="space-y-3 p-6"
+        className="space-y-3"
       >
         <h2 id={titleId} className="text-lg font-semibold">
           {title}

@@ -539,6 +539,8 @@ describe('Control center', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'End exercise' }))
     const dialog = screen.getByRole('dialog')
+    // It can't be undone: the confirming button says so with its colour.
+    expect(within(dialog).getByRole('button', { name: 'End exercise' })).toHaveClass('bg-danger')
     fireEvent.click(within(dialog).getByRole('button', { name: 'End exercise' }))
 
     // Where it was confirmed, not behind the dialog.

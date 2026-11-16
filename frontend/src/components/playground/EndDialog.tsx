@@ -1,7 +1,7 @@
 import { useId, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { btnDanger, btnPrimary, btnSecondary, inputBase } from '../../lib/buttonStyles'
+import { btnDanger, btnSecondary, inputBase } from '../../lib/buttonStyles'
 import { ButtonSpinner } from '../common/ButtonSpinner'
 import { Modal } from '../common/Modal'
 
@@ -38,7 +38,7 @@ export function EndDialog({
           if (emergency) onStop(reason.trim())
           else onEnd()
         }}
-        className="space-y-4 p-6"
+        className="space-y-4"
       >
         <h2 id={titleId} className="text-lg font-semibold">
           {t('playground.control.endDialog.title')}
@@ -96,7 +96,7 @@ export function EndDialog({
           <button
             type="submit"
             disabled={pending || (emergency && !reason.trim())}
-            className={emergency ? btnDanger : btnPrimary}
+            className={btnDanger}
           >
             {pending ? (
               <ButtonSpinner />

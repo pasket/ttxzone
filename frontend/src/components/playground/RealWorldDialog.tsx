@@ -59,7 +59,7 @@ export function RealWorldDialog({
           event.preventDefault()
           if (matches) void submit()
         }}
-        className="space-y-4 p-6"
+        className="space-y-4"
       >
         <h2 id={titleId} className="text-lg font-semibold">
           {t('playground.realWorld.title')}
