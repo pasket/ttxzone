@@ -50,21 +50,27 @@ export function useDockLayout(module: string) {
   }
 }
 
-const WIDE = '(min-width: 1024px)'
+const WIDE = { lg: '(min-width: 1024px)', md: '(min-width: 768px)' }
 
-function subscribe(onChange: () => void) {
-  if (typeof window.matchMedia !== 'function') return () => {}
-  const query = window.matchMedia(WIDE)
-  query.addEventListener('change', onChange)
-  return () => query.removeEventListener('change', onChange)
-}
-
-/** Whether the page is wide enough for side-by-side columns (`lg`).
- * Without matchMedia (tests, old browsers) it's taken as wide. */
-export function useIsWide(): boolean {
+/** Whether the page is wide enough for side-by-side columns: from `lg`,
+ * or from `md` for the Control center (on a tablet held upright the
+ * Controller sees the stage and what to deliver at once; a Player's
+ * stage keeps the whole width there). Without matchMedia (tests, old
+ * browsers) it's taken as wide. */
+export function useIsWide(from: 'lg' | 'md' = 'lg'): boolean {
+  const media = WIDE[from]
+  const subscribe = useCallback(
+    (onChange: () => void) => {
+      if (typeof window.matchMedia !== 'function') return () => {}
+      const query = window.matchMedia(media)
+      query.addEventListener('change', onChange)
+      return () => query.removeEventListener('change', onChange)
+    },
+    [media],
+  )
   return useSyncExternalStore(
     subscribe,
-    () => typeof window.matchMedia !== 'function' || window.matchMedia(WIDE).matches,
+    () => typeof window.matchMedia !== 'function' || window.matchMedia(media).matches,
     () => true,
   )
 }

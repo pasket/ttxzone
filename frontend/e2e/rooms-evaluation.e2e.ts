@@ -16,6 +16,7 @@ test('each room gets its key questions and is rated on its own', async ({ browse
       .click()
 
   await controller.getByRole('button', { name: 'Start exercise' }).click()
+  await controller.getByRole('dialog').getByRole('button', { name: 'Start exercise' }).click()
   await release()
   await expect(first.getByRole('heading', { name: /^#1 /, level: 2 })).toBeVisible(LIVE)
   await release()

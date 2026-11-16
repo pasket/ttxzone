@@ -36,6 +36,7 @@ test('the live session, for every role', async ({ browser }) => {
   await expect(controller.getByRole('button', { name: 'Start exercise' })).toBeVisible(LIVE)
   await check(controller, 'Control center before the start')
   await controller.getByRole('button', { name: 'Start exercise' }).click()
+  await controller.getByRole('dialog').getByRole('button', { name: 'Start exercise' }).click()
   await release()
   await expect(player.getByRole('heading', { name: /^#1 / })).toBeVisible(LIVE)
   await release()

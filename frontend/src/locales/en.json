@@ -3883,6 +3883,8 @@
       "backToWorkspace": "Back to your workspace",
       "generalTitle": "General",
       "profileTitle": "Profile",
+      "nameLabel": "Name",
+      "nameHint": "Only an instance administrator can change it.",
       "appearanceTitle": "Appearance",
       "workspaceTitle": "Workspace",
       "defaultsTitle": "Default workspace",
@@ -4207,6 +4209,13 @@
       "session": "Session",
       "notReady": "The MSEL and the session plan must both be ready before the session can start.",
       "start": "Start exercise",
+      "startDialog": {
+        "title": "Start the exercise?",
+        "presentNone": "No Player is present yet.",
+        "present_one": "{{count}} Player is present.",
+        "present_other": "{{count}} Players are present.",
+        "description": "It starts for everyone on the exercise at once."
+      },
       "end": "End exercise",
       "queue": "Full MSEL",
       "previous": "Previous",

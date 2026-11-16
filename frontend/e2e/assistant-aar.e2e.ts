@@ -16,6 +16,7 @@ test('an AI client drafts the report from the session, and a person accepts it',
 
   await test.step('a session is played', async () => {
     await controller.getByRole('button', { name: 'Start exercise' }).click()
+    await controller.getByRole('dialog').getByRole('button', { name: 'Start exercise' }).click()
     await controller
       .getByRole('region', { name: 'Next' })
       .getByRole('button', { name: /^Release / })

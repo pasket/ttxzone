@@ -38,7 +38,7 @@ export type ControlAct = (
 ) => Promise<boolean>
 
 type Asking =
-  | { kind: 'end' | 'restart' | 'endex' }
+  | { kind: 'start' | 'end' | 'restart' | 'endex' }
   | { kind: 'resend'; code: string }
   | { kind: 'skip'; inject: RunControlInject }
   /** `over`: the pending mandatory injects a release goes ahead of. */
@@ -180,6 +180,10 @@ export function ControlCenterPanel({
       )
     )
 
+  // Who the session would start for: said before starting it.
+  const playersPresent =
+    run.presence_counts?.player ?? run.presence.filter((p) => p.role === 'player').length
+
   return (
     <div className="space-y-4">
       <Panel
@@ -201,7 +205,10 @@ export function ControlCenterPanel({
             <button
               type="button"
               disabled={!run.msel_ready || !run.plan_ready || pending !== null}
-              onClick={() => void act('start', '/start')}
+              onClick={() => {
+                setError(null)
+                setAsking({ kind: 'start' })
+              }}
               className={btnPrimary}
             >
               {pending === 'start' ? <ButtonSpinner /> : t('playground.control.start')}
@@ -282,6 +289,23 @@ export function ControlCenterPanel({
         />
       )}
 
+      {asking?.kind === 'start' && (
+        <ConfirmActionDialog
+          error={error}
+          title={t('playground.control.startDialog.title')}
+          description={`${
+            playersPresent === 0
+              ? t('playground.control.startDialog.presentNone')
+              : t('playground.control.startDialog.present', { count: playersPresent })
+          } ${t('playground.control.startDialog.description')}`}
+          confirmLabel={t('playground.control.start')}
+          pending={pending === 'start'}
+          onClose={() => setAsking(null)}
+          onConfirm={async () => {
+            if (await act('start', '/start')) setAsking(null)
+          }}
+        />
+      )}
       {asking?.kind === 'end' && (
         <EndDialog
           error={error}

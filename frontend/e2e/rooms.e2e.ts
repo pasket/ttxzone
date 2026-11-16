@@ -9,6 +9,7 @@ test('each room gets its injects until the Controller brings everyone together',
   const [first, second] = table
 
   await controller.getByRole('button', { name: 'Start exercise' }).click()
+  await controller.getByRole('dialog').getByRole('button', { name: 'Start exercise' }).click()
 
   await test.step('each Player is told which room they are in', async () => {
     await expect(first.getByText(/You’re in .*RM-01/)).toBeVisible(LIVE)

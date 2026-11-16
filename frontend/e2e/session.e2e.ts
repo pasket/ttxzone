@@ -11,6 +11,7 @@ test('a Controller and a Player play a session from start to feedback', async ({
       player.getByText('Waiting for the Controller to start the exercise.'),
     ).toBeVisible()
     await controller.getByRole('button', { name: 'Start exercise' }).click()
+    await controller.getByRole('dialog').getByRole('button', { name: 'Start exercise' }).click()
     await expect(player.getByText('The first inject is on its way.')).toBeVisible(LIVE)
   })
 

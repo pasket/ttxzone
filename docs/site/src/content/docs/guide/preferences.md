@@ -9,7 +9,7 @@ Open **Preferences** from the avatar menu.
 
 ## General
 
-Language, avatar, and the light or dark theme. The theme is saved per device.
+Language, avatar, and the light or dark theme. The theme is saved per device. Your name and email address are shown here; an instance administrator changes them.
 
 ## Default workspace
 

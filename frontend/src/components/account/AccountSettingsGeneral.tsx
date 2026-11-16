@@ -19,6 +19,18 @@ export function AccountSettingsGeneral() {
   return (
     <div className="w-full max-w-xl space-y-6">
       <Panel title={t('account.settings.profileTitle')}>
+        {/* Shown, not edited here: the account's name is the instance's record. */}
+        <div className={rowClass}>
+          <span className="text-sm text-paper-ink dark:text-fg">
+            {t('account.settings.nameLabel')}
+          </span>
+          <span className="max-w-[16rem] text-right text-sm">
+            <span className="block font-medium text-paper-ink dark:text-fg">{user?.full_name}</span>
+            <span className="block text-xs text-paper-ink/60 dark:text-fg-muted">
+              {t('account.settings.nameHint')}
+            </span>
+          </span>
+        </div>
         <div className={rowClass}>
           <label htmlFor="settings-email" className="text-sm text-paper-ink dark:text-fg">
             {t('auth.login.emailLabel')}

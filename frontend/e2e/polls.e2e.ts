@@ -14,6 +14,7 @@ test('the Players vote on a poll and see the result once it is shown', async ({ 
   }
 
   await controller.getByRole('button', { name: 'Start exercise' }).click()
+  await controller.getByRole('dialog').getByRole('button', { name: 'Start exercise' }).click()
   await release()
   await expect(first.getByRole('heading', { name: /^#1 / })).toBeVisible(LIVE)
 

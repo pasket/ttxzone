@@ -12,6 +12,7 @@ test('the Controller moves one Player and seats a late one', async ({ browser })
   const nothingOnScreen = 'Nothing on screen. Wait for the Controller.'
 
   await controller.getByRole('button', { name: 'Start exercise' }).click()
+  await controller.getByRole('dialog').getByRole('button', { name: 'Start exercise' }).click()
   await expect(second.getByText(/You’re in .*RM-02/)).toBeVisible(LIVE)
 
   await test.step('a Player without a room follows the main room', async () => {

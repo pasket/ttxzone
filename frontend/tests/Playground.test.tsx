@@ -495,6 +495,35 @@ describe('Control center', () => {
     expect(screen.getByText(/must both be ready/)).toBeInTheDocument()
   })
 
+  it('asks before starting, saying how many Players are present', async () => {
+    const started = controlled({ state: 'running' })
+    const fetchMock = answering(started)
+    const onChange = vi.fn()
+    render(
+      <ControlCenterPanel
+        ttxId="ttx-1"
+        run={controlled({
+          state: 'not_started',
+          msel_ready: true,
+          plan_ready: true,
+          presence: [],
+          presence_counts: { player: 2 },
+        })}
+        onChange={onChange}
+      />,
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Start exercise' }))
+    expect(fetchMock).not.toHaveBeenCalled()
+
+    const dialog = within(screen.getByRole('dialog'))
+    expect(dialog.getByRole('heading', { name: 'Start the exercise?' })).toBeInTheDocument()
+    expect(dialog.getByText(/2 Players are present\./)).toBeInTheDocument()
+
+    fireEvent.click(dialog.getByRole('button', { name: 'Start exercise' }))
+    await waitFor(() => expect(onChange).toHaveBeenCalledWith(started))
+    expect(String(fetchMock.mock.calls[0][0])).toContain('/ttx/ttx-1/run/start')
+  })
+
   it('releases the next mandatory inject and applies the answer', async () => {
     const next = controlled({ seq: 4 })
     const fetchMock = answering(next)

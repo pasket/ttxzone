@@ -60,14 +60,17 @@ export function AccountSettingsLayout() {
           linkTo={linkTo}
         />
         <main id="main-content" className="min-w-0 flex-1 p-6 pb-22 lg:pb-6">
-          {/* Panels below are h2s; the menu already shows the page name
-              visually, so the page's h1 is for assistive tech only. */}
-          {activeSection && <h1 className="sr-only">{t(activeSection.titleKey)}</h1>}
           {/* The way out of Preferences: where the logo also leads. */}
-          <Link to="/" className={`mb-4 inline-block text-sm ${linkAccent}`}>
+          <Link to="/" className={`mb-2 inline-block text-sm ${linkAccent}`}>
             <span aria-hidden="true">← </span>
             {t('account.settings.backToWorkspace')}
           </Link>
+          {/* The page's title, as on every module page; its panels are h2s. */}
+          {activeSection && (
+            <h1 className="mb-6 text-2xl font-bold tracking-tight text-paper-ink dark:text-fg">
+              {t(activeSection.titleKey)}
+            </h1>
+          )}
           <RouteBoundary>
             <Outlet />
           </RouteBoundary>

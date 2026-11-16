@@ -3883,6 +3883,8 @@
       "backToWorkspace": "Volver a tu espacio de trabajo",
       "generalTitle": "General",
       "profileTitle": "Perfil",
+      "nameLabel": "Nombre",
+      "nameHint": "Solo un administrador de la instancia puede cambiarlo.",
       "appearanceTitle": "Apariencia",
       "workspaceTitle": "Espacio de trabajo",
       "defaultsTitle": "Espacio de trabajo por defecto",
@@ -4207,6 +4209,13 @@
       "session": "Sesión",
       "notReady": "El MSEL y el plan de sesión deben estar listos antes de poder iniciar la sesión.",
       "start": "Iniciar ejercicio",
+      "startDialog": {
+        "title": "¿Iniciar el ejercicio?",
+        "presentNone": "Aún no hay ningún Jugador presente.",
+        "present_one": "Hay {{count}} Jugador presente.",
+        "present_other": "Hay {{count}} Jugadores presentes.",
+        "description": "Empieza para todas las personas del ejercicio a la vez."
+      },
       "end": "Terminar ejercicio",
       "queue": "MSEL completo",
       "previous": "Anterior",

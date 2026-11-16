@@ -60,6 +60,7 @@ test('the screens the guide shows', async ({ browser }) => {
   await test.step('the live session', async () => {
     await controller.goto(`/control/${ttxId}`)
     await controller.getByRole('button', { name: 'Start exercise' }).click()
+    await controller.getByRole('dialog').getByRole('button', { name: 'Start exercise' }).click()
     await release(controller)
     await expect(player.getByRole('heading', { name: /^#1 /, level: 2 })).toBeVisible(LIVE)
     await shoot(controller, 'control-center')
@@ -85,6 +86,7 @@ test('the screens the guide shows', async ({ browser }) => {
       PLAYER_1,
     ])
     await polls.getByRole('button', { name: 'Start exercise' }).click()
+    await polls.getByRole('dialog').getByRole('button', { name: 'Start exercise' }).click()
     await release(polls)
     await expect(voters[0].getByRole('heading', { name: /^#1 / })).toBeVisible(LIVE)
     await release(polls)

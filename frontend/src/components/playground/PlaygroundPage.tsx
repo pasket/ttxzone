@@ -74,7 +74,7 @@ export function PlaygroundPage({
 }) {
   const { t } = useTranslation()
   const { run, error, apply } = useRunFeed(ttxId, role)
-  const wide = useIsWide()
+  const wide = useIsWide(wideDock ? 'md' : 'lg')
   const [tab, setTab] = useState<'stage' | 'dock'>('stage')
   const where = useStageRoom(run?.rooms)
   // The inject picked on the phase track to read again, for the run and
@@ -487,7 +487,10 @@ function DockedColumns({
   const max = Math.max(DOCK_MIN, Math.floor((rowWidth || 1280) / 2))
   const clamp = (value: number) => Math.min(max, Math.max(DOCK_MIN, Math.round(value)))
   // An Evaluator works in the dock (the points to rate): it opens wider.
-  const current = width ?? (wideDock ? null : role === 'evaluator' ? 480 : 360)
+  // A width remembered on a wider page never takes more than half of this
+  // one (a tablet, a narrower window): the stage keeps its share.
+  const preferred = width ?? (wideDock ? null : role === 'evaluator' ? 480 : 360)
+  const current = preferred === null ? null : Math.min(preferred, max)
 
   // The stage stays beside a dock longer than it (the Controller's, an
   // Evaluator's points): under the band while it fits the screen, else

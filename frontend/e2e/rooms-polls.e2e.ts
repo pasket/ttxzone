@@ -14,6 +14,7 @@ test('each room votes on a poll of its own, and the main room on another', async
   const [first, second] = table
 
   await controller.getByRole('button', { name: 'Start exercise' }).click()
+  await controller.getByRole('dialog').getByRole('button', { name: 'Start exercise' }).click()
   await expect(first.getByText(/You’re in .*RM-01/)).toBeVisible(LIVE)
 
   await test.step('releasing the poll opens a vote in each room', async () => {
