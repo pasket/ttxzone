@@ -1,4 +1,11 @@
-import { useRef, useState, type KeyboardEvent, type PointerEvent, type ReactNode } from 'react'
+import {
+  useEffect,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type PointerEvent,
+  type ReactNode,
+} from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { DOCK_MIN, useDockLayout, useIsWide } from '../../hooks/useDockLayout'
@@ -175,7 +182,10 @@ export function PlaygroundPage({
             most of the screen, so it's no box at all there (`contents`):
             only the EXERCISE strip, with the stop keyword, sticks, and the
             phases and who is present scroll away with the page. */}
-        <div className="sticky top-[var(--playground-top-offset,0px)] z-10 space-y-2 bg-paper pb-2 max-md:contents dark:bg-ink">
+        <div
+          data-playground-band
+          className="sticky top-[var(--playground-top-offset,0px)] z-10 space-y-2 bg-paper pb-2 max-md:contents dark:bg-ink"
+        >
           <div className="max-md:sticky max-md:top-0 max-md:z-10">
             <ExerciseBanner ttxId={ttxId} run={run} apply={apply} />
           </div>
@@ -478,6 +488,35 @@ function DockedColumns({
   const clamp = (value: number) => Math.min(max, Math.max(DOCK_MIN, Math.round(value)))
   const current = width ?? (wideDock ? null : 360)
 
+  // The stage stays beside a dock longer than it (the Controller's, an
+  // Evaluator's points): under the band while it fits the screen, else
+  // with its foot at the screen's -- so scrolling the dock never loses
+  // the inject in play, and a long inject still shows whole by scrolling.
+  const stageRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const stage = stageRef.current
+    if (!stage || typeof ResizeObserver !== 'function') return
+    const band = document.querySelector<HTMLElement>('[data-playground-band]')
+    const place = () => {
+      const under = band ? band.offsetHeight + (parseFloat(getComputedStyle(band).top) || 0) : 0
+      const fits = stage.offsetHeight <= window.innerHeight - under
+      stage.style.top = `${fits ? under : window.innerHeight - stage.offsetHeight - 16}px`
+    }
+    place()
+    const sizes = new ResizeObserver(place)
+    sizes.observe(stage)
+    if (band) sizes.observe(band)
+    // A pinned storyline moves the band down through a variable on the root.
+    const root = new MutationObserver(place)
+    root.observe(document.documentElement, { attributes: true, attributeFilter: ['style'] })
+    window.addEventListener('resize', place)
+    return () => {
+      sizes.disconnect()
+      root.disconnect()
+      window.removeEventListener('resize', place)
+    }
+  }, [])
+
   function onKeyDown(event: KeyboardEvent) {
     const from = current ?? max
     const next =
@@ -515,7 +554,7 @@ function DockedColumns({
 
   return (
     <div ref={rowRef} className="flex items-start gap-0">
-      <div className="min-w-0 flex-1 space-y-3 pr-2">
+      <div ref={stageRef} className="sticky min-w-0 flex-1 space-y-3 pr-2">
         <StageHeader present={present} />
         <div className="space-y-4">{stage}</div>
       </div>

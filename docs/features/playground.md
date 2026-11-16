@@ -265,6 +265,7 @@ Status: **built** (all five slices; see Delivery slices and Open items). This is
 ## Dock
 
 - On `lg` and wider the dock sits beside the Playground behind a separator (a hairline with a grip that stays in view while scrolling): drag it, or focus it and use ←/→ (16 px), Home/End; between 280 px and half the page (360 px by default; the control center starts at half). A button folds it to a rail. Width and fold are remembered per module on the device (`hooks/useDockLayout`, `localStorage` `ttx_dock_<module>`). The stage is headed by a "Playground" badge, level with the dock's role badge, so each column says what it is.
+- **The stage stays beside a longer dock** (`DockedColumns`): it is `sticky`, placed by an effect from the band's measured height (`[data-playground-band]`, plus the pinned storyline's offset): under the band while it fits the screen, else with its foot at the screen's foot, so scrolling the Controller's panel or an Evaluator's points never loses the inject in play and a long inject is still read whole by scrolling. No inner scroller.
 - Narrower, the Playground and the dock are two tabs ("Playground" / "Your panel"; `useIsWide`).
 
 ## Open items
