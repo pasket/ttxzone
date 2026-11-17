@@ -64,6 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           : snapshot.organizations,
         snapshot.ttxList,
         savedDefaults(snapshot.user),
+        true,
       )
       // Reconciled against the just-resolved org (not the stale prevOrgId)
       // so a refresh() that also changes the active org doesn't leave a

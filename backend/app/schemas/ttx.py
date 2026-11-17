@@ -1,5 +1,6 @@
 import uuid
-from datetime import datetime
+from datetime import date, datetime
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -73,6 +74,11 @@ class TTXRead(BaseModel):
     tlp: Tlp
     # None until the MSEL is first opened.
     msel_status: MselStatus | None = None
+    # Where its session stands, so a list can say which exercise is being
+    # played now: the current run's state ("not_started" while it has none).
+    run_state: Literal["not_started", "live", "paused", "ended", "stopped"] = "not_started"
+    # The day its session is planned for, once the session plan is ready.
+    session_date: date | None = None
     # The planning team member who coordinates it (None only while the
     # exercise has no Planner at all).
     lead_planner: LeadPlannerRead | None = None

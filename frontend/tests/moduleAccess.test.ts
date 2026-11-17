@@ -263,6 +263,16 @@ describe('default context resolution', () => {
     expect(resolveDefaultContext([], list, none)).toEqual(none)
   })
 
+  it('lands on the exercise in play, for whoever takes part in it', () => {
+    const live = { ...ttx('player', 'p2'), organization_id: 'abc', run_state: 'paused' as const }
+    const saved = { organizationId: 'abc', role: 'player' as const, ttxId: 'p1' }
+    // Preferences shows what is saved; arriving goes where the session is.
+    expect(resolveDefaultContext([abc], [...list, live], saved).ttxId).toBe('p1')
+    expect(resolveDefaultContext([abc], [...list, live], saved, true).ttxId).toBe('p2')
+    // Nothing in play: the saved one, as before.
+    expect(resolveDefaultContext([abc], list, saved, true).ttxId).toBe('p1')
+  })
+
   it('uses a valid saved default, level by level', () => {
     expect(
       resolveDefaultContext([abc, other], list, {

@@ -444,11 +444,16 @@ function Home() {
   // user who holds no role in the active org (a freshly invited
   // Player still awaiting approval) sees the Waiting Room.
   const route = routeForContext(
-    resolveDefaultContext(activeOrganization ? [activeOrganization] : [], allTtxList, {
-      organizationId: user?.default_organization_id ?? null,
-      role: user?.default_role ?? null,
-      ttxId: user?.default_ttx_id ?? null,
-    }),
+    resolveDefaultContext(
+      activeOrganization ? [activeOrganization] : [],
+      allTtxList,
+      {
+        organizationId: user?.default_organization_id ?? null,
+        role: user?.default_role ?? null,
+        ttxId: user?.default_ttx_id ?? null,
+      },
+      true,
+    ),
   )
   if (route) return <Navigate to={route} replace />
   // The deployment's operator with no role in any organization (a fresh

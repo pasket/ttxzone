@@ -1,4 +1,5 @@
 import uuid
+from datetime import date
 from typing import Literal
 
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
@@ -26,6 +27,7 @@ from app.models import (
     TTXNeedsForm,
     User,
 )
+from app.models.exercise_run import RunStatus
 from app.schemas.dashboard import TTXDashboardRead
 from app.schemas.invitation_token import (
     InvitationTokenAuditListResponse,
@@ -59,6 +61,7 @@ from app.schemas.ttx_tag import TTXTagAssignmentRequest, TTXTagRead
 from app.services import platform_audit_service
 from app.services.attention_service import attention
 from app.services.dashboard_service import get_ttx_dashboard
+from app.services.exercise_run_service import run_states
 from app.services.invitation_token_service import (
     create_invitation_token,
     list_invitation_tokens_for_ttx,
@@ -69,6 +72,7 @@ from app.services.ttx_access_request_service import (
     list_pending_access_requests_for_ttx,
     reject_access_request,
 )
+from app.services.ttx_conduct_prep_service import session_dates
 from app.services.ttx_image_service import clear_image, image_url, upload_image
 from app.services.ttx_msel_service import find_msel, msel_statuses
 from app.services.ttx_needs_form_service import form_statuses, get_form
@@ -144,6 +148,8 @@ def list_ttx_endpoint(
     forms = form_statuses(session, ttx_ids)
     msels = msel_statuses(session, ttx_ids)
     leads = lead_planners(session, ttx_ids)
+    runs = run_states(session, ttx_ids)
+    planned = session_dates(session, ttx_ids)
     managed = {
         org_id
         for org_id in {ttx.organization_id for ttx in items}
@@ -169,6 +175,8 @@ def list_ttx_endpoint(
                 msels.get(ttx.id),
                 leads.get(ttx.id),
                 deletable(ttx),
+                runs.get(ttx.id),
+                planned.get(ttx.id),
             )
             for ttx in items
         ],
@@ -200,6 +208,8 @@ def _build_ttx_read(
     msel_status: MselStatus | None,
     lead: User | None = None,
     can_delete: bool = False,
+    run_status: RunStatus | None = None,
+    session_date: date | None = None,
 ) -> TTXRead:
     """`access` is the caller's grant on the exercise; None means they see
     it through Program Manager org-wide visibility only."""
@@ -226,6 +236,8 @@ def _build_ttx_read(
         lead_planner=LeadPlannerRead(user_id=lead.id, full_name=lead.full_name) if lead else None,
         can_delete=can_delete,
         archived_at=ttx.archived_at,
+        run_state=run_status.value if run_status else "not_started",
+        session_date=session_date,
     )
 
 
@@ -246,6 +258,8 @@ def _ttx_read(session: Session, ttx: TTX, user: User) -> TTXRead:
         msel.status if msel else None,
         lead_planners(session, [ttx.id]).get(ttx.id),
         can_delete_ttx(session, user, ttx, access),
+        run_states(session, [ttx.id]).get(ttx.id),
+        session_dates(session, [ttx.id]).get(ttx.id),
     )
 
 

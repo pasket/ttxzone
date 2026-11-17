@@ -22840,6 +22840,30 @@
             "title": "Role",
             "type": "string"
           },
+          "run_state": {
+            "default": "not_started",
+            "enum": [
+              "not_started",
+              "live",
+              "paused",
+              "ended",
+              "stopped"
+            ],
+            "title": "Run State",
+            "type": "string"
+          },
+          "session_date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Session Date"
+          },
           "tags": {
             "items": {
               "$ref": "#/components/schemas/TTXTagRead"

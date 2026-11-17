@@ -13,7 +13,7 @@ Language, avatar, and the light or dark theme. The theme is saved per device. Yo
 
 ## Default workspace
 
-The organization, exercise and role you land on after signing in.
+The organization, exercise and role you land on after signing in. One exception: if you take part in an exercise whose session is being played, you land on that one.
 
 ## Security
 

@@ -724,3 +724,28 @@ def test_the_team_exports_the_log_and_a_draft_after_action_report(
     keyword = db_session.exec(select(TTXNeedsForm)).first().stop_exercise_keyword
     assert not keyword or keyword not in report
     assert client.get(_url(ready, "/export/nope.pdf")).status_code == 404
+
+
+def test_the_exercise_list_says_where_each_session_stands(
+    client: TestClient,
+    db_session: Session,
+    exercise: dict,  # noqa: F811
+) -> None:
+    ttx_id = exercise["ttx"]["id"]
+
+    def listed() -> dict:
+        items = client.get("/api/v1/ttx").json()["items"]
+        return next(item for item in items if item["id"] == ttx_id)
+
+    # The planned day shows once the session plan is ready, not from a draft.
+    assert listed()["run_state"] == "not_started" and listed()["session_date"] is None
+    _ready_plan(client, ttx_id)
+    planned = _get(client, ttx_id).json()["session_date"]
+    assert planned is not None and listed()["session_date"] == planned
+
+    for action, state in (("/start", "live"), ("/pause", "paused"), ("/resume", "live")):
+        assert _post(client, ttx_id, action).status_code == 200
+        assert listed()["run_state"] == state
+    # A Player's list says so too: it's how they find the exercise in play.
+    _as_player(client, db_session, ttx_id)
+    assert listed()["run_state"] == "live"

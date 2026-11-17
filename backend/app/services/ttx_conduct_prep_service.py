@@ -132,6 +132,21 @@ def _not_approved(ttx: TTX, message: str) -> AppException:
 # -- reads ----------------------------------------------------------------
 
 
+def session_dates(session: Session, ttx_ids: list[uuid.UUID]) -> dict[uuid.UUID, date]:
+    """The planned session day per exercise in one query (TTX lists), for
+    the exercises whose session plan is ready and names one."""
+    if not ttx_ids:
+        return {}
+    rows = session.exec(
+        select(TTXConductPrep.ttx_id, TTXConductPrep.session_date).where(
+            TTXConductPrep.ttx_id.in_(ttx_ids),
+            TTXConductPrep.status == ConductPrepStatus.READY,
+            TTXConductPrep.session_date.is_not(None),
+        )
+    )
+    return dict(rows.all())
+
+
 def find_prep(session: Session, ttx_id: uuid.UUID, *, lock: bool = False) -> TTXConductPrep | None:
     query = select(TTXConductPrep).where(TTXConductPrep.ttx_id == ttx_id)
     if lock:

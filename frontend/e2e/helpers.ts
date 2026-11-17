@@ -52,6 +52,9 @@ export async function signedIn(browser: Browser, email: string): Promise<Page> {
     await page.getByRole('button', { name: 'Verify' }).click()
   }
   await expect(page).not.toHaveURL(/\/login/)
+  // Let the landing redirect finish: a `goto` issued while the app is still
+  // routing to the person's workspace gets aborted by it.
+  await expect(page.getByRole('main')).toBeVisible()
   await context.storageState({ path: saved })
   return page
 }

@@ -29,6 +29,7 @@ import { Panel } from '../common/Panel'
 import { SectionHeader } from '../common/SectionHeader'
 import { TableToolbar } from '../common/TableToolbar'
 import { ttxOptionsForModule } from '../../lib/moduleAccess'
+import { SessionStanding } from './SessionStanding'
 import { LeaveRequestDialog } from './LeaveRequestDialog'
 import type {
   InvitationTokenRedeemResponse,
@@ -364,6 +365,7 @@ export function EnrollmentsSection() {
               <thead>
                 <tr className={panelTableHeadRow}>
                   <th className={panelTh}>{t('execution.enrollments.columnName')}</th>
+                  <th className={panelTh}>{t('execution.enrollments.columnSession')}</th>
                   <th className={panelActionsTh}>{t('common.table.actions')}</th>
                 </tr>
               </thead>
@@ -383,6 +385,9 @@ export function EnrollmentsSection() {
                           {ttx.description}
                         </p>
                       )}
+                    </td>
+                    <td className={panelTd}>
+                      <SessionStanding ttx={ttx} />
                     </td>
                     <td className={panelTd}>
                       <div className={actionsCellClass}>

@@ -9,7 +9,7 @@ You take part in the exercise, working through a simulated incident with your te
 
 ## Join
 
-You'll get a link by email, which adds you at once, or an invitation token from one of the exercise's Exercise Planners. Enter the token in **Playground → My exercises**, and an Exercise Planner approves your request. That page lists your exercises: select one's name to open its Playground. You can also ask to leave an exercise from there.
+You'll get a link by email, which adds you at once, or an invitation token from one of the exercise's Exercise Planners. Enter the token in **Playground → My exercises**, and an Exercise Planner approves your request. That page lists your exercises and where each session stands: live or paused, ended, or the day it's planned for. Select one's name to open its Playground. When you sign in while one of your exercises is being played, you land on that one. You can also ask to leave an exercise from there.
 
 ## Before the session
 

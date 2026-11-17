@@ -117,6 +117,19 @@ PRESENCE_NAMES_MAX = 30
 PRESENCE_TOUCH_INTERVAL = timedelta(seconds=5)
 
 
+def run_states(session: Session, ttx_ids: list[uuid.UUID]) -> dict[uuid.UUID, RunStatus]:
+    """The current run's status per exercise in one query (TTX lists);
+    absent = its session hasn't started."""
+    if not ttx_ids:
+        return {}
+    rows = session.exec(
+        select(ExerciseRun.ttx_id, ExerciseRun.status).where(
+            ExerciseRun.ttx_id.in_(ttx_ids), ExerciseRun.archived_at.is_(None)
+        )
+    )
+    return dict(rows.all())
+
+
 def find_run(session: Session, ttx_id: uuid.UUID, *, lock: bool = False) -> ExerciseRun | None:
     """The exercise's current run (archived ones are history)."""
     query = select(ExerciseRun).where(

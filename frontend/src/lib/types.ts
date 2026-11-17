@@ -215,6 +215,11 @@ export interface TTXRead {
   /** Archived: read-only and out of the default lists; whoever may
    * delete it archives and unarchives it. */
   archived_at?: string | null
+  /** Where its session stands: the current run's state. */
+  run_state?: 'not_started' | 'live' | 'paused' | 'ended' | 'stopped'
+  /** The day its session is planned for (YYYY-MM-DD), once the session
+   * plan is ready. */
+  session_date?: string | null
   /** The planning team member who coordinates it (null only while it
    * has no Planner). */
   lead_planner?: { user_id: string; full_name: string } | null

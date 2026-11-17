@@ -3345,7 +3345,16 @@
       "dashboard": "Playground",
       "evaluation": "Evaluation"
     },
+    "sessionState": {
+      "live": "Live",
+      "paused": "Paused",
+      "ended": "Ended",
+      "stopped": "Stopped",
+      "notStarted": "Not started",
+      "plannedFor": "Planned for {{date}}"
+    },
     "enrollments": {
+      "columnSession": "Session",
       "joinTitle": "Join an exercise",
       "tokenLabel": "Invitation token",
       "joinSubmit": "Join exercise",

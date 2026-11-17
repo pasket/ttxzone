@@ -22,6 +22,7 @@ import {
   isModuleRoute,
   moduleForRole,
   routeForContext,
+  isInPlay,
   ttxOptionsForModule,
   ttxOptionsForRole,
 } from '../../lib/moduleAccess'
@@ -253,6 +254,10 @@ function TtxSegment({
             {activeOptions.map((ttx) => (
               <option key={ttx.id} value={ttx.id}>
                 {ttx.name}
+                {/* Which one is being played now, where there are several. */}
+                {isInPlay(ttx)
+                  ? ` · ${t(`execution.sessionState.${ttx.run_state === 'paused' ? 'paused' : 'live'}`)}`
+                  : ''}
               </option>
             ))}
             {archivedOptions.length > 0 && (

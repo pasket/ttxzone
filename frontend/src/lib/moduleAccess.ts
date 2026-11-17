@@ -177,6 +177,11 @@ export function contextEntry(
   }
 }
 
+/** Whether the exercise's session is being played now (live or paused). */
+export function isInPlay(ttx: TTXRead): boolean {
+  return ttx.run_state === 'live' || ttx.run_state === 'paused'
+}
+
 /** The user's saved default context (Preferences -> Workspace);
  * any level may be null ("first available"). */
 export interface DefaultContext {
@@ -203,6 +208,10 @@ export function resolveDefaultContext(
   organizations: OrganizationSummary[],
   allTtxList: TTXRead[],
   defaults: DefaultContext,
+  /** Arriving (signing in, opening the app): an exercise whose session is
+   * in play wins over the saved one, for whoever takes part in it. Not
+   * for Preferences, which shows what is saved. */
+  landing = false,
 ): ResolvedContext {
   const org =
     organizations.find((o) => o.organization_id === defaults.organizationId) ?? organizations[0]
@@ -219,8 +228,15 @@ export function resolveDefaultContext(
   // Program Manager works without an exercise; still keep one active so a
   // later switch to Creator/Execution has something selected.
   const candidates = role && role !== 'program_manager' ? ttxOptionsForRole(role, scoped) : scoped
+  const inPlay =
+    landing && role && role !== 'program_manager' && role !== 'planner'
+      ? candidates.find(isInPlay)
+      : undefined
   const ttx =
-    (isDefaultOrg && candidates.find((t) => t.id === defaults.ttxId)) || candidates[0] || null
+    inPlay ||
+    (isDefaultOrg && candidates.find((t) => t.id === defaults.ttxId)) ||
+    candidates[0] ||
+    null
   return { organizationId: org.organization_id, role, ttxId: ttx?.id ?? null }
 }
 

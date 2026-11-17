@@ -167,4 +167,24 @@ describe('EnrollmentsSection', () => {
     expect(screen.queryByRole('button', { name: 'Request to leave Ransomware Drill' })).toBeNull()
     mockTtxList = []
   })
+
+  it('says where the session of each exercise stands', async () => {
+    const row = { role: 'player', created_at: '2026-01-01T00:00:00Z' }
+    mockTtxList = [
+      { ...row, id: 'a', name: 'Alpha', run_state: 'live' },
+      { ...row, id: 'b', name: 'Bravo', run_state: 'ended' },
+      { ...row, id: 'c', name: 'Charlie', run_state: 'not_started', session_date: '2026-12-03' },
+      { ...row, id: 'd', name: 'Delta' },
+    ]
+    stubFetchWithPendingCount(vi.fn().mockResolvedValue(requestsResponse([])))
+    render(<EnrollmentsSection />)
+
+    const standing = (name: string) => screen.getByRole('link', { name }).closest('tr')
+    expect(await screen.findByRole('columnheader', { name: 'Session' })).toBeInTheDocument()
+    expect(standing('Alpha')).toHaveTextContent('Live')
+    expect(standing('Bravo')).toHaveTextContent('Ended')
+    expect(standing('Charlie')).toHaveTextContent('Planned for Dec 3, 2026')
+    expect(standing('Delta')).toHaveTextContent('Not started')
+    mockTtxList = []
+  })
 })
