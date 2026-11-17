@@ -232,6 +232,10 @@ class PasswordChangeRequest(BaseModel):
     new_password: StrongPassword
 
 
+class AccountNameRequest(BaseModel):
+    full_name: str = Field(min_length=1, max_length=255)
+
+
 class AvatarPresetRequest(BaseModel):
     preset_key: str = Field(min_length=1, max_length=64)
 

@@ -25,6 +25,7 @@ from app.core.security import (
 from app.models import Organization, User, UserSession
 from app.schemas.auth import (
     AccountDeleteRequest,
+    AccountNameRequest,
     AuthMeResponse,
     AvatarPresetRequest,
     EmailCodeSentResponse,
@@ -67,6 +68,7 @@ from app.services import (
     oidc_service,
     session_service,
 )
+from app.services.account_admin_service import rename_self
 from app.services.auth_event_service import auth_event
 from app.services.auth_service import (
     authenticate_user,
@@ -691,6 +693,16 @@ def change_password_endpoint(
     """Change the caller's password. Needs a recent authentication."""
     change_password(session, user, payload.current_password, payload.new_password)
     session_service.revoke_sessions(session, user, keep=current.id)
+
+
+@router.put("/name", status_code=204, dependencies=[Depends(verify_csrf)])
+def set_name_endpoint(
+    payload: AccountNameRequest,
+    user: User = Depends(get_current_user),
+    session: Session = Depends(get_session),
+) -> None:
+    """Correct the caller's own name. Recorded in the activity log."""
+    rename_self(session, user, payload.full_name)
 
 
 @router.post("/avatar/preset", status_code=204, dependencies=[Depends(verify_csrf)])

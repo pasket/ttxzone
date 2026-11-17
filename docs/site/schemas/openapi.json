@@ -482,6 +482,21 @@
         "title": "AccountDeleteRequest",
         "type": "object"
       },
+      "AccountNameRequest": {
+        "properties": {
+          "full_name": {
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Full Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "full_name"
+        ],
+        "title": "AccountNameRequest",
+        "type": "object"
+      },
       "ActionMark": {
         "enum": [
           "observed",
@@ -25169,6 +25184,47 @@
           }
         ],
         "summary": "Set preferred MFA",
+        "tags": [
+          "Account and sign-in"
+        ]
+      }
+    },
+    "/api/v1/auth/name": {
+      "put": {
+        "description": "Correct the caller's own name. Recorded in the activity log.",
+        "operationId": "set_name_endpoint_api_v1_auth_name_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccountNameRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "csrfToken": [],
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Set name",
         "tags": [
           "Account and sign-in"
         ]

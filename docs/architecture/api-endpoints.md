@@ -14,6 +14,7 @@ New endpoints go in `app/api/v1/endpoints/<router>.py` and are included in `app/
 - Sessions: `GET /auth/sessions`, `DELETE /auth/sessions` (all but current), `DELETE /auth/sessions/{session_id}`.
 - Defaults: `PUT /auth/default-context` (org + role + exercise, validated by `organization_service.set_default_context`); `PATCH /auth/default-organization` (unused by the UI; 404 for an org the user doesn't belong to; clears role/exercise when the org changes).
 - TOTP: `POST /auth/totp/enroll`, `…/enroll/confirm`, `…/disable`, `…/backup-codes/regenerate` (allowed even mid mandatory-MFA lock — it doesn't weaken the second factor). Code by email as a second factor: `POST /auth/mfa/email/enable` (emails the code) + `…/enable/confirm`, `DELETE /auth/mfa/email` (step-up), `PUT /auth/mfa/preferred` (`totp` | `email`, only among those enrolled). `POST /auth/password`.
+- Name: `PUT /auth/name` `{full_name}` — the caller's own (trimmed, 1–255; 422 `NAME_REQUIRED` when blank); no step-up (not a credential), recorded as `account.update` with before and after, the caller as actor and target. The email stays the instance administrator's.
 - Avatar: `POST /auth/avatar/preset`, `POST /auth/avatar/upload`, `DELETE /auth/avatar`.
 
 

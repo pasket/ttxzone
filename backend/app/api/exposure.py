@@ -28,6 +28,7 @@ PUBLIC: frozenset[tuple[str, str]] = frozenset(
         ("POST", "/auth/login/email-code"),
         ("POST", "/auth/login/verify-totp"),
         ("POST", "/auth/logout"),
+        ("PUT", "/auth/name"),
         ("DELETE", "/auth/me"),
         ("GET", "/auth/me"),
         ("GET", "/auth/me/lead-exercises"),

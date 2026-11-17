@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AccountSettingsGeneral } from '../src/components/account/AccountSettingsGeneral'
@@ -99,6 +99,27 @@ describe('AccountSettingsGeneral', () => {
     renderGeneral()
 
     expect(await screen.findByDisplayValue('owner@acme.com')).toBeDisabled()
+  })
+
+  it('lets the account correct its own name', async () => {
+    renderGeneral()
+    const name = await screen.findByLabelText('Name')
+    await waitFor(() => expect(name).toHaveValue('Owner'))
+    // Nothing to save until it differs, nor with a blank name.
+    expect(screen.queryByRole('button', { name: 'Save' })).not.toBeInTheDocument()
+    fireEvent.change(name, { target: { value: '   ' } })
+    expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled()
+
+    const fetchMock = vi.mocked(fetch)
+    fetchMock.mockResolvedValue({ ok: true, status: 204, json: async () => ({}) } as Response)
+    fireEvent.change(name, { target: { value: ' Ada Owner ' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+    await waitFor(() =>
+      expect(fetchMock).toHaveBeenCalledWith(
+        '/api/v1/auth/name',
+        expect.objectContaining({ method: 'PUT', body: '{"full_name":"Ada Owner"}' }),
+      ),
+    )
   })
 
   it('defaults to Dark and toggling Light removes the dark class + persists it', async () => {

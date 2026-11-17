@@ -251,6 +251,32 @@ def update_profile(
     )
 
 
+def rename_self(session: Session, user: User, full_name: str) -> None:
+    """The caller corrects their own name. Not a credential, so no
+    step-up: recorded like the administrator's edit, with before and
+    after. The email stays the administrator's to change."""
+    name = full_name.strip()
+    if not name:
+        raise AppException(
+            "NAME_REQUIRED", "The name can't be empty.", 422, log_level=logging.WARNING
+        )
+    before = user.full_name
+    if name == before:
+        return
+    user.full_name = name
+    session.add(user)
+    session.commit()
+    platform_audit_service.record(
+        session,
+        user,
+        "account.update",
+        "account",
+        user.id,
+        user.email,
+        {"full_name": {"before": before, "after": name}},
+    )
+
+
 # Easy to read out and type: no 0/O, 1/l/I look-alikes.
 _LOWER = "abcdefghijkmnopqrstuvwxyz"
 _UPPER = "ABCDEFGHJKLMNPQRSTUVWXYZ"
