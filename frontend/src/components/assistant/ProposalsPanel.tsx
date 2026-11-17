@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { type ReactNode, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useLocation } from 'react-router-dom'
 
@@ -323,12 +323,24 @@ export function ProposalsPanel<D>({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [actionsKey])
 
+  // Accepted and now in the form (not while the page still asks whether to
+  // reopen the document): said once, since the panel's row then goes quiet.
+  const inForm = items.filter(isAccepted).length
+  const saidInForm = useRef(inForm)
+  useEffect(() => {
+    if (inForm > saidInForm.current) {
+      showToast(t('assistant.inForm', { count: inForm - saidInForm.current }))
+    }
+    saidInForm.current = inForm
+  }, [inForm, showToast, t])
+
   if (items.length === 0) return null
   // Still to decide: not accepted, nor back after a save (closed apart).
   // An action runs on its own (its own dialog): never in Accept all.
   const actionable = pending.filter((p) => !savedAgain(p) && !isAction(p))
-  // A long list reads as titles; each one's changes open on demand.
-  const folded = items.length > 3
+  // Past the first, a proposal reads as its title and summary; its changes
+  // open on demand, so three proposals don't push the document off screen.
+  const unfolded = items[0]?.id
   // By item: the proposals on one saved row (INJ-27) side by side, an
   // EEG's observation points under their objective (OBJ-01); any other new
   // row on its own.
@@ -610,6 +622,28 @@ export function ProposalsPanel<D>({
     return t('assistant.update', { target, code: code ?? '' })
   }
 
+  /** The title as shown: a saved row it changes or deletes is named the
+   * way the rest of the application names a coded row. */
+  function titleNode(proposal: Proposal): ReactNode {
+    const code = proposal.target_id ? codeOf(proposal.target_id) : undefined
+    const coded =
+      code &&
+      proposal.operation !== 'create' &&
+      !['msel_renumber', 'needs_scope', 'needs_tlp', 'ttx_meta', 'msel_meta'].includes(
+        proposal.target,
+      )
+    if (!coded) return title(proposal)
+    const target = t(TARGET_LABEL_KEYS[proposal.target])
+    return (
+      <>
+        {t(proposal.operation === 'delete' ? 'assistant.removeOf' : 'assistant.updateOf', {
+          target,
+        })}{' '}
+        <CodeRef code={code} title={removedName(proposal)} />
+      </>
+    )
+  }
+
   /** What a deletion takes away, as the person knows the row. */
   function removedName(proposal: Proposal): string {
     const row = [...(draftRows[proposal.target] ?? []), ...(savedRows[proposal.target] ?? [])].find(
@@ -703,7 +737,7 @@ export function ProposalsPanel<D>({
             </label>
           ) : (
             <span id={`proposal-${proposal.id}`} className="font-medium">
-              {title(proposal)}
+              {titleNode(proposal)}
             </span>
           )}
           {proposal.outdated && <span className={badgeNeutral}>{t('assistant.outdated')}</span>}
@@ -754,7 +788,7 @@ export function ProposalsPanel<D>({
                 {t('assistant.removes', { name: removedName(proposal) || title(proposal) })}
               </p>
             ) : (
-              <details open={!folded} className="text-sm">
+              <details open={proposal.id === unfolded} className="text-sm">
                 <summary className={`${linkAccent} cursor-pointer text-[13px]`}>
                   {t('assistant.changes', { count: fields.length })}
                 </summary>
@@ -983,7 +1017,9 @@ export function ProposalsPanel<D>({
       <li key={`group-${group[0].id}`} className="space-y-3 py-3 first:pt-0">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <p className="text-sm">
-            <span className="font-medium">{groupTitle(group[0])}</span>{' '}
+            <span className="font-medium">
+              {group[0].target === 'eeg_point' ? groupTitle(group[0]) : titleNode(group[0])}
+            </span>{' '}
             <span className="text-paper-ink/60 dark:text-fg-muted">
               · {t('assistant.groupCount', { count: group.length })}
             </span>

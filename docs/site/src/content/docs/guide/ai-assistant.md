@@ -21,7 +21,7 @@ It acts as you, so it reaches only what you can.
 - **Start from an exercise template** of the Library and adapt it, and **remember**: past exercises' reports and the improvement plan, to learn from what happened before.
 - **Propose** needs, objectives, the MSEL's phases, simulated actors and threat actors, injects, polls, the session plan's observation points and parts of the report.
 
-It never changes anything by itself. Each proposal waits on the form's page under **AI proposals**, for you to accept it into the draft or discard it. Accepting has the form's usual effects: a ready MSEL reopens, for example.
+It never changes anything by itself. Each proposal waits on the form's page under **AI proposals**, for you to accept it into the draft or discard it. Accepting has the form's usual effects: a ready MSEL reopens, for example. The first proposal shows what it changes; the others show their title and summary, with the changes one click away. Once an accepted proposal is in the form, a notice says so: it saves with the form.
 
 When proposals wait for you, the assistant's spark appears at the top right with how many; click it to see where they are and go there. Each page also says what waits on the others. The numbers beside the Design menu's sections are something else: what each document still needs fixed before it can move on.
 

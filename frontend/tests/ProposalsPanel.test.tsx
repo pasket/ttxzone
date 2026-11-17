@@ -160,6 +160,10 @@ describe('ProposalsPanel', () => {
     expect(screen.getByTestId('titles')).toHaveTextContent('Sharper title|Backups untested')
     expect(screen.getAllByText('Accepted, saving…')).toHaveLength(2)
     expect(fetchMock).toHaveBeenCalledTimes(1)
+    // Each acceptance says it reached the form.
+    expect(
+      (await screen.findAllByText('Accepted: it’s in the form now, and saves with it.')).length,
+    ).toBeGreaterThan(0)
 
     fireEvent.click(screen.getByRole('button', { name: 'save' }))
 
@@ -326,8 +330,8 @@ describe('ProposalsPanel', () => {
     ])
   })
 
-  it('folds the changes of each one when the list is long', async () => {
-    const many = [1, 2, 3, 4].map((n) =>
+  it('shows the changes of the first one and folds the rest', async () => {
+    const many = [1, 2, 3].map((n) =>
       proposal({ ...CREATE, id: `p-${n}`, summary: `Proposal ${n}` }),
     )
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(respond({ items: many })))
@@ -335,8 +339,10 @@ describe('ProposalsPanel', () => {
     render(<Harness />)
 
     expect(await screen.findByText('Proposal 1')).toBeInTheDocument()
-    const [first] = screen.getAllByText('4 changes')
-    expect(first.closest('details')).not.toHaveAttribute('open')
+    const [first, second, third] = screen.getAllByText('4 changes')
+    expect(first.closest('details')).toHaveAttribute('open')
+    expect(second.closest('details')).not.toHaveAttribute('open')
+    expect(third.closest('details')).not.toHaveAttribute('open')
   })
 
   it('groups the proposals on one row, accepting all of them or the ones ticked', async () => {
@@ -461,7 +467,9 @@ describe('ProposalsPanel', () => {
 
     render(<Harness />)
 
-    expect(await screen.findByText('Delete need NEED-01')).toBeInTheDocument()
+    // The row is named as a coded row: its code, then its title.
+    const heading = (await screen.findByText(/^Delete need/)).closest('span') as HTMLElement
+    expect(heading).toHaveTextContent('Delete need NEED-01|, Old title')
     expect(screen.getByText('Removes “Old title”.')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Accept' }))
     expect(screen.getByTestId('titles')).toHaveTextContent(/^$/)

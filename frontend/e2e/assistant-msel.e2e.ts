@@ -52,6 +52,10 @@ test('an AI client proposes MSEL changes, and accepted ones leave the panel for 
 
   await test.step('they wait on the page', async () => {
     await expect(panel.getByText(CHANGED_TITLE)).toBeVisible(LIVE)
+    // Past the first, a proposal's changes wait folded under its title.
+    for (const fold of await panel.locator('details:not([open]) > summary').all()) {
+      await fold.click()
+    }
     await expect(panel.getByText(NEW_TITLE)).toBeVisible()
     await check(planner, 'The MSEL with proposals')
   })
