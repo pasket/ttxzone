@@ -36,7 +36,8 @@ import { SsoReturnNotice } from './components/common/SsoReturnNotice'
 import { AuthProvider } from './lib/AuthContext'
 import { ReauthenticationHost } from './components/common/ReauthenticationHost'
 import { SessionTimeoutWatcher } from './components/common/SessionTimeoutWatcher'
-import { resolveDefaultContext, routeForContext } from './lib/moduleAccess'
+import { playersPath } from './lib/creatorPaths'
+import { resolveDefaultContext, routeForContext, ttxOptionsForModule } from './lib/moduleAccess'
 import { ThemeProvider } from './lib/ThemeContext'
 import { ToastProvider } from './lib/ToastContext'
 import { LIBRARY_SUB_KINDS } from './lib/libraryLevels'
@@ -259,6 +260,36 @@ function AdminSectionOutlet() {
   return <SectionPlaceholder sections={ADMIN_SECTIONS} />
 }
 
+/** A Players page on the exercise its URL names: shown once that
+ * exercise is the one in context (the pages read it from there), so a
+ * shared link never shows another exercise's Players first. An exercise
+ * the reader doesn't plan goes back to Creator. */
+function PlayersRoute({ children }: { children: ReactNode }) {
+  const { ttxId } = useParams<{ ttxId?: string }>()
+  const { ttxList, activeTtxId } = useAuth()
+  if (!ttxOptionsForModule('creator', ttxList).some((ttx) => ttx.id === ttxId)) {
+    return <Navigate to="/creator" replace />
+  }
+  return (
+    <RequireTtxParam module="creator">
+      {ttxId === activeTtxId ? (
+        <>
+          <ArchivedExerciseBanner />
+          <div className="p-6">{children}</div>
+        </>
+      ) : null}
+    </RequireTtxParam>
+  )
+}
+
+/** The Players URL without an exercise: on to the one in context. */
+function PlayersRedirect({ tab }: { tab?: 'pending' | 'invitations' }) {
+  const { activeTtxId } = useAuth()
+  const location = useLocation()
+  if (!activeTtxId) return <Navigate to="/creator" replace />
+  return <Navigate to={`${playersPath(activeTtxId, tab)}${location.search}`} replace />
+}
+
 function CreatorSectionOutlet() {
   const { ttxId, section } = useParams<{ ttxId?: string; section?: string }>()
   const { ttxList } = useAuth()
@@ -270,6 +301,13 @@ function CreatorSectionOutlet() {
       <div className="p-6">
         <CreatorExerciseSection key={ttxId} />
       </div>
+    )
+  }
+  if (section === 'players') {
+    return (
+      <PlayersRoute>
+        <CreatorPlayersSection />
+      </PlayersRoute>
     )
   }
   if (section === 'needs') {
@@ -719,29 +757,33 @@ function App() {
                       }
                     />
                   ))}
+                  {/* Players' tabs, on the exercise the URL names. The short
+                   * form (no exercise: old links, bookmarks) goes to the one
+                   * in context. */}
                   <Route
-                    path="/creator/players"
+                    path="/creator/:ttxId/players/pending"
                     element={
-                      <div className="p-6">
-                        <CreatorPlayersSection />
-                      </div>
+                      <PlayersRoute>
+                        <CreatorAccessRequestsSection />
+                      </PlayersRoute>
                     }
                   />
                   <Route
-                    path="/creator/players/pending"
+                    path="/creator/:ttxId/players/invitations"
                     element={
-                      <div className="p-6">
-                        <CreatorAccessRequestsSection />
-                      </div>
+                      <PlayersRoute>
+                        <CreatorInvitationsSection />
+                      </PlayersRoute>
                     }
+                  />
+                  <Route path="/creator/players" element={<PlayersRedirect />} />
+                  <Route
+                    path="/creator/players/pending"
+                    element={<PlayersRedirect tab="pending" />}
                   />
                   <Route
                     path="/creator/players/invitations"
-                    element={
-                      <div className="p-6">
-                        <CreatorInvitationsSection />
-                      </div>
-                    }
+                    element={<PlayersRedirect tab="invitations" />}
                   />
                   <Route
                     path="/creator/:ttxId?/:section?"

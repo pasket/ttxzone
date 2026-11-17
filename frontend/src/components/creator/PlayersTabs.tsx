@@ -1,8 +1,9 @@
 import { useTranslation } from 'react-i18next'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 
 import { useApiResource } from '../../hooks/useApiResource'
 import { useAuth } from '../../hooks/useAuth'
+import { playersPath } from '../../lib/creatorPaths'
 import type { TTXAccessRequestListResponse, TTXLeaveRequest } from '../../lib/types'
 import { PageTabs } from '../common/PageTabs'
 import { SectionHeader } from '../common/SectionHeader'
@@ -14,7 +15,9 @@ import { SectionHeader } from '../common/SectionHeader'
 export function PlayersTabs({ pendingCount }: { pendingCount?: number }) {
   const { t } = useTranslation()
   const { activeTtxId } = useAuth()
-  const page = useLocation().pathname.split('/')[3]
+  // The tabs keep the exercise the URL names (`/creator/:ttxId/players/…`).
+  const ttxId = useParams<{ ttxId?: string }>().ttxId ?? activeTtxId
+  const page = useLocation().pathname.split('/').pop()
   const { data } = useApiResource<TTXAccessRequestListResponse>(
     pendingCount === undefined && activeTtxId
       ? `/ttx/${activeTtxId}/access-requests?limit=1&offset=0`
@@ -33,20 +36,20 @@ export function PlayersTabs({ pendingCount }: { pendingCount?: number }) {
         items={[
           {
             key: 'confirmed',
-            to: '/creator/players',
+            to: playersPath(ttxId),
             label: t('creator.players.tabConfirmed'),
             current: page !== 'pending' && page !== 'invitations',
           },
           {
             key: 'pending',
-            to: '/creator/players/pending',
+            to: playersPath(ttxId, 'pending'),
             label: t('creator.players.tabPending'),
             count: pending,
             current: page === 'pending',
           },
           {
             key: 'invitations',
-            to: '/creator/players/invitations',
+            to: playersPath(ttxId, 'invitations'),
             label: t('creator.players.tabInvitations'),
             current: page === 'invitations',
           },

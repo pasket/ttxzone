@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 
+import { playersPath } from '../../../lib/creatorPaths'
 import { btnSecondary, linkAccent } from '../../../lib/buttonStyles'
 import {
   BRIEFING_ITEMS,
@@ -445,7 +446,7 @@ function Convocation(props: StepProps) {
  * a decision maker, their name taken from the account; then the decision
  * makers, Players or added by hand, with their attendance and, for those
  * not confirmed, what happens if they don't come. */
-function Attendees({ prep, draft, update, removeRow, isInvalid, readOnly }: StepProps) {
+function Attendees({ prep, draft, update, removeRow, isInvalid, readOnly, ttxId }: StepProps) {
   const { t, i18n } = useTranslation()
   const ctx = prep.context
   const players = new Map(ctx.exercise_players.map((p) => [p.user_id, p]))
@@ -488,7 +489,7 @@ function Attendees({ prep, draft, update, removeRow, isInvalid, readOnly }: Step
               {t('creator.conductPrep.logistics.attendees.pendingRequests', {
                 count: ctx.pending_access_requests,
               })}{' '}
-              <Link to="/creator/players/pending" className={linkAccent}>
+              <Link to={playersPath(ttxId, 'pending')} className={linkAccent}>
                 {t('creator.conductPrep.logistics.attendees.review')}
               </Link>
             </p>
@@ -497,7 +498,7 @@ function Attendees({ prep, draft, update, removeRow, isInvalid, readOnly }: Step
         {ctx.exercise_players.length === 0 ? (
           <p className="text-sm text-paper-ink/60 dark:text-fg-faint">
             {t('creator.conductPrep.logistics.attendees.noPlayers')}{' '}
-            <Link to="/creator/players/invitations" className={linkAccent}>
+            <Link to={playersPath(ttxId, 'invitations')} className={linkAccent}>
               {t('creator.conductPrep.logistics.attendees.createInvitation')}
             </Link>
           </p>

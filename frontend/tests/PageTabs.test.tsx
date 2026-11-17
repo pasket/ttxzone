@@ -53,4 +53,24 @@ describe('Page tabs', () => {
     expect(links.map((l) => l.textContent)).toEqual(['Confirmed', 'Pending3', 'Invitations'])
     expect(links[1]).toHaveAttribute('aria-current', 'page')
   })
+
+  it("keep Players' tabs on the exercise the URL names", () => {
+    render(
+      <MemoryRouter initialEntries={['/creator/ttx-7/players/invitations']}>
+        <Routes>
+          <Route
+            path="/creator/:ttxId/players/invitations"
+            element={<PlayersTabs pendingCount={0} />}
+          />
+        </Routes>
+      </MemoryRouter>,
+    )
+    const links = screen.getAllByRole('link')
+    expect(links.map((l) => l.getAttribute('href'))).toEqual([
+      '/creator/ttx-7/players',
+      '/creator/ttx-7/players/pending',
+      '/creator/ttx-7/players/invitations',
+    ])
+    expect(links[2]).toHaveAttribute('aria-current', 'page')
+  })
 })

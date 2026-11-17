@@ -7,6 +7,7 @@ import { useAuth } from '../../hooks/useAuth'
 import { useTableUrlState } from '../../hooks/useTableUrlState'
 import { useToast } from '../../hooks/useToast'
 import { useUndoableAction } from '../../hooks/useUndoableAction'
+import { playersPath } from '../../lib/creatorPaths'
 import { apiFetch, ApiError } from '../../lib/api'
 import { actionsCellClass, linkAccent } from '../../lib/buttonStyles'
 import {
@@ -127,7 +128,7 @@ function PlayersList({ ttxId }: { ttxId: string }) {
         {data && !loading && players.length === 0 && (
           <p className="px-5 py-12 text-center text-sm text-paper-ink/70 dark:text-fg-muted">
             {t('creator.players.empty')}{' '}
-            <Link to="/creator/players/invitations" className={linkAccent}>
+            <Link to={playersPath(ttxId, 'invitations')} className={linkAccent}>
               {t('creator.players.emptyCta')}
             </Link>
           </p>

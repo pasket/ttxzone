@@ -27,20 +27,21 @@ Personal invitations a Planner sends to addresses (`EmailInvitation`, `email_inv
 
 ## Creator → Players
 The menu item is **Players**, an org-scoped route acting on the ContextBar's exercise. It has three tabs, shown with the page title by `creator/PlayersTabs`, keyed off `location.pathname`:
-- **Confirmed** (`/creator/players`)
-- **Pending** (`/creator/players/pending`), with a count pill (`PageTabs` `count`). The Pending page passes its live `total`; elsewhere the tabs fetch `access-requests?limit=1`.
-- **Invitations** (`/creator/players/invitations`): the join codes, then the [email invitations](#email-invitations)
+- The exercise is in the URL (`lib/creatorPaths.ts`'s `playersPath`), so a shared link opens that exercise's Players; `PlayersRoute` (App.tsx) shows the page once that exercise is the one in context and sends an exercise the reader doesn't plan back to Creator. The short form without an exercise (`/creator/players[/pending|/invitations]`, old links) redirects to the exercise in context, keeping the query.
+- **Confirmed** (`/creator/:ttxId/players`)
+- **Pending** (`/creator/:ttxId/players/pending`), with a count pill (`PageTabs` `count`). The Pending page passes its live `total`; elsewhere the tabs fetch `access-requests?limit=1`.
+- **Invitations** (`/creator/:ttxId/players/invitations`): the join codes, then the [email invitations](#email-invitations)
 
-## Invitations (`CreatorInvitationsSection`, `/creator/players/invitations`)
+## Invitations (`CreatorInvitationsSection`, `/creator/:ttxId/players/invitations`)
 - Acts on the ContextBar's `activeTtxId` (no local picker); `creator.invitations.noTtxMessage` when there's none.
 - Create form: optional description, no role picker, an "Unlimited" checkbox (sends `max_uses: null`, disables the number), `expires_at` `max` = now + 365 days client-side.
 - On creation the plaintext shows once in a dismissible callout with Copy (`navigator.clipboard.writeText`); every row also shows its token + Copy. The response is prepended to local state as an `InvitationTokenAuditRead`-shaped row and revoke patches `revoked_at` locally — no re-fetch. The table still shows the role of older, revoked Planner tokens (labels via `ROLE_LABEL_KEYS`).
 - Actions column: Edit (only opens the tag-assignment `Modal` — a token has nothing else to edit) + Revoke (hidden once revoked).
 
-## Pending (`CreatorAccessRequestsSection`, `/creator/players/pending`)
+## Pending (`CreatorAccessRequestsSection`, `/creator/:ttxId/players/pending`)
 - Same context pattern; a decided row is filtered out locally. Shows the domain-not-allowed indicator and disables Approve for a non-allowlisted Planner-role request (`is_allowed_domain`, always true for Players). Approve/Reject is the one Actions column with a text button (auto width).
 
-## Confirmed (`CreatorPlayersSection`, `/creator/players`)
+## Confirmed (`CreatorPlayersSection`, `/creator/:ttxId/players`)
 - The end of the invite → approve funnel: the exercise's `PLAYER` rows, from `GET /ttx/{ttx_id}/players` (`ttx_player_service.players_view`, Planner, design). The team is never listed here; it's on Creator → Exercise.
 - Columns: Player (name, email), Joined (`TTXAccess.created_at`), Invitation (the token description of the latest approved request; "Added directly" when there is none, for example a fixture), Room (`CodeRef`, only while `uses_rooms`), Last login, Actions. Search and sort run client-side (`filterAndSortPeople`, URL prefix `players_`).
 - Remove: trash `IconButton` + `useUndoableAction`, then `DELETE /ttx/{ttx_id}/players/{user_id}`. It deletes the access row with its tags and seat, and logs to `app.log`. Only `PLAYER` rows can be removed (anything else answers 404 `PLAYER_NOT_FOUND`). There is no step-up: the Player can come back with another code and a new approval.

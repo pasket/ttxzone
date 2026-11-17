@@ -1014,7 +1014,7 @@ describe('ContextBar', () => {
     expect(screen.queryByText('View')).not.toBeInTheDocument()
   })
 
-  it('updates context without navigating away when switching TTX on an org-scoped route', async () => {
+  it('keeps Players on the exercise in the URL: the short link opens the one in context, a switch follows', async () => {
     window.history.pushState({}, '', '/creator/players')
     const fetchMock = dynamicFetchMock({
       me: {
@@ -1066,9 +1066,11 @@ describe('ContextBar', () => {
     render(<App />)
 
     const select = await screen.findByLabelText('Select exercise')
+    // The link without an exercise lands on the one in context.
+    await waitFor(() => expect(window.location.pathname).toBe('/creator/ttx-1/players'))
     fireEvent.change(select, { target: { value: 'ttx-2' } })
 
-    expect(window.location.pathname).toBe('/creator/players')
+    expect(window.location.pathname).toBe('/creator/ttx-2/players')
     await waitFor(() => {
       expect(fetchMock).toHaveBeenCalledWith(
         expect.stringContaining('/ttx/ttx-2/players'),

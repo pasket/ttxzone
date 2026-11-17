@@ -83,7 +83,7 @@ describe('CreatorPlayersSection', () => {
     expect(await screen.findByText('No Players have joined yet.', { exact: false })).toBeVisible()
     expect(screen.getByRole('link', { name: 'Create an invitation' })).toHaveAttribute(
       'href',
-      '/creator/players/invitations',
+      '/creator/ttx-1/players/invitations',
     )
   })
 

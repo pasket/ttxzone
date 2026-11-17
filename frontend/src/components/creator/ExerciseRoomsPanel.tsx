@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import { useApiResource } from '../../hooks/useApiResource'
 import { useTableUrlState } from '../../hooks/useTableUrlState'
 import { useToast } from '../../hooks/useToast'
+import { playersPath } from '../../lib/creatorPaths'
 import { apiFetch, ApiError } from '../../lib/api'
 import {
   actionsCellClass,
@@ -173,7 +174,7 @@ export function ExerciseRoomsPanel({
               onEdit={setEditing}
               onRemove={setRemoving}
             />
-            <PlayerSeats data={data} busy={busy} onSeat={seat} />
+            <PlayerSeats ttxId={ttx.id} data={data} busy={busy} onSeat={seat} />
             <TeamRooms data={data} busy={busy} onSeat={seat} />
           </>
         )}
@@ -286,10 +287,12 @@ function RoomList({
 /** The Players and their room: a select per row, or tick several and seat
  * them together. No dragging. */
 function PlayerSeats({
+  ttxId,
   data,
   busy,
   onSeat,
 }: {
+  ttxId: string
   data: RoomsRead
   busy: boolean
   onSeat: (assignments: { user_id: string; room_id: string | null }[]) => Promise<boolean>
@@ -376,7 +379,7 @@ function PlayerSeats({
       {data.players.length === 0 && (
         <p className="px-5 pb-4 text-sm text-paper-ink/70 dark:text-fg-muted">
           {t('creator.rooms.noPlayers')}{' '}
-          <Link to="/creator/players/invitations" className={linkAccent}>
+          <Link to={playersPath(ttxId, 'invitations')} className={linkAccent}>
             {t('creator.rooms.goToInvitations')}
           </Link>
         </p>

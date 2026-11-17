@@ -59,11 +59,11 @@ export interface SectionDef {
   /** Shown instead of the title in the phone's bottom menu. */
   shortKey?: SectionShortKey
   /** True for a section that is org-scoped rather than TTX-scoped -- its
-   * route has no `:ttxId` segment (e.g. `/creator/players`, not
-   * `/creator/:ttxId/players`). PrimaryNav/MobileBottomNav use this to
+   * route has no `:ttxId` segment (e.g. `/creator/library`, not
+   * `/creator/:ttxId/library`). PrimaryNav/MobileBottomNav use this to
    * build the right link, and to recognize the section is active even
    * when it's reached through a literal sibling route with no `:section`
-   * param of its own (e.g. `/creator/players/pending`). */
+   * param of its own (e.g. `/creator/library/injects`). */
   orgScoped?: boolean
   /** Roles that see the section (all when omitted). Execution is the
    * Player landing, shared with the Facilitators, Observers and
@@ -119,7 +119,6 @@ export const CREATOR_SECTIONS: SectionDef[] = [
     key: 'players',
     path: 'players',
     titleKey: 'creator.sections.players',
-    orgScoped: true,
     group: 'exercise',
   },
   // The organization's side, shared by its exercises.
