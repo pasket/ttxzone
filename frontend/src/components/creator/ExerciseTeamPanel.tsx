@@ -205,8 +205,10 @@ export function ExerciseTeamPanel({
   const navigate = useNavigate()
   const base = `/ttx/${ttx.id}/people`
   const { data, loading, error, refetch } = useApiResource<ExercisePeopleListResponse>(base)
+  // Who could be added: only where someone can be (not in the read-only
+  // view of the profile or of an archived exercise).
   const candidatesResource = useApiResource<ExercisePersonCandidateListResponse>(
-    `${base}/candidates`,
+    readOnly ? null : `${base}/candidates`,
   )
   const items = data?.items ?? []
   // Single/managed only (the server answers empty in "open"), and only for
@@ -214,7 +216,7 @@ export function ExerciseTeamPanel({
   // domains with no role in it yet, whom they can add in one step.
   const managesOrganization = useGrantInOrganization(ttx).manages
   const newcomersResource = useApiResource<DomainAccountListResponse>(
-    managesOrganization && user?.can_found_organization === false
+    !readOnly && managesOrganization && user?.can_found_organization === false
       ? `/organizations/${ttx.organization_id}/domain-accounts`
       : null,
   )

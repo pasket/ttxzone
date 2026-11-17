@@ -513,9 +513,8 @@ describe('ExerciseTeamPanel', () => {
   })
 
   it('read-only, is the matrix alone: nothing to add, edit or remove', async () => {
-    stubApi({
+    const fetchMock = stubApi({
       'GET /ttx/ttx-1/people': [json(200, { items: [me, max, wanda] })],
-      'GET /ttx/ttx-1/people/candidates': [json(200, { items: [] })],
     })
 
     render(
@@ -529,5 +528,9 @@ describe('ExerciseTeamPanel', () => {
     expect(screen.queryByRole('columnheader', { name: 'Actions' })).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /Add person/ })).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /^(Edit|Remove) / })).not.toBeInTheDocument()
+    // Nobody can be added here, so who could be isn't asked for.
+    expect(fetchMock.mock.calls.map(([url]) => String(url))).not.toContainEqual(
+      expect.stringContaining('/candidates'),
+    )
   })
 })
