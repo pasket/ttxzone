@@ -3591,6 +3591,12 @@
         "players": "Players"
       }
     },
+    "exerciseView": {
+      "back": "Back to Exercises",
+      "banner": "You’re reading this exercise as its organization’s Exercise Program Manager: nothing here can be changed. To work on it, join its team from Admin → Exercises.",
+      "tabs": "The exercise’s documents",
+      "readLabel": "Read {{name}}"
+    },
     "exercises": {
       "title": "Exercises",
       "listTitle": "The organization's exercises",

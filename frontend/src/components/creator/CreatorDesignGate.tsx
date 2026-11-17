@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useParams } from 'react-router-dom'
 
+import { useExerciseView } from '../../hooks/useExerciseView'
 import { useAuth } from '../../hooks/useAuth'
 import { btnPrimary } from '../../lib/buttonStyles'
 import { Panel } from '../common/Panel'
@@ -16,6 +17,7 @@ export function CreatorDesignGate({ children }: { children: ReactNode }) {
   const { ttxId } = useParams<{ ttxId?: string }>()
   const { ttxList } = useAuth()
   const exercise = ttxList.find((item) => item.id === ttxId)
+  const { base } = useExerciseView(ttxId)
 
   if (!exercise || exercise.needs_form_status === 'approved' || exercise.msel_status) {
     return <>{children}</>
@@ -28,7 +30,7 @@ export function CreatorDesignGate({ children }: { children: ReactNode }) {
           <p className="text-sm text-pretty text-paper-ink/70 dark:text-fg-muted">
             {t('creator.needs.gate.body')}
           </p>
-          <Link to={`/creator/${exercise.id}/needs`} className={`${btnPrimary} inline-flex`}>
+          <Link to={`${base}/needs`} className={`${btnPrimary} inline-flex`}>
             {t('creator.needs.gate.link')}
           </Link>
         </div>

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 import { useApiDownload } from '../../hooks/useApiDownload'
 import { type ArchivedFilter, useArchivedFilter } from '../../hooks/useArchivedFilter'
@@ -28,6 +28,7 @@ import {
 import type { TTXDuplicateResponse, TTXRead } from '../../lib/types'
 import { ButtonSpinner } from './ButtonSpinner'
 import { CodeRef } from './CodeRef'
+import { ViewButton } from './ViewButton'
 import { DuplicateIcon } from './DuplicateIcon'
 import { IconButton } from './IconButton'
 import { Modal } from './Modal'
@@ -113,6 +114,7 @@ export function ExerciseList({
   description,
   empty,
   canOpen = () => true,
+  readPath = () => null,
   action,
 }: {
   exercises: TTXRead[]
@@ -123,6 +125,9 @@ export function ExerciseList({
   description: string
   empty: React.ReactNode
   canOpen?: (exercise: TTXRead) => boolean
+  /** Where an exercise the caller can't open in Creator is read instead
+   * (Admin's read-only view), if anywhere. */
+  readPath?: (exercise: TTXRead) => string | null
   /** One more action per row, before Delete. */
   action?: (exercise: TTXRead) => React.ReactNode
 }) {
@@ -246,6 +251,13 @@ export function ExerciseList({
                       >
                         <CodeRef code={ttx.code} title={ttx.name} variant="stacked" strong wrap />
                       </button>
+                    ) : readPath(ttx) ? (
+                      <Link
+                        to={readPath(ttx) ?? ''}
+                        className={`block rounded-sm text-sm hover:underline focus-visible:underline ${linkAccent}`}
+                      >
+                        <CodeRef code={ttx.code} title={ttx.name} variant="stacked" strong wrap />
+                      </Link>
                     ) : (
                       <span className="text-sm">
                         <CodeRef code={ttx.code} title={ttx.name} variant="stacked" strong wrap />
@@ -275,6 +287,12 @@ export function ExerciseList({
                         >
                           <OpenIcon />
                         </button>
+                      )}
+                      {!canOpen(ttx) && readPath(ttx) && (
+                        <ViewButton
+                          label={t('admin.exerciseView.readLabel', { name: ttx.name })}
+                          onClick={() => navigate(readPath(ttx) ?? '')}
+                        />
                       )}
                       {action?.(ttx)}
                       {onArchive && ttx.can_delete && (

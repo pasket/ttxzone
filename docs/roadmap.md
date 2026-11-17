@@ -30,7 +30,7 @@ Grouped by theme. Section numbers are stable references (other documents cite th
 - Nothing open: licence, `NOTICE`, credits in About, per-operator terms and privacy policy are built (`docs/features/legal-documents.md`).
 
 ### 5. Exercise lifecycle and after-action (Later)
-- Opening an exercise read-only from Admin → Exercises without a seat on its team.
+- Nothing planned here for now.
 
 ### 6. Live session and rooms (Later)
 - Applying a scenario to an exercise that has been played: refused (`SCENARIO_EXERCISE_PLAYED`), since each run's snapshots hang off the MSEL and session plan rows the copy deletes. Allowing it means snapshots owned by the exercise (a migration) so archived runs keep the design they ran.

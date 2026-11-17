@@ -4,6 +4,7 @@ import { mergeMselProposals, mselMetaRow, renumberRow } from '../../../lib/propo
 import { ProposalsPanel } from '../../assistant/ProposalsPanel'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 
+import { useExerciseView } from '../../../hooks/useExerciseView'
 import { useApiResource } from '../../../hooks/useApiResource'
 import { useAuth } from '../../../hooks/useAuth'
 import { useAutosavedDocument } from '../../../hooks/useAutosavedDocument'
@@ -189,7 +190,9 @@ function MselEditor({
   const { refresh } = useAuth()
   const [searchParams, setSearchParams] = useSearchParams()
   const [busy, setBusy] = useState(false)
-  const readOnly = !msel.editable
+  // Someone who oversees the exercise without a seat on it reads the MSEL.
+  const { oversight, base } = useExerciseView(ttxId)
+  const readOnly = !msel.editable || oversight
   // Editing an MSEL past draft sends it back to draft: the first edit asks,
   // and the answer holds for this status and version.
   const [pendingPatch, setPendingPatch] = useState<Partial<MselDraft> | null>(null)
@@ -616,7 +619,7 @@ function MselEditor({
         <p className="text-sm text-pretty text-paper-ink/70 dark:text-fg-muted">
           <HelpText id="creator.msel.intro" text={t('creator.msel.intro')} />
         </p>
-        {readOnly && (
+        {!msel.editable && (
           <div
             role="status"
             className="rounded-sm border border-paper-line bg-hover/40 p-4 text-sm dark:border-line"
@@ -628,7 +631,7 @@ function MselEditor({
                 : t('creator.msel.readOnly.body', { version: msel.needs.version })}
             </p>
             <Link
-              to={`/creator/${ttxId}/needs?step=approval`}
+              to={`${base}/needs?step=approval`}
               className={`${linkAccent} mt-2 inline-block font-medium`}
             >
               {t('creator.msel.readOnly.action')}

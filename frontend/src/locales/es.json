@@ -3591,6 +3591,12 @@
         "players": "Jugadores"
       }
     },
+    "exerciseView": {
+      "back": "Volver a Ejercicios",
+      "banner": "Estás leyendo este ejercicio como Responsable del Programa de Ejercicios de su organización: aquí no se puede cambiar nada. Para trabajar en él, únete a su equipo desde Admin → Ejercicios.",
+      "tabs": "Documentos del ejercicio",
+      "readLabel": "Leer {{name}}"
+    },
     "exercises": {
       "title": "Ejercicios",
       "listTitle": "Los ejercicios de la organización",

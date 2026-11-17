@@ -84,6 +84,13 @@ describe('AdminExercisesSection', () => {
     expect(screen.getByLabelText('Delete Ransomware drill')).toBeInTheDocument()
     expect(screen.getByLabelText('Delete Phishing drill')).toBeInTheDocument()
     expect(screen.queryByLabelText('Open Phishing drill')).not.toBeInTheDocument()
+    // The other is read, in Admin's own view of it.
+    expect(screen.getByRole('button', { name: 'Read Phishing drill' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Phishing drill/ })).toHaveAttribute(
+      'href',
+      '/admin/exercises/ttx-2/exercise',
+    )
+    expect(screen.queryByLabelText('Read Ransomware drill')).not.toBeInTheDocument()
     fireEvent.click(screen.getByLabelText('Open Ransomware drill'))
     expect(setActiveTtxId).toHaveBeenCalledWith('ttx-1')
 

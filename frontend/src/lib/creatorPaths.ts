@@ -9,3 +9,14 @@ export function playersPath(
   const base = ttxId ? `/creator/${ttxId}/players` : '/creator/players'
   return tab ? `${base}/${tab}` : base
 }
+
+/** The documents an Exercise Program Manager reads of an exercise they
+ * hold no seat on (Admin's read-only view), in the order they're written:
+ * the section of the URL and its title. */
+export const OVERSIGHT_DOCUMENTS = [
+  ['exercise', 'creator.sections.exercise'],
+  ['needs', 'creator.sections.needs'],
+  ['msel', 'creator.sections.msel'],
+  ['conduct-prep', 'creator.sections.conductPrep'],
+  ['after-action', 'creator.sections.afterAction'],
+] as const

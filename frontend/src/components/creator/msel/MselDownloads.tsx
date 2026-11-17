@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 
+import { useExerciseView } from '../../../hooks/useExerciseView'
 import { useApiDownload } from '../../../hooks/useApiDownload'
 import { API_BASE } from '../../../lib/api'
 import { btnSecondary, linkAccent } from '../../../lib/buttonStyles'
@@ -19,15 +20,13 @@ export function MselDownloads({
   const { t, i18n } = useTranslation()
   const lang = i18n.language.slice(0, 2)
   const download = useApiDownload()
+  const { base } = useExerciseView(ttxId)
   const path = `/ttx/${ttxId}/msel/export/msel.pdf?lang=${lang}`
   const button = `${btnSecondary} inline-flex h-8 items-center py-0 text-xs`
 
   return (
     <span className="inline-flex flex-wrap items-center justify-end gap-x-3 gap-y-1">
-      <Link
-        to={`/creator/${ttxId}/conduct-prep?step=documents`}
-        className={`${linkAccent} text-xs`}
-      >
+      <Link to={`${base}/conduct-prep?step=documents`} className={`${linkAccent} text-xs`}>
         {t('creator.msel.downloads.movedHint')}
       </Link>
       {blockedReason ? (

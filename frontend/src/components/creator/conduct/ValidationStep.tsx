@@ -1,3 +1,4 @@
+import { useExerciseView } from '../../../hooks/useExerciseView'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 
@@ -27,6 +28,7 @@ import type { StepProps } from './stepProps'
 export function ValidationStep(props: StepProps) {
   const { t, i18n } = useTranslation()
   const { prep, draft, update, isInvalid, ttxId } = props
+  const { base } = useExerciseView(ttxId)
   const ctx = prep.context
   const allValidated = ctx.mandatory_injects_validated >= ctx.mandatory_injects
   const meeting = (date: string | null, done: boolean) =>
@@ -83,7 +85,7 @@ export function ValidationStep(props: StepProps) {
               />
             </div>
           </div>
-          <Link to={`/creator/${ttxId}/msel?tab=injects`} className={linkAccent}>
+          <Link to={`${base}/msel?tab=injects`} className={linkAccent}>
             {t('creator.conductPrep.validationStep.openMsel')}
           </Link>
         </div>

@@ -139,6 +139,10 @@ export function AdminExercisesSection() {
         })}
         empty={<p className={mutedClass}>{t('admin.exercises.empty')}</p>}
         canOpen={(ttx) => actsAs(ttx, 'planner')}
+        // No seat on it: read in Admin's own view of the exercise.
+        readPath={(ttx) =>
+          ttx.role === 'program_manager' ? `/admin/exercises/${ttx.id}/exercise` : null
+        }
         // No seat on it yet: oversight only.
         action={(ttx) => (
           <>

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type Dispatch, type SetStateAction } from 
 import { useTranslation } from 'react-i18next'
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 
+import { useExerciseView } from '../../../hooks/useExerciseView'
 import { useApiResource } from '../../../hooks/useApiResource'
 import { useAutosavedDocument } from '../../../hooks/useAutosavedDocument'
 import { useConductPrepIssueMessage } from '../../../hooks/useConductPrepIssueMessage'
@@ -84,6 +85,7 @@ export function CreatorConductPrepSection() {
   const { ttxId } = useParams<{ ttxId: string }>()
   const { data, error, refetch } = useApiResource<ConductPrep>(`/ttx/${ttxId}/conduct-prep`)
   const { t } = useTranslation()
+  const { base } = useExerciseView(ttxId)
 
   const [prep, setPrep] = useState<ConductPrep | null>(null)
   const [baseline, setBaseline] = useState<ConductPrepDraft | null>(null)
@@ -104,7 +106,7 @@ export function CreatorConductPrepSection() {
             <p className="text-sm text-pretty text-paper-ink/70 dark:text-fg-muted">
               {t('creator.conductPrep.gate.body')}
             </p>
-            <Link to={`/creator/${ttxId}/needs?step=approval`} className={btnPrimary}>
+            <Link to={`${base}/needs?step=approval`} className={btnPrimary}>
               {t('creator.conductPrep.gate.action')}
             </Link>
           </div>
@@ -176,6 +178,8 @@ function ConductPrepEditor({
   const { t } = useTranslation()
   const { showToast } = useToast()
   const navigate = useNavigate()
+  // Someone who oversees the exercise without a seat on it reads the plan.
+  const { oversight, base } = useExerciseView(ttxId)
   // Issues shown here but fixed elsewhere -- the MSEL, the needs analysis,
   // the exercise team -- say where, and take you there.
   const elsewhere = t('creator.conductPrep.fixElsewhere', { returnObjects: true }) as Record<
@@ -184,18 +188,21 @@ function ConductPrepEditor({
   >
   const fixesElsewhere = (issue: ValidationIssue): IssueFix[] => {
     const to: Record<string, [string, string]> = {
-      MSEL_NOT_READY: [elsewhere.msel, `/creator/${ttxId}/msel?tab=review`],
-      INJECTS_NOT_VALIDATED: [elsewhere.injects, `/creator/${ttxId}/msel?tab=injects`],
-      SESSION_OUTSIDE_WINDOW: [elsewhere.window, `/creator/${ttxId}/needs?step=constraints`],
-      STOP_KEYWORD_MISSING: [elsewhere.stopKeyword, `/creator/${ttxId}/needs?step=risks`],
-      LEAD_EVALUATOR_MISSING: [elsewhere.leadEvaluator, `/creator/${ttxId}/exercise?edit=1`],
+      MSEL_NOT_READY: [elsewhere.msel, `${base}/msel?tab=review`],
+      INJECTS_NOT_VALIDATED: [elsewhere.injects, `${base}/msel?tab=injects`],
+      SESSION_OUTSIDE_WINDOW: [elsewhere.window, `${base}/needs?step=constraints`],
+      STOP_KEYWORD_MISSING: [elsewhere.stopKeyword, `${base}/needs?step=risks`],
+      LEAD_EVALUATOR_MISSING: [
+        elsewhere.leadEvaluator,
+        `${base}/exercise${oversight ? '' : '?edit=1'}`,
+      ],
     }
     const target = to[issue.code]
     return target ? [{ label: target[0], onSelect: () => navigate(target[1]) }] : []
   }
   const [searchParams, setSearchParams] = useSearchParams()
   const [busy, setBusy] = useState(false)
-  const readOnly = !prep.editable
+  const readOnly = !prep.editable || oversight
   // Editing a ready plan sends it back to draft: the first edit asks, and
   // the answer holds for this version.
   const [pendingPatch, setPendingPatch] = useState<Partial<ConductPrepDraft> | null>(null)
@@ -383,7 +390,7 @@ function ConductPrepEditor({
         <p className="text-sm text-pretty text-paper-ink/70 dark:text-fg-muted">
           <HelpText id="creator.conductPrep.intro" text={t('creator.conductPrep.intro')} />
         </p>
-        {readOnly && (
+        {!prep.editable && (
           <div
             role="status"
             className="rounded-sm border border-paper-line bg-hover/40 p-4 text-sm dark:border-line"
@@ -395,7 +402,7 @@ function ConductPrepEditor({
               })}
             </p>
             <Link
-              to={`/creator/${ttxId}/needs?step=approval`}
+              to={`${base}/needs?step=approval`}
               className={`${linkAccent} mt-2 inline-block font-medium`}
             >
               {t('creator.msel.readOnly.action')}

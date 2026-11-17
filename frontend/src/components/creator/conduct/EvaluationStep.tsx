@@ -1,3 +1,4 @@
+import { useExerciseView } from '../../../hooks/useExerciseView'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
@@ -45,14 +46,15 @@ export function EvaluationStep(props: StepProps) {
     .filter(Boolean)
     .join(' · ')
   // The hint names the two sources of the points' text as links.
+  const { base } = useExerciseView(props.ttxId)
   const sourceLinks: Record<string, React.ReactNode> = {
     needs: (
-      <Link key="needs" to={`/creator/${props.ttxId}/needs?step=objectives`} className={linkAccent}>
+      <Link key="needs" to={`${base}/needs?step=objectives`} className={linkAccent}>
         {t('creator.conductPrep.eeg.sourceNeeds')}
       </Link>
     ),
     msel: (
-      <Link key="msel" to={`/creator/${props.ttxId}/msel?tab=injects`} className={linkAccent}>
+      <Link key="msel" to={`${base}/msel?tab=injects`} className={linkAccent}>
         {t('creator.conductPrep.eeg.sourceMsel')}
       </Link>
     ),
@@ -545,8 +547,9 @@ function EvaluatorAssignments({ prep, draft, update, isInvalid, readOnly, ttxId 
   const rowOf = (userId: string) =>
     draft.evaluators.find((e) => e.user_id === userId) ?? emptyEvaluator(userId)
 
+  const view = useExerciseView(ttxId)
   const teamLink = (
-    <Link to={`/creator/${ttxId}/exercise?edit=1`} className={linkAccent}>
+    <Link to={`${view.base}/exercise${view.oversight ? '' : '?edit=1'}`} className={linkAccent}>
       {t('creator.conductPrep.evaluators.teamLink')}
     </Link>
   )

@@ -31,12 +31,13 @@ import { RequireTtxParam } from './components/layout/RequireTtxParam'
 import { useAuth } from './hooks/useAuth'
 import { safeReturnTo } from './lib/sso'
 import { RouteBoundary } from './components/common/RouteBoundary'
+import { ExerciseOversightHeader } from './components/admin/ExerciseOversightHeader'
 import { ArchivedExerciseBanner } from './components/common/ArchivedExerciseBanner'
 import { SsoReturnNotice } from './components/common/SsoReturnNotice'
 import { AuthProvider } from './lib/AuthContext'
 import { ReauthenticationHost } from './components/common/ReauthenticationHost'
 import { SessionTimeoutWatcher } from './components/common/SessionTimeoutWatcher'
-import { playersPath } from './lib/creatorPaths'
+import { OVERSIGHT_DOCUMENTS, playersPath } from './lib/creatorPaths'
 import { resolveDefaultContext, routeForContext, ttxOptionsForModule } from './lib/moduleAccess'
 import { ThemeProvider } from './lib/ThemeContext'
 import { ToastProvider } from './lib/ToastContext'
@@ -210,6 +211,48 @@ function SectionPlaceholder({ sections }: { sections: ReturnType<typeof sections
   )
 }
 
+/** Admin -> Exercises -> one exercise, read-only: Creator's own screens
+ * for someone who oversees the exercise without a seat on it (they turn
+ * read-only through `useExerciseView`, and link to each other under this
+ * route). Whoever plans it works on it in Creator instead. */
+function AdminExerciseView() {
+  const { ttxId, section } = useParams<{ ttxId?: string; section?: string }>()
+  const { ttxList } = useAuth()
+  const location = useLocation()
+  const exercise = ttxList.find((ttx) => ttx.id === ttxId)
+  if (!exercise || !ttxId) return <Navigate to="/admin/exercises" replace />
+  const document = OVERSIGHT_DOCUMENTS.find(([key]) => key === section)
+  if (exercise.role !== 'program_manager') {
+    return (
+      <Navigate to={`/creator/${ttxId}/${document?.[0] ?? 'exercise'}${location.search}`} replace />
+    )
+  }
+  if (!document) return <Navigate to={`/admin/exercises/${ttxId}/exercise`} replace />
+  return (
+    <>
+      <ArchivedExerciseBanner />
+      <ExerciseOversightHeader exercise={exercise} section={document[0]} />
+      <div className="p-6">
+        {section === 'exercise' && <CreatorExerciseSection key={ttxId} />}
+        {section === 'needs' && <CreatorNeedsFormSection key={ttxId} />}
+        {section === 'msel' && (
+          <CreatorDesignGate>
+            <CreatorMselSection key={ttxId} />
+          </CreatorDesignGate>
+        )}
+        {section === 'conduct-prep' && (
+          <CreatorDesignGate>
+            <CreatorConductPrepSection key={ttxId} />
+          </CreatorDesignGate>
+        )}
+        {section === 'after-action' && (
+          <AfterActionSection key={ttxId} ttxId={ttxId} exercise={exercise} />
+        )}
+      </div>
+    </>
+  )
+}
+
 function AdminSectionOutlet() {
   const { section } = useParams<{ section?: string }>()
   const { activeOrganizationId } = useAuth()
@@ -295,6 +338,12 @@ function CreatorSectionOutlet() {
   const { ttxList } = useAuth()
   // A Planner who also runs the session gets the way to it from the report.
   const controls = ttxList.some((ttx) => ttx.id === ttxId && ttx.controls)
+  // An exercise the caller only oversees is read in Admin's view of it,
+  // not here (a Creator link someone shared with them).
+  if (ttxList.some((ttx) => ttx.id === ttxId && ttx.role === 'program_manager')) {
+    const document = OVERSIGHT_DOCUMENTS.find(([key]) => key === section)
+    return <Navigate to={`/admin/exercises/${ttxId}/${document?.[0] ?? 'exercise'}`} replace />
+  }
   if (section === 'exercise') {
     // Keyed by the exercise so a ContextBar switch discards an open edit form.
     return (
@@ -669,6 +718,7 @@ function App() {
                       }
                     />
                   ))}
+                  <Route path="/admin/exercises/:ttxId/:section?" element={<AdminExerciseView />} />
                   <Route
                     path="/admin/:section?"
                     element={

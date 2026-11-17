@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, Navigate, useLocation, useParams } from 'react-router-dom'
 
+import { useExerciseView } from '../../hooks/useExerciseView'
 import { useApiResource } from '../../hooks/useApiResource'
 import { useAuth } from '../../hooks/useAuth'
 import { useEditModeParam } from '../../hooks/useEditModeParam'
@@ -41,6 +42,7 @@ function ExerciseIdentityBand({
   onDuplicate?: () => void
 }) {
   const { t, i18n } = useTranslation()
+  const { base } = useExerciseView(exercise.id)
   return (
     <section
       aria-label={exercise.name}
@@ -91,7 +93,7 @@ function ExerciseIdentityBand({
               <dt className={`text-xs ${textFaint}`}>{t('creator.needs.identity.needsForm')}</dt>
               <dd className="flex items-center gap-2">
                 <TlpBadge tlp={exercise.tlp} />
-                <Link to={`/creator/${exercise.id}/needs`} className={`text-sm ${linkAccent}`}>
+                <Link to={`${base}/needs`} className={`text-sm ${linkAccent}`}>
                   {t(`creator.needs.status.${exercise.needs_form_status}`)}
                 </Link>
               </dd>
@@ -179,7 +181,12 @@ export function CreatorExerciseSection() {
   const { showToast } = useToast()
   const { ttxList, refresh, activeOrganizationId, activeOrganization } = useAuth()
   const { ttxId } = useParams<{ ttxId?: string }>()
-  const exercise = ttxOptionsForModule('creator', ttxList).find((ttx) => ttx.id === ttxId)
+  // Its planning team's, or read by an Exercise Program Manager who
+  // oversees it without a seat (Admin's read-only view).
+  const { oversight } = useExerciseView(ttxId)
+  const exercise = oversight
+    ? ttxList.find((ttx) => ttx.id === ttxId)
+    : ttxOptionsForModule('creator', ttxList).find((ttx) => ttx.id === ttxId)
   const [duplicating, setDuplicating] = useState(false)
   // The presentation an accepted AI proposal opens the edit form with.
   const [proposed, setProposed] = useState<Partial<ReturnType<typeof exerciseRow>> | null>(null)
@@ -208,7 +215,8 @@ export function CreatorExerciseSection() {
 
   const title = t('creator.exercise.title')
 
-  if (editing) {
+  // Nothing to edit for whoever only oversees it (`?edit=1` typed by hand).
+  if (editing && !oversight) {
     // A link, so leaving with the form half-filled asks first like any
     // other; the page's path without `?edit=1` is the profile.
     const backToProfile = (
@@ -270,7 +278,7 @@ export function CreatorExerciseSection() {
             <ExerciseIdentityBand
               exercise={exercise}
               editButtonRef={editTriggerRef}
-              onEdit={exercise.archived_at ? undefined : openEditing}
+              onEdit={exercise.archived_at || oversight ? undefined : openEditing}
               onDuplicate={
                 // A copy is a new exercise: it takes the org-scoped Planner grant too.
                 exercise.plans && activeOrganization?.is_planner
@@ -281,7 +289,7 @@ export function CreatorExerciseSection() {
             {duplicating && (
               <DuplicateExerciseModal exercise={exercise} onClose={() => setDuplicating(false)} />
             )}
-            {!exercise.archived_at && (
+            {!exercise.archived_at && !oversight && (
               <ProposalsPanel<ReturnType<typeof exerciseRow>>
                 ttxId={exercise.id}
                 targets={['ttx_meta']}

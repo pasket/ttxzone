@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type Dispatch, type SetStateAction } from 
 import { useTranslation } from 'react-i18next'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 
+import { useExerciseView } from '../../../hooks/useExerciseView'
 import { useApiResource } from '../../../hooks/useApiResource'
 import { useAuth } from '../../../hooks/useAuth'
 import { useAutosavedDocument } from '../../../hooks/useAutosavedDocument'
@@ -205,8 +206,10 @@ function NeedsFormEditor({
   const { showToast } = useToast()
   const download = useApiDownload()
   const { refresh, ttxList } = useAuth()
-  // Archived: read-only (the server refuses every change).
-  const archived = !!ttxList.find((ttx) => ttx.id === ttxId)?.archived_at
+  // Archived, or read by someone who oversees the exercise without a seat
+  // on it: read-only (the server refuses every change).
+  const { oversight } = useExerciseView(ttxId)
+  const archived = oversight || !!ttxList.find((ttx) => ttx.id === ttxId)?.archived_at
   const [searchParams, setSearchParams] = useSearchParams()
   const [busy, setBusy] = useState(false)
   const runUndoable = useUndoableAction()

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 
+import { useExerciseView } from '../../../hooks/useExerciseView'
 import { useAuth } from '../../../hooks/useAuth'
 import { useToast } from '../../../hooks/useToast'
 import {
@@ -201,6 +202,7 @@ export function InjectDialog({
   onDiscard: (inject: InjectDraft) => void
 }) {
   const { t } = useTranslation()
+  const { oversight, base } = useExerciseView(ttxId)
   const { activeOrganizationId, activeOrganization, user } = useAuth()
   const { showToast } = useToast()
   const [inject, setInject] = useState(initial)
@@ -456,7 +458,9 @@ export function InjectDialog({
           role="status"
           className="mt-3 rounded-sm border border-paper-line bg-hover/40 p-3 text-sm dark:border-line"
         >
-          {needs.status === 'approved' ? (
+          {oversight ? (
+            <p>{t('admin.exerciseView.banner')}</p>
+          ) : needs.status === 'approved' ? (
             <p>{t('creator.exercises.archivedBanner')}</p>
           ) : (
             <>
@@ -467,7 +471,7 @@ export function InjectDialog({
                   : t('creator.msel.readOnly.body', { version: needs.version })}
               </p>
               <Link
-                to={`/creator/${ttxId}/needs?step=approval`}
+                to={`${base}/needs?step=approval`}
                 className={`${linkAccent} mt-1 inline-block font-medium`}
               >
                 {t('creator.msel.readOnly.action')}
