@@ -142,6 +142,21 @@ VAGUE_ACTION_WORDS: dict[str, tuple[str, ...]] = {
     "en": ("manage", "assess", "check", "analyse the situation", "analyze the situation"),
     "es": ("gestionar", "valorar", "comprobar", "analizar la situación"),
 }
+# A template's {placeholder} nobody filled in (`scenario_service.fill_variables`
+# leaves them): it would reach the table as written.
+_UNFILLED = re.compile(r"\{\w+\}")
+
+
+def _has_unfilled(*texts) -> bool:
+    """Whether any of `texts` -- strings or lists of them -- still carries
+    a {placeholder}."""
+    for text in texts:
+        for part in [text] if isinstance(text, str) else text or []:
+            if _UNFILLED.search(part or ""):
+                return True
+    return False
+
+
 _VAGUE_ACTION = re.compile(
     r"\b(" + "|".join(re.escape(w) for ws in VAGUE_ACTION_WORDS.values() for w in ws) + r")\b",
     re.IGNORECASE,
@@ -646,6 +661,9 @@ def _phase_view(phase: PhaseRead) -> SimpleNamespace:
     return SimpleNamespace(
         id=str(phase.id),
         name=phase.name,
+        headline=phase.headline,
+        situation_update=phase.situation_update,
+        key_questions=phase.key_questions,
         start_offset=phase.start_offset,
         end_offset=phase.end_offset,
         objective_ids=[str(o) for o in phase.objective_ids],
@@ -729,6 +747,13 @@ def validation_report(
     elif context.max_duration_hours and scenario.duration_minutes > context.max_duration_hours * 60:
         issue(ready, "DURATION_EXCEEDS_LIMIT", SCENARIO, "duration_minutes")
 
+    # M31 -- a template's {placeholder} left unfilled (warning), here and in
+    # each phase and inject below: the table would read it as written.
+    for field in ("title", "summary"):
+        if _has_unfilled(getattr(scenario, field)):
+            issue(warnings, "PLACEHOLDER_UNFILLED", SCENARIO, field)
+            break
+
     # M02 -- the needs analysis was approved again with another version.
     if (
         scenario.needs_form_version is not None
@@ -746,6 +771,8 @@ def validation_report(
         issue(ready, "PHASES_REQUIRED", PHASES, "phases")
     duration = scenario.duration_minutes
     for phase in phases:
+        if _has_unfilled(phase.name, phase.headline, phase.situation_update, phase.key_questions):
+            issue(warnings, "PLACEHOLDER_UNFILLED", PHASES, "name", phase.id)
         if blank(phase.name):
             issue(ready, "MSEL_INCOMPLETE", PHASES, "name", phase.id)
         if phase.end_offset <= phase.start_offset:
@@ -882,6 +909,18 @@ def validation_report(
             and inject.review_status != InjectReviewStatus.VALIDATED
         ):
             issue(approved, "INJECT_NOT_VALIDATED", INJECTS, "review_status", inject.id)
+        # M31 -- a template's {placeholder} left unfilled (warning).
+        if _has_unfilled(
+            inject.title,
+            inject.content,
+            inject.trigger_condition,
+            inject.contingent_purpose,
+            inject.poll_question,
+            inject.poll_options,
+            inject.poll_outcomes,
+            [a.description for a in inject.actions],
+        ):
+            issue(warnings, "PLACEHOLDER_UNFILLED", INJECTS, "content", inject.id)
         # M13 -- expected actions an evaluator can't observe (warning).
         if any(_VAGUE_ACTION.search(a.description) for a in inject.actions):
             issue(warnings, "VAGUE_EXPECTED_ACTION", INJECTS, "expected_actions", inject.id)
@@ -1068,6 +1107,9 @@ def draft_report(
         SimpleNamespace(
             id=phase_ids[p.key],
             name=p.name,
+            headline=p.headline,
+            situation_update=p.situation_update,
+            key_questions=p.key_questions,
             start_offset=p.start_offset,
             end_offset=p.end_offset,
             objective_ids=[str(o) for o in p.objective_ids],

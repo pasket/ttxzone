@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 
 import { codeRefText } from '../lib/codeRef'
+import { leftoverVariables } from '../lib/injectLibrary'
 import {
   formatOffset,
   formatSpan,
@@ -77,12 +78,27 @@ export function useMselIssueMessage(
     return words.length ? ` (${words.map((w) => `“${w}”`).join(', ')})` : ''
   }
 
+  // The {placeholders} a template left in the row the issue names (or in
+  // the scenario's own text), as written: "{supplier}, {plant}".
+  function unfilled(issue: ValidationIssue): string {
+    if (issue.code !== 'PLACEHOLDER_UNFILLED') return ''
+    const id = issue.item_id
+    const row = id
+      ? (draft.injects.find((i) => i.key === id || i.id === id) ??
+        draft.phases.find((p) => p.key === id || p.id === id))
+      : [draft.title, draft.summary]
+    return leftoverVariables(row ?? [])
+      .map((name) => `{${name}}`)
+      .join(', ')
+  }
+
   const message = (issue: ValidationIssue) => {
     const values: Record<string, string> = {
       field: issue.field ? (fieldLabels[issue.field] ?? issue.field) : '',
       item: itemLabel(issue.item_id),
       code: issue.code,
       words: vagueWords(issue),
+      placeholders: unfilled(issue),
       ...phaseValues(issue.item_id),
     }
     // No injects because there are no phases to put them in (Add inject is
@@ -93,11 +109,13 @@ export function useMselIssueMessage(
       !issue.item_id &&
       draft.phases.length === 0
     const template =
-      (noInjectsNoPhases
-        ? messages.INJECTS_NEED_PHASES
-        : issue.code === 'MSEL_INCOMPLETE' && issue.item_id
-          ? messages.MSEL_INCOMPLETE_item
-          : messages[issue.code]) ?? messages.unknown
+      (issue.code === 'PLACEHOLDER_UNFILLED' && !issue.item_id
+        ? messages.PLACEHOLDER_UNFILLED_scenario
+        : noInjectsNoPhases
+          ? messages.INJECTS_NEED_PHASES
+          : issue.code === 'MSEL_INCOMPLETE' && issue.item_id
+            ? messages.MSEL_INCOMPLETE_item
+            : messages[issue.code]) ?? messages.unknown
     return template.replace(/\{\{(\w+)\}\}/g, (_, key: string) => values[key] ?? '')
   }
   return Object.assign(message, { item: (issue: ValidationIssue) => itemLabel(issue.item_id) })

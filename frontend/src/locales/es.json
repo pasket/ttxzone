@@ -2231,6 +2231,8 @@
         "INJECT_AFTER_END": "{{item}}: está programado después del final de la sesión.",
         "INJECT_OUTSIDE_PHASE": "{{item}}: su momento cae fuera de su fase.",
         "POLL_OUTCOME_MISSING": "{{item}}: unas opciones dicen qué pasa después y otras no, así que la mesa puede acabar en una sin consecuencia.",
+        "PLACEHOLDER_UNFILLED": "{{item}}: queda un marcador de la plantilla sin rellenar ({{placeholders}}). La mesa lo leería tal cual.",
+        "PLACEHOLDER_UNFILLED_scenario": "El título o el resumen del escenario conserva un marcador de la plantilla ({{placeholders}}). La mesa lo leería tal cual.",
         "POLL_INCOMPLETE": "{{item}}: falta {{field}}.",
         "CONTINGENT_INCOMPLETE": "{{item}}: falta {{field}}.",
         "RECIPIENT_NOT_IN_SCOPE": "{{item}}: un destinatario no es un área del alcance del análisis de necesidades.",

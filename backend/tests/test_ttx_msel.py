@@ -1494,6 +1494,29 @@ def test_a_poll_asks_a_question_and_evaluates_nothing(client: TestClient, exerci
     assert read["poll_outcomes"] == ["They come back for more.", ""]
     assert "POLL_OUTCOME_MISSING" in _codes(saved["validation"]["warnings"])
 
+    # A template's placeholder nobody filled in is warned about on its row
+    # (and on the scenario's own text), and goes once it's written out.
+    assert "PLACEHOLDER_UNFILLED" not in _codes(saved["validation"]["warnings"])
+    payload = _payload_from(saved)
+    row = next(i for i in payload["injects"] if i["id"] == inject["id"])
+    row.update(poll_question="Pay {attacker} the ransom?")
+    payload["summary"] = "An attack on {organization}."
+    saved = _put(client, exercise["ttx"]["id"], payload).json()
+    unfilled = [
+        (i["section"], i["field"], i["item_id"])
+        for i in saved["validation"]["warnings"]
+        if i["code"] == "PLACEHOLDER_UNFILLED"
+    ]
+    assert len(unfilled) == 2
+    assert (unfilled[0][1], unfilled[0][2]) == ("summary", None)
+    assert (unfilled[1][1], unfilled[1][2]) == ("content", inject["id"])
+    payload = _payload_from(saved)
+    row = next(i for i in payload["injects"] if i["id"] == inject["id"])
+    row.update(poll_question="Pay the ransom?")
+    payload["summary"] = "An attack on the bank."
+    saved = _put(client, exercise["ttx"]["id"], payload).json()
+    assert "PLACEHOLDER_UNFILLED" not in _codes(saved["validation"]["warnings"])
+
     # The meters: each needs a name of its own, and some poll to move it. A
     # meter that goes takes its impacts with it.
     payload = _payload_from(saved)

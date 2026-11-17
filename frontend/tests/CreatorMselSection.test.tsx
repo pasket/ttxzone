@@ -336,6 +336,45 @@ describe('CreatorMselSection', () => {
     ).toBeInTheDocument()
   })
 
+  it('warns about a template placeholder nobody filled in, naming it', async () => {
+    const base = msel()
+    stubApi({
+      'GET /ttx/ttx-1/msel': [
+        json(
+          200,
+          msel({
+            summary: 'An attack on {organization}.',
+            injects: [
+              { ...base.injects[0], content: 'Files of {supplier} are encrypted.' },
+              ...base.injects.slice(1),
+            ],
+            validation: {
+              ready: [],
+              approved: [],
+              warnings: [
+                { code: 'PLACEHOLDER_UNFILLED', section: 1, field: 'summary', item_id: null },
+                { code: 'PLACEHOLDER_UNFILLED', section: 3, field: 'content', item_id: 'inj-1' },
+              ],
+            },
+          }),
+        ),
+      ],
+      'GET /attack/19.2': [json(200, catalog)],
+    })
+    renderPage()
+
+    expect(
+      await screen.findByRole('button', {
+        name: /INJ-01 \| Ransom note found: a template placeholder was never filled in \(\{supplier\}\)/,
+      }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getAllByRole('button', {
+        name: /title or summary still has a template placeholder \(\{organization\}\)/,
+      }),
+    ).not.toHaveLength(0)
+  })
+
   it('offers compression presets and shows what the session adds up to', async () => {
     stubApi({
       'GET /ttx/ttx-1/msel': [json(200, msel())],

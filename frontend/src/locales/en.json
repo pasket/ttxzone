@@ -2232,6 +2232,8 @@
         "INJECT_OUTSIDE_PHASE": "{{item}}: its time falls outside its phase.",
         "POLL_INCOMPLETE": "{{item}}: {{field}} is missing.",
         "POLL_OUTCOME_MISSING": "{{item}}: some options say what follows and others don’t, so the table may land on one with no consequence.",
+        "PLACEHOLDER_UNFILLED": "{{item}}: a template placeholder was never filled in ({{placeholders}}). The table would read it as written.",
+        "PLACEHOLDER_UNFILLED_scenario": "The scenario’s title or summary still has a template placeholder ({{placeholders}}). The table would read it as written.",
         "CONTINGENT_INCOMPLETE": "{{item}}: {{field}} is missing.",
         "RECIPIENT_NOT_IN_SCOPE": "{{item}}: an area in its audience isn’t in scope of the needs analysis.",
         "RESPONSIBLE_NOT_IN_SCOPE": "{{item}}: a responsible area isn’t in scope of the needs analysis.",
