@@ -307,6 +307,8 @@ INTERNAL_ONLY: frozenset[tuple[str, str]] = frozenset(
         ("PATCH", "/ttx/{ttx_id}"),
         ("DELETE", "/ttx/{ttx_id}/access"),
         ("GET", "/ttx/{ttx_id}/access-requests"),
+        ("POST", "/ttx/archive-many"),
+        ("POST", "/ttx/{ttx_id}/access-requests/decide"),
         ("POST", "/ttx/{ttx_id}/access-requests/{request_id}/approve"),
         ("POST", "/ttx/{ttx_id}/access-requests/{request_id}/reject"),
         ("POST", "/ttx/{ttx_id}/archive"),
@@ -395,6 +397,7 @@ INTERNAL_ONLY: frozenset[tuple[str, str]] = frozenset(
         ("POST", "/ttx/{ttx_id}/leave-requests/{request_id}/reject"),
         ("GET", "/ttx/{ttx_id}/players"),
         ("DELETE", "/ttx/{ttx_id}/players/{user_id}"),
+        ("POST", "/ttx/{ttx_id}/players/remove"),
         # ttx_rooms
         ("GET", "/ttx/{ttx_id}/rooms"),
         ("POST", "/ttx/{ttx_id}/rooms"),

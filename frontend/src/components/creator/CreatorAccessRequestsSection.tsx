@@ -2,17 +2,21 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useAuth } from '../../hooks/useAuth'
+import { useRowSelection } from '../../hooks/useRowSelection'
 import { useToast } from '../../hooks/useToast'
 import { useUndoableAction } from '../../hooks/useUndoableAction'
 import { usePageFallback, useTableUrlState } from '../../hooks/useTableUrlState'
 import { apiFetch, ApiError } from '../../lib/api'
-import { btnPrimary } from '../../lib/buttonStyles'
+import { nameList, type BulkResult } from '../../lib/bulk'
+import { btnPrimary, btnSecondary } from '../../lib/buttonStyles'
 import { panelTableHeadRow, panelTbody, panelTd, panelTh, panelTr } from '../../lib/panelStyles'
 import { ButtonSpinner } from '../common/ButtonSpinner'
 import { IconButton } from '../common/IconButton'
 import { Pagination } from '../common/Pagination'
 import { Panel } from '../common/Panel'
+import { SelectBox, SelectionBar } from '../common/SelectionBar'
 import { TableToolbar } from '../common/TableToolbar'
+import { ConfirmActionDialog } from '../playground/ConfirmActionDialog'
 import { ROLE_LABEL_KEYS } from '../../lib/roleLabels'
 import type {
   SortBy,
@@ -25,6 +29,7 @@ import { LeaveRequestsPanel } from './LeaveRequestsPanel'
 import { PlayersTabs } from './PlayersTabs'
 
 const PAGE_SIZE = 10
+const requestId = (item: TTXAccessRequestRead) => item.id
 
 export function CreatorAccessRequestsSection() {
   const { t } = useTranslation()
@@ -41,6 +46,10 @@ export function CreatorAccessRequestsSection() {
   const [decidingId, setDecidingId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [leaveRequests, setLeaveRequests] = useState<TTXLeaveRequest[] | null>(null)
+  const selection = useRowSelection<TTXAccessRequestRead>(requestId)
+  const [bulkBusy, setBulkBusy] = useState<'approve' | 'reject' | null>(null)
+  const [rejecting, setRejecting] = useState(false)
+  const [bulkError, setBulkError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!activeTtxId) return
@@ -154,6 +163,53 @@ export function CreatorAccessRequestsSection() {
     )
   }
 
+  // Several at once: approved straight away, like one; rejected after a
+  // confirmation (no Undo window for a whole group).
+  const chosen = selection.rows.filter((item) => requests.some((r) => r.id === item.id))
+  const onPage = selection.page(requests)
+
+  async function decideChosen(decision: 'approve' | 'reject') {
+    setBulkBusy(decision)
+    setBulkError(null)
+    setError(null)
+    try {
+      const result = await apiFetch<BulkResult>(`/ttx/${activeTtxId}/access-requests/decide`, {
+        method: 'POST',
+        body: JSON.stringify({ request_ids: chosen.map((item) => item.id), decision }),
+      })
+      const done = new Set(result.done)
+      setRequests((prev) => prev.filter((item) => !done.has(item.id)))
+      setTotal((prev) => prev - done.size)
+      selection.forget(result.done)
+      if (done.size > 0) {
+        showToast(
+          t(
+            decision === 'approve'
+              ? 'creator.accessRequests.bulk.approved'
+              : 'creator.accessRequests.bulk.rejected',
+            { count: done.size },
+          ),
+        )
+      }
+      if (result.failed.length > 0) {
+        showToast(
+          t('common.bulk.failed', {
+            count: result.failed.length,
+            reason: result.failed[0].message,
+          }),
+          { variant: 'error' },
+        )
+      }
+      setRejecting(false)
+    } catch (err) {
+      const message = err instanceof ApiError ? err.message : t('auth.common.genericError')
+      if (decision === 'reject') setBulkError(message)
+      else setError(message)
+    } finally {
+      setBulkBusy(null)
+    }
+  }
+
   const totalPages = Math.ceil(total / PAGE_SIZE)
 
   return (
@@ -190,6 +246,34 @@ export function CreatorAccessRequestsSection() {
         }
         flush
       >
+        {requests.length > 0 && (
+          <SelectionBar
+            label={t('creator.accessRequests.bulk.label')}
+            count={chosen.length}
+            onClear={selection.clear}
+          >
+            <button
+              type="button"
+              disabled={bulkBusy !== null}
+              onClick={() => void decideChosen('approve')}
+              className={btnPrimary}
+            >
+              {bulkBusy === 'approve' ? (
+                <ButtonSpinner />
+              ) : (
+                t('creator.accessRequests.bulk.approve', { count: chosen.length })
+              )}
+            </button>
+            <button
+              type="button"
+              disabled={bulkBusy !== null}
+              onClick={() => setRejecting(true)}
+              className={btnSecondary}
+            >
+              {t('creator.accessRequests.bulk.reject', { count: chosen.length })}
+            </button>
+          </SelectionBar>
+        )}
         {!loading && requests.length === 0 && (
           <p className="px-5 py-12 text-center text-sm text-paper-ink/70 dark:text-fg-muted">
             {search
@@ -202,6 +286,14 @@ export function CreatorAccessRequestsSection() {
             <table className="w-full text-left">
               <thead>
                 <tr className={panelTableHeadRow}>
+                  <th className={`${panelTh} w-10`}>
+                    <SelectBox
+                      label={t('common.selection.selectPage')}
+                      checked={onPage.all}
+                      some={onPage.some}
+                      onChange={(on) => selection.toggle(requests, on)}
+                    />
+                  </th>
                   <th className={panelTh}>{t('creator.accessRequests.columnUser')}</th>
                   <th className={panelTh}>{t('creator.accessRequests.columnRole')}</th>
                   <th className={`${panelTh} text-right`}>{t('common.table.actions')}</th>
@@ -210,6 +302,13 @@ export function CreatorAccessRequestsSection() {
               <tbody className={panelTbody}>
                 {requests.map((item) => (
                   <tr key={item.id} aria-busy={decidingId === item.id} className={panelTr}>
+                    <td className={panelTd}>
+                      <SelectBox
+                        label={t('common.selection.selectOne', { name: item.user.full_name })}
+                        checked={selection.has(item)}
+                        onChange={(on) => selection.toggle([item], on)}
+                      />
+                    </td>
                     <td className={panelTd}>
                       <span className="font-semibold text-paper-ink dark:text-fg">
                         {item.user.full_name}
@@ -266,6 +365,22 @@ export function CreatorAccessRequestsSection() {
           </div>
         )}
       </Panel>
+      {rejecting && (
+        <ConfirmActionDialog
+          title={t('creator.accessRequests.bulk.rejectTitle', { count: chosen.length })}
+          description={t('creator.accessRequests.bulk.rejectBody', {
+            names: nameList(
+              chosen.map((item) => item.user),
+              t,
+            ),
+          })}
+          confirmLabel={t('creator.accessRequests.bulk.reject', { count: chosen.length })}
+          pending={bulkBusy === 'reject'}
+          error={bulkError}
+          onClose={() => setRejecting(false)}
+          onConfirm={() => void decideChosen('reject')}
+        />
+      )}
       {leaveRequests && (
         <LeaveRequestsPanel
           ttxId={activeTtxId}

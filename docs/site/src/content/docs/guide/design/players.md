@@ -19,8 +19,8 @@ You can resend or withdraw each invitation.
 
 Create an invitation in **Invitations**, with an optional description, limit and expiry of up to a year. Share its token however you like.
 
-An invitation token isn't a secret, so anyone holding it only gets a **pending** request. You approve or reject each one in **Pending**. You can revoke a token at any time.
+An invitation token isn't a secret, so anyone holding it only gets a **pending** request. You approve or reject each one in **Pending**; to decide several at once, tick them and use **Approve** or **Reject** above the list. You can revoke a token at any time.
 
 ## Confirmed Players
 
-**Confirmed** lists the exercise's Players, how each one joined and their last sign-in. From there you can remove a Player. Requests to leave an exercise wait in **Pending**, with the requests to join.
+**Confirmed** lists the exercise's Players, how each one joined and their last sign-in. From there you can remove a Player, or tick several and remove them together. Requests to leave an exercise wait in **Pending**, with the requests to join.

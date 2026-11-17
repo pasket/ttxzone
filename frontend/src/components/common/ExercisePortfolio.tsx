@@ -5,9 +5,11 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useApiDownload } from '../../hooks/useApiDownload'
 import { type ArchivedFilter, useArchivedFilter } from '../../hooks/useArchivedFilter'
 import { useAuth } from '../../hooks/useAuth'
+import { useRowSelection } from '../../hooks/useRowSelection'
 import { useTableUrlState } from '../../hooks/useTableUrlState'
 import { useToast } from '../../hooks/useToast'
 import { API_BASE, apiFetch, ApiError } from '../../lib/api'
+import type { BulkResult } from '../../lib/bulk'
 import {
   actionsCellClass,
   btnDanger,
@@ -28,7 +30,9 @@ import {
 import type { TTXDuplicateResponse, TTXRead } from '../../lib/types'
 import { ButtonSpinner } from './ButtonSpinner'
 import { CodeRef } from './CodeRef'
+import { SelectBox, SelectionBar } from './SelectionBar'
 import { ViewButton } from './ViewButton'
+import { ConfirmActionDialog } from '../playground/ConfirmActionDialog'
 import { DuplicateIcon } from './DuplicateIcon'
 import { IconButton } from './IconButton'
 import { Modal } from './Modal'
@@ -88,6 +92,8 @@ function ArchiveIcon() {
 }
 
 /** "Archived", next to an exercise's name: a state, in neutral. */
+const exerciseId = (exercise: TTXRead) => exercise.id
+
 export function ArchivedBadge() {
   const { t } = useTranslation()
   return (
@@ -116,6 +122,7 @@ export function ExerciseList({
   canOpen = () => true,
   readPath = () => null,
   action,
+  onArchivedMany,
 }: {
   exercises: TTXRead[]
   page?: ExercisePage
@@ -130,10 +137,20 @@ export function ExerciseList({
   readPath?: (exercise: TTXRead) => string | null
   /** One more action per row, before Delete. */
   action?: (exercise: TTXRead) => React.ReactNode
+  /** Several were archived or brought back at once: a list read from the
+   * server one page at a time reads it again. */
+  onArchivedMany?: () => void
 }) {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
-  const { setActiveTtxId } = useAuth()
+  const { setActiveTtxId, refresh } = useAuth()
+  const { showToast } = useToast()
+  // Several at once, where archiving is offered: only the exercises the
+  // caller may archive (`can_delete`) can be ticked.
+  const selection = useRowSelection<TTXRead>(exerciseId)
+  const [archivingMany, setArchivingMany] = useState<boolean | null>(null)
+  const [bulkBusy, setBulkBusy] = useState(false)
+  const [bulkError, setBulkError] = useState<string | null>(null)
   const { sortDir, setSortDir, sortBy, setSortBy, search, setSearch } = useTableUrlState()
   const [archivedFilter, setArchivedFilter] = useArchivedFilter()
   const dateFmt = new Intl.DateTimeFormat(i18n.language, { dateStyle: 'medium' })
@@ -162,6 +179,49 @@ export function ExerciseList({
   const none = page
     ? total === 0 && !query && archivedFilter === 'active' && !page.loading
     : exercises.length === 0
+
+  const selectable = onArchive ? rows.filter((ttx) => ttx.can_delete) : []
+  // Ticked rows still on show, split by what can be done to them.
+  const chosen = selection.rows.filter((ttx) => rows.some((row) => row.id === ttx.id))
+  const toArchive = chosen.filter((ttx) => !ttx.archived_at)
+  const toRestore = chosen.filter((ttx) => ttx.archived_at)
+  const onPage = selection.page(selectable)
+  const batch = archivingMany === null ? [] : archivingMany ? toArchive : toRestore
+
+  async function archiveMany(archived: boolean) {
+    setBulkBusy(true)
+    setBulkError(null)
+    try {
+      const result = await apiFetch<BulkResult>('/ttx/archive-many', {
+        method: 'POST',
+        body: JSON.stringify({ ttx_ids: batch.map((ttx) => ttx.id), archived }),
+      })
+      selection.forget(result.done)
+      if (result.done.length > 0) {
+        showToast(
+          t(archived ? 'creator.exercises.bulk.archived' : 'creator.exercises.bulk.unarchived', {
+            count: result.done.length,
+          }),
+        )
+      }
+      if (result.failed.length > 0) {
+        showToast(
+          t('common.bulk.failed', {
+            count: result.failed.length,
+            reason: result.failed[0].message,
+          }),
+          { variant: 'error' },
+        )
+      }
+      await refresh()
+      onArchivedMany?.()
+      setArchivingMany(null)
+    } catch (err) {
+      setBulkError(err instanceof ApiError ? err.message : t('auth.common.genericError'))
+    } finally {
+      setBulkBusy(false)
+    }
+  }
 
   function open(ttx: TTXRead) {
     setActiveTtxId(ttx.id)
@@ -211,6 +271,48 @@ export function ExerciseList({
           />
         </FilterRow>
       )}
+      {selectable.length > 0 && (
+        <SelectionBar
+          label={t('creator.exercises.bulk.label')}
+          count={chosen.length}
+          onClear={selection.clear}
+        >
+          {toArchive.length > 0 && (
+            <button type="button" onClick={() => setArchivingMany(true)} className={btnSecondary}>
+              {t('creator.exercises.bulk.archive', { count: toArchive.length })}
+            </button>
+          )}
+          {toRestore.length > 0 && (
+            <button type="button" onClick={() => setArchivingMany(false)} className={btnSecondary}>
+              {t('creator.exercises.bulk.unarchive', { count: toRestore.length })}
+            </button>
+          )}
+        </SelectionBar>
+      )}
+      {archivingMany !== null && (
+        <ConfirmActionDialog
+          title={t(
+            archivingMany
+              ? 'creator.exercises.bulk.archiveTitle'
+              : 'creator.exercises.bulk.unarchiveTitle',
+            { count: batch.length },
+          )}
+          description={t(
+            archivingMany
+              ? 'creator.exercises.bulk.archiveBody'
+              : 'creator.exercises.bulk.unarchiveBody',
+          )}
+          items={batch.map((ttx) => ({ code: ttx.code, title: ttx.name }))}
+          confirmLabel={t(
+            archivingMany ? 'creator.exercises.bulk.archive' : 'creator.exercises.bulk.unarchive',
+            { count: batch.length },
+          )}
+          pending={bulkBusy}
+          error={bulkError}
+          onClose={() => setArchivingMany(null)}
+          onConfirm={() => void archiveMany(archivingMany)}
+        />
+      )}
       {page?.error ? (
         <p role="alert" className="px-5 py-4 text-sm text-danger-fg">
           {page.error.message}
@@ -230,6 +332,17 @@ export function ExerciseList({
           <table className="w-full text-left">
             <thead>
               <tr className={panelTableHeadRow}>
+                {onArchive && (
+                  <th className={`${panelTh} w-10`}>
+                    <SelectBox
+                      label={t('common.selection.selectPage')}
+                      checked={onPage.all}
+                      some={onPage.some}
+                      disabled={selectable.length === 0}
+                      onChange={(on) => selection.toggle(selectable, on)}
+                    />
+                  </th>
+                )}
                 <th className={panelTh}>{t('creator.exercises.columns.exercise')}</th>
                 <th className={panelTh}>{t('creator.exercises.columns.needs')}</th>
                 <th className={panelTh}>{t('creator.exercises.columns.msel')}</th>
@@ -241,6 +354,17 @@ export function ExerciseList({
             <tbody className={panelTbody}>
               {rows.map((ttx) => (
                 <tr key={ttx.id} className={panelTr}>
+                  {onArchive && (
+                    <td className={panelTd}>
+                      {ttx.can_delete && (
+                        <SelectBox
+                          label={t('common.selection.selectOne', { name: ttx.name })}
+                          checked={selection.has(ttx)}
+                          onChange={(on) => selection.toggle([ttx], on)}
+                        />
+                      )}
+                    </td>
+                  )}
                   <td className={panelTd}>
                     {canOpen(ttx) ? (
                       <button

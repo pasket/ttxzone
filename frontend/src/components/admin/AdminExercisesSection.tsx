@@ -133,6 +133,7 @@ export function AdminExercisesSection() {
         }}
         onDelete={setDeleting}
         onArchive={setArchiving}
+        onArchivedMany={exercises.refetch}
         title={t('admin.exercises.listTitle')}
         description={t('admin.exercises.intro', {
           organization: activeOrganization?.organization_name ?? '',

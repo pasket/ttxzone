@@ -144,4 +144,37 @@ describe('AdminExercisesSection', () => {
     expect(url.searchParams.get('offset')).toBe('20')
     expect(url.searchParams.get('q')).toBe('drill')
   })
+
+  it('archives the ticked exercises together, after naming them', async () => {
+    const fetchMock = serve()
+    render(
+      <MemoryRouter initialEntries={['/admin/exercises']}>
+        <AdminExercisesSection />
+      </MemoryRouter>,
+    )
+    await screen.findByText('Phishing drill')
+
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Select every row on this page' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Archive 2' }))
+    const dialog = screen.getByRole('dialog')
+    expect(dialog).toHaveTextContent('Archive 2 exercises?')
+    expect(dialog).toHaveTextContent('Phishing drill')
+    fetchMock.mockImplementationOnce(
+      async () =>
+        ({
+          ok: true,
+          status: 200,
+          json: async () => ({ done: ['ttx-1', 'ttx-2'], failed: [] }),
+        }) as Response,
+    )
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Archive 2' }))
+
+    expect(await screen.findByText('2 exercises archived')).toBeInTheDocument()
+    const call = fetchMock.mock.calls.find(([url]) => String(url).endsWith('/ttx/archive-many'))
+    expect(JSON.parse(String(call?.[1]?.body))).toEqual({
+      ttx_ids: ['ttx-1', 'ttx-2'],
+      archived: true,
+    })
+    await waitFor(() => expect(refresh).toHaveBeenCalled())
+  })
 })

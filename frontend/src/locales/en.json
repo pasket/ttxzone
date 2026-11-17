@@ -50,6 +50,20 @@
       "next": "Next",
       "pageOf": "Page {{page}} of {{totalPages}}"
     },
+    "selection": {
+      "none": "Tick rows to act on several at once.",
+      "selected_one": "{{count}} selected",
+      "selected_other": "{{count}} selected",
+      "selectPage": "Select every row on this page",
+      "selectOne": "Select {{name}}",
+      "clear": "Clear selection"
+    },
+    "bulk": {
+      "failed_one": "{{count}} couldn’t be done: {{reason}}",
+      "failed_other": "{{count}} couldn’t be done. The first: {{reason}}",
+      "andMore_one": "and {{count}} more",
+      "andMore_other": "and {{count}} more"
+    },
     "toolbar": {
       "searchLabel": "Search",
       "searchPlaceholder": "Search…",
@@ -866,6 +880,23 @@
       "afterAction": "After-action report"
     },
     "exercises": {
+      "bulk": {
+        "label": "Act on the selected exercises",
+        "archive_one": "Archive {{count}}",
+        "archive_other": "Archive {{count}}",
+        "unarchive_one": "Unarchive {{count}}",
+        "unarchive_other": "Unarchive {{count}}",
+        "archiveTitle_one": "Archive {{count}} exercise?",
+        "archiveTitle_other": "Archive {{count}} exercises?",
+        "archiveBody": "They become read-only and leave the default lists. Nothing is deleted; you can unarchive them.",
+        "unarchiveTitle_one": "Unarchive {{count}} exercise?",
+        "unarchiveTitle_other": "Unarchive {{count}} exercises?",
+        "unarchiveBody": "They come back to the default lists and can be changed again.",
+        "archived_one": "{{count}} exercise archived",
+        "archived_other": "{{count}} exercises archived",
+        "unarchived_one": "{{count}} exercise unarchived",
+        "unarchived_other": "{{count}} exercises unarchived"
+      },
       "createTitle": "Create exercise",
       "updateTitle": "Edit exercise",
       "nameLabel": "Name",
@@ -967,6 +998,20 @@
       "columnTags": "TTX tags"
     },
     "accessRequests": {
+      "bulk": {
+        "label": "Act on the selected requests",
+        "approve_one": "Approve {{count}}",
+        "approve_other": "Approve {{count}}",
+        "reject_one": "Reject {{count}}",
+        "reject_other": "Reject {{count}}",
+        "rejectTitle_one": "Reject {{count}} request?",
+        "rejectTitle_other": "Reject {{count}} requests?",
+        "rejectBody": "They won’t join the exercise, and each waits a day before asking again. {{names}}.",
+        "approved_one": "{{count}} request approved",
+        "approved_other": "{{count}} requests approved",
+        "rejected_one": "{{count}} request rejected",
+        "rejected_other": "{{count}} requests rejected"
+      },
       "title": "Pending requests",
       "count_one": "{{count}} pending request",
       "count_other": "{{count}} pending requests",
@@ -988,6 +1033,17 @@
       "approvedToast": "The Player has left the exercise"
     },
     "players": {
+      "bulk": {
+        "label": "Act on the selected Players",
+        "remove": "Remove from the exercise",
+        "confirmTitle_one": "Remove {{count}} Player?",
+        "confirmTitle_other": "Remove {{count}} Players?",
+        "confirmBody": "They leave the exercise at once and lose their seat in its rooms; each can join again with an invitation. {{names}}.",
+        "confirm_one": "Remove {{count}} Player",
+        "confirm_other": "Remove {{count}} Players",
+        "removed_one": "{{count}} Player removed",
+        "removed_other": "{{count}} Players removed"
+      },
       "tabConfirmed": "Confirmed",
       "tabPending": "Pending",
       "tabInvitations": "Invitations",

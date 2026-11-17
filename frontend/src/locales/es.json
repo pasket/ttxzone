@@ -50,6 +50,20 @@
       "next": "Siguiente",
       "pageOf": "Página {{page}} de {{totalPages}}"
     },
+    "selection": {
+      "none": "Marca filas para actuar sobre varias a la vez.",
+      "selected_one": "{{count}} seleccionada",
+      "selected_other": "{{count}} seleccionadas",
+      "selectPage": "Seleccionar todas las filas de esta página",
+      "selectOne": "Seleccionar {{name}}",
+      "clear": "Quitar la selección"
+    },
+    "bulk": {
+      "failed_one": "{{count}} no se pudo hacer: {{reason}}",
+      "failed_other": "{{count}} no se pudieron hacer. La primera: {{reason}}",
+      "andMore_one": "y {{count}} más",
+      "andMore_other": "y {{count}} más"
+    },
     "toolbar": {
       "searchLabel": "Buscar",
       "searchPlaceholder": "Buscar…",
@@ -866,6 +880,23 @@
       "afterAction": "Informe posterior"
     },
     "exercises": {
+      "bulk": {
+        "label": "Actuar sobre los ejercicios seleccionados",
+        "archive_one": "Archivar {{count}}",
+        "archive_other": "Archivar {{count}}",
+        "unarchive_one": "Desarchivar {{count}}",
+        "unarchive_other": "Desarchivar {{count}}",
+        "archiveTitle_one": "¿Archivar {{count}} ejercicio?",
+        "archiveTitle_other": "¿Archivar {{count}} ejercicios?",
+        "archiveBody": "Quedan en solo lectura y salen de las listas por defecto. No se borra nada; puedes desarchivarlos.",
+        "unarchiveTitle_one": "¿Desarchivar {{count}} ejercicio?",
+        "unarchiveTitle_other": "¿Desarchivar {{count}} ejercicios?",
+        "unarchiveBody": "Vuelven a las listas por defecto y se pueden cambiar de nuevo.",
+        "archived_one": "{{count}} ejercicio archivado",
+        "archived_other": "{{count}} ejercicios archivados",
+        "unarchived_one": "{{count}} ejercicio desarchivado",
+        "unarchived_other": "{{count}} ejercicios desarchivados"
+      },
       "createTitle": "Crear ejercicio",
       "updateTitle": "Editar ejercicio",
       "nameLabel": "Nombre",
@@ -967,6 +998,20 @@
       "columnTags": "Etiquetas de TTX"
     },
     "accessRequests": {
+      "bulk": {
+        "label": "Actuar sobre las solicitudes seleccionadas",
+        "approve_one": "Aprobar {{count}}",
+        "approve_other": "Aprobar {{count}}",
+        "reject_one": "Rechazar {{count}}",
+        "reject_other": "Rechazar {{count}}",
+        "rejectTitle_one": "¿Rechazar {{count}} solicitud?",
+        "rejectTitle_other": "¿Rechazar {{count}} solicitudes?",
+        "rejectBody": "No se unirán al ejercicio, y cada persona espera un día antes de volver a pedirlo. {{names}}.",
+        "approved_one": "{{count}} solicitud aprobada",
+        "approved_other": "{{count}} solicitudes aprobadas",
+        "rejected_one": "{{count}} solicitud rechazada",
+        "rejected_other": "{{count}} solicitudes rechazadas"
+      },
       "title": "Solicitudes pendientes",
       "count_one": "{{count}} solicitud pendiente",
       "count_other": "{{count}} solicitudes pendientes",
@@ -988,6 +1033,17 @@
       "approvedToast": "El Jugador ha salido del ejercicio"
     },
     "players": {
+      "bulk": {
+        "label": "Actuar sobre los Jugadores seleccionados",
+        "remove": "Quitar del ejercicio",
+        "confirmTitle_one": "¿Quitar {{count}} Jugador?",
+        "confirmTitle_other": "¿Quitar {{count}} Jugadores?",
+        "confirmBody": "Salen del ejercicio en el acto y pierden su sitio en las salas; cada uno puede volver a unirse con una invitación. {{names}}.",
+        "confirm_one": "Quitar {{count}} Jugador",
+        "confirm_other": "Quitar {{count}} Jugadores",
+        "removed_one": "{{count}} Jugador quitado",
+        "removed_other": "{{count}} Jugadores quitados"
+      },
       "tabConfirmed": "Confirmados",
       "tabPending": "Pendientes",
       "tabInvitations": "Invitaciones",

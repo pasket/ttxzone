@@ -4,12 +4,14 @@ import { Link } from 'react-router-dom'
 
 import { useApiResource } from '../../hooks/useApiResource'
 import { useAuth } from '../../hooks/useAuth'
+import { useRowSelection } from '../../hooks/useRowSelection'
 import { useTableUrlState } from '../../hooks/useTableUrlState'
 import { useToast } from '../../hooks/useToast'
 import { useUndoableAction } from '../../hooks/useUndoableAction'
 import { playersPath } from '../../lib/creatorPaths'
 import { apiFetch, ApiError } from '../../lib/api'
-import { actionsCellClass, linkAccent } from '../../lib/buttonStyles'
+import { nameList, type BulkResult } from '../../lib/bulk'
+import { actionsCellClass, btnSecondary, linkAccent } from '../../lib/buttonStyles'
 import {
   panelActionsTh,
   panelTableHeadRow,
@@ -25,8 +27,12 @@ import { HelpText } from '../common/HelpText'
 import { IconButton } from '../common/IconButton'
 import { LastLogin } from '../common/LastLogin'
 import { Panel } from '../common/Panel'
+import { SelectBox, SelectionBar } from '../common/SelectionBar'
 import { TableToolbar } from '../common/TableToolbar'
+import { ConfirmActionDialog } from '../playground/ConfirmActionDialog'
 import { PlayersTabs } from './PlayersTabs'
+
+const playerId = (player: TTXPlayerRead) => player.user_id
 
 /** Creator -> Players -> Confirmed: the Players whose request was
  * approved, the end of the invite -> approve funnel. Removing one takes
@@ -95,6 +101,44 @@ function PlayersList({ ttxId }: { ttxId: string }) {
     })
   }
 
+  // Several at once: confirmed first (no Undo window for a whole group).
+  const selection = useRowSelection<TTXPlayerRead>(playerId)
+  const [confirming, setConfirming] = useState(false)
+  const [busy, setBusy] = useState(false)
+  const [bulkError, setBulkError] = useState<string | null>(null)
+  const chosen = selection.rows.filter((p) => !removed.has(p.user_id))
+  const onPage = selection.page(visible)
+
+  async function removeChosen() {
+    setBusy(true)
+    setBulkError(null)
+    try {
+      const result = await apiFetch<BulkResult>(`/ttx/${ttxId}/players/remove`, {
+        method: 'POST',
+        body: JSON.stringify({ user_ids: chosen.map((p) => p.user_id) }),
+      })
+      for (const id of result.done) setGone(id, true)
+      selection.forget(result.done)
+      if (result.done.length > 0) {
+        showToast(t('creator.players.bulk.removed', { count: result.done.length }))
+      }
+      if (result.failed.length > 0) {
+        showToast(
+          t('common.bulk.failed', {
+            count: result.failed.length,
+            reason: result.failed[0].message,
+          }),
+          { variant: 'error' },
+        )
+      }
+      setConfirming(false)
+    } catch (err) {
+      setBulkError(err instanceof ApiError ? err.message : t('auth.common.genericError'))
+    } finally {
+      setBusy(false)
+    }
+  }
+
   return (
     <div className="space-y-4">
       <PlayersTabs />
@@ -133,6 +177,17 @@ function PlayersList({ ttxId }: { ttxId: string }) {
             </Link>
           </p>
         )}
+        {visible.length > 0 && (
+          <SelectionBar
+            label={t('creator.players.bulk.label')}
+            count={chosen.length}
+            onClear={selection.clear}
+          >
+            <button type="button" onClick={() => setConfirming(true)} className={btnSecondary}>
+              {t('creator.players.bulk.remove')}
+            </button>
+          </SelectionBar>
+        )}
         {players.length > 0 && visible.length === 0 && (
           <p className="px-5 py-12 text-center text-sm text-paper-ink/70 dark:text-fg-muted">
             {t('common.toolbar.noSearchResults', { query: search })}
@@ -143,6 +198,14 @@ function PlayersList({ ttxId }: { ttxId: string }) {
             <table className="w-full min-w-[40rem] text-left">
               <thead>
                 <tr className={panelTableHeadRow}>
+                  <th scope="col" className={`${panelTh} w-10`}>
+                    <SelectBox
+                      label={t('common.selection.selectPage')}
+                      checked={onPage.all}
+                      some={onPage.some}
+                      onChange={(on) => selection.toggle(visible, on)}
+                    />
+                  </th>
                   <th scope="col" className={panelTh}>
                     {t('creator.players.columnPlayer')}
                   </th>
@@ -168,6 +231,13 @@ function PlayersList({ ttxId }: { ttxId: string }) {
               <tbody className={panelTbody}>
                 {visible.map((player) => (
                   <tr key={player.user_id} className={panelTr}>
+                    <td className={panelTd}>
+                      <SelectBox
+                        label={t('common.selection.selectOne', { name: player.full_name })}
+                        checked={selection.has(player)}
+                        onChange={(on) => selection.toggle([player], on)}
+                      />
+                    </td>
                     <th scope="row" className={`${panelTd} text-left font-normal`}>
                       <span className="block font-semibold text-paper-ink dark:text-fg">
                         {player.full_name}
@@ -216,6 +286,17 @@ function PlayersList({ ttxId }: { ttxId: string }) {
           </div>
         )}
       </Panel>
+      {confirming && (
+        <ConfirmActionDialog
+          title={t('creator.players.bulk.confirmTitle', { count: chosen.length })}
+          description={t('creator.players.bulk.confirmBody', { names: nameList(chosen, t) })}
+          confirmLabel={t('creator.players.bulk.confirm', { count: chosen.length })}
+          pending={busy}
+          error={bulkError}
+          onClose={() => setConfirming(false)}
+          onConfirm={() => void removeChosen()}
+        />
+      )}
     </div>
   )
 }

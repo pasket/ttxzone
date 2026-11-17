@@ -28,6 +28,7 @@ from app.models import (
     User,
 )
 from app.models.exercise_run import RunStatus
+from app.schemas.bulk import AccessRequestsDecideRequest, BulkResult, ExercisesArchiveRequest
 from app.schemas.dashboard import TTXDashboardRead
 from app.schemas.invitation_token import (
     InvitationTokenAuditListResponse,
@@ -58,7 +59,7 @@ from app.schemas.ttx_planning_team import (
     PlanningTeamTagAssignmentRequest,
 )
 from app.schemas.ttx_tag import TTXTagAssignmentRequest, TTXTagRead
-from app.services import platform_audit_service
+from app.services import bulk_service, platform_audit_service
 from app.services.attention_service import attention
 from app.services.dashboard_service import get_ttx_dashboard
 from app.services.exercise_run_service import run_states
@@ -312,6 +313,24 @@ def _archive(ttx_id: uuid.UUID, user: User, session: Session, archived: bool) ->
     else:
         require_ttx_role(session, user, ttx, (RoleEnum.PLANNER,))
     return _ttx_read(session, set_archived(session, ttx, user, archived), user)
+
+
+@router.post("/archive-many", response_model=BulkResult, dependencies=[Depends(verify_csrf)])
+def archive_many_endpoint(
+    payload: ExercisesArchiveRequest,
+    user: User = Depends(get_current_user),
+    session: Session = Depends(get_session),
+    locale: str = Depends(get_locale),
+) -> BulkResult:
+    """Archive (or bring back) several exercises: each one as on its own
+    -- its Lead Planner or a Program Manager of its organization --, and
+    the answer says which were done and why the others weren't."""
+    return bulk_service.each(
+        session,
+        payload.ttx_ids,
+        lambda ttx_id: _archive(ttx_id, user, session, payload.archived),
+        locale,
+    )
 
 
 @router.post("/{ttx_id}/archive", response_model=TTXRead, dependencies=[Depends(verify_csrf)])
@@ -587,6 +606,31 @@ def reject_access_request_endpoint(
     requester = session.get(User, request.user_id)
     allowed_domains = _org_allowed_domains(session, ttx.organization_id)
     return _access_request_read(request, requester, token, allowed_domains)
+
+
+@router.post(
+    "/{ttx_id}/access-requests/decide",
+    response_model=BulkResult,
+    dependencies=[Depends(verify_csrf)],
+)
+def decide_access_requests_endpoint(
+    payload: AccessRequestsDecideRequest,
+    ttx: TTX = Depends(RequiresOrgAndTTXAccess(RoleEnum.PLANNER)),
+    user: User = Depends(get_current_user),
+    session: Session = Depends(get_session),
+    locale: str = Depends(get_locale),
+) -> BulkResult:
+    """Approve or reject several requests to join the exercise: each one
+    as on its own; one already decided is reported, not fatal."""
+    decide = approve_access_request if payload.decision == "approve" else reject_access_request
+    # Read again per row: a row that fails rolls the session back.
+    ttx_id = ttx.id
+    return bulk_service.each(
+        session,
+        payload.request_ids,
+        lambda request_id: decide(session, session.get(TTX, ttx_id), user, request_id),
+        locale,
+    )
 
 
 # planning team (Creator -> Settings -> planning team), called

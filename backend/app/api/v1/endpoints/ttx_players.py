@@ -9,14 +9,17 @@ from fastapi import APIRouter, Depends
 from sqlmodel import Session
 
 from app.core.db import get_session
+from app.core.i18n import get_locale
 from app.core.security import RequiresOrgAndTTXAccess, get_current_user, verify_csrf
 from app.models import TTX, Organization, RoleEnum, User
+from app.schemas.bulk import BulkResult, PlayersRemoveRequest
 from app.schemas.ttx_player import (
     LeaveRequestCreate,
     MyLeaveRequestRead,
     TTXLeaveRequestRead,
     TTXPlayersRead,
 )
+from app.services import bulk_service
 from app.services.ttx_leave_request_service import (
     approve_leave_request,
     list_own_pending_leave_requests,
@@ -50,6 +53,28 @@ def remove_player_endpoint(
 ) -> None:
     """Remove a Player from the exercise."""
     remove_player(session, ttx, user_id, user.id)
+
+
+@router.post(
+    "/{ttx_id}/players/remove", response_model=BulkResult, dependencies=[Depends(verify_csrf)]
+)
+def remove_players_endpoint(
+    payload: PlayersRemoveRequest,
+    ttx: TTX = Depends(_planner),
+    user: User = Depends(get_current_user),
+    session: Session = Depends(get_session),
+    locale: str = Depends(get_locale),
+) -> BulkResult:
+    """Remove several Players from the exercise: each one as on its own;
+    someone who isn't its Player is reported, not fatal."""
+    # Read again per row: a row that fails rolls the session back.
+    ttx_id, actor_id = ttx.id, user.id
+    return bulk_service.each(
+        session,
+        payload.user_ids,
+        lambda user_id: remove_player(session, session.get(TTX, ttx_id), user_id, actor_id),
+        locale,
+    )
 
 
 def _leave_request_read(request, user: User) -> TTXLeaveRequestRead:

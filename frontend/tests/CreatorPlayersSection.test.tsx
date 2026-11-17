@@ -1,4 +1,4 @@
-import { fireEvent, screen } from '@testing-library/react'
+import { fireEvent, screen, within } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
 
@@ -122,5 +122,35 @@ describe('CreatorPlayersSection', () => {
 
     expect(screen.getByText('Ana Ruiz')).toBeInTheDocument()
     expect(fetchMock).toHaveBeenCalledTimes(1)
+  })
+
+  it('removes the ticked Players together, after asking', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(playersResponse([ana, bea]))
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({ done: ['user-2', 'user-3'], failed: [] }),
+      } as Response)
+    stubFetchWithPendingCount(fetchMock)
+    renderAt()
+    await screen.findByText('Ana Ruiz')
+
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Select Ana Ruiz' }))
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Select Bea Gil' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Remove from the exercise' }))
+    const dialog = screen.getByRole('dialog')
+    expect(dialog).toHaveTextContent('Remove 2 Players?')
+    expect(dialog).toHaveTextContent('Ana Ruiz, Bea Gil.')
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Remove 2 Players' }))
+
+    expect(await screen.findByText('2 Players removed')).toBeInTheDocument()
+    const [url, init] = fetchMock.mock.calls.at(-1) as [string, RequestInit]
+    expect(url).toContain('/ttx/ttx-1/players/remove')
+    expect(JSON.parse(String(init.body))).toEqual({ user_ids: ['user-2', 'user-3'] })
+    expect(screen.queryByText('Ana Ruiz')).toBeNull()
+    expect(screen.queryByText('Bea Gil')).toBeNull()
   })
 })

@@ -183,6 +183,8 @@ DESIGN_ENDPOINTS = [
     ("POST", "/email-invitations/00000000-0000-0000-0000-000000000000/resend"),
     ("DELETE", "/email-invitations/00000000-0000-0000-0000-000000000000"),
     ("GET", "/access-requests"),
+    ("POST", "/access-requests/decide"),
+    ("POST", "/players/remove"),
     ("GET", "/planning-team"),
     ("PUT", "/planning-team/lead"),
     ("PUT", "/planning-team/00000000-0000-0000-0000-000000000000/functions"),

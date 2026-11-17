@@ -1,4 +1,4 @@
-import { fireEvent, screen, waitFor } from '@testing-library/react'
+import { fireEvent, screen, waitFor, within } from '@testing-library/react'
 
 import { render, stubFetchWithPendingCount } from './testUtils'
 import { describe, expect, it, vi } from 'vitest'
@@ -200,5 +200,75 @@ describe('CreatorAccessRequestsSection', () => {
         expect.anything(),
       ),
     )
+  })
+
+  it('approves the ticked requests together, and says which one could not be', async () => {
+    mockTtxList = ttxList
+    const second = {
+      ...pendingRequest,
+      id: 'request-2',
+      user: { ...pendingRequest.user, id: 'user-3', full_name: 'Second' },
+    }
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(mockRequestList([pendingRequest, second]))
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          done: ['request-1'],
+          failed: [{ id: 'request-2', code: 'X', message: 'Already decided.' }],
+        }),
+      } as Response)
+    stubFetchWithPendingCount(fetchMock)
+
+    render(<CreatorAccessRequestsSection />)
+    await screen.findByText('Requester')
+    // Nothing to act on until a row is ticked.
+    expect(screen.queryByRole('group', { name: 'Act on the selected requests' })).toBeNull()
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Select every row on this page' }))
+    expect(screen.getByRole('status')).toHaveTextContent('2 selected')
+    fireEvent.click(screen.getByRole('button', { name: 'Approve 2' }))
+
+    expect(await screen.findByText('1 request approved')).toBeInTheDocument()
+    expect(screen.getByText('1 couldn’t be done: Already decided.')).toBeInTheDocument()
+    const [url, init] = fetchMock.mock.calls.at(-1) as [string, RequestInit]
+    expect(url).toContain('/ttx/ttx-1/access-requests/decide')
+    expect(JSON.parse(String(init.body))).toEqual({
+      request_ids: ['request-1', 'request-2'],
+      decision: 'approve',
+    })
+    // The one that went through leaves the list; the other stays, still ticked.
+    expect(screen.queryByText('Requester')).toBeNull()
+    expect(screen.getByText('Second')).toBeInTheDocument()
+    expect(screen.getByRole('checkbox', { name: 'Select Second' })).toBeChecked()
+  })
+
+  it('asks before rejecting several at once', async () => {
+    mockTtxList = ttxList
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(mockRequestList([pendingRequest]))
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({ done: ['request-1'], failed: [] }),
+      } as Response)
+    stubFetchWithPendingCount(fetchMock)
+
+    render(<CreatorAccessRequestsSection />)
+    await screen.findByText('Requester')
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Select Requester' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Reject 1' }))
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+
+    const dialog = screen.getByRole('dialog')
+    expect(dialog).toHaveTextContent('Reject 1 request?')
+    expect(dialog).toHaveTextContent('Requester.')
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Reject 1' }))
+
+    expect(await screen.findByText('1 request rejected')).toBeInTheDocument()
+    const [, init] = fetchMock.mock.calls.at(-1) as [string, RequestInit]
+    expect(JSON.parse(String(init.body)).decision).toBe('reject')
   })
 })

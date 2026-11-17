@@ -455,6 +455,34 @@
         "title": "AccessRequestStatus",
         "type": "string"
       },
+      "AccessRequestsDecideRequest": {
+        "properties": {
+          "decision": {
+            "enum": [
+              "approve",
+              "reject"
+            ],
+            "title": "Decision",
+            "type": "string"
+          },
+          "request_ids": {
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "maxItems": 200,
+            "minItems": 1,
+            "title": "Request Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "request_ids",
+          "decision"
+        ],
+        "title": "AccessRequestsDecideRequest",
+        "type": "object"
+      },
       "AccountDeleteRequest": {
         "properties": {
           "confirmation": {
@@ -2350,6 +2378,56 @@
           "file"
         ],
         "title": "Body_upload_ttx_image_endpoint_api_v1_ttx__ttx_id__image_post",
+        "type": "object"
+      },
+      "BulkFailure": {
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "message"
+        ],
+        "title": "BulkFailure",
+        "type": "object"
+      },
+      "BulkResult": {
+        "description": "The rows the action was applied to, and the ones it wasn't, each\nwith the error it would have answered on its own.",
+        "properties": {
+          "done": {
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "title": "Done",
+            "type": "array"
+          },
+          "failed": {
+            "items": {
+              "$ref": "#/components/schemas/BulkFailure"
+            },
+            "title": "Failed",
+            "type": "array"
+          }
+        },
+        "required": [
+          "done",
+          "failed"
+        ],
+        "title": "BulkResult",
         "type": "object"
       },
       "Capability": {
@@ -6279,6 +6357,30 @@
           "conversion"
         ],
         "title": "ExerciseThreatActorAddedRead",
+        "type": "object"
+      },
+      "ExercisesArchiveRequest": {
+        "properties": {
+          "archived": {
+            "default": true,
+            "title": "Archived",
+            "type": "boolean"
+          },
+          "ttx_ids": {
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "maxItems": 200,
+            "minItems": 1,
+            "title": "Ttx Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "ttx_ids"
+        ],
+        "title": "ExercisesArchiveRequest",
         "type": "object"
       },
       "ExpectedActionInput": {
@@ -15906,6 +16008,25 @@
           "name"
         ],
         "title": "PlayerRoomRead",
+        "type": "object"
+      },
+      "PlayersRemoveRequest": {
+        "properties": {
+          "user_ids": {
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "maxItems": 200,
+            "minItems": 1,
+            "title": "User Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "user_ids"
+        ],
+        "title": "PlayersRemoveRequest",
         "type": "object"
       },
       "ProgramManagerCreate": {
@@ -35538,6 +35659,72 @@
         ]
       }
     },
+    "/api/v1/ttx/archive-many": {
+      "post": {
+        "description": "Archive (or bring back) several exercises: each one as on its own\n-- its Lead Planner or a Program Manager of its organization --, and\nthe answer says which were done and why the others weren't.",
+        "operationId": "archive_many_endpoint_api_v1_ttx_archive_many_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "accept-language",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Accept-Language"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExercisesArchiveRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "csrfToken": [],
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Archive many",
+        "tags": [
+          "Exercises"
+        ]
+      }
+    },
     "/api/v1/ttx/{ttx_id}": {
       "delete": {
         "description": "Delete the exercise and everything under it, for good: its Lead\nPlanner or a Program Manager of its organization, with its name typed\n(no step-up; the activity log records it). The one write a Program Manager makes on an\nexercise without a seat on its team (oversight of the portfolio), so\nit is guarded here rather than by RequiresOrgAndTTXAccess.",
@@ -36208,6 +36395,72 @@
           }
         ],
         "summary": "List access requests",
+        "tags": [
+          "Exercises"
+        ]
+      }
+    },
+    "/api/v1/ttx/{ttx_id}/access-requests/decide": {
+      "post": {
+        "description": "Approve or reject several requests to join the exercise: each one\nas on its own; one already decided is reported, not fatal.",
+        "operationId": "decide_access_requests_endpoint_api_v1_ttx__ttx_id__access_requests_decide_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "accept-language",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Accept-Language"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AccessRequestsDecideRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "csrfToken": [],
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Decide access requests",
         "tags": [
           "Exercises"
         ]
@@ -40464,6 +40717,72 @@
           }
         ],
         "summary": "List players",
+        "tags": [
+          "Players"
+        ]
+      }
+    },
+    "/api/v1/ttx/{ttx_id}/players/remove": {
+      "post": {
+        "description": "Remove several Players from the exercise: each one as on its own;\nsomeone who isn't its Player is reported, not fatal.",
+        "operationId": "remove_players_endpoint_api_v1_ttx__ttx_id__players_remove_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "accept-language",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Accept-Language"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlayersRemoveRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BulkResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "csrfToken": [],
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Remove players",
         "tags": [
           "Players"
         ]

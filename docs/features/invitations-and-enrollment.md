@@ -39,9 +39,11 @@ The menu item is **Players**, an org-scoped route acting on the ContextBar's exe
 - Actions column: Edit (only opens the tag-assignment `Modal` — a token has nothing else to edit) + Revoke (hidden once revoked).
 
 ## Pending (`CreatorAccessRequestsSection`, `/creator/:ttxId/players/pending`)
+- **Several at once**: tick rows (or the page) and the selection bar (`common/SelectionBar`, `hooks/useRowSelection`) offers **Approve N** (straight away, like one) and **Reject N** (after a confirmation naming them: a group gets no Undo window) — `POST /ttx/{ttx_id}/access-requests/decide`. The rows done leave the list; one that couldn't be stays ticked and a toast gives its reason.
 - Same context pattern; a decided row is filtered out locally. Shows the domain-not-allowed indicator and disables Approve for a non-allowlisted Planner-role request (`is_allowed_domain`, always true for Players). Approve/Reject is the one Actions column with a text button (auto width).
 
 ## Confirmed (`CreatorPlayersSection`, `/creator/:ttxId/players`)
+- **Several at once**: tick rows and **Remove from the exercise** asks first, naming them, then `POST /ttx/{ttx_id}/players/remove`; one row is still removed with Undo.
 - The end of the invite → approve funnel: the exercise's `PLAYER` rows, from `GET /ttx/{ttx_id}/players` (`ttx_player_service.players_view`, Planner, design). The team is never listed here; it's on Creator → Exercise.
 - Columns: Player (name, email), Joined (`TTXAccess.created_at`), Invitation (the token description of the latest approved request; "Added directly" when there is none, for example a fixture), Room (`CodeRef`, only while `uses_rooms`), Last login, Actions. Search and sort run client-side (`filterAndSortPeople`, URL prefix `players_`).
 - Remove: trash `IconButton` + `useUndoableAction`, then `DELETE /ttx/{ttx_id}/players/{user_id}`. It deletes the access row with its tags and seat, and logs to `app.log`. Only `PLAYER` rows can be removed (anything else answers 404 `PLAYER_NOT_FOUND`). There is no step-up: the Player can come back with another code and a new approval.
