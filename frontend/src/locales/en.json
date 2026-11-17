@@ -4144,6 +4144,7 @@
       "title": "Pause for a real-world event",
       "body": "It pauses the exercise on every screen until the Controller resumes it. Use it only for a real incident.",
       "confirm": "Type «{{keyword}}» to confirm",
+      "hint": "Capitals, accents and extra spaces don’t matter.",
       "submit": "Pause the exercise",
       "banner": "Paused · Real-world event",
       "paused": "The exercise is paused to attend a real-world event",

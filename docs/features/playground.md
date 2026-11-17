@@ -25,7 +25,7 @@ Status: **built** (all five slices; see Delivery slices and Open items). This is
 2. **Safety always on screen.** A sticky band reads "EXERCISE · EXERCISE · EXERCISE" and carries the stop keyword (`TTXNeedsForm.stop_exercise_keyword`; «REAL WORLD» when none is set). From `md` the whole band is sticky (that strip, the phase track, who is present, the notices); below it only that strip is (`max-md:contents` on the band, `max-md:sticky` on the strip), since the whole band would take most of a phone's screen.
    - **REAL WORLD button.** While the session runs (live or paused), the keyword is a button: "If a real incident happens, press «…»". The Playground is digital, so saying the keyword reaches no one.
      - **Who:** any participant may press it, Players included.
-     - **Confirmation:** `RealWorldDialog` asks them to type the keyword (case-insensitive, trimmed); the server checks it again (422 `KEYWORD_MISMATCH`).
+     - **Confirmation:** `RealWorldDialog` asks them to type the keyword, compared without case, accents or spare spaces (`lib/stopKeyword.ts`; "pinzon de hierro" is "PINZÓN DE HIERRO"); the server checks it again the same way (`fold_stop_keyword`, 422 `KEYWORD_MISMATCH`).
      - **Effect:** it **pauses** the session (`POST /run/real-world`, `ExerciseRun.real_world_at` / `real_world_by_id`; a `PAUSE` event with `real_world: true`, "Real-world event" in the log). A normal pause already running keeps its start; a second press changes nothing.
      - **Every screen** shows it: the band turns red ("Paused · Real-world event") and a notice under the presence strip, in the same sticky band, shows who paused it and when.
      - **Resuming:** only a Controller resumes, which clears the flag, or ends the run (End's emergency stop if needed).

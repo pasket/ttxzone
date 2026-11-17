@@ -56,6 +56,22 @@ def test_any_player_pauses_it_with_the_stop_keyword(
     assert _post(client, ready, "/resume").status_code == 403
 
 
+def test_the_keyword_is_taken_without_accents_or_spare_spaces(
+    client: TestClient,
+    db_session: Session,
+    ready: str,  # noqa: F811
+) -> None:
+    _keyword(db_session, "PINZÓN  DE HIERRO")
+    _post(client, ready, "/start")
+    _as_player(client, db_session, ready)
+
+    assert _press(client, ready, "pinzon").json()["error"]["code"] == "KEYWORD_MISMATCH"
+    assert _press(client, ready, "pinzondehierro").json()["error"]["code"] == "KEYWORD_MISMATCH"
+    pressed = _press(client, ready, " pinzon de   hierro ")
+    assert pressed.status_code == 200, pressed.text
+    assert pressed.json()["state"] == "paused"
+
+
 def test_the_controller_resumes_and_the_clock_leaves_it_out(
     client: TestClient,
     db_session: Session,

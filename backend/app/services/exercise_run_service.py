@@ -9,6 +9,7 @@ import hashlib
 import logging
 import random
 import time
+import unicodedata
 import uuid
 from collections import Counter, OrderedDict
 from dataclasses import dataclass, field
@@ -598,12 +599,23 @@ def pause_run(session: Session, ttx: TTX, user: User) -> None:
 DEFAULT_STOP_KEYWORD = "REAL WORLD"
 
 
+def fold_stop_keyword(text: str) -> str:
+    """The stop keyword as it's compared: without case, accents or spare
+    spaces. It's typed in an emergency, maybe on a phone or a keyboard
+    with no accents at hand: "pinzon de hierro" is "PINZÓN DE HIERRO"."""
+    bare = "".join(
+        char for char in unicodedata.normalize("NFKD", text) if not unicodedata.combining(char)
+    )
+    return " ".join(bare.casefold().split())
+
+
 def real_world_pause(session: Session, ttx: TTX, user: User, keyword: str) -> None:
     """Pause it for a real-world event: anyone at the table may, typing the
-    exercise's stop keyword (any case) to confirm; every screen says why,
-    and only a Controller resumes. Pressed twice, nothing changes."""
+    exercise's stop keyword (case, accents and spacing aside) to confirm;
+    every screen says why, and only a Controller resumes. Pressed twice,
+    nothing changes."""
     expected = get_form(session, ttx.id).stop_exercise_keyword.strip() or DEFAULT_STOP_KEYWORD
-    if keyword.strip().casefold() != expected.casefold():
+    if fold_stop_keyword(keyword) != fold_stop_keyword(expected):
         raise _refuse("KEYWORD_MISMATCH", "That isn't the stop keyword.", 422)
     run = _open_run(session, ttx, RunStatus.LIVE, RunStatus.PAUSED)
     _refuse_after_endex(_log(session, run))

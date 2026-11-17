@@ -3,12 +3,13 @@ import { useTranslation } from 'react-i18next'
 
 import { ApiError, apiFetch } from '../../lib/api'
 import { btnDanger, btnSecondary, inputBase } from '../../lib/buttonStyles'
+import { foldStopKeyword } from '../../lib/stopKeyword'
 import type { RunRead } from '../../lib/types'
 import { ButtonSpinner } from '../common/ButtonSpinner'
 import { Modal } from '../common/Modal'
 
-/** REAL WORLD, confirmed: typing the exercise's stop keyword (any case)
- * pauses the session on every screen for a real-world event, until a
+/** REAL WORLD, confirmed: typing the exercise's stop keyword (case, accents
+ * and spacing aside) pauses the session on every screen for a real-world event, until a
  * Controller resumes it. */
 export function RealWorldDialog({
   ttxId,
@@ -26,7 +27,7 @@ export function RealWorldDialog({
   const [typed, setTyped] = useState('')
   const [pending, setPending] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const matches = typed.trim().toLowerCase() === keyword.trim().toLowerCase()
+  const matches = foldStopKeyword(typed) === foldStopKeyword(keyword)
   // Straight to the field: in an emergency every tap counts. After Modal's
   // own focus (a child's effect runs first, this one wins).
   const fieldRef = useRef<HTMLInputElement>(null)
@@ -81,8 +82,12 @@ export function RealWorldDialog({
             maxLength={100}
             autoComplete="off"
             spellCheck={false}
+            aria-describedby={`${titleId}-hint`}
             className={`${inputBase} font-mono`}
           />
+          <p id={`${titleId}-hint`} className="text-xs text-paper-ink/70 dark:text-fg-muted">
+            {t('playground.realWorld.hint')}
+          </p>
         </div>
         {error && (
           <p role="alert" className="text-sm text-danger-fg">

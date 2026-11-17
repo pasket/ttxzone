@@ -4144,6 +4144,7 @@
       "title": "Pausar por un evento real",
       "body": "Pausa el ejercicio en todas las pantallas hasta que el Controlador lo reanude. Úsalo solo ante un incidente real.",
       "confirm": "Escribe «{{keyword}}» para confirmar",
+      "hint": "Da igual que uses mayúsculas, tildes o espacios de más.",
       "submit": "Pausar el ejercicio",
       "banner": "En pausa · Evento real",
       "paused": "El ejercicio está en pausa para atender un evento real",
