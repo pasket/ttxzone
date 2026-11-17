@@ -25,6 +25,7 @@ export function FormattedTextArea({
   describedBy,
   invalid = false,
   headings = false,
+  fieldLabel,
 }: {
   id: string
   value: string
@@ -38,10 +39,14 @@ export function FormattedTextArea({
   invalid?: boolean
   /** Preview "# " titles too (long documents: the legal ones). */
   headings?: boolean
+  /** The field's name, for a page with several of these: its toolbar
+   * and its Write / Preview switch then say which field they act on. */
+  fieldLabel?: string
 }) {
   const { t } = useTranslation()
   const ref = useRef<HTMLTextAreaElement>(null)
   const [preview, setPreview] = useState(false)
+  const named = (group: string) => (fieldLabel ? `${group}: ${fieldLabel}` : group)
 
   // Apply, then put the selection back where it makes sense.
   function commit(next: string, start: number, end: number) {
@@ -125,7 +130,7 @@ export function FormattedTextArea({
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-paper-line px-1.5 py-1 dark:border-line">
         <div
           role="toolbar"
-          aria-label={t('common.formatting.toolbar')}
+          aria-label={named(t('common.formatting.toolbar'))}
           aria-controls={id}
           className="flex items-center gap-0.5"
         >
@@ -145,7 +150,11 @@ export function FormattedTextArea({
             </button>
           ))}
         </div>
-        <div role="group" aria-label={t('common.formatting.mode')} className={segmentedControl}>
+        <div
+          role="group"
+          aria-label={named(t('common.formatting.mode'))}
+          className={segmentedControl}
+        >
           <button
             type="button"
             aria-pressed={!preview}

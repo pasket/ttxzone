@@ -76,6 +76,12 @@ export function ControlCenterPanel({
   const { t } = useTranslation()
   const [pending, setPending] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  // An action that fails without a dialog (Release, Pause) reports under
+  // the Session panel, which may be scrolled out of sight by then.
+  const errorRef = useRef<HTMLParagraphElement>(null)
+  useEffect(() => {
+    if (error) errorRef.current?.scrollIntoView?.({ block: 'nearest' })
+  }, [error])
   const [asking, setAskingState] = useState<Asking | null>(null)
   // A dialog opens without the previous action's error, and shows its own.
   const setAsking = (next: Asking | null) => {
@@ -270,7 +276,7 @@ export function ControlCenterPanel({
           />
         )}
         {error && !asking && (
-          <p className="mt-3 text-sm text-danger-fg" aria-live="polite">
+          <p ref={errorRef} className="mt-3 text-sm text-danger-fg" aria-live="polite">
             {error}
           </p>
         )}

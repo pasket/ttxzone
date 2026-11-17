@@ -348,7 +348,8 @@ function PlatformScope() {
         <span aria-hidden="true" className={breadcrumbSeparator}>
           ›
         </span>
-        <span className={`${badgeNeutral} shrink-0`}>
+        {/* Nothing else shares this bar: the role reads whole. */}
+        <span className={`${badgeNeutral} max-w-none! shrink-0`}>
           <span className="sr-only">{t('nav.roleLabel')}: </span>
           <span className="truncate">{t('platform.context.role')}</span>
         </span>

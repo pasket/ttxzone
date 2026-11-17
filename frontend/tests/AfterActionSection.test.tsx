@@ -575,6 +575,12 @@ describe('The after-action report', () => {
     fireEvent.click(links[3])
     expect(document.activeElement).toBe(document.getElementById('aar-part-objective-o2'))
 
+    // Each field's formatting bar says whose it is.
+    expect(
+      screen.getByRole('toolbar', { name: 'Formatting: Strengths: OBJ-02' }),
+    ).toBeInTheDocument()
+    expect(screen.getByRole('toolbar', { name: 'Formatting: Conclusions' })).toBeInTheDocument()
+
     // The document line: code, version, status and classification.
     expect(screen.getByText('TTX-2026-01')).toBeInTheDocument()
     expect(screen.getByText('Version 1')).toBeInTheDocument()

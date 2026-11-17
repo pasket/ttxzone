@@ -787,7 +787,14 @@ function TextBlock({
         {context && <span className="sr-only">: {context}</span>}
       </label>
       {editable ? (
-        <FormattedTextArea id={id} value={value} onChange={onChange} rows={5} maxLength={20000} />
+        <FormattedTextArea
+          id={id}
+          value={value}
+          onChange={onChange}
+          rows={5}
+          maxLength={20000}
+          fieldLabel={context ? `${label}: ${context}` : label}
+        />
       ) : (
         <FormattedText text={value || '—'} className="text-sm" />
       )}
