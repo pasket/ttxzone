@@ -114,7 +114,7 @@ test('the screens the guide shows', async ({ browser }) => {
     await dialog.getByLabel('Area for improvement').fill('Escalation to the crisis committee')
     await dialog.getByLabel('What will be done').fill('Add the on-call rota to the playbook')
     await dialog.getByLabel('Owner').fill('Head of Security')
-    await dialog.getByRole('button', { name: 'Apply' }).click()
+    await dialog.getByRole('button', { name: 'Save' }).click()
     await controller.waitForTimeout(2_000) // the report saves about a second after a change
     await shoot(controller, 'after-action-report', async () => {
       await controller

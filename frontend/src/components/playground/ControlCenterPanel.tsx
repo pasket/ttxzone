@@ -80,7 +80,8 @@ export function ControlCenterPanel({
   // the Session panel, which may be scrolled out of sight by then.
   const errorRef = useRef<HTMLParagraphElement>(null)
   useEffect(() => {
-    if (error) errorRef.current?.scrollIntoView?.({ block: 'nearest' })
+    // Centred: at the top it would sit under the sticky band.
+    if (error) errorRef.current?.scrollIntoView?.({ block: 'center' })
   }, [error])
   const [asking, setAskingState] = useState<Asking | null>(null)
   // A dialog opens without the previous action's error, and shows its own.
