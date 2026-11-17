@@ -60,7 +60,7 @@ function Shell() {
 }
 
 function renderAt(path: string) {
-  render(
+  return render(
     <MemoryRouter initialEntries={[path]}>
       <Routes>
         <Route path="/creator/exercises" element={<Shell />} />
@@ -110,6 +110,23 @@ describe('Creator portfolio in the ContextBar', () => {
     expect(screen.getByRole('status', { name: 'Path' })).toHaveTextContent('/creator/exercises')
     expect(setActiveTtxId).not.toHaveBeenCalled()
     expect(exerciseSelect()).toHaveValue('__all__')
+  })
+
+  it('names the exercise the menu works on in the portfolio, never one only overseen', () => {
+    mockList = exercises
+    mockActiveTtx = exercises[0]
+    const { unmount } = renderAt('/creator/exercises')
+    const menu = () => screen.getByRole('navigation', { name: 'Primary' })
+    expect(within(menu()).getByText('Ransomware drill')).toBeInTheDocument()
+    unmount()
+
+    // A Program Manager who plans nothing keeps an exercise in context
+    // they hold no seat on: the menu's sections aren't about it.
+    const overseen = { ...exercises[0], role: 'program_manager', plans: false, controls: false }
+    mockList = [overseen]
+    mockActiveTtx = overseen
+    renderAt('/creator/exercises')
+    expect(within(menu()).queryByText('Ransomware drill')).toBeNull()
   })
 
   it("leaves the portfolio for the picked exercise's first page", () => {

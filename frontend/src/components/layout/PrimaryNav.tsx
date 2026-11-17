@@ -7,6 +7,7 @@ import { useAuth } from '../../hooks/useAuth'
 import { AcronymText } from '../common/AcronymText'
 import { FoldIcon } from '../common/FoldIcon'
 import { foldToggle } from '../../lib/buttonStyles'
+import { actsAs } from '../../lib/moduleAccess'
 import type { SectionDef, SectionGroup } from '../../lib/navSections'
 
 import { SectionIcon } from './SectionIcon'
@@ -45,8 +46,15 @@ function useModuleMenu(): SectionMenu {
   const { activeTtxId, activeTtx } = useAuth()
   const { pathname } = useLocation()
   const pending = useDocumentAttention(module === 'creator' ? activeTtxId : null)
+  // Only an exercise the menu's sections work on: one the caller plans. A
+  // Program Manager keeps an exercise in context they may only oversee.
   const caption =
-    module === 'creator' && pathname.startsWith('/creator/exercises') ? activeTtx?.name : undefined
+    module === 'creator' &&
+    pathname.startsWith('/creator/exercises') &&
+    activeTtx &&
+    actsAs(activeTtx, 'planner')
+      ? activeTtx.name
+      : undefined
   return { sections, activeSection, linkTo: (s) => hrefFor(module, base, s), pending, caption }
 }
 
