@@ -4631,8 +4631,21 @@
     "pdf": "Download PDF",
     "markFinal": "Mark as final",
     "reopen": "Reopen to edit",
-    "finalLine": "Final — version {{version}}, by {{who}}.",
-    "draftLine": "Draft — version {{version}}. Editing a final report opens the next version; following up the plan does not.",
+    "finalLine": "Marked as final by {{who}}.",
+    "draftLine": "Editing a final report opens the next version; following up the plan does not.",
+    "reportStatus": {
+      "draft": "Draft",
+      "final": "Final"
+    },
+    "index": {
+      "label": "Report parts",
+      "written": "Written",
+      "empty": "Empty",
+      "level": "Level {{level}}",
+      "noLevel": "No level yet",
+      "actions_one": "{{count}} action",
+      "actions_other": "{{count}} actions"
+    },
     "summary": "Summary",
     "executiveSummary": "Executive summary",
     "scenarioSummary": "Scenario",

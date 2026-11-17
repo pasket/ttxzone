@@ -33,3 +33,13 @@ export function runLabel(t: TFunction, dateFmt: Intl.DateTimeFormat, run: AarRun
     date: dateFmt.format(new Date(run.started_at)),
   })
 }
+
+/** The anchors of the report's parts, shared with the page that draws them. */
+export const AAR_ANCHORS = {
+  summary: 'aar-part-summary',
+  objectives: 'aar-part-objectives',
+  objective: (id: string) => `aar-part-objective-${id}`,
+  plan: 'aar-part-plan',
+  conclusions: 'aar-part-conclusions',
+  session: 'aar-part-session',
+}

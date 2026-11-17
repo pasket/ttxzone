@@ -317,7 +317,7 @@ describe('The after-action report', () => {
     )
     vi.stubGlobal('fetch', withRetests(fetchMock))
     render(<AfterActionSection ttxId="ttx-1" />)
-    expect(await screen.findByText(/^Final — version 1, by Ada\./)).toBeInTheDocument()
+    expect(await screen.findByText(/^Marked as final by Ada\./)).toBeInTheDocument()
     // A final report reads as one: reopening is the one way back to editing.
     expect(screen.queryByRole('textbox', { name: 'Conclusions' })).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: /Add an action/ })).not.toBeInTheDocument()
@@ -540,5 +540,44 @@ describe('The after-action report', () => {
       ),
     )
     expect(await screen.findByText('Ransomware drill II')).toBeInTheDocument()
+  })
+
+  it('indexes its parts with where each stands, under the document line', async () => {
+    const two = report({
+      objectives: [
+        ...report().objectives,
+        { ...report().objectives[0], id: 'o2', objective_code: 'OBJ-02', overall: null },
+      ],
+    })
+    vi.stubGlobal(
+      'fetch',
+      withRetests(async () => json(two)),
+    )
+    render(<AfterActionSection ttxId="ttx-1" exercise={{ code: 'TTX-2026-01', tlp: 'amber' }} />)
+
+    const index = await screen.findByRole('navigation', { name: 'Report parts' })
+    const links = within(index).getAllByRole('link')
+    expect(links.map((link) => link.getAttribute('href'))).toEqual([
+      '#aar-part-summary',
+      '#aar-part-objectives',
+      '#aar-part-objective-o1',
+      '#aar-part-objective-o2',
+      '#aar-part-plan',
+      '#aar-part-conclusions',
+    ])
+    expect(links[0]).toHaveTextContent('Written')
+    expect(links[2]).toHaveTextContent('Level M')
+    expect(links[3]).toHaveTextContent('No level yet')
+    expect(links[4]).toHaveTextContent('1 action')
+    expect(links[5]).toHaveTextContent('Empty')
+
+    // Following a link hands the focus to its part.
+    fireEvent.click(links[3])
+    expect(document.activeElement).toBe(document.getElementById('aar-part-objective-o2'))
+
+    // The document line: code, version, status and classification.
+    expect(screen.getByText('TTX-2026-01')).toBeInTheDocument()
+    expect(screen.getByText('Version 1')).toBeInTheDocument()
+    expect(screen.getByText('TLP:AMBER')).toBeInTheDocument()
   })
 })

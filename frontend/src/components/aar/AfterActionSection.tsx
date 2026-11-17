@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useApiDownload } from '../../hooks/useApiDownload'
 import { useToast } from '../../hooks/useToast'
 import { useUndoableAction } from '../../hooks/useUndoableAction'
-import { emptyAction, IMPROVEMENT_STATUSES, runLabel } from '../../lib/aar'
+import { AAR_ANCHORS, emptyAction, IMPROVEMENT_STATUSES, runLabel } from '../../lib/aar'
 import { ApiError, API_BASE, apiFetch } from '../../lib/api'
 import {
   panelActionsTh,
@@ -29,6 +29,7 @@ import type {
   AarRunOption,
   ImprovementAction,
   RatingLevel,
+  Tlp,
 } from '../../lib/types'
 import { ProposalsPanel } from '../assistant/ProposalsPanel'
 import { ButtonSpinner } from '../common/ButtonSpinner'
@@ -39,11 +40,14 @@ import { FormattedTextArea } from '../common/FormattedTextArea'
 import { IconButton } from '../common/IconButton'
 import { Panel } from '../common/Panel'
 import { SectionHeader } from '../common/SectionHeader'
+import { StatusTrack } from '../common/StatusTrack'
+import { TlpBadge } from '../common/TlpBadge'
 import { ConfirmActionDialog } from '../playground/ConfirmActionDialog'
 import { FeedbackResults } from '../playground/FeedbackResults'
 import { MeterResults } from '../playground/MetersPanel'
 import { TeamNotesPanel } from '../playground/TeamNotesPanel'
 import { ActionDialog } from './ActionDialog'
+import { AarIndex } from './AarIndex'
 import { AarPreview } from './AarPreview'
 import { RetestDialog } from './RetestDialog'
 import { RetestRefCell } from './RetestRefCell'
@@ -53,6 +57,8 @@ import { RetestsPanel } from './RetestsPanel'
 const SAVE_AFTER_MS = 1000
 const LEVELS: RatingLevel[] = ['P', 'S', 'M', 'U']
 const muted = 'text-paper-ink/60 dark:text-fg-muted'
+/** A part the index links to: it takes the focus when its link is followed. */
+const part = 'scroll-mt-4 focus:outline-none'
 
 type SaveState = 'saved' | 'pending' | 'saving' | 'error' | 'stale'
 
@@ -65,8 +71,12 @@ type SaveState = 'saved' | 'pending' | 'saving' | 'error' | 'stale'
 export function AfterActionSection({
   ttxId,
   controlTo,
+  exercise,
 }: {
   ttxId: string
+  /** The exercise's code and classification, for the document's header
+   * line (the report itself doesn't carry them). */
+  exercise?: { code: string; tlp: Tlp }
   /** The exercise's Control center, when whoever reads this runs its
    * session: offered while the report waits for one. */
   controlTo?: string
@@ -265,6 +275,7 @@ export function AfterActionSection({
   const writable = editable && report.status !== 'final'
   const waiting = busy || save === 'pending' || save === 'saving'
   const unrated = report.objectives.filter((objective) => !objective.overall)
+  const withSession = report.can_see_session && !!report.run_id
 
   async function transition(to: 'final' | 'draft') {
     const next = await replace('/transitions', { method: 'POST', body: JSON.stringify({ to }) })
@@ -328,15 +339,29 @@ export function AfterActionSection({
           </div>
         }
       />
+      <div className="flex flex-wrap items-center gap-2 text-sm">
+        {exercise && (
+          <>
+            <span translate="no" className="font-mono">
+              {exercise.code}
+            </span>
+            <span aria-hidden="true" className="text-paper-ink/30 dark:text-fg-faint">
+              ·
+            </span>
+          </>
+        )}
+        <span className="font-mono">{t('creator.msel.version', { version: report.version })}</span>
+        <span className="inline-flex h-6 items-center rounded-xs border border-paper-line px-2 text-xs font-medium dark:border-line">
+          {t(`aar.reportStatus.${report.status}`)}
+        </span>
+        {exercise && <TlpBadge tlp={exercise.tlp} />}
+      </div>
       <p className={`text-sm ${muted}`}>
         {report.status === 'final'
-          ? [
-              t('aar.finalLine', { version: report.version, who: report.finalized_by }),
-              editable && t('aar.finalHint'),
-            ]
+          ? [t('aar.finalLine', { who: report.finalized_by }), editable && t('aar.finalHint')]
               .filter(Boolean)
               .join(' ')
-          : t('aar.draftLine', { version: report.version })}
+          : t('aar.draftLine')}
       </p>
       <RunLine
         key={report.run_id}
@@ -376,226 +401,264 @@ export function AfterActionSection({
         />
       )}
 
-      <Panel title={t('aar.summary')}>
-        <TextBlock
-          id="aar-executive-summary"
-          label={t('aar.executiveSummary')}
-          value={report.executive_summary}
-          editable={writable}
-          onChange={(executive_summary) => edit((c) => ({ ...c, executive_summary }))}
-        />
-        <TextBlock
-          id="aar-scenario-summary"
-          label={t('aar.scenarioSummary')}
-          value={report.scenario_summary}
-          editable={writable}
-          onChange={(scenario_summary) => edit((c) => ({ ...c, scenario_summary }))}
-        />
-      </Panel>
+      <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
+        <aside className="shrink-0 space-y-4 lg:sticky lg:top-4 lg:max-h-[calc(100dvh-2rem)] lg:w-60 lg:overflow-y-auto">
+          <AarIndex report={report} withSession={withSession} />
+          <StatusTrack
+            id="aar-status-title"
+            states={(['draft', 'final'] as const).map((key) => ({
+              key,
+              label: t(`aar.reportStatus.${key}`),
+            }))}
+            current={report.status}
+          />
+        </aside>
 
-      <Panel title={t('aar.objectives')}>
-        <div className="space-y-6">
-          {report.objectives.map((objective) => (
-            <ObjectiveBlock
-              key={objective.id}
-              objective={objective}
-              editable={writable}
-              onChange={(next) =>
-                edit((c) => ({
-                  ...c,
-                  objectives: c.objectives.map((o) => (o.id === next.id ? next : o)),
-                }))
-              }
-              onAddAction={() => {
-                setPrefill({
-                  objective_code: objective.objective_code,
-                  finding:
-                    objective.improvements
-                      .split('\n')
-                      .map((line) => line.replace(/^-\s*/, '').trim())
-                      .find(Boolean) ?? '',
-                })
-                setDialog('new')
-              }}
-            />
-          ))}
-        </div>
-      </Panel>
-
-      {/* What earlier exercises asked this one to re-test: the results are
-          written against them here. */}
-      <RetestsPanel ttxId={ttxId} />
-
-      <Panel
-        title={t('aar.plan')}
-        aside={
-          writable && (
-            <button
-              type="button"
-              onClick={() => {
-                setPrefill({})
-                setDialog('new')
-              }}
-              className={btnSecondary}
-            >
-              <span aria-hidden="true">+ </span>
-              {t('aar.addAction')}
-            </button>
-          )
-        }
-        flush
-      >
-        {report.actions.length === 0 ? (
-          <p className={`p-4 text-sm ${muted}`}>{t('aar.noActions')}</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[46rem] text-left text-sm">
-              <thead>
-                <tr className={panelTableHeadRow}>
-                  <th className={panelTh}>{t('aar.columns.action')}</th>
-                  <th className={panelTh}>{t('aar.columns.owner')}</th>
-                  <th className={panelTh}>{t('aar.columns.due')}</th>
-                  <th className={panelTh}>{t('aar.columns.status')}</th>
-                  <th className={panelTh}>{t('aar.columns.retest')}</th>
-                  {writable && <th className={panelActionsTh}>{t('aar.columns.actions')}</th>}
-                </tr>
-              </thead>
-              <tbody className={panelTbody}>
-                {report.actions.map((action, index) => (
-                  <tr key={action.id ?? `new-${index}`} className={`${panelTr} align-top`}>
-                    <td className={panelTd}>
-                      <CodeRef
-                        code={action.code || '…'}
-                        title={action.action || action.finding}
-                        wrap
-                      />
-                      {action.finding && <p className={`text-xs ${muted}`}>{action.finding}</p>}
-                    </td>
-                    <td className={panelTd}>
-                      {[action.owner, action.owner_area].filter(Boolean).join(' · ') || '—'}
-                    </td>
-                    <td className={panelTd}>
-                      {action.due_date ?? '—'}
-                      {action.overdue && (
-                        <span className="ml-1 rounded-xs bg-danger/10 px-1 text-xs text-danger-fg">
-                          {t('aar.overdue')}
-                        </span>
-                      )}
-                    </td>
-                    <td className={panelTd}>
-                      {(report.can_follow_up ?? editable) && action.code ? (
-                        <select
-                          aria-label={t('aar.statusOf', { code: action.code })}
-                          value={action.status}
-                          disabled={busy}
-                          onChange={(e) =>
-                            void replace(`/actions/${action.code}`, {
-                              method: 'PATCH',
-                              body: JSON.stringify({
-                                status: e.target.value,
-                                status_note: action.status_note,
-                                due_date: action.due_date,
-                              }),
-                            })
-                          }
-                          className="rounded-sm border border-panel-line bg-field px-1 py-0.5 text-sm"
-                        >
-                          {IMPROVEMENT_STATUSES.map((s) => (
-                            <option key={s} value={s}>
-                              {t(`aar.status.${s}`)}
-                            </option>
-                          ))}
-                        </select>
-                      ) : (
-                        t(`aar.status.${action.status}`)
-                      )}
-                    </td>
-                    <td className={panelTd}>
-                      <RetestRefCell retest={action.retest} />
-                      {report.can_follow_up && action.code && (
-                        <button
-                          type="button"
-                          disabled={busy}
-                          onClick={() => setRetesting(action)}
-                          className={`block text-xs ${linkAccent}`}
-                          aria-label={t('aar.retest.changeLabel', { code: action.code })}
-                        >
-                          {action.retest ? t('aar.retest.change') : t('aar.retest.link')}
-                        </button>
-                      )}
-                    </td>
-                    {writable && (
-                      <td className={panelTd}>
-                        <div className="flex justify-end gap-1">
-                          <EditButton
-                            label={t('aar.editAction', { code: action.code || '…' })}
-                            onClick={() => setDialog(action)}
-                          />
-                          <IconButton
-                            label={t('aar.removeAction', { code: action.code || '…' })}
-                            onClick={() => {
-                              const removed = action
-                              setHolding((n) => n + 1)
-                              runUndoable({
-                                message: t('aar.removed', { code: action.code || '…' }),
-                                undoLabel: t('common.toast.undo'),
-                                onRemove: () =>
-                                  edit((c) => ({
-                                    ...c,
-                                    actions: c.actions.filter((a) => a !== removed),
-                                  })),
-                                onRestore: () => {
-                                  setReport((c) =>
-                                    c
-                                      ? {
-                                          ...c,
-                                          actions: [
-                                            ...c.actions.slice(0, index),
-                                            removed,
-                                            ...c.actions.slice(index),
-                                          ],
-                                        }
-                                      : c,
-                                  )
-                                  setHolding((n) => n - 1)
-                                },
-                                onCommit: async () => setHolding((n) => n - 1),
-                              })
-                            }}
-                          />
-                        </div>
-                      </td>
-                    )}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <div className="min-w-0 flex-1 space-y-6">
+          <div id={AAR_ANCHORS.summary} tabIndex={-1} className={part}>
+            <Panel title={t('aar.summary')}>
+              <TextBlock
+                id="aar-executive-summary"
+                label={t('aar.executiveSummary')}
+                value={report.executive_summary}
+                editable={writable}
+                onChange={(executive_summary) => edit((c) => ({ ...c, executive_summary }))}
+              />
+              <TextBlock
+                id="aar-scenario-summary"
+                label={t('aar.scenarioSummary')}
+                value={report.scenario_summary}
+                editable={writable}
+                onChange={(scenario_summary) => edit((c) => ({ ...c, scenario_summary }))}
+              />
+            </Panel>
           </div>
-        )}
-      </Panel>
 
-      <Panel title={t('aar.conclusions')}>
-        <TextBlock
-          id="aar-conclusions"
-          label={t('aar.conclusions')}
-          hideLabel
-          value={report.conclusions}
-          editable={writable}
-          onChange={(conclusions) => edit((c) => ({ ...c, conclusions }))}
-        />
-      </Panel>
+          <div id={AAR_ANCHORS.objectives} tabIndex={-1} className={part}>
+            <Panel title={t('aar.objectives')}>
+              <div className="space-y-6">
+                {report.objectives.map((objective) => (
+                  <ObjectiveBlock
+                    key={objective.id}
+                    objective={objective}
+                    editable={writable}
+                    onChange={(next) =>
+                      edit((c) => ({
+                        ...c,
+                        objectives: c.objectives.map((o) => (o.id === next.id ? next : o)),
+                      }))
+                    }
+                    onAddAction={() => {
+                      setPrefill({
+                        objective_code: objective.objective_code,
+                        finding:
+                          objective.improvements
+                            .split('\n')
+                            .map((line) => line.replace(/^-\s*/, '').trim())
+                            .find(Boolean) ?? '',
+                      })
+                      setDialog('new')
+                    }}
+                  />
+                ))}
+              </div>
+            </Panel>
+          </div>
 
-      {report.can_see_session && report.run_id && (
-        <>
-          <Panel title={t('aar.fromSession.title')} description={t('aar.fromSession.description')}>
-            <div className="text-sm">
-              <FeedbackResults key={report.run_id} ttxId={ttxId} seq={0} runId={report.run_id} />
-              <MeterResults key={`meters-${report.run_id}`} ttxId={ttxId} runId={report.run_id} />
+          {/* What earlier exercises asked this one to re-test: the results are
+          written against them here. */}
+          <RetestsPanel ttxId={ttxId} />
+
+          <div id={AAR_ANCHORS.plan} tabIndex={-1} className={part}>
+            <Panel
+              title={t('aar.plan')}
+              aside={
+                writable && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPrefill({})
+                      setDialog('new')
+                    }}
+                    className={btnSecondary}
+                  >
+                    <span aria-hidden="true">+ </span>
+                    {t('aar.addAction')}
+                  </button>
+                )
+              }
+              flush
+            >
+              {report.actions.length === 0 ? (
+                <p className={`p-4 text-sm ${muted}`}>{t('aar.noActions')}</p>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[46rem] text-left text-sm">
+                    <thead>
+                      <tr className={panelTableHeadRow}>
+                        <th className={panelTh}>{t('aar.columns.action')}</th>
+                        <th className={panelTh}>{t('aar.columns.owner')}</th>
+                        <th className={panelTh}>{t('aar.columns.due')}</th>
+                        <th className={panelTh}>{t('aar.columns.status')}</th>
+                        <th className={panelTh}>{t('aar.columns.retest')}</th>
+                        {writable && <th className={panelActionsTh}>{t('aar.columns.actions')}</th>}
+                      </tr>
+                    </thead>
+                    <tbody className={panelTbody}>
+                      {report.actions.map((action, index) => (
+                        <tr key={action.id ?? `new-${index}`} className={`${panelTr} align-top`}>
+                          <td className={panelTd}>
+                            <CodeRef
+                              code={action.code || '…'}
+                              title={action.action || action.finding}
+                              wrap
+                            />
+                            {action.finding && (
+                              <p className={`text-xs ${muted}`}>{action.finding}</p>
+                            )}
+                          </td>
+                          <td className={panelTd}>
+                            {[action.owner, action.owner_area].filter(Boolean).join(' · ') || '—'}
+                          </td>
+                          <td className={panelTd}>
+                            {action.due_date ?? '—'}
+                            {action.overdue && (
+                              <span className="ml-1 rounded-xs bg-danger/10 px-1 text-xs text-danger-fg">
+                                {t('aar.overdue')}
+                              </span>
+                            )}
+                          </td>
+                          <td className={panelTd}>
+                            {(report.can_follow_up ?? editable) && action.code ? (
+                              <select
+                                aria-label={t('aar.statusOf', { code: action.code })}
+                                value={action.status}
+                                disabled={busy}
+                                onChange={(e) =>
+                                  void replace(`/actions/${action.code}`, {
+                                    method: 'PATCH',
+                                    body: JSON.stringify({
+                                      status: e.target.value,
+                                      status_note: action.status_note,
+                                      due_date: action.due_date,
+                                    }),
+                                  })
+                                }
+                                className="rounded-sm border border-panel-line bg-field px-1 py-0.5 text-sm"
+                              >
+                                {IMPROVEMENT_STATUSES.map((s) => (
+                                  <option key={s} value={s}>
+                                    {t(`aar.status.${s}`)}
+                                  </option>
+                                ))}
+                              </select>
+                            ) : (
+                              t(`aar.status.${action.status}`)
+                            )}
+                          </td>
+                          <td className={panelTd}>
+                            <RetestRefCell retest={action.retest} />
+                            {report.can_follow_up && action.code && (
+                              <button
+                                type="button"
+                                disabled={busy}
+                                onClick={() => setRetesting(action)}
+                                className={`block text-xs ${linkAccent}`}
+                                aria-label={t('aar.retest.changeLabel', { code: action.code })}
+                              >
+                                {action.retest ? t('aar.retest.change') : t('aar.retest.link')}
+                              </button>
+                            )}
+                          </td>
+                          {writable && (
+                            <td className={panelTd}>
+                              <div className="flex justify-end gap-1">
+                                <EditButton
+                                  label={t('aar.editAction', { code: action.code || '…' })}
+                                  onClick={() => setDialog(action)}
+                                />
+                                <IconButton
+                                  label={t('aar.removeAction', { code: action.code || '…' })}
+                                  onClick={() => {
+                                    const removed = action
+                                    setHolding((n) => n + 1)
+                                    runUndoable({
+                                      message: t('aar.removed', { code: action.code || '…' }),
+                                      undoLabel: t('common.toast.undo'),
+                                      onRemove: () =>
+                                        edit((c) => ({
+                                          ...c,
+                                          actions: c.actions.filter((a) => a !== removed),
+                                        })),
+                                      onRestore: () => {
+                                        setReport((c) =>
+                                          c
+                                            ? {
+                                                ...c,
+                                                actions: [
+                                                  ...c.actions.slice(0, index),
+                                                  removed,
+                                                  ...c.actions.slice(index),
+                                                ],
+                                              }
+                                            : c,
+                                        )
+                                        setHolding((n) => n - 1)
+                                      },
+                                      onCommit: async () => setHolding((n) => n - 1),
+                                    })
+                                  }}
+                                />
+                              </div>
+                            </td>
+                          )}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </Panel>
+          </div>
+
+          <div id={AAR_ANCHORS.conclusions} tabIndex={-1} className={part}>
+            <Panel title={t('aar.conclusions')}>
+              <TextBlock
+                id="aar-conclusions"
+                label={t('aar.conclusions')}
+                hideLabel
+                value={report.conclusions}
+                editable={writable}
+                onChange={(conclusions) => edit((c) => ({ ...c, conclusions }))}
+              />
+            </Panel>
+          </div>
+
+          {withSession && report.run_id && (
+            <div id={AAR_ANCHORS.session} tabIndex={-1} className={`space-y-6 ${part}`}>
+              <Panel
+                title={t('aar.fromSession.title')}
+                description={t('aar.fromSession.description')}
+              >
+                <div className="text-sm">
+                  <FeedbackResults
+                    key={report.run_id}
+                    ttxId={ttxId}
+                    seq={0}
+                    runId={report.run_id}
+                  />
+                  <MeterResults
+                    key={`meters-${report.run_id}`}
+                    ttxId={ttxId}
+                    runId={report.run_id}
+                  />
+                </div>
+              </Panel>
+              <TeamNotesPanel key={report.run_id} ttxId={ttxId} runId={report.run_id} />
             </div>
-          </Panel>
-          <TeamNotesPanel key={report.run_id} ttxId={ttxId} runId={report.run_id} />
-        </>
-      )}
+          )}
+        </div>
+      </div>
 
       {reopening && (
         <ConfirmActionDialog
@@ -756,8 +819,10 @@ function ObjectiveBlock({
   )
   return (
     <section
+      id={AAR_ANCHORS.objective(objective.id)}
+      tabIndex={-1}
       aria-label={objective.objective_code}
-      className="space-y-3 border-b border-panel-line pb-6 last:border-0 last:pb-0"
+      className="scroll-mt-4 space-y-3 focus:outline-none border-b border-panel-line pb-6 last:border-0 last:pb-0"
     >
       <h3 className="text-sm font-semibold">
         <CodeRef code={objective.objective_code} title={objective.title} wrap strong />

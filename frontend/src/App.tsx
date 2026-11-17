@@ -302,6 +302,7 @@ function CreatorSectionOutlet() {
           key={ttxId}
           ttxId={ttxId}
           controlTo={controls ? `/control/${ttxId}/dashboard` : undefined}
+          exercise={ttxList.find((ttx) => ttx.id === ttxId)}
         />
       </div>
     )
@@ -367,7 +368,11 @@ function ControlSectionOutlet() {
   if (section === 'after-action' && ttxId) {
     return (
       <div className="p-6">
-        <AfterActionSection key={ttxId} ttxId={ttxId} />
+        <AfterActionSection
+          key={ttxId}
+          ttxId={ttxId}
+          exercise={ttxList.find((ttx) => ttx.id === ttxId)}
+        />
       </div>
     )
   }
@@ -384,6 +389,7 @@ function ControlSectionOutlet() {
 /** The Playground, shared by Players, Facilitators, Observers and Evaluators. */
 function ExecutionSectionOutlet() {
   const { ttxId, section } = useParams<{ ttxId?: string; section?: string }>()
+  const { ttxList } = useAuth()
   if (section === 'dashboard') {
     return (
       <div className="p-6">
@@ -401,7 +407,11 @@ function ExecutionSectionOutlet() {
   if (section === 'after-action' && ttxId) {
     return (
       <div className="p-6">
-        <AfterActionSection key={ttxId} ttxId={ttxId} />
+        <AfterActionSection
+          key={ttxId}
+          ttxId={ttxId}
+          exercise={ttxList.find((ttx) => ttx.id === ttxId)}
+        />
       </div>
     )
   }

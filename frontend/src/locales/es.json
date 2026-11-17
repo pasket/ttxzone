@@ -4631,8 +4631,21 @@
     "pdf": "Descargar PDF",
     "markFinal": "Marcar como final",
     "reopen": "Reabrir para editar",
-    "finalLine": "Final — versión {{version}}, por {{who}}.",
-    "draftLine": "Borrador — versión {{version}}. Editar un informe final abre la versión siguiente; hacer el seguimiento del plan no.",
+    "finalLine": "Marcado como final por {{who}}.",
+    "draftLine": "Editar un informe final abre la versión siguiente; hacer el seguimiento del plan no.",
+    "reportStatus": {
+      "draft": "Borrador",
+      "final": "Final"
+    },
+    "index": {
+      "label": "Partes del informe",
+      "written": "Escrito",
+      "empty": "Vacío",
+      "level": "Nivel {{level}}",
+      "noLevel": "Sin nivel todavía",
+      "actions_one": "{{count}} acción",
+      "actions_other": "{{count}} acciones"
+    },
     "summary": "Resumen",
     "executiveSummary": "Resumen ejecutivo",
     "scenarioSummary": "Escenario",
