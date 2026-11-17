@@ -11,6 +11,7 @@ from sqlmodel import Session, select
 
 from app.main import app
 from app.models import (
+    TTX,
     OrganizationMembership,
     OrgRoleEnum,
     PlatformAuditEvent,
@@ -136,3 +137,7 @@ def test_joining_needs_no_step_up_and_is_audited(client: TestClient, db_session:
     ).one()
     assert event.actor_user_id == manager.id
     assert event.details and event.details["role"] == "planner"
+    # The exercise's code and name apart, beside the label of the time.
+    ttx = db_session.get(TTX, event.target_id)
+    assert (event.details["exercise_code"], event.details["exercise_name"]) == (ttx.code, ttx.name)
+    assert event.target_label == f"{ttx.code} {ttx.name}"

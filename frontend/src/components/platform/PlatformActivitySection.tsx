@@ -15,6 +15,7 @@ import {
   optionalSuffix,
 } from '../../lib/buttonStyles'
 import { LEGAL_TITLE_KEYS } from '../../lib/legal'
+import { exerciseOf } from '../../lib/platformActivity'
 import { TARGET_LABEL_KEYS } from '../../lib/proposalLabels'
 import {
   panelFormActions,
@@ -36,6 +37,7 @@ import type {
   TenancyMode,
 } from '../../lib/types'
 import { ButtonSpinner } from '../common/ButtonSpinner'
+import { CodeRef } from '../common/CodeRef'
 import { HelpText } from '../common/HelpText'
 import { Modal } from '../common/Modal'
 import { Pagination } from '../common/Pagination'
@@ -401,9 +403,12 @@ function EventTarget({ event }: { event: PlatformAuditEvent }) {
     const after = (details.after ?? details.before ?? {}) as { smtp_host?: unknown }
     extra = typeof after.smtp_host === 'string' ? after.smtp_host : null
   }
+  const exercise = exerciseOf(event)
   return (
     <>
-      <span className="block">{main}</span>
+      <span className="block">
+        {exercise ? <CodeRef code={exercise.code} title={exercise.name} /> : main}
+      </span>
       {extra && <span className="block text-paper-ink/60 dark:text-fg-muted">{extra}</span>}
     </>
   )

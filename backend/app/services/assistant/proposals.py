@@ -2508,6 +2508,8 @@ def _audit(
             ttx.id,
             target_label=f"{ttx.code} · {ttx.name}"[:255],
             details={
+                "exercise_code": ttx.code,
+                "exercise_name": ttx.name,
                 "target": proposal.target,
                 "operation": proposal.operation,
                 "row": codes.get(str(proposal.target_id or proposal.applied_row_id or "")),

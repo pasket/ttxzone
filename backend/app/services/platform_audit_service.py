@@ -189,8 +189,19 @@ def record_exercise(
         "exercise",
         ttx.id,
         f"{ttx.code} {ttx.name}"[:320],
-        {"organization_id": str(ttx.organization_id), **(details or {})},
+        {**exercise_details(ttx), **(details or {})},
     )
+
+
+def exercise_details(ttx: Any) -> dict[str, str]:
+    """What every exercise event says of its exercise: the organization,
+    and the code and name apart, so the log shows them the way the rest of
+    the application names a coded row."""
+    return {
+        "organization_id": str(ttx.organization_id),
+        "exercise_code": ttx.code,
+        "exercise_name": ttx.name,
+    }
 
 
 SortDir = Literal["asc", "desc"]
