@@ -12,11 +12,9 @@ import {
   btnPrimary,
   btnSecondary,
   inputBase,
-  linkAccent,
 } from '../../lib/buttonStyles'
 import {
   panelActionsTh,
-  panelDivider,
   panelFormActions,
   panelTableHeadRow,
   panelTbody,
@@ -38,6 +36,7 @@ import { FilterRow, FilterSelect } from '../common/FilterRow'
 import { Modal } from '../common/Modal'
 import { Pagination } from '../common/Pagination'
 import { Panel } from '../common/Panel'
+import { SelectBox, SelectionBar } from '../common/SelectionBar'
 import { RoleIcon } from '../common/RoleIcon'
 import { RoleMark } from '../common/RoleMatrix'
 import { SectionHeader } from '../common/SectionHeader'
@@ -598,15 +597,14 @@ export function PlatformAccountsSection() {
             onChange={(next) => setAdminFilter(next as (typeof ADMIN_FILTERS)[number] | null)}
           />
         </FilterRow>
-        {selected.size > 0 && (
-          <div
-            role="group"
-            aria-label={t('platform.accounts.bulk.label')}
-            className={`flex flex-wrap items-center gap-2 border-b px-5 py-2.5 ${panelDivider}`}
+        {/* In place before anything is ticked: appearing on the first tick
+            would push the rows down under the pointer. */}
+        {selectable.length > 0 && (
+          <SelectionBar
+            label={t('platform.accounts.bulk.label')}
+            count={selected.size}
+            onClear={() => setSelected(new Map())}
           >
-            <span className="text-sm font-medium text-paper-ink dark:text-fg">
-              {t('platform.accounts.bulk.selected', { count: selected.size })}
-            </span>
             {BULK_ACTIONS.map((action) => (
               <button
                 key={action}
@@ -617,14 +615,7 @@ export function PlatformAccountsSection() {
                 {t(BULK_LABEL_KEYS[action])}
               </button>
             ))}
-            <button
-              type="button"
-              onClick={() => setSelected(new Map())}
-              className={`text-sm ${linkAccent}`}
-            >
-              {t('platform.accounts.bulk.clear')}
-            </button>
-          </div>
+          </SelectionBar>
         )}
         {accounts.error ? (
           <p role="alert" className="px-5 py-4 text-sm text-danger-fg">
@@ -646,20 +637,13 @@ export function PlatformAccountsSection() {
               <thead>
                 <tr className={panelTableHeadRow}>
                   <th scope="col" className={`${panelTh} w-10`}>
-                    {/* The label is the target: 32px around a 16px box. */}
-                    <label className="-m-2 inline-flex cursor-pointer p-2">
-                      <input
-                        type="checkbox"
-                        checked={allOnPage}
-                        ref={(input) => {
-                          if (input) input.indeterminate = someOnPage && !allOnPage
-                        }}
-                        disabled={selectable.length === 0}
-                        onChange={(e) => toggle(selectable, e.target.checked)}
-                        aria-label={t('platform.accounts.bulk.selectPage')}
-                        className="h-4 w-4 accent-accent-fg"
-                      />
-                    </label>
+                    <SelectBox
+                      label={t('platform.accounts.bulk.selectPage')}
+                      checked={allOnPage}
+                      some={someOnPage}
+                      disabled={selectable.length === 0}
+                      onChange={(on) => toggle(selectable, on)}
+                    />
                   </th>
                   <th scope="col" className={panelTh}>
                     {t('platform.accounts.columns.account')}
@@ -695,15 +679,11 @@ export function PlatformAccountsSection() {
                     >
                       <td className={panelTd}>
                         {account.user_id !== user?.id && (
-                          <label className="-m-2 inline-flex cursor-pointer p-2">
-                            <input
-                              type="checkbox"
-                              checked={selected.has(account.user_id)}
-                              onChange={(e) => toggle([account], e.target.checked)}
-                              aria-label={t('platform.accounts.bulk.selectOne', { name })}
-                              className="h-4 w-4 accent-accent-fg"
-                            />
-                          </label>
+                          <SelectBox
+                            label={t('platform.accounts.bulk.selectOne', { name })}
+                            checked={selected.has(account.user_id)}
+                            onChange={(on) => toggle([account], on)}
+                          />
                         )}
                       </td>
                       <td className={panelTd}>

@@ -5020,7 +5020,6 @@
         "selected_other": "{{count}} seleccionadas",
         "selectPage": "Seleccionar todas las cuentas de esta página",
         "selectOne": "Seleccionar a {{name}}",
-        "clear": "Quitar la selección",
         "suspend": "Suspender",
         "reactivate": "Reactivar",
         "end_sessions": "Cerrar sesión en todas partes",
