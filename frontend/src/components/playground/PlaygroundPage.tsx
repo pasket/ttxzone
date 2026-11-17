@@ -74,7 +74,9 @@ export function PlaygroundPage({
 }) {
   const { t } = useTranslation()
   const { run, error, apply } = useRunFeed(ttxId, role)
-  const wide = useIsWide(wideDock ? 'md' : 'lg')
+  // Stage and panel side by side from a tablet held upright, for everyone:
+  // the dock never takes more than half the row.
+  const wide = useIsWide('md')
   const [tab, setTab] = useState<'stage' | 'dock'>('stage')
   const where = useStageRoom(run?.rooms)
   // The inject picked on the phase track to read again, for the run and

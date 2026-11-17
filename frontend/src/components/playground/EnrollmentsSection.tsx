@@ -431,7 +431,8 @@ export function EnrollmentsSection() {
   )
 }
 
-/** A door with an arrow out: asking to leave. */
+/** A person with a minus: asking to be taken off the exercise (the door
+ * with an arrow is signing out). */
 function ExitIcon() {
   return (
     <svg
@@ -444,7 +445,9 @@ function ExitIcon() {
       strokeLinejoin="round"
       aria-hidden="true"
     >
-      <path d="M14 4H6v16h8M10 12h10M17 9l3 3-3 3" />
+      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M22 11h-6" />
     </svg>
   )
 }

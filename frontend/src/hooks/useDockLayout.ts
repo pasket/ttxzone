@@ -52,11 +52,11 @@ export function useDockLayout(module: string) {
 
 const WIDE = { lg: '(min-width: 1024px)', md: '(min-width: 768px)' }
 
-/** Whether the page is wide enough for side-by-side columns: from `lg`,
- * or from `md` for the Control center (on a tablet held upright the
- * Controller sees the stage and what to deliver at once; a Player's
- * stage keeps the whole width there). Without matchMedia (tests, old
- * browsers) it's taken as wide. */
+/** Whether the stage and the dock fit side by side, or (narrower) show
+ * as two tabs. The Playground and the Control center ask from `md`: a
+ * tablet held upright shows the stage and the panel at once, the panel
+ * capped at half the row. Without matchMedia (tests, old browsers) it's
+ * taken as wide. */
 export function useIsWide(from: 'lg' | 'md' = 'lg'): boolean {
   const media = WIDE[from]
   const subscribe = useCallback(

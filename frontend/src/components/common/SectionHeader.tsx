@@ -25,7 +25,8 @@ export function SectionHeader({
       <Heading
         ref={headingRef}
         tabIndex={headingRef ? -1 : undefined}
-        className="text-2xl font-bold tracking-tight text-balance text-paper-ink focus:outline-none dark:text-fg"
+        // A second-level title reads as one: under the page's own.
+        className={`${level === 1 ? 'text-2xl font-bold' : 'text-lg font-semibold'} tracking-tight text-balance text-paper-ink focus:outline-none dark:text-fg`}
       >
         {title}
       </Heading>
