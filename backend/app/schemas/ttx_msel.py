@@ -688,6 +688,9 @@ class MselRead(BaseModel):
     # A draft's versions frozen when it was READY before: renumbering asks
     # first, since they keep the old codes (empty when not a draft).
     frozen_versions: list["FrozenVersionRead"] = Field(default_factory=list)
+    # What moving to the latest ATT&CK release would change; None when the
+    # MSEL already uses it (and in a snapshot, which never moves).
+    attack_upgrade: "AttackUpgradePreview | None" = None
 
 
 class AttackTacticRead(BaseModel):
@@ -727,6 +730,31 @@ class AttackVersionsRead(BaseModel):
 class AttackReplacement(BaseModel):
     from_id: str
     to_id: str
+
+
+class AttackTacticMove(BaseModel):
+    """A technique an inject keeps under another tactic: the one it had no
+    longer applies to it in the new release."""
+
+    technique_id: str
+    from_tactic_id: str
+    to_tactic_id: str
+
+
+class AttackUpgradePreview(BaseModel):
+    """What POST /ttx/{ttx_id}/msel/attack-upgrade would do now. `neutral`:
+    it changes nothing but the release (nothing replaced, removed, moved or
+    renamed), so the MSEL keeps its status; otherwise an MSEL past DRAFT
+    goes back to it (`reopens`)."""
+
+    to_version: str
+    replaced: list["AttackReplacement"] = Field(default_factory=list)
+    removed: list[str] = Field(default_factory=list)
+    moved: list[AttackTacticMove] = Field(default_factory=list)
+    # Techniques kept whose name or tactics MITRE changed.
+    changed: list[str] = Field(default_factory=list)
+    neutral: bool
+    reopens: bool
 
 
 class AttackConversionRead(BaseModel):
@@ -782,6 +810,8 @@ class AttackUpgradeRead(BaseModel):
     msel: "MselRead"
     replaced: list[AttackReplacement]
     removed: list[str]
+    moved: list[AttackTacticMove] = Field(default_factory=list)
+    changed: list[str] = Field(default_factory=list)
 
 
 class MselRenumberRead(BaseModel):

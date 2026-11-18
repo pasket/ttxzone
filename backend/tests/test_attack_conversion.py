@@ -8,9 +8,11 @@ from fastapi.testclient import TestClient
 from sqlmodel import Session
 
 from app.data.attack_catalog import LATEST_ATTACK_VERSION
-from tests.msel_helpers import example_payload
+from tests.msel_helpers import example_payload, steady_payload
+from tests.test_exercise_run import _ready_plan
 from tests.test_inject_library import TEMPLATE, _copy_payload
-from tests.test_ttx_msel import _open, _put, _url
+from tests.test_ttx_conduct_prep import _add_evaluator
+from tests.test_ttx_msel import _open, _put, _to_ready, _url
 from tests.test_ttx_needs_form import _create_ttx, _csrf, _manager, _to_approved
 
 
@@ -161,3 +163,33 @@ def test_the_organizations_library_moves_to_the_latest_release(
         f"/api/v1/organizations/{org}/injects/attack-upgrade", headers=headers
     ).json()
     assert again["upgraded"] == 0
+
+
+def test_a_frozen_version_a_session_was_played_from_keeps_its_release(
+    client: TestClient, db_session: Session, exercise, next_release
+) -> None:
+    from sqlmodel import select
+
+    from app.models import MselSnapshot
+
+    ttx_id = exercise["ttx"]["id"]
+    _to_ready(client, exercise, steady_payload(exercise["msel"]))
+    evaluator = _add_evaluator(client, db_session, exercise["org_id"], ttx_id, "eval@audit.org")
+    lead = client.put(
+        f"/api/v1/ttx/{ttx_id}/evaluators/lead",
+        json={"user_id": str(evaluator.id)},
+        headers=_csrf(client),
+    )
+    assert lead.status_code == 204
+    _ready_plan(client, ttx_id)
+    started = client.post(f"/api/v1/ttx/{ttx_id}/run/start", headers=_csrf(client))
+    assert started.status_code == 200, started.text
+
+    upgraded = client.post(_url(ttx_id, "/attack-upgrade"), headers=_csrf(client))
+
+    assert upgraded.status_code == 200, upgraded.text
+    msel = upgraded.json()["msel"]
+    assert (msel["status"], msel["attack_version"]) == ("ready", "99.0")
+    # What was played stays as it was played.
+    snapshot = db_session.exec(select(MselSnapshot)).one().payload
+    assert snapshot["attack_version"] == LATEST_ATTACK_VERSION

@@ -1500,6 +1500,30 @@
         "title": "AttackReplacement",
         "type": "object"
       },
+      "AttackTacticMove": {
+        "description": "A technique an inject keeps under another tactic: the one it had no\nlonger applies to it in the new release.",
+        "properties": {
+          "from_tactic_id": {
+            "title": "From Tactic Id",
+            "type": "string"
+          },
+          "technique_id": {
+            "title": "Technique Id",
+            "type": "string"
+          },
+          "to_tactic_id": {
+            "title": "To Tactic Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "technique_id",
+          "from_tactic_id",
+          "to_tactic_id"
+        ],
+        "title": "AttackTacticMove",
+        "type": "object"
+      },
       "AttackTacticRead": {
         "properties": {
           "id": {
@@ -1556,9 +1580,75 @@
         "title": "AttackTechniqueRead",
         "type": "object"
       },
+      "AttackUpgradePreview": {
+        "description": "What POST /ttx/{ttx_id}/msel/attack-upgrade would do now. `neutral`:\nit changes nothing but the release (nothing replaced, removed, moved or\nrenamed), so the MSEL keeps its status; otherwise an MSEL past DRAFT\ngoes back to it (`reopens`).",
+        "properties": {
+          "changed": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Changed",
+            "type": "array"
+          },
+          "moved": {
+            "items": {
+              "$ref": "#/components/schemas/AttackTacticMove"
+            },
+            "title": "Moved",
+            "type": "array"
+          },
+          "neutral": {
+            "title": "Neutral",
+            "type": "boolean"
+          },
+          "removed": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Removed",
+            "type": "array"
+          },
+          "reopens": {
+            "title": "Reopens",
+            "type": "boolean"
+          },
+          "replaced": {
+            "items": {
+              "$ref": "#/components/schemas/AttackReplacement"
+            },
+            "title": "Replaced",
+            "type": "array"
+          },
+          "to_version": {
+            "title": "To Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "to_version",
+          "neutral",
+          "reopens"
+        ],
+        "title": "AttackUpgradePreview",
+        "type": "object"
+      },
       "AttackUpgradeRead": {
         "description": "POST /ttx/{ttx_id}/msel/attack-upgrade: the MSEL on the new release\nand what changed on the way.",
         "properties": {
+          "changed": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Changed",
+            "type": "array"
+          },
+          "moved": {
+            "items": {
+              "$ref": "#/components/schemas/AttackTacticMove"
+            },
+            "title": "Moved",
+            "type": "array"
+          },
           "msel": {
             "$ref": "#/components/schemas/MselRead"
           },
@@ -10651,6 +10741,16 @@
             },
             "title": "Attack Techniques",
             "type": "array"
+          },
+          "attack_upgrade": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AttackUpgradePreview"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "attack_version": {
             "title": "Attack Version",

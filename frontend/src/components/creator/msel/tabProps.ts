@@ -16,7 +16,7 @@ export interface TabProps {
   catalog: AttackCatalog | null
   /** False while the needs analysis is being revised. */
   readOnly: boolean
-  /** Move the MSEL to the latest ATT&CK release (Scenario tab). */
+  /** Move the MSEL to the latest ATT&CK release. */
   upgradeAttack: () => void
   /** Unsaved edits or another action running: the upgrade must wait. */
   attackUpgradeBlocked: boolean

@@ -3,7 +3,7 @@ import { ThreatActorsSection } from './ThreatActorsSection'
 import type { TabProps } from './tabProps'
 
 /** Tab 4 (second, after Scenario) -- the scenario's threat actors and the
- * MITRE ATT&CK release the MSEL is pinned to, with its upgrade. ATT&CK
+ * MITRE ATT&CK release the MSEL is pinned to. ATT&CK
  * labels the injects; the storyline's phases come from the objectives. */
 export function ThreatActorsTab(props: TabProps) {
   const { msel, draft, update, removeRow, catalog, readOnly, upgradeAttack, attackUpgradeBlocked } =

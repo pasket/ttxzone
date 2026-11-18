@@ -175,3 +175,27 @@ def example_payload(msel: dict) -> dict:
         "phases": phases,
         "injects": injects,
     }
+
+
+# What the fake next ATT&CK release (`next_release`) revokes, deprecates or
+# moves to another tactic.
+CHANGED_IN_NEXT_RELEASE = {"T1566", "T1490", "T1021"}
+
+
+def steady_payload(msel: dict) -> dict:
+    """The sample without the techniques the fake next ATT&CK release
+    changes: moving it there changes nothing but the release."""
+    payload = example_payload(msel)
+    for inject in payload["injects"]:
+        if inject.get("attack_techniques"):
+            kept = [
+                ref
+                for ref in inject["attack_techniques"]
+                if ref["technique_id"] not in CHANGED_IN_NEXT_RELEASE
+            ]
+            inject["attack_techniques"] = kept or [attack_ref("T1486")]
+    for actor in payload["threat_actors"]:
+        actor["techniques"] = [
+            t for t in actor["techniques"] if t["technique_id"] not in CHANGED_IN_NEXT_RELEASE
+        ]
+    return payload

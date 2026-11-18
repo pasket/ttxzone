@@ -1075,28 +1075,47 @@ describe('CreatorMselSection', () => {
     })
   })
 
-  it('offers the newer ATT&CK release and reports what the upgrade changed', async () => {
+  it('offers the newer ATT&CK release on every tab, says what it changes and reports it', async () => {
     const upgraded = msel({ attack_version: '20.0', revision: 3 })
+    const changes = {
+      replaced: [{ from_id: 'T1566', to_id: 'T1566.001' }],
+      removed: ['T1490'],
+      moved: [{ technique_id: 'T1021', from_tactic_id: 'TA0008', to_tactic_id: 'TA0005' }],
+      changed: ['T1021'],
+    }
     const fetchMock = stubApi({
-      'GET /ttx/ttx-1/msel': [json(200, msel())],
+      'GET /ttx/ttx-1/msel': [
+        json(
+          200,
+          msel({
+            status: 'in_review',
+            attack_upgrade: { to_version: '20.0', ...changes, neutral: false, reopens: true },
+          }),
+        ),
+      ],
       'GET /attack/19.2': [json(200, { ...catalog, latest_version: '20.0' })],
       'GET /attack/20.0': [json(200, { ...catalog, version: '20.0', latest_version: '20.0' })],
-      'POST /ttx/ttx-1/msel/attack-upgrade': [
-        json(200, {
-          msel: upgraded,
-          replaced: [{ from_id: 'T1566', to_id: 'T1566.001' }],
-          removed: ['T1490'],
-        }),
-      ],
+      'POST /ttx/ttx-1/msel/attack-upgrade': [json(200, { msel: upgraded, ...changes })],
     })
-    renderPage('/creator/ttx-1/msel?tab=threats')
+    // Not the Threat actors tab: the notice sits above them all.
+    renderPage('/creator/ttx-1/msel?tab=injects')
 
     expect(await screen.findByText('ATT&CK v20.0 is available')).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        'This MSEL uses v19.2. Updating changes it: 1 replaced: T1566 → T1566.001. 1 removed: T1490. 1 kept under another tactic: T1021 (TA0008 → TA0005). It goes back to draft, like any edit.',
+      ),
+    ).toBeInTheDocument()
+    // Nothing moves on its own when something would change.
+    expect(fetchMock).not.toHaveBeenCalledWith(
+      expect.stringContaining('/msel/attack-upgrade'),
+      expect.anything(),
+    )
     fireEvent.click(screen.getByRole('button', { name: 'Update to v20.0' }))
 
     expect(
       await screen.findByText(
-        'Updated to ATT&CK v20.0. 1 replaced: T1566 → T1566.001. 1 removed: T1490.',
+        'Updated to ATT&CK v20.0. 1 replaced: T1566 → T1566.001. 1 removed: T1490. 1 kept under another tactic: T1021 (TA0008 → TA0005).',
       ),
     ).toBeInTheDocument()
     expect(fetchMock).toHaveBeenCalledWith(
@@ -1105,6 +1124,121 @@ describe('CreatorMselSection', () => {
     )
     await waitFor(() =>
       expect(screen.queryByText('ATT&CK v20.0 is available')).not.toBeInTheDocument(),
+    )
+  })
+
+  const NOTHING_CHANGES = {
+    to_version: '20.0',
+    replaced: [],
+    removed: [],
+    moved: [],
+    changed: [],
+    neutral: true,
+    reopens: false,
+  }
+
+  it('moves a draft to the newer ATT&CK release on its own when nothing in it changes', async () => {
+    const fetchMock = stubApi({
+      'GET /ttx/ttx-1/msel': [json(200, msel({ attack_upgrade: NOTHING_CHANGES }))],
+      'GET /attack/19.2': [json(200, { ...catalog, latest_version: '20.0' })],
+      'GET /attack/20.0': [json(200, { ...catalog, version: '20.0', latest_version: '20.0' })],
+      'POST /ttx/ttx-1/msel/attack-upgrade': [
+        json(200, {
+          msel: msel({ attack_version: '20.0', revision: 3 }),
+          replaced: [],
+          removed: [],
+          moved: [],
+          changed: [],
+        }),
+      ],
+    })
+    renderPage('/creator/ttx-1/msel')
+
+    expect(
+      await screen.findByText(
+        'This MSEL now uses ATT&CK v20.0, the latest version. Nothing in it changed.',
+      ),
+    ).toBeInTheDocument()
+    const upgrades = fetchMock.mock.calls.filter(([url]) =>
+      String(url).includes('/msel/attack-upgrade'),
+    )
+    expect(upgrades).toHaveLength(1)
+    expect(screen.queryByText('ATT&CK v20.0 is available')).not.toBeInTheDocument()
+  })
+
+  it('only offers the release to an MSEL past draft, which keeps its status when nothing changes', async () => {
+    const fetchMock = stubApi({
+      'GET /ttx/ttx-1/msel': [
+        json(200, msel({ status: 'ready', attack_upgrade: NOTHING_CHANGES })),
+      ],
+      'GET /attack/19.2': [json(200, { ...catalog, latest_version: '20.0' })],
+    })
+    renderPage('/creator/ttx-1/msel')
+
+    expect(await screen.findByText('ATT&CK v20.0 is available')).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        'This MSEL uses v19.2. Updating changes nothing in it but the version, so it keeps its status.',
+      ),
+    ).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Update to v20.0' })).toBeEnabled()
+    expect(fetchMock).not.toHaveBeenCalledWith(
+      expect.stringContaining('/msel/attack-upgrade'),
+      expect.anything(),
+    )
+  })
+
+  it('offers the release beside the version too, on the Threat actors tab', async () => {
+    const fetchMock = stubApi({
+      'GET /ttx/ttx-1/msel': [
+        json(200, msel({ status: 'ready', attack_upgrade: NOTHING_CHANGES })),
+      ],
+      'GET /attack/19.2': [json(200, { ...catalog, latest_version: '20.0' })],
+      'GET /attack/20.0': [json(200, { ...catalog, version: '20.0', latest_version: '20.0' })],
+      'POST /ttx/ttx-1/msel/attack-upgrade': [
+        json(200, {
+          msel: msel({ status: 'ready', attack_version: '20.0', revision: 3 }),
+          replaced: [],
+          removed: [],
+          moved: [],
+          changed: [],
+        }),
+      ],
+    })
+    renderPage('/creator/ttx-1/msel?tab=threats')
+
+    expect(await screen.findByText(/MITRE ATT&CK v19\.2, released August 2026/)).toBeInTheDocument()
+    // The notice above the tabs, and the one beside the version.
+    const buttons = screen.getAllByRole('button', { name: 'Update to v20.0' })
+    expect(buttons).toHaveLength(2)
+    fireEvent.click(buttons[1])
+
+    expect(await screen.findByText('Updated to ATT&CK v20.0.')).toBeInTheDocument()
+    expect(fetchMock).toHaveBeenCalledWith(
+      expect.stringContaining('/msel/attack-upgrade'),
+      expect.objectContaining({ method: 'POST' }),
+    )
+    await waitFor(() =>
+      expect(screen.queryByRole('button', { name: 'Update to v20.0' })).not.toBeInTheDocument(),
+    )
+  })
+
+  it('neither offers nor applies the release while the MSEL is read-only', async () => {
+    const fetchMock = stubApi({
+      'GET /ttx/ttx-1/msel': [
+        json(200, msel({ editable: false, attack_upgrade: NOTHING_CHANGES })),
+      ],
+      'GET /attack/19.2': [json(200, { ...catalog, latest_version: '20.0' })],
+    })
+    renderPage('/creator/ttx-1/msel')
+
+    expect(
+      await screen.findByText('Read-only until the needs analysis is approved'),
+    ).toBeInTheDocument()
+    expect(screen.queryByText('ATT&CK v20.0 is available')).not.toBeInTheDocument()
+    expect(fetchMock).not.toHaveBeenCalledWith(
+      expect.stringContaining('/msel/attack-upgrade'),
+      expect.anything(),
     )
   })
 

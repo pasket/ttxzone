@@ -6,6 +6,7 @@ import { Link, useParams, useSearchParams } from 'react-router-dom'
 
 import { useExerciseView } from '../../../hooks/useExerciseView'
 import { useApiResource } from '../../../hooks/useApiResource'
+import { useAttackConversionSummary } from '../../../hooks/useAttackConversionSummary'
 import { useAuth } from '../../../hooks/useAuth'
 import { useAutosavedDocument } from '../../../hooks/useAutosavedDocument'
 import { useMselIssueMessage } from '../../../hooks/useMselIssueMessage'
@@ -59,6 +60,7 @@ import { SectionHeader } from '../../common/SectionHeader'
 import { TlpBadge } from '../../common/TlpBadge'
 import { FieldGroup } from '../../common/FieldGroup'
 import { CoverageTab, LoadTable } from './AnalysisTabs'
+import { AttackUpgradeNotice } from './AttackSection'
 import { PlaceholderFillDialog } from './PlaceholderFillDialog'
 import { StorylineStrip } from './StorylineStrip'
 import { InjectsTab } from './InjectsTab'
@@ -189,6 +191,7 @@ function MselEditor({
 }) {
   const { t, i18n } = useTranslation()
   const { showToast } = useToast()
+  const summarizeUpgrade = useAttackConversionSummary()
   const { refresh } = useAuth()
   const [searchParams, setSearchParams] = useSearchParams()
   const [busy, setBusy] = useState(false)
@@ -489,6 +492,28 @@ function MselEditor({
       t('creator.msel.toast.acknowledged'),
     )
 
+  // A draft the latest ATT&CK release changes nothing in moves to it when
+  // opened: only the release number changes, so there is nothing to review
+  // (anything else waits for the notice's button). Once per release it is
+  // on -- the request isn't idempotent, so no cleanup flag either: under
+  // StrictMode that would drop the one answer. It goes in like a save, so
+  // an edit made meanwhile stays. If it fails, the notice is still there.
+  const autoUpgrade =
+    !readOnly && msel.status === 'draft' && !dirty && !busy && msel.attack_upgrade?.neutral === true
+  const autoUpgradeTried = useRef<string | null>(null)
+  const [autoUpgradeFailed, setAutoUpgradeFailed] = useState(false)
+  useEffect(() => {
+    const attempt = `${msel.id}:${msel.attack_version}`
+    if (!autoUpgrade || autoUpgradeTried.current === attempt) return
+    autoUpgradeTried.current = attempt
+    void apiFetch<AttackUpgradeResult>(`/ttx/${ttxId}/msel/attack-upgrade`, { method: 'POST' })
+      .then((result) => {
+        onSaved(result.msel, baseline)
+        showToast(t('creator.msel.attack.autoUpgraded', { version: result.msel.attack_version }))
+      })
+      .catch(() => setAutoUpgradeFailed(true))
+  }, [autoUpgrade, msel.id, msel.attack_version, ttxId, baseline, onSaved, showToast, t])
+
   async function upgradeAttack() {
     setBusy(true)
     try {
@@ -500,18 +525,7 @@ function MselEditor({
       showToast(
         [
           t('creator.msel.attack.upgraded', { version: result.msel.attack_version }),
-          result.replaced.length
-            ? t('creator.msel.attack.replaced', {
-                count: result.replaced.length,
-                list: result.replaced.map((r) => `${r.from_id} → ${r.to_id}`).join(', '),
-              })
-            : '',
-          result.removed.length
-            ? t('creator.msel.attack.removed', {
-                count: result.removed.length,
-                list: result.removed.join(', '),
-              })
-            : '',
+          summarizeUpgrade(result),
         ]
           .filter(Boolean)
           .join(' '),
@@ -639,6 +653,13 @@ function MselEditor({
               {t('creator.msel.readOnly.action')}
             </Link>
           </div>
+        )}
+        {!readOnly && (!autoUpgrade || autoUpgradeFailed) && (
+          <AttackUpgradeNotice
+            msel={msel}
+            blocked={busy || dirty}
+            onUpgrade={() => void upgradeAttack()}
+          />
         )}
       </div>
 

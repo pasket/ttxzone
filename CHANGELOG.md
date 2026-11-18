@@ -6,6 +6,7 @@ Notable changes to TTX-Zone, by release. Versions follow [Semantic Versioning](h
 
 ### Changed
 - **MITRE ATT&CK v20.1** is the release new exercises, TTX-Zone's scenarios, its inject catalog and the assistant's knowledge base use: 18 new techniques (9 Enterprise, 9 ICS) and two new groups (G1058, G1059). Nothing changes on its own: an existing MSEL and the organization's library stay on v19.2 and offer the update. Updating removes the two ICS techniques v20.1 deprecates (T0807, T0853) from what uses them, and says so. No database migration.
+- **Creator → MSEL**: a newer ATT&CK version is no longer offered only at the foot of the Threat actors tab. A draft it changes nothing in moves to it when opened, with a message. Otherwise a notice above every tab says what the update would change in that MSEL, and an MSEL in review or ready keeps its status when nothing in it changes (before, updating always sent it back to draft). A technique kept under another tactic is now reported too.
 
 ## [0.2.0] - 2026-11-15
 

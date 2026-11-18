@@ -297,8 +297,15 @@ def upgrade_attack_endpoint(
     session: Session = Depends(get_session),
 ) -> AttackUpgradeRead:
     """Move the MSEL to the latest ATT&CK release shipped with the app."""
-    msel, replaced, removed = upgrade_attack(session, ttx, user)
-    return AttackUpgradeRead(msel=msel_read(session, ttx, msel), replaced=replaced, removed=removed)
+    msel, plan = upgrade_attack(session, ttx, user)
+    conversion = plan.report.read()
+    return AttackUpgradeRead(
+        msel=msel_read(session, ttx, msel),
+        replaced=conversion.replaced,
+        removed=conversion.removed,
+        moved=plan.moved,
+        changed=plan.changed,
+    )
 
 
 @router.get("/attack", response_model=AttackVersionsRead)

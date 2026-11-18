@@ -74,7 +74,7 @@ from app.schemas.ttx_msel import (
     ActorRead,
     AttackRef,
     AttackRefRead,
-    AttackReplacement,
+    AttackUpgradePreview,
     ExpectedActionRead,
     FrozenVersionRead,
     InjectArtifact,
@@ -92,7 +92,13 @@ from app.schemas.ttx_msel import (
     refs,
 )
 from app.schemas.ttx_needs_form import ValidationIssue, ValidationReport
-from app.services.attack_conversion import ConversionReport, convert_profile, convert_refs
+from app.services.attack_conversion import (
+    ConversionReport,
+    UpgradePlan,
+    convert_profile,
+    convert_refs,
+    plan_upgrade,
+)
 from app.services.code_renumber import (
     code_number,
     code_rewriter,
@@ -619,6 +625,54 @@ def msel_read(session: Session, ttx: TTX, msel: TTXMsel) -> MselRead:
         validation=report,
         renumberable=renumberable(session, msel),
         frozen_versions=frozen_versions(session, msel) if msel.status == MselStatus.DRAFT else [],
+        attack_upgrade=_attack_upgrade_preview(msel, inject_techniques, threat_actors),
+    )
+
+
+def _upgrade_plan(
+    msel: TTXMsel,
+    inject_techniques: dict[uuid.UUID, list[InjectAttackTechnique]],
+    threat_actors: list[MselThreatActor],
+    to_version: str,
+) -> UpgradePlan:
+    """The MSEL's ATT&CK references on `to_version`, and what changes."""
+    return plan_upgrade(
+        msel.attack_version,
+        to_version,
+        {
+            inject_id: [(r.domain, r.tactic_id, r.technique_id) for r in rows]
+            for inject_id, rows in inject_techniques.items()
+        },
+        {
+            actor.id: (
+                actor.mitre_group_id,
+                [(t["domain"], t["technique_id"]) for t in actor.techniques],
+            )
+            for actor in threat_actors
+        },
+    )
+
+
+def _attack_upgrade_preview(
+    msel: TTXMsel,
+    inject_techniques: dict[uuid.UUID, list[InjectAttackTechnique]],
+    threat_actors: list[MselThreatActor],
+) -> AttackUpgradePreview | None:
+    """What moving the MSEL to the latest shipped release would change;
+    None when it is already there."""
+    latest = ATTACK_VERSIONS[-1]
+    if msel.attack_version not in ATTACK_VERSIONS or msel.attack_version == latest:
+        return None
+    plan = _upgrade_plan(msel, inject_techniques, threat_actors, latest)
+    conversion = plan.report.read()
+    return AttackUpgradePreview(
+        to_version=latest,
+        replaced=conversion.replaced,
+        removed=conversion.removed,
+        moved=plan.moved,
+        changed=plan.changed,
+        neutral=plan.neutral,
+        reopens=msel.status != MselStatus.DRAFT and not plan.neutral,
     )
 
 
@@ -1614,7 +1668,7 @@ def transition(session: Session, ttx: TTX, to: MselStatus, user: User) -> TTXMse
     if msel.status == MselStatus.READY:
         session.flush()
         snapshot = msel_read(session, ttx, msel).model_dump(
-            mode="json", exclude={"validation", "frozen_versions"}
+            mode="json", exclude={"validation", "frozen_versions", "attack_upgrade"}
         )
         session.add(
             MselSnapshot(
@@ -1658,13 +1712,18 @@ def acknowledge_needs_version(session: Session, ttx: TTX, user: User) -> TTXMsel
 
 def upgrade_attack(
     session: Session, ttx: TTX, user: User, to_version: str = LATEST_ATTACK_VERSION
-) -> tuple[TTXMsel, list[AttackReplacement], list[str]]:
+) -> tuple[TTXMsel, UpgradePlan]:
     """Move the MSEL to a newer ATT&CK release: revoked techniques (and
     groups) become MITRE's replacement, deprecated or vanished ones are
     removed -- a threat actor whose group is gone stays, as an unknown actor
     with its name (all reported). Like an edit, a reviewed MSEL goes back to
     DRAFT; a READY one opens a new version, its snapshot keeping the old
-    release."""
+    release.
+
+    Unless the move is neutral -- nothing replaced, removed, moved to
+    another tactic or renamed: then only the release number changes, so the
+    MSEL keeps its status and version, and a READY one's snapshot takes the
+    new release too while no session was played from it."""
     msel, _ = _editable(session, ttx)
     if to_version not in ATTACK_VERSIONS:
         raise _reject(
@@ -1682,21 +1741,12 @@ def upgrade_attack(
     inject_ids = list(session.exec(select(Inject.id).where(Inject.msel_id == msel.id)))
     inject_rows = _technique_rows(session, inject_ids)
 
-    report = ConversionReport()
-    new_injects = {
-        inject_id: convert_refs(
-            [(r.domain, r.tactic_id, r.technique_id) for r in rows], to_version, report
-        )
-        for inject_id, rows in inject_rows.items()
-    }
-    for actor in _threat_actors(session, msel):
+    threat_actors = _threat_actors(session, msel)
+    plan = _upgrade_plan(msel, inject_rows, threat_actors, to_version)
+    new_injects = plan.injects
+    for actor in threat_actors:
         before = _threat_actor_content(actor)
-        actor.mitre_group_id, kept = convert_profile(
-            actor.mitre_group_id,
-            [(t["domain"], t["technique_id"]) for t in actor.techniques],
-            to_version,
-            report,
-        )
+        actor.mitre_group_id, kept = plan.actors[actor.id]
         actor.techniques = [{"domain": d, "technique_id": t} for d, t in kept]
         if before != _threat_actor_content(actor):
             actor.modified_at = datetime.now(UTC)
@@ -1714,7 +1764,10 @@ def upgrade_attack(
     )
     previous = msel.attack_version
     msel.attack_version = to_version
-    _reopen(msel)
+    if not plan.neutral:
+        _reopen(msel)
+    elif msel.status == MselStatus.READY:
+        _move_snapshot_release(session, msel, to_version)
     _touch(msel, user)
     session.add(msel)
     session.commit()
@@ -1726,8 +1779,26 @@ def upgrade_attack(
         to_version,
         user.id,
     )
-    conversion = report.read()
-    return msel, conversion.replaced, conversion.removed
+    return msel, plan
+
+
+def _move_snapshot_release(session: Session, msel: TTXMsel, to_version: str) -> None:
+    """A READY MSEL moved to another release without changing anything:
+    its frozen version says so too, unless a session was played from it
+    (then it stays as what was played)."""
+    snapshot = session.exec(
+        select(MselSnapshot)
+        .where(MselSnapshot.msel_id == msel.id, MselSnapshot.version == msel.version)
+        .order_by(MselSnapshot.created_at.desc())
+    ).first()
+    if snapshot is None:
+        return
+    played = session.exec(
+        select(ExerciseRun.id).where(ExerciseRun.msel_snapshot_id == snapshot.id)
+    ).first()
+    if played is None:
+        snapshot.payload = {**snapshot.payload, "attack_version": to_version}
+        session.add(snapshot)
 
 
 # -- renumbering codes -----------------------------------------------------

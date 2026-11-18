@@ -29,7 +29,7 @@ from app.models import (
     TTXMsel,
     UserSession,
 )
-from tests.msel_helpers import attack_ref, example_payload
+from tests.msel_helpers import attack_ref, example_payload, steady_payload
 from tests.test_ttx_evaluation import _account, _enable_totp, _login
 from tests.test_ttx_needs_form import (
     _complete_payload,
@@ -84,8 +84,16 @@ def _saved_example(client: TestClient, exercise: dict) -> dict:
     return response.json()
 
 
-def _to_ready(client: TestClient, exercise: dict) -> dict:
-    saved = _saved_example(client, exercise)
+def _saved(client: TestClient, exercise: dict, payload: dict) -> dict:
+    response = _put(client, exercise["ttx"]["id"], payload)
+    assert response.status_code == 200, response.text
+    return response.json()
+
+
+def _to_ready(client: TestClient, exercise: dict, payload: dict | None = None) -> dict:
+    saved = (
+        _saved_example(client, exercise) if payload is None else _saved(client, exercise, payload)
+    )
     assert saved["validation"]["ready"] == [], saved["validation"]["ready"]
     assert saved["validation"]["approved"] == []
     assert _move(client, exercise["ttx"]["id"], "in_review").status_code == 200
@@ -1210,6 +1218,7 @@ def test_an_msel_is_upgraded_explicitly_and_its_snapshot_keeps_the_old_release(
     assert (msel["status"], msel["version"]) == ("draft", ready["version"] + 1)
     snapshot = db_session.exec(select(MselSnapshot)).one().payload
     assert snapshot["attack_version"] == LATEST_ATTACK_VERSION
+    assert "attack_upgrade" not in snapshot
     assert "Phishing" in [r["technique_name"] for r in snapshot["attack_techniques"]]
 
     again = client.post(
@@ -1217,6 +1226,82 @@ def test_an_msel_is_upgraded_explicitly_and_its_snapshot_keeps_the_old_release(
     )
     assert again.status_code == 409
     assert again.json()["error"]["code"] == "ATTACK_VERSION_NOT_NEWER"
+
+
+def test_an_msel_on_the_latest_release_has_nothing_to_upgrade(
+    client: TestClient, exercise: dict
+) -> None:
+    assert _saved_example(client, exercise)["attack_upgrade"] is None
+
+
+def test_the_msel_says_what_an_upgrade_would_change(
+    client: TestClient, exercise: dict, next_release
+) -> None:
+    preview = _saved_example(client, exercise)["attack_upgrade"]
+
+    assert preview["to_version"] == "99.0"
+    assert preview["replaced"] == [{"from_id": "T1566", "to_id": "T1566.001"}]
+    assert preview["removed"] == ["T1490"]
+    # Kept, but under another tactic: said too, it isn't the planner's choice.
+    assert preview["moved"] == [
+        {"technique_id": "T1021", "from_tactic_id": "TA0008", "to_tactic_id": "TA0005"}
+    ]
+    assert preview["changed"] == ["T1021"]
+    # A draft has nothing to reopen.
+    assert (preview["neutral"], preview["reopens"]) == (False, False)
+
+    assert _move(client, exercise["ttx"]["id"], "in_review").status_code == 200
+    assert _open(client, exercise["ttx"]["id"])["attack_upgrade"]["reopens"] is True
+
+
+def test_an_upgrade_that_changes_nothing_keeps_the_msel_ready(
+    client: TestClient, db_session: Session, exercise: dict, next_release
+) -> None:
+    ttx_id = exercise["ttx"]["id"]
+    ready = _to_ready(client, exercise, steady_payload(exercise["msel"]))
+    preview = ready["attack_upgrade"]
+    assert (preview["to_version"], preview["neutral"], preview["reopens"]) == ("99.0", True, False)
+    assert preview["replaced"] == preview["removed"] == preview["moved"] == preview["changed"] == []
+
+    response = client.post(_url(ttx_id, "/attack-upgrade"), headers=_csrf(client))
+
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["replaced"] == body["removed"] == body["moved"] == body["changed"] == []
+    msel = body["msel"]
+    assert msel["attack_version"] == "99.0" and msel["attack_upgrade"] is None
+    # Only the release moved: still READY, same version, and a new revision
+    # so a page open on it reloads.
+    assert (msel["status"], msel["version"]) == ("ready", ready["version"])
+    assert msel["revision"] > ready["revision"]
+    assert msel["injects"] == ready["injects"]
+    assert msel["threat_actors"] == ready["threat_actors"]
+    # No session was played from the frozen version: it says the release too.
+    snapshot = db_session.exec(select(MselSnapshot)).one().payload
+    assert snapshot["attack_version"] == "99.0"
+
+
+def test_a_technique_that_only_changes_tactic_still_reopens_the_msel(
+    client: TestClient, exercise: dict, next_release
+) -> None:
+    ttx_id = exercise["ttx"]["id"]
+    payload = steady_payload(exercise["msel"])
+    lateral = next(i for i in payload["injects"] if i.get("attack_techniques"))
+    lateral["attack_techniques"] = [attack_ref("T1021")]
+    payload["threat_actors"][0]["techniques"].append(
+        {"domain": "enterprise", "technique_id": "T1021"}
+    )
+    ready = _to_ready(client, exercise, payload)
+    preview = ready["attack_upgrade"]
+    assert preview["replaced"] == preview["removed"] == []
+    assert (preview["neutral"], preview["reopens"]) == (False, True)
+
+    body = client.post(_url(ttx_id, "/attack-upgrade"), headers=_csrf(client)).json()
+
+    assert body["moved"] == [
+        {"technique_id": "T1021", "from_tactic_id": "TA0008", "to_tactic_id": "TA0005"}
+    ]
+    assert (body["msel"]["status"], body["msel"]["version"]) == ("draft", ready["version"] + 1)
 
 
 # -- storyline branches ------------------------------------------------------

@@ -1359,6 +1359,33 @@ export interface Msel {
   /** A draft's versions frozen when it was ready before: they keep the old
    * codes, so renumbering asks first (absent in snapshots). */
   frozen_versions?: MselFrozenVersion[]
+  /** What moving to the latest ATT&CK release would change; null when the
+   * MSEL already uses it (absent in snapshots). */
+  attack_upgrade?: AttackUpgradePreview | null
+}
+
+/** An inject's technique kept under another tactic: its own no longer
+ * applies to it in the new release. */
+export interface AttackTacticMove {
+  technique_id: string
+  from_tactic_id: string
+  to_tactic_id: string
+}
+
+/** What moving an MSEL onto another ATT&CK release changes beyond
+ * replacements and removals. */
+export interface AttackUpgradeChanges extends AttackConversion {
+  moved: AttackTacticMove[]
+  /** Techniques kept whose name or tactics MITRE changed. */
+  changed: string[]
+}
+
+/** `neutral`: only the release number changes, so the MSEL keeps its
+ * status; otherwise one past draft goes back to it (`reopens`). */
+export interface AttackUpgradePreview extends AttackUpgradeChanges {
+  to_version: string
+  neutral: boolean
+  reopens: boolean
 }
 
 export type MselRenumberKind = 'phases' | 'injects' | 'threat_actors'
@@ -1425,10 +1452,8 @@ export interface AttackCatalog {
 }
 
 /** POST /ttx/{ttx_id}/msel/attack-upgrade */
-export interface AttackUpgradeResult {
+export interface AttackUpgradeResult extends AttackUpgradeChanges {
   msel: Msel
-  replaced: { from_id: string; to_id: string }[]
-  removed: string[]
 }
 
 /** GET /auth/me/lead-exercises: what deleting the account must hand over. */
