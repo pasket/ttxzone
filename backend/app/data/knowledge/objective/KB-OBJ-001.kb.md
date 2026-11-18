@@ -9,7 +9,7 @@ language: "en"
 sectors: ["cross-sector"]
 families: []
 capabilities: ["detection_triage_escalation"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: []
 attack_groups: []
 related: ["KB-GLS-003"]

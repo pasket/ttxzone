@@ -13,6 +13,7 @@ from fastapi.testclient import TestClient
 from PIL import Image
 from sqlmodel import Session, select
 
+from app.data.attack_catalog import LATEST_ATTACK_VERSION
 from app.data.scenario_catalog import scenario_catalog
 from app.models import (
     TTX,
@@ -305,6 +306,17 @@ def test_the_catalog_is_valid_and_bilingual(client: TestClient, designed: dict) 
         "items"
     ]
     assert {i["language"] for i in items} == {"es"}
+
+
+def test_the_catalog_is_written_against_the_latest_attack_release() -> None:
+    """An exercise started from a scenario takes the scenario's ATT&CK
+    release, so a new release means reviewing every scenario (techniques
+    and groups may be revoked or deprecated) and bumping its
+    `attack_version` (see scripts/import_attack.py)."""
+    for scenario in scenario_catalog().values():
+        for language, doc in scenario.documents.items():
+            if doc.msel is not None:
+                assert doc.msel.attack_version == LATEST_ATTACK_VERSION, (scenario.id, language)
 
 
 @pytest.mark.parametrize("language", ["en", "es"])

@@ -9,7 +9,7 @@ language: "en"
 sectors: ["public-administration"]
 families: []
 capabilities: ["continuity_recovery", "detection_triage_escalation", "regulatory_notification"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: []
 attack_groups: []
 related: []

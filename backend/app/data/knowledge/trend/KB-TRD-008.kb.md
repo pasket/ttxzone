@@ -9,7 +9,7 @@ language: "en"
 sectors: ["cross-sector", "technology-msp"]
 families: ["insider", "data_breach"]
 capabilities: ["detection_triage_escalation", "legal_forensics", "cross_unit_coordination"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: ["enterprise:T1585.001", "enterprise:T1683.002", "enterprise:T1078", "enterprise:T1219", "enterprise:T1213.003", "enterprise:T1567.002", "enterprise:T1204.002", "enterprise:T1657"]
 attack_groups: []
 related: ["KB-TRD-009", "KB-TRD-002"]

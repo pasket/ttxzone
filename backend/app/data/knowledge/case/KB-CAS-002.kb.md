@@ -9,7 +9,7 @@ language: "en"
 sectors: ["retail-ecommerce"]
 families: ["ransomware", "phishing_account_takeover", "data_breach"]
 capabilities: ["crisis_decision_making", "internal_external_comms", "continuity_recovery"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: ["enterprise:T1566.004", "enterprise:T1078", "enterprise:T1003.003", "enterprise:T1486", "enterprise:T1490", "enterprise:T1567"]
 attack_groups: ["G1015"]
 related: ["KB-TRD-002", "KB-ART-002", "KB-ART-001"]

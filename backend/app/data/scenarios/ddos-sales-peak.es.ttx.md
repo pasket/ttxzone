@@ -5,7 +5,7 @@ language: "es"
 title: "DDoS hacktivista en plena campaña de ventas"
 exported_at: "2026-10-31T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # DDoS hacktivista en plena campaña de ventas
@@ -191,7 +191,7 @@ Viernes, 15:00. La tienda funciona tras la mitigación; siguen llegando quejas.
   "msel": {
     "title": "Fin de semana negro",
     "summary": "En vísperas del mayor fin de semana de ventas del año, un canal hacktivista incluye tu marca entre sus objetivos. A la mañana siguiente el tráfico de la tienda se dispara.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 160,
     "time_compression": 1,
     "phases": [

@@ -10,6 +10,7 @@ from fastapi.testclient import TestClient
 from pypdf import PdfReader
 from sqlmodel import Session
 
+from app.data.attack_catalog import LATEST_ATTACK_VERSION
 from app.models import RoleEnum, TTXAccess
 from tests.msel_helpers import example_payload
 from tests.test_ttx_evaluation import _account, _login
@@ -127,7 +128,7 @@ def test_the_planning_documents_have_everything(client: TestClient, ready_exerci
     assert "12 h later in the scenario" in guide
     # ATT&CK: the pinned release and the techniques grouped by tactic, one
     # per line under it, code first.
-    assert "MITRE ATT&CK v19.2 (Enterprise, ICS)" in full
+    assert f"MITRE ATT&CK v{LATEST_ATTACK_VERSION} (Enterprise, ICS)" in full
     assert "Initial Access T1566 | Phishing" in full
     assert "Impact T1486 | Data Encrypted for Impact T1490 | Inhibit System Recovery" in full
     assert "The MITRE Corporation" in full

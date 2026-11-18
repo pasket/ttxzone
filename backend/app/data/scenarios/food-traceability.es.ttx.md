@@ -5,7 +5,7 @@ language: "es"
 title: "¿Podemos fiarnos de los registros de lote?"
 exported_at: "2026-11-05T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # ¿Podemos fiarnos de los registros de lote?
@@ -277,7 +277,7 @@ Día 28. Ningún sistema nuevo muestra comportamiento malicioso.
   "msel": {
     "title": "Trazabilidad alimentaria",
     "summary": "{organization} fabrica y distribuye alimentos con la marca {brand} desde {plant_1} y {plant_2}. Las recetas están en {recipe_system}, y lotes, palés y decisiones de liberación en {traceability_system}. Distribuidores y consumidores confían en esos registros sin verlos nunca.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 180,
     "time_compression": 20,
     "phases": [

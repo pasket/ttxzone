@@ -268,15 +268,19 @@ export function InjectLibrary({
                 permissions.manageOrganization && (
                   <button
                     type="button"
-                    onClick={() =>
+                    // A new inject is written against the catalog's ATT&CK
+                    // release (the latest shipped), known once it has loaded.
+                    disabled={!catalog.data}
+                    onClick={() => {
+                      if (!catalog.data) return
                       setForm({
                         id: null,
                         initial: {
                           ...emptyInjectFields(uiLanguage),
-                          attack_version: catalog.data?.attack_version ?? '19.2',
+                          attack_version: catalog.data.attack_version,
                         },
                       })
-                    }
+                    }}
                     className={btnSecondary}
                   >
                     <span aria-hidden="true">+ </span>

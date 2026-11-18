@@ -5,7 +5,7 @@ language: "en"
 title: "The remote developer who wasn't"
 exported_at: "2026-10-31T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # The remote developer who wasn't
@@ -197,7 +197,7 @@ A week later. An anonymous email attaches samples of the source code.
   "msel": {
     "title": "A good developer, a strange laptop",
     "summary": "Seven months into a remote contract, a developer of {organization} does good work but rarely turns on the camera. Then the SOC notices a remote-access tool on his laptop.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 170,
     "time_compression": 1,
     "phases": [

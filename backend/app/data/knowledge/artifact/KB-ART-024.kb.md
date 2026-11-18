@@ -9,7 +9,7 @@ language: "en"
 sectors: ["cross-sector"]
 families: ["phishing_account_takeover"]
 capabilities: ["detection_triage_escalation", "internal_external_comms"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: ["enterprise:T1534", "enterprise:T1557", "enterprise:T1539", "enterprise:T1114.003"]
 attack_groups: []
 related: ["KB-TRD-002", "KB-ART-010"]

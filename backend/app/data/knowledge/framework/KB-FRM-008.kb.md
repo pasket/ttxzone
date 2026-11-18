@@ -9,7 +9,7 @@ language: "en"
 sectors: ["finance"]
 families: []
 capabilities: ["continuity_recovery", "crisis_decision_making", "internal_external_comms"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: []
 attack_groups: []
 related: []

@@ -9,7 +9,7 @@ language: "en"
 sectors: ["cross-sector", "transport-logistics", "ot-manufacturing"]
 families: ["data_breach", "supply_chain"]
 capabilities: ["regulatory_notification", "legal_forensics", "internal_external_comms"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: ["enterprise:T1190", "enterprise:T1505.003", "enterprise:T1219", "enterprise:T1041", "enterprise:T1657"]
 attack_groups: ["G0092"]
 related: ["KB-TRD-005", "KB-TRD-003", "KB-ART-001"]

@@ -1,8 +1,8 @@
 """Import a MITRE ATT&CK release into TTX-Zone's code-level catalog.
 
     python scripts/import_attack.py            # the latest release
-    python scripts/import_attack.py 19.2       # a given one
-    python scripts/import_attack.py 19.2 --from-dir /tmp/stix   # offline
+    python scripts/import_attack.py 20.1       # a given one
+    python scripts/import_attack.py 20.1 --from-dir /tmp/stix   # offline
 
 Downloads the official STIX 2.1 bundles of the Enterprise and ICS domains
 from github.com/mitre-attack/attack-stix-data and writes one compact file
@@ -17,23 +17,29 @@ Bringing in a new release, step by step:
 
 1. Import it -- inside the backend container (the host's Python may lack
    the root certificates for raw.githubusercontent.com):
-       docker compose exec backend python scripts/import_attack.py 20.0
-2. Add "20.0" to ATTACK_VERSIONS in app/data/attack_catalog.py (oldest
+       docker compose exec backend python scripts/import_attack.py 21.0
+2. Add "21.0" to ATTACK_VERSIONS in app/data/attack_catalog.py (oldest
    first). Never delete an older release's files: MSELs, snapshots and
    library items pinned to it read their names from them.
-3. Review TTX-Zone's inject catalog (app/data/injects/catalog.json) against
-   the new release -- techniques may be revoked, deprecated or moved to
-   another tactic -- then bump its `attack_version`.
-   test_the_catalog_is_written_against_the_latest_attack_release fails
-   until you do.
-4. Run the whole suite (the loader checks each file: tactics, techniques,
+3. Review TTX-Zone's own content against the new release -- techniques
+   and groups may be revoked or deprecated, techniques moved to another
+   tactic -- then bump each `attack_version`: the inject catalog
+   (app/data/injects/catalog.json), the knowledge base
+   (app/data/knowledge/) and the scenarios (app/data/scenarios/, twice per
+   file: front matter and data block). Each has a
+   test_the_catalog_is_written_against_the_latest_attack_release that
+   fails until you do.
+4. Regenerate docs/site/schemas/openapi.json (the latest release is a
+   default in it) and update "Current release" in
+   docs/architecture/attack.md.
+5. Run the whole suite (the loader checks each file: tactics, techniques,
    groups' techniques) and commit. No database migration is needed.
 
 What then happens in the app: existing MSELs stay on their release and
 offer an explicit upgrade; new MSELs pin the new one; Library ->
 Threat actors shows its groups; organization libraries offer "Update to
-v20"; copies across releases are converted (app/services/
-attack_conversion.py). See CLAUDE.md, "ATT&CK is versioned".
+v21"; copies across releases are converted (app/services/
+attack_conversion.py). See docs/architecture/attack.md.
 
 Stdlib only, run at development time -- the app never downloads anything
 at runtime."""
@@ -208,7 +214,7 @@ def _groups(objects: list, by_stix: dict, revoked_by: dict) -> tuple[list, dict]
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("version", nargs="?", help="e.g. 19.2 (default: the latest)")
+    parser.add_argument("version", nargs="?", help="e.g. 20.1 (default: the latest)")
     parser.add_argument(
         "--from-dir",
         type=Path,

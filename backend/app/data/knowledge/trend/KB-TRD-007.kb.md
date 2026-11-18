@@ -9,7 +9,7 @@ language: "en"
 sectors: ["public-administration", "finance", "transport-logistics", "energy-utilities"]
 families: ["ddos", "ot_ics"]
 capabilities: ["detection_triage_escalation", "internal_external_comms", "continuity_recovery"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: ["enterprise:T1583.005", "enterprise:T1498.001", "enterprise:T1499.002", "enterprise:T1491.002", "ics:T0883", "ics:T0814"]
 attack_groups: ["G1027"]
 related: ["KB-TRD-004", "KB-ART-006"]

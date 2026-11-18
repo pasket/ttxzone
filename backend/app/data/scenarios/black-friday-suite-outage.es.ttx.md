@@ -5,7 +5,7 @@ language: "es"
 title: "Víspera del Black Friday: continuidad de las operaciones ante la caída de un tercero crítico"
 exported_at: "2026-11-14T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # Víspera del Black Friday: continuidad de las operaciones ante la caída de un tercero crítico
@@ -360,7 +360,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
   "msel": {
     "title": "Caída de la suite en Black Friday",
     "summary": "{organization} es un grupo de moda global y cotizado, con miles de tiendas y un canal online que aporta {online_share} de la facturación. Esta noche a las 00:00 arranca la campaña de Black Friday de {brand}: los medios están contratados, el stock está colocado y el war room está montado. Es jueves, 18:00. El correo, el chat, los calendarios y los archivos compartidos dejan de funcionar a la vez, y no solo para ti: {collab_suite} está caída en todo el mundo. La tienda online y la pasarela de pago funcionan en otro proveedor y siguen en pie. Casi todo lo demás que usas para coordinar el negocio, no.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 240,
     "time_compression": 3,
     "phases": [

@@ -9,7 +9,7 @@ language: "en"
 sectors: ["ot-manufacturing", "energy-utilities"]
 families: ["ot_ics", "ransomware", "physical_hybrid"]
 capabilities: ["detection_triage_escalation", "cross_unit_coordination", "continuity_recovery"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: ["ics:T0822", "ics:T0886", "ics:T0883", "ics:T1694.001", "ics:T0859", "ics:T0864", "ics:T0836", "ics:T0829", "ics:T0827", "ics:T0828", "enterprise:T1133", "enterprise:T1486"]
 attack_groups: ["G1017"]
 related: ["KB-CAS-001", "KB-ART-004"]

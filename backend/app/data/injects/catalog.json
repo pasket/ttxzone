@@ -1,5 +1,5 @@
 {
- "attack_version": "19.2",
+ "attack_version": "20.1",
  "injects": [
   {
    "id": "INJ-RAN-01",

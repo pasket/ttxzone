@@ -9,7 +9,7 @@ language: "en"
 sectors: ["cross-sector"]
 families: ["ransomware", "data_breach"]
 capabilities: ["detection_triage_escalation", "crisis_decision_making", "continuity_recovery"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: ["enterprise:T1078", "enterprise:T1110", "enterprise:T1566", "enterprise:T1219", "enterprise:T1003.003", "enterprise:T1685", "enterprise:T1490", "enterprise:T1567.002", "enterprise:T1486"]
 attack_groups: []
 related: []

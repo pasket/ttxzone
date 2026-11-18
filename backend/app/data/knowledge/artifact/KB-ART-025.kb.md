@@ -9,7 +9,7 @@ language: "en"
 sectors: ["cross-sector", "technology-msp"]
 families: ["supply_chain"]
 capabilities: ["third_party_supply_chain", "legal_forensics", "regulatory_notification"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: []
 attack_groups: []
 related: ["KB-ART-021", "KB-ART-003", "KB-TRD-003"]

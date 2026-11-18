@@ -9,7 +9,7 @@ language: "en"
 sectors: ["cross-sector", "finance"]
 families: ["bec_fraud"]
 capabilities: ["detection_triage_escalation", "crisis_decision_making", "legal_forensics"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: ["enterprise:T1593", "enterprise:T1684.001", "enterprise:T1683.002", "enterprise:T1657"]
 attack_groups: []
 related: ["KB-TRD-006", "KB-TRD-009"]

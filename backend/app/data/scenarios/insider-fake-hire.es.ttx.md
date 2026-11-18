@@ -5,7 +5,7 @@ language: "es"
 title: "El desarrollador remoto que no era quien decía"
 exported_at: "2026-10-31T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # El desarrollador remoto que no era quien decía
@@ -197,7 +197,7 @@ Una semana después. Un correo anónimo adjunta muestras del código fuente.
   "msel": {
     "title": "Un buen desarrollador, un portátil extraño",
     "summary": "Siete meses después de empezar un contrato remoto, un desarrollador de {organization} trabaja bien pero casi nunca enciende la cámara. Entonces el SOC detecta una herramienta de acceso remoto en su portátil.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 170,
     "time_compression": 1,
     "phases": [

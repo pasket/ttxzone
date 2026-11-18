@@ -5,7 +5,7 @@ language: "es"
 title: "Ransomware en un grupo hospitalario"
 exported_at: "2026-11-05T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # Ransomware en un grupo hospitalario
@@ -286,7 +286,7 @@ Día 6. La contención ha terminado y los hospitales siguen en papel. El princip
   "msel": {
     "title": "Red hospitalaria",
     "summary": "{organization} gestiona {hospital_1}, {hospital_2} y una red de laboratorios y consultas externas. Los equipos clínicos dependen de {ehr_system}, de las plataformas de laboratorio e imagen y de dispositivos médicos conectados que comparten interfaces con la TI corporativa.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 175,
     "time_compression": 15,
     "phases": [

@@ -5,7 +5,7 @@ language: "es"
 title: "Una actualización de software envenenada"
 exported_at: "2026-10-31T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # Una actualización de software envenenada
@@ -196,7 +196,7 @@ Viernes, 07:00. Veintidós horas desde el aviso.
   "msel": {
     "title": "Versión 4.2.1",
     "summary": "Un proveedor de inteligencia avisa de que la versión 4.2.1 de un agente de monitorización muy extendido, distribuida automáticamente la semana pasada, contiene una puerta trasera. Tus servidores se actualizaron según lo previsto.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 170,
     "time_compression": 1,
     "phases": [

@@ -5,7 +5,7 @@ language: "en"
 title: "Ransomware with double extortion"
 exported_at: "2026-10-12T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # Ransomware with double extortion
@@ -196,7 +196,7 @@ Wednesday. A journalist asks for comment on the leaked data.
   "msel": {
     "title": "Locked out on a Monday",
     "summary": "Early on a Monday the service desk receives calls about files that won't open. Within hours the main business applications are encrypted, a ransom note appears and the attackers claim to hold customer data.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 170,
     "time_compression": 1,
     "phases": [

@@ -5,7 +5,7 @@ language: "en"
 title: "Black Friday eve: operations continuity when a critical third party goes down"
 exported_at: "2026-11-14T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # Black Friday eve: operations continuity when a critical third party goes down
@@ -360,7 +360,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
   "msel": {
     "title": "Black Friday suite outage",
     "summary": "{organization} is a global fashion group, listed on the stock market, with thousands of stores and an online channel that brings in {online_share} of revenue. Tonight at midnight the {brand} Black Friday campaign goes live: media are booked, stock is in place and the war room is set up. It is Thursday, 18:00. Email, chat, calendars and shared files stop working at the same time, and not only for you: {collab_suite} is down worldwide. The online shop and the payment gateway run elsewhere and still work. Almost everything else you use to coordinate the business does not.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 240,
     "time_compression": 3,
     "phases": [

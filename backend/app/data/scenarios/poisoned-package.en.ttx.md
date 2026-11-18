@@ -5,7 +5,7 @@ language: "en"
 title: "From a poisoned package to production data"
 exported_at: "2026-11-05T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # From a poisoned package to production data
@@ -327,7 +327,7 @@ Three weeks later. The incident is closed and the final report is being drafted.
   "msel": {
     "title": "Poisoned package",
     "summary": "{organization} is a financial entity whose development teams, internal AI assistant and production databases run on {cloud_platform}. What starts as an alert on one workstation becomes, over six days, a reportable major incident and a personal data breach.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 180,
     "time_compression": 10,
     "phases": [

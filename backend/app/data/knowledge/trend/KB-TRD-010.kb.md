@@ -9,7 +9,7 @@ language: "en"
 sectors: ["cross-sector", "technology-msp"]
 families: ["cloud_compromise", "data_breach", "supply_chain"]
 capabilities: ["detection_triage_escalation", "third_party_supply_chain", "regulatory_notification"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: ["enterprise:T1566.004", "enterprise:T1078.004", "enterprise:T1528", "enterprise:T1550.001", "enterprise:T1098.001", "enterprise:T1484.002", "enterprise:T1580", "enterprise:T1213", "enterprise:T1530", "enterprise:T1537"]
 attack_groups: ["G1057"]
 related: ["KB-TRD-002", "KB-TRD-003", "KB-ART-003"]

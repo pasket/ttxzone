@@ -123,7 +123,7 @@ def test_the_catalog_is_served_with_attack_names(client: TestClient, db_session:
 
     assert response.status_code == 200, response.text
     body = response.json()
-    assert body["attack_version"] == "19.2"
+    assert body["attack_version"] == LATEST_ATTACK_VERSION
     ransom = next(i for i in body["items"] if i["id"] == "INJ-RAN-01")
     assert ransom["title"] == {
         "es": "Cifrado masivo de madrugada",

@@ -26,7 +26,7 @@ _DIR = Path(__file__).resolve().parent / "attack"
 
 # Shipped releases, oldest first. Add a new one after importing it; never
 # remove one (MSELs pinned to it read their names from its files).
-ATTACK_VERSIONS: tuple[str, ...] = ("19.2",)
+ATTACK_VERSIONS: tuple[str, ...] = ("19.2", "20.1")
 LATEST_ATTACK_VERSION = ATTACK_VERSIONS[-1]
 DOMAINS: tuple[str, ...] = ("enterprise", "ics")
 DOMAIN_NAMES = {"enterprise": "Enterprise", "ics": "ICS"}

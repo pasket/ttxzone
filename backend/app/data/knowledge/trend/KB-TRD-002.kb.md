@@ -9,7 +9,7 @@ language: "en"
 sectors: ["cross-sector"]
 families: ["phishing_account_takeover", "ransomware", "cloud_compromise"]
 capabilities: ["detection_triage_escalation", "incident_classification", "third_party_supply_chain"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: ["enterprise:T1078", "enterprise:T1110.003", "enterprise:T1566.004", "enterprise:T1621", "enterprise:T1539", "enterprise:T1550.004", "enterprise:T1528", "enterprise:T1098.005", "enterprise:T1114.003", "enterprise:T1564.008"]
 attack_groups: ["G1015"]
 related: ["KB-TRD-001", "KB-CAS-002", "KB-ART-002"]

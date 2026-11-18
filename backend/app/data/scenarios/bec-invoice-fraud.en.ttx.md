@@ -5,7 +5,7 @@ language: "en"
 title: "Supplier invoice fraud"
 exported_at: "2026-10-31T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # Supplier invoice fraud
@@ -190,7 +190,7 @@ Thursday, 14:00. The supplier's IT has found something.
   "msel": {
     "title": "New bank details",
     "summary": "A message in an existing email thread with the packaging supplier announces new bank details for its next invoice, due this week.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 160,
     "time_compression": 1,
     "phases": [

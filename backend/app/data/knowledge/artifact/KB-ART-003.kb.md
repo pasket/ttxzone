@@ -9,7 +9,7 @@ language: "en"
 sectors: ["cross-sector", "technology-msp"]
 families: ["supply_chain", "data_breach"]
 capabilities: ["third_party_supply_chain", "regulatory_notification", "incident_classification"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: ["enterprise:T1199", "enterprise:T1528"]
 attack_groups: []
 related: ["KB-TRD-003", "KB-CAS-004"]

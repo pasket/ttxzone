@@ -5,7 +5,7 @@ language: "en"
 title: "Two incidents, one campaign against the plant"
 exported_at: "2026-11-05T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # Two incidents, one campaign against the plant
@@ -290,7 +290,7 @@ Three weeks later. Restoration is nearly complete.
   "msel": {
     "title": "Connected plant",
     "summary": "{organization} builds vehicles at {assembly_plant} and runs its line-control systems from a shared manufacturing site. Robots and controllers are maintained remotely by {supplier}. Neither of the two teams knows yet that it is working on the same adversary.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 180,
     "time_compression": 10,
     "phases": [

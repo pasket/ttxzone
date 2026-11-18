@@ -9,7 +9,7 @@ language: "en"
 sectors: ["healthcare"]
 families: ["ransomware", "data_breach", "supply_chain"]
 capabilities: ["continuity_recovery", "crisis_decision_making", "regulatory_notification"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: ["enterprise:T1133", "enterprise:T1190", "enterprise:T1078", "enterprise:T1199", "enterprise:T1567.002", "enterprise:T1486", "enterprise:T1490", "enterprise:T1657"]
 attack_groups: ["G1024"]
 related: ["KB-TRD-001", "KB-TRD-003", "KB-ART-001"]

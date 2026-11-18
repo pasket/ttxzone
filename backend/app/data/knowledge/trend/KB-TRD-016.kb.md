@@ -9,7 +9,7 @@ language: "en"
 sectors: ["cross-sector", "transport-logistics", "energy-utilities", "telecom", "public-administration"]
 families: ["physical_hybrid", "wiper_destructive", "ddos"]
 capabilities: ["crisis_decision_making", "cross_unit_coordination", "continuity_recovery"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: ["enterprise:T1190", "enterprise:T1498", "enterprise:T1485", "enterprise:T1491.002", "ics:T0883"]
 attack_groups: ["G0034", "G0007"]
 related: ["KB-TRD-007", "KB-TRD-004", "KB-TRD-020", "KB-CAS-001"]

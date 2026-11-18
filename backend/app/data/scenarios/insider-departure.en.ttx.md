@@ -5,7 +5,7 @@ language: "en"
 title: "A departing engineer takes the crown jewels"
 exported_at: "2026-10-31T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # A departing engineer takes the crown jewels
@@ -190,7 +190,7 @@ Friday. The engineer has left; a customer calls about a competitor's offer.
   "msel": {
     "title": "Friday is his last day",
     "summary": "A data-loss alert flags an engineer syncing gigabytes to personal cloud storage late at night. HR confirms he resigned last week to join a competitor and leaves on Friday.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 170,
     "time_compression": 1,
     "phases": [

@@ -5,7 +5,7 @@ language: "en"
 title: "Wiper attack on a distributed energy fleet"
 exported_at: "2026-10-31T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # Wiper attack on a distributed energy fleet
@@ -204,7 +204,7 @@ Day 2. Field crews confirm destroyed devices; the authorities and the press are 
   "msel": {
     "title": "Dark sites in a cold spell",
     "summary": "Before dawn, two days before a holiday, the control room of {organization} starts losing contact with its remote generation sites one after another. A few hours later, endpoint protection at the heat plant reports mass file deletion. Nobody has asked for anything: the attack is purely destructive.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 170,
     "time_compression": 1,
     "phases": [

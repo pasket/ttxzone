@@ -9,7 +9,7 @@ language: "en"
 sectors: ["cross-sector", "technology-msp", "energy-utilities"]
 families: ["supply_chain"]
 capabilities: ["third_party_supply_chain", "detection_triage_escalation", "crisis_decision_making"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: ["enterprise:T1199", "enterprise:T1219", "enterprise:T1133"]
 attack_groups: []
 related: ["KB-TRD-003", "KB-ART-003", "KB-ART-025"]

@@ -5,7 +5,7 @@ language: "es"
 title: "Extorsión tras un día cero en la transferencia de ficheros"
 exported_at: "2026-10-31T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # Extorsión tras un día cero en la transferencia de ficheros
@@ -208,7 +208,7 @@ Cinco días después. El sitio de filtraciones incluye a {organization} entre la
   "msel": {
     "title": "Los ficheros que compartimos",
     "summary": "El fabricante de la plataforma de transferencia de ficheros publica un aviso urgente: una vulnerabilidad se está explotando en todo el mundo. {organization} parchea, pero los registros del servidor solo cubren siete días. Tres semanas después llega el correo de extorsión.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 170,
     "time_compression": 1,
     "phases": [

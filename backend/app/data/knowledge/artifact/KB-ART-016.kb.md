@@ -9,7 +9,7 @@ language: "en"
 sectors: ["cross-sector"]
 families: ["ransomware"]
 capabilities: ["continuity_recovery", "crisis_decision_making"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: ["enterprise:T1490", "enterprise:T1485", "enterprise:T1486"]
 attack_groups: []
 related: ["KB-TRD-001", "KB-CAS-002"]

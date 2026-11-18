@@ -9,7 +9,7 @@ language: "en"
 sectors: ["cross-sector", "public-administration", "energy-utilities"]
 families: ["ransomware", "data_breach"]
 capabilities: ["detection_triage_escalation", "incident_classification", "regulatory_notification"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: ["enterprise:T1190", "enterprise:T1133", "enterprise:T1505.003"]
 attack_groups: []
 related: ["KB-TRD-005", "KB-ART-007"]

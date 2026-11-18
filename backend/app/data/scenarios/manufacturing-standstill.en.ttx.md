@@ -5,7 +5,7 @@ language: "en"
 title: "Ransomware stops a manufacturer and its supply chain"
 exported_at: "2026-10-31T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # Ransomware stops a manufacturer and its supply chain
@@ -211,7 +211,7 @@ Two weeks later. Systems are being rebuilt; small suppliers are struggling.
   "msel": {
     "title": "Every line stopped",
     "summary": "At the 06:00 shift change, {organization} detects encryption on the servers that plan production and logistics. Plant systems share the same network.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 170,
     "time_compression": 1,
     "phases": [

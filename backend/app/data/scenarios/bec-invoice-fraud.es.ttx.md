@@ -5,7 +5,7 @@ language: "es"
 title: "Fraude de factura de proveedor"
 exported_at: "2026-10-31T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # Fraude de factura de proveedor
@@ -190,7 +190,7 @@ Jueves, 14:00. La informática del proveedor ha encontrado algo.
   "msel": {
     "title": "Nuevos datos bancarios",
     "summary": "Un mensaje en un hilo de correo ya existente con el proveedor de embalajes anuncia nuevos datos bancarios para su próxima factura, que vence esta semana.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 160,
     "time_compression": 1,
     "phases": [

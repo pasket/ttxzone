@@ -5,7 +5,7 @@ language: "es"
 title: "Tokens robados a una integración SaaS"
 exported_at: "2026-10-31T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # Tokens robados a una integración SaaS
@@ -201,7 +201,7 @@ Día 4. Los clientes empiezan a preguntar.
   "msel": {
     "title": "La integración que no era de nadie",
     "summary": "Un lunes por la mañana, la plataforma de CRM que usa {organization} revoca todos los tokens de la integración de un chatbot de ventas y publica un aviso. El equipo comercial solo quiere que vuelva el chatbot.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 170,
     "time_compression": 1,
     "phases": [

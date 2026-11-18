@@ -5,7 +5,7 @@ language: "en"
 title: "Town hall encrypted"
 exported_at: "2026-10-31T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # Town hall encrypted
@@ -201,7 +201,7 @@ Two weeks later. Residents' records are published.
   "msel": {
     "title": "Back to paper",
     "summary": "Monday, 08:00. Staff of {organization} find a ransom note on their screens. The website and the electronic office are down; the IT team has three people.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 170,
     "time_compression": 1,
     "phases": [

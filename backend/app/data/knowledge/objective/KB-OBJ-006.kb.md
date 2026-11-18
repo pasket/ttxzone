@@ -9,7 +9,7 @@ language: "en"
 sectors: ["finance", "cross-sector"]
 families: []
 capabilities: ["continuity_recovery"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: []
 attack_groups: []
 related: ["KB-FRM-004"]

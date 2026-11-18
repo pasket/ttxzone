@@ -5,7 +5,7 @@ language: "es"
 title: "El director financiero falso y las transferencias urgentes"
 exported_at: "2026-10-31T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # El director financiero falso y las transferencias urgentes
@@ -198,7 +198,7 @@ Cinco días después. En la sede nadie sabe nada de la operación.
   "msel": {
     "title": "Ver para creer",
     "summary": "Una responsable financiera regional de {organization} recibe un correo del director financiero sobre una adquisición confidencial que exige pagos urgentes. Sospecha que es phishing, hasta que entra en una videollamada donde el director financiero y dos compañeros lo confirman.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 160,
     "time_compression": 1,
     "phases": [

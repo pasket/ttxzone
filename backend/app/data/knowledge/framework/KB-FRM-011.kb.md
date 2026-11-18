@@ -9,7 +9,7 @@ language: "en"
 sectors: ["healthcare"]
 families: []
 capabilities: ["continuity_recovery", "regulatory_notification", "detection_triage_escalation"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: []
 attack_groups: []
 related: []

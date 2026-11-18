@@ -9,7 +9,7 @@ language: "en"
 sectors: ["cross-sector", "technology-msp"]
 families: ["supply_chain", "cloud_compromise", "ransomware"]
 capabilities: ["third_party_supply_chain", "regulatory_notification", "continuity_recovery"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: ["enterprise:T1199", "enterprise:T1195.001", "enterprise:T1195.002", "enterprise:T1528", "enterprise:T1530", "enterprise:T1213"]
 attack_groups: []
 related: ["KB-CAS-003", "KB-CAS-004", "KB-ART-003"]

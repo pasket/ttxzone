@@ -5,7 +5,7 @@ language: "es"
 title: "Un ransomware paraliza a un fabricante y a su cadena de suministro"
 exported_at: "2026-10-31T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # Un ransomware paraliza a un fabricante y a su cadena de suministro
@@ -211,7 +211,7 @@ Dos semanas después. Los sistemas se están reconstruyendo; los proveedores peq
   "msel": {
     "title": "Todas las líneas paradas",
     "summary": "En el cambio de turno de las 06:00, {organization} detecta cifrado en los servidores que planifican la producción y la logística. Los sistemas de planta comparten la misma red.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 170,
     "time_compression": 1,
     "phases": [

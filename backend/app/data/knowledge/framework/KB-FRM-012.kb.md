@@ -9,7 +9,7 @@ language: "en"
 sectors: ["retail-ecommerce", "finance"]
 families: []
 capabilities: ["detection_triage_escalation", "legal_forensics", "third_party_supply_chain"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: []
 attack_groups: []
 related: []

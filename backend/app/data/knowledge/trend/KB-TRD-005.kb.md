@@ -9,7 +9,7 @@ language: "en"
 sectors: ["cross-sector"]
 families: ["data_breach", "supply_chain", "ransomware"]
 capabilities: ["detection_triage_escalation", "regulatory_notification", "legal_forensics"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: ["enterprise:T1190", "enterprise:T1133", "enterprise:T1505.003", "enterprise:T1219", "enterprise:T1041", "enterprise:T1567", "enterprise:T1657"]
 attack_groups: ["G0092"]
 related: ["KB-TRD-001", "KB-CAS-004"]

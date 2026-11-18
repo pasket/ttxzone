@@ -9,7 +9,7 @@ language: "en"
 sectors: ["public-administration"]
 families: ["ransomware", "ddos", "data_breach"]
 capabilities: ["continuity_recovery", "internal_external_comms", "regulatory_notification"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: ["enterprise:T1133", "enterprise:T1078", "enterprise:T1566.001", "enterprise:T1486", "enterprise:T1490", "enterprise:T1567.002", "enterprise:T1498"]
 attack_groups: ["G0007"]
 related: ["KB-TRD-001", "KB-TRD-007"]

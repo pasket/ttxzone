@@ -9,7 +9,7 @@ language: "en"
 sectors: ["finance"]
 families: ["ddos", "bec_fraud", "supply_chain", "data_breach"]
 capabilities: ["regulatory_notification", "third_party_supply_chain", "internal_external_comms"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: ["enterprise:T1498", "enterprise:T1499.002", "enterprise:T1566.004", "enterprise:T1657", "enterprise:T1199", "enterprise:T1190", "enterprise:T1078"]
 attack_groups: []
 related: ["KB-TRD-006", "KB-TRD-007", "KB-ART-007"]

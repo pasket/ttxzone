@@ -9,7 +9,7 @@ language: "en"
 sectors: ["education"]
 families: ["ransomware", "data_breach", "ddos", "phishing_account_takeover"]
 capabilities: ["continuity_recovery", "detection_triage_escalation", "internal_external_comms"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: ["enterprise:T1566.001", "enterprise:T1078", "enterprise:T1213", "enterprise:T1567.002", "enterprise:T1486", "enterprise:T1498"]
 attack_groups: []
 related: ["KB-TRD-001", "KB-TRD-007", "KB-TRD-008"]

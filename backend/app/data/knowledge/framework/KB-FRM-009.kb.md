@@ -9,7 +9,7 @@ language: "en"
 sectors: ["finance", "cross-sector"]
 families: []
 capabilities: ["crisis_decision_making", "regulatory_notification", "internal_external_comms"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: []
 attack_groups: []
 related: []

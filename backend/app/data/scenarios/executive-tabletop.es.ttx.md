@@ -5,7 +5,7 @@ language: "es"
 title: "Ejercicio ejecutivo: acceso de confianza"
 exported_at: "2026-10-12T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # Ejercicio ejecutivo: acceso de confianza
@@ -384,7 +384,7 @@ Martes 5 de mayo, 14:00. La fase de respuesta a la crisis ha terminado y la recu
   "msel": {
     "title": "Acceso de confianza",
     "summary": "Es **domingo 3 de mayo, 08:00**. Una mañana tranquila de fin de semana en todo el Grupo: {group_name} (funciones de Grupo), {company_1} y {company_2}.\n\nDurante la noche, el Centro de Operaciones de Seguridad del Grupo ha detectado **actividad de inicio de sesión inusual** vinculada a un contratista de **{supplier}**, el proveedor de servicios de TI del Grupo, con **acceso privilegiado en todo el Grupo** en {country_1} y {country_2}.\n\nEl Equipo de Gestión de Crisis acaba de recibir una **notificación formal de incidente** y la petición de una **llamada de emergencia en la próxima hora**. _La información es incompleta y seguirá cambiando._\n\nTu papel es **dirigir la respuesta del Grupo como lo harías en un día real**, con tus planes, tu autoridad y tus procesos actuales. Acepta el escenario tal como se presenta y **céntrate en las decisiones que solo tú puedes tomar**.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 140,
     "time_compression": 5,
     "phases": [

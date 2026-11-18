@@ -9,7 +9,7 @@ language: "en"
 sectors: ["cross-sector", "energy-utilities", "telecom", "transport-logistics"]
 families: ["generic", "ot_ics"]
 capabilities: ["continuity_recovery", "crisis_decision_making", "internal_external_comms"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: []
 attack_groups: []
 related: ["KB-CAS-001", "KB-TRD-004", "KB-ART-004"]

@@ -9,7 +9,7 @@ language: "en"
 sectors: ["cross-sector", "public-administration", "energy-utilities"]
 families: ["generic", "physical_hybrid"]
 capabilities: ["internal_external_comms", "crisis_decision_making", "cross_unit_coordination"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: ["enterprise:T1585.001", "enterprise:T1683.001", "enterprise:T1683.002", "enterprise:T1684.001", "enterprise:T1491.002"]
 attack_groups: []
 related: ["KB-TRD-007", "KB-TRD-016", "KB-CAS-005", "KB-ART-015"]

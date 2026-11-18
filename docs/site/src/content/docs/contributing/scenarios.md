@@ -19,7 +19,7 @@ language: "en"
 title: "…"
 exported_at: "…"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 # Title
 …a readable summary: objectives, phases and injects…

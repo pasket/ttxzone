@@ -9,7 +9,7 @@ language: "en"
 sectors: ["ot-manufacturing", "transport-logistics"]
 families: ["ransomware", "supply_chain"]
 capabilities: ["continuity_recovery", "third_party_supply_chain", "crisis_decision_making"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: ["enterprise:T1078", "enterprise:T1486", "ics:T0826", "ics:T0828"]
 attack_groups: []
 related: ["KB-TRD-003", "KB-TRD-004"]

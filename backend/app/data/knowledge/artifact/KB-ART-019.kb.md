@@ -9,7 +9,7 @@ language: "en"
 sectors: ["cross-sector", "technology-msp"]
 families: ["supply_chain", "data_breach", "ransomware"]
 capabilities: ["third_party_supply_chain", "internal_external_comms", "legal_forensics"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: []
 attack_groups: []
 related: ["KB-TRD-003", "KB-ART-003"]

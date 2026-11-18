@@ -9,7 +9,7 @@ language: "en"
 sectors: ["cross-sector"]
 families: ["generic", "ransomware", "data_breach"]
 capabilities: ["internal_external_comms", "crisis_decision_making"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: []
 attack_groups: []
 related: ["KB-CAS-002", "KB-CAS-004", "KB-CAS-005"]

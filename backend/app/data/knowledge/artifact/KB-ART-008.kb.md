@@ -9,7 +9,7 @@ language: "en"
 sectors: ["cross-sector"]
 families: ["generic", "ransomware"]
 capabilities: ["crisis_decision_making", "legal_forensics", "third_party_supply_chain"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: []
 attack_groups: []
 related: ["KB-ART-001", "KB-ART-011"]

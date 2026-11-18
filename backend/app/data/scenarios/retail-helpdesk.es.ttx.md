@@ -5,7 +5,7 @@ language: "es"
 title: "Ransomware en una cadena minorista que empezó con una llamada al soporte"
 exported_at: "2026-10-31T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # Ransomware en una cadena minorista que empezó con una llamada al soporte
@@ -205,7 +205,7 @@ Diez días después. La investigación confirma que se llevaron datos de cliente
   "msel": {
     "title": "Un puente sin cajas",
     "summary": "El sábado de un puente, las tiendas de {organization} informan de que fallan los pagos sin contacto y se pierden las reservas de recogida en tienda. La guardia de TI cree que es una avería.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 170,
     "time_compression": 1,
     "phases": [

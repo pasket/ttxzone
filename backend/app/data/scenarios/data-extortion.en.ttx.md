@@ -5,7 +5,7 @@ language: "en"
 title: "Data extortion after a file-transfer zero-day"
 exported_at: "2026-10-31T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # Data extortion after a file-transfer zero-day
@@ -208,7 +208,7 @@ Five days later. The leak site lists {organization} among the campaign's victims
   "msel": {
     "title": "The files we shared",
     "summary": "The vendor of the file-transfer platform publishes an emergency advisory: a vulnerability is being exploited worldwide. {organization} patches, but logs on the server only go back seven days. Three weeks later the extortion email arrives.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 170,
     "time_compression": 1,
     "phases": [

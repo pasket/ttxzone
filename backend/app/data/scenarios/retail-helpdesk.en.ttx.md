@@ -5,7 +5,7 @@ language: "en"
 title: "Retail ransomware that began with a help-desk call"
 exported_at: "2026-10-31T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # Retail ransomware that began with a help-desk call
@@ -205,7 +205,7 @@ Ten days later. The investigation confirms customer data was taken.
   "msel": {
     "title": "A long weekend without tills",
     "summary": "On the Saturday of a long weekend, stores of {organization} report that contactless payments fail and click-and-collect bookings are lost. The IT duty manager thinks it is a glitch.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 170,
     "time_compression": 1,
     "phases": [

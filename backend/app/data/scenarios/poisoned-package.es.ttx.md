@@ -5,7 +5,7 @@ language: "es"
 title: "Del paquete envenenado a los datos de producción"
 exported_at: "2026-11-05T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # Del paquete envenenado a los datos de producción
@@ -327,7 +327,7 @@ Tres semanas después. El incidente está cerrado y se redacta el informe final.
   "msel": {
     "title": "Paquete envenenado",
     "summary": "{organization} es una entidad financiera cuyos equipos de desarrollo, asistente interno de IA y bases de datos de producción funcionan sobre {cloud_platform}. Lo que empieza como una alerta en un puesto se convierte, en seis días, en un incidente grave notificable y una brecha de datos personales.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 180,
     "time_compression": 10,
     "phases": [

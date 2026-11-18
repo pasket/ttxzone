@@ -5,7 +5,7 @@ language: "en"
 title: "Nationwide blackout of unknown cause"
 exported_at: "2026-10-31T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # Nationwide blackout of unknown cause
@@ -197,7 +197,7 @@ Night. Officials say there is no evidence of a cyberattack; power returns region
   "msel": {
     "title": "Lights out at midday",
     "summary": "A weekday, 12:33. Power drops everywhere at once. The data centre of {organization} switches to generators; offices go dark, phones still work. On social media the word 'cyberattack' appears within minutes.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 170,
     "time_compression": 1,
     "phases": [

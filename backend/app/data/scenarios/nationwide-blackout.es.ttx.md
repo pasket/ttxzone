@@ -5,7 +5,7 @@ language: "es"
 title: "Apagón nacional de causa desconocida"
 exported_at: "2026-10-31T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # Apagón nacional de causa desconocida
@@ -197,7 +197,7 @@ Noche. Las autoridades dicen que no hay indicios de ciberataque; la electricidad
   "msel": {
     "title": "Apagón a mediodía",
     "summary": "Un día laborable, 12:33. La electricidad cae en todas partes a la vez. El centro de datos de {organization} pasa a generadores; las oficinas se quedan a oscuras y los teléfonos aún funcionan. En las redes sociales aparece la palabra «ciberataque» en cuestión de minutos.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 170,
     "time_compression": 1,
     "phases": [

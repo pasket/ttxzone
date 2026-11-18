@@ -9,7 +9,7 @@ language: "en"
 sectors: ["energy-utilities", "ot-manufacturing"]
 families: ["wiper_destructive", "ot_ics"]
 capabilities: ["detection_triage_escalation", "crisis_decision_making", "continuity_recovery"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: ["enterprise:T1133", "enterprise:T1078", "enterprise:T1090.003", "enterprise:T1003.003", "enterprise:T1484.001", "enterprise:T1485", "enterprise:T1561", "ics:T0883", "ics:T1694.001", "ics:T0809", "ics:T1693.002", "ics:T0816", "ics:T0829", "ics:T0827"]
 attack_groups: ["G0034", "G0035"]
 related: ["KB-TRD-001"]

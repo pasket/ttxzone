@@ -9,7 +9,7 @@ language: "en"
 sectors: ["cross-sector", "energy-utilities", "finance", "healthcare", "public-administration"]
 families: ["regulatory"]
 capabilities: ["regulatory_notification", "incident_classification", "legal_forensics"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: []
 attack_groups: []
 related: ["KB-CAS-003", "KB-CAS-004", "KB-ART-003"]

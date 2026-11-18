@@ -5,7 +5,7 @@ language: "en"
 title: "Hacktivist DDoS during the sales peak"
 exported_at: "2026-10-31T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # Hacktivist DDoS during the sales peak
@@ -191,7 +191,7 @@ Friday, 15:00. The shop is up behind mitigation; complaints keep coming.
   "msel": {
     "title": "Black weekend",
     "summary": "On the eve of the biggest sales weekend of the year, a hacktivist channel lists your brand among its targets. The next morning traffic to the shop explodes.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 160,
     "time_compression": 1,
     "phases": [

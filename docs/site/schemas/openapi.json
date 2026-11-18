@@ -13589,7 +13589,7 @@
             "type": "array"
           },
           "attack_version": {
-            "default": "19.2",
+            "default": "20.1",
             "title": "Attack Version",
             "type": "string"
           },
@@ -13848,7 +13848,7 @@
             "type": "array"
           },
           "attack_version": {
-            "default": "19.2",
+            "default": "20.1",
             "title": "Attack Version",
             "type": "string"
           },

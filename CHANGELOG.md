@@ -2,6 +2,11 @@
 
 Notable changes to TTX-Zone, by release. Versions follow [Semantic Versioning](https://semver.org/). Before upgrading a deployment, read the release's entry and [Upgrade](https://docs.ttxzone.com/instance/upgrade/).
 
+## [Unreleased]
+
+### Changed
+- **MITRE ATT&CK v20.1** is the release new exercises, TTX-Zone's scenarios, its inject catalog and the assistant's knowledge base use: 18 new techniques (9 Enterprise, 9 ICS) and two new groups (G1058, G1059). Nothing changes on its own: an existing MSEL and the organization's library stay on v19.2 and offer the update. Updating removes the two ICS techniques v20.1 deprecates (T0807, T0853) from what uses them, and says so. No database migration.
+
 ## [0.2.0] - 2026-11-15
 
 ### Added

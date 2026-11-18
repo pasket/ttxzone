@@ -9,7 +9,7 @@ language: "en"
 sectors: ["cross-sector", "technology-msp"]
 families: ["phishing_account_takeover", "supply_chain", "data_breach"]
 capabilities: ["detection_triage_escalation", "incident_classification", "third_party_supply_chain"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: ["enterprise:T1588.007", "enterprise:T1682", "enterprise:T1683.001", "enterprise:T1683.002", "enterprise:T1566.002", "enterprise:T1195.002", "enterprise:T1190", "enterprise:T1059", "enterprise:T1552.001"]
 attack_groups: ["G0007"]
 related: ["KB-TRD-006", "KB-TRD-008", "KB-TRD-003"]

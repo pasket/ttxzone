@@ -5,7 +5,7 @@ language: "en"
 title: "Deepfake CFO and urgent transfers"
 exported_at: "2026-10-31T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # Deepfake CFO and urgent transfers
@@ -198,7 +198,7 @@ Five days later. Headquarters knows nothing about the deal.
   "msel": {
     "title": "Seeing is believing",
     "summary": "A regional finance manager of {organization} receives an email from the CFO about a confidential acquisition that needs urgent payments. She suspects phishing, until she joins a video call where the CFO and two colleagues confirm it.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 160,
     "time_compression": 1,
     "phases": [

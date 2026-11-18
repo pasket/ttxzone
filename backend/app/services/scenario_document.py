@@ -8,7 +8,7 @@ repository, a chat, an email) and carries the data losslessly.
     title: "Ransomware on the payment platform"
     exported_at: "2026-10-12T10:00:00+00:00"
     generator: "ttx-zone"
-    attack_version: "19.2"
+    attack_version: "20.1"
     ---
     # Ransomware on the payment platform
     ...a readable summary: objectives, phases, injects...

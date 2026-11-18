@@ -5,7 +5,7 @@ language: "en"
 title: "Customer data in an open storage bucket"
 exported_at: "2026-10-31T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # Customer data in an open storage bucket
@@ -195,7 +195,7 @@ Wednesday, 11:00. Twenty-four hours since the report.
   "msel": {
     "title": "exports-prod",
     "summary": "A message from an independent researcher says a storage bucket named exports-prod lists customer files to anyone on the internet. It came from the security contact on the website.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 170,
     "time_compression": 1,
     "phases": [

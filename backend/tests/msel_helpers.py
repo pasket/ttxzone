@@ -7,7 +7,7 @@ indicators of compromise."""
 
 AREAS = ("Crisis Committee", "SOC", "OT Operations")
 
-# The sample's ATT&CK techniques (v19.2) and the tactic each serves here.
+# The sample's ATT&CK techniques and the tactic each serves here.
 TECHNIQUE_TACTICS = {
     "T1566": ("enterprise", "TA0001"),
     "T1486": ("enterprise", "TA0040"),

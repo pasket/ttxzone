@@ -9,7 +9,7 @@ language: "en"
 sectors: ["telecom"]
 families: ["data_breach", "wiper_destructive", "supply_chain"]
 capabilities: ["detection_triage_escalation", "continuity_recovery", "cross_unit_coordination"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: ["enterprise:T1190", "enterprise:T1584.008", "enterprise:T1556.004", "enterprise:T1601.001", "enterprise:T1602.002", "enterprise:T1040", "enterprise:T1557", "enterprise:T1485"]
 attack_groups: ["G1045", "G0034"]
 related: ["KB-TRD-005", "KB-TRD-004"]

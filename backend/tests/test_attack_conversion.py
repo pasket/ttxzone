@@ -7,6 +7,7 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import Session
 
+from app.data.attack_catalog import LATEST_ATTACK_VERSION
 from tests.msel_helpers import example_payload
 from tests.test_inject_library import TEMPLATE, _copy_payload
 from tests.test_ttx_msel import _open, _put, _url
@@ -57,7 +58,7 @@ def test_a_group_the_release_lacks_becomes_an_unknown_actor(
     ttx_id = exercise["ttx"]["id"]
     _put(client, ttx_id, example_payload(exercise["msel"]))
 
-    # The catalog shows v99; this MSEL is still pinned to v19.2.
+    # The catalog shows v99; this MSEL is still pinned to the shipped release.
     added = client.post(
         _url(ttx_id, "/threat-actors"),
         json={
@@ -87,7 +88,7 @@ def test_a_library_inject_is_moved_onto_the_msels_release(
     upgraded = client.post(_url(ttx_id, "/attack-upgrade"), headers=_csrf(client))
     assert upgraded.json()["msel"]["attack_version"] == "99.0"
 
-    # A v19.2 template naming T1566 (revoked in v99) and T1490 (deprecated).
+    # A template of the shipped release naming T1566 (revoked in v99) and T1490 (deprecated).
     response = client.post(
         _url(ttx_id, "/injects"),
         json=_copy_payload(
@@ -119,7 +120,7 @@ def test_the_organizations_library_moves_to_the_latest_release(
         json={
             "name": "OilRig",
             "mitre_group_id": "G0049",
-            "attack_version": "19.2",
+            "attack_version": LATEST_ATTACK_VERSION,
             "techniques": [
                 {"domain": "enterprise", "technique_id": "T1566"},
                 {"domain": "enterprise", "technique_id": "T1490"},
@@ -132,7 +133,7 @@ def test_the_organizations_library_moves_to_the_latest_release(
         f"/api/v1/organizations/{org}/injects",
         json={
             **TEMPLATE,
-            "attack_version": "19.2",
+            "attack_version": LATEST_ATTACK_VERSION,
             "attack": [{"domain": "enterprise", "tactic_id": "TA0001", "technique_id": "T1566"}],
         },
         headers=headers,

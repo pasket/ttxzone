@@ -9,7 +9,7 @@ language: "en"
 sectors: ["finance"]
 families: ["regulatory"]
 capabilities: ["regulatory_notification", "incident_classification", "third_party_supply_chain"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: []
 attack_groups: []
 related: ["KB-TRD-012", "KB-ART-007"]

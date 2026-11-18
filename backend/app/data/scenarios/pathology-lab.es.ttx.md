@@ -5,7 +5,7 @@ language: "es"
 title: "Ransomware en el laboratorio de análisis compartido"
 exported_at: "2026-10-31T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # Ransomware en el laboratorio de análisis compartido
@@ -201,7 +201,7 @@ Dos semanas después. El proveedor se negó a pagar; se publican datos de pacien
   "msel": {
     "title": "Sin resultados",
     "summary": "Lunes, 10:00. El proveedor del laboratorio deja de enviar resultados a la historia clínica de {organization}. Urgencias, quirófanos y oncología dependen de ellos.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 170,
     "time_compression": 1,
     "phases": [

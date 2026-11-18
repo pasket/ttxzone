@@ -5,7 +5,7 @@ language: "es"
 title: "Un ingeniero que se va se lleva las joyas de la corona"
 exported_at: "2026-10-31T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # Un ingeniero que se va se lleva las joyas de la corona
@@ -190,7 +190,7 @@ Viernes. El ingeniero se ha ido; un cliente llama por una oferta de la competenc
   "msel": {
     "title": "El viernes es su último día",
     "summary": "Una alerta de fuga de datos señala a un ingeniero que sincroniza gigabytes con su nube personal de madrugada. RR. HH. confirma que dimitió la semana pasada para irse a la competencia y se va el viernes.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 170,
     "time_compression": 1,
     "phases": [

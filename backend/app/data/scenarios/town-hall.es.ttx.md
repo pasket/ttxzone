@@ -5,7 +5,7 @@ language: "es"
 title: "Ayuntamiento cifrado"
 exported_at: "2026-10-31T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # Ayuntamiento cifrado
@@ -201,7 +201,7 @@ Dos semanas después. Se publican los datos de los vecinos.
   "msel": {
     "title": "Vuelta al papel",
     "summary": "Lunes, 08:00. La plantilla de {organization} encuentra una nota de rescate en sus pantallas. La web y la sede electrónica están caídas; el equipo de TI son tres personas.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 170,
     "time_compression": 1,
     "phases": [

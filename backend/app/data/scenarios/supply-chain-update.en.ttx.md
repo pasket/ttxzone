@@ -5,7 +5,7 @@ language: "en"
 title: "A poisoned software update"
 exported_at: "2026-10-31T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # A poisoned software update
@@ -196,7 +196,7 @@ Friday, 07:00. Twenty-two hours since the advisory.
   "msel": {
     "title": "Version 4.2.1",
     "summary": "A threat intelligence provider warns that version 4.2.1 of a widely used monitoring agent, pushed automatically last week, contains a backdoor. Your servers updated on schedule.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 170,
     "time_compression": 1,
     "phases": [

@@ -9,7 +9,7 @@ language: "en"
 sectors: ["cross-sector", "technology-msp"]
 families: ["cloud_compromise"]
 capabilities: ["detection_triage_escalation", "incident_classification"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: ["enterprise:T1552.001", "enterprise:T1078.004", "enterprise:T1496", "enterprise:T1580"]
 attack_groups: []
 related: ["KB-TRD-010", "KB-TRD-009"]

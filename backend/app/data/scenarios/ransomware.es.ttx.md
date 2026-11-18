@@ -5,7 +5,7 @@ language: "es"
 title: "Ransomware con doble extorsión"
 exported_at: "2026-10-12T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # Ransomware con doble extorsión
@@ -196,7 +196,7 @@ Miércoles. Un periodista pide declaraciones sobre los datos filtrados.
   "msel": {
     "title": "Bloqueados un lunes",
     "summary": "Un lunes a primera hora el centro de soporte recibe llamadas por archivos que no se abren. En pocas horas las aplicaciones principales están cifradas, aparece una nota de rescate y los atacantes afirman tener datos de clientes.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 170,
     "time_compression": 1,
     "phases": [

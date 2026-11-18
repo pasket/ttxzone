@@ -9,7 +9,7 @@ language: "en"
 sectors: ["cross-sector"]
 families: ["generic", "ransomware"]
 capabilities: ["crisis_decision_making", "internal_external_comms", "cross_unit_coordination"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: []
 attack_groups: []
 related: ["KB-ART-016", "KB-ART-017"]

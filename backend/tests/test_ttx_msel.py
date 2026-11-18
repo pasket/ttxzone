@@ -12,7 +12,12 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import Session, select
 
-from app.data.attack_catalog import load_domain, upgrade_selection
+from app.data.attack_catalog import (
+    ATTACK_VERSIONS,
+    LATEST_ATTACK_VERSION,
+    load_domain,
+    upgrade_selection,
+)
 from app.main import app
 from app.models import (
     Inject,
@@ -277,10 +282,14 @@ def test_players_and_other_organizations_are_denied(
 
 def test_the_attack_release_is_served(client: TestClient, exercise: dict) -> None:
     versions = client.get("/api/v1/attack").json()
-    assert versions == {"versions": ["19.2"], "latest_version": "19.2"}
+    assert versions == {
+        "versions": list(ATTACK_VERSIONS),
+        "latest_version": LATEST_ATTACK_VERSION,
+    }
 
-    release = client.get("/api/v1/attack/19.2").json()
-    assert (release["version"], release["released"]) == ("19.2", "2026-08-05")
+    release = client.get(f"/api/v1/attack/{LATEST_ATTACK_VERSION}").json()
+    shipped = load_domain(LATEST_ATTACK_VERSION, "enterprise")
+    assert (release["version"], release["released"]) == (LATEST_ATTACK_VERSION, shipped.released)
     assert release["copyright"].startswith("Copyright 2015-2026, The MITRE Corporation")
     enterprise, ics = release["domains"]
     assert (enterprise["domain"], ics["domain"]) == ("enterprise", "ics")
@@ -297,7 +306,7 @@ def test_the_attack_release_is_served(client: TestClient, exercise: dict) -> Non
     # A technique can serve several tactics.
     assert len(techniques["T1078"]["tactics"]) > 1
     # Deprecated techniques aren't offered.
-    deprecated = [t for t in load_domain("19.2", "enterprise").techniques.values() if t.deprecated]
+    deprecated = [t for t in shipped.techniques.values() if t.deprecated]
     assert deprecated and not any(t.id in techniques for t in deprecated)
 
     missing = client.get("/api/v1/attack/1.0")
@@ -310,7 +319,7 @@ def test_techniques_are_stored_with_their_tactic_and_release(
 ) -> None:
     msel = _put(client, exercise["ttx"]["id"], example_payload(exercise["msel"])).json()
 
-    assert msel["attack_version"] == "19.2"
+    assert msel["attack_version"] == LATEST_ATTACK_VERSION
     inject = msel["injects"][0]
     assert inject["attack_techniques"] == [
         {
@@ -1140,7 +1149,9 @@ def test_deleting_the_organization_removes_the_msel(
 
 def test_a_deprecated_technique_is_not_accepted(client: TestClient, exercise: dict) -> None:
     deprecated = next(
-        t for t in load_domain("19.2", "enterprise").techniques.values() if t.deprecated
+        t
+        for t in load_domain(LATEST_ATTACK_VERSION, "enterprise").techniques.values()
+        if t.deprecated
     )
     payload = example_payload(exercise["msel"])
     payload["injects"][0]["attack_techniques"] = [
@@ -1174,7 +1185,7 @@ def test_an_msel_is_upgraded_explicitly_and_its_snapshot_keeps_the_old_release(
     client: TestClient, db_session: Session, exercise: dict, next_release
 ) -> None:
     ready = _to_ready(client, exercise)
-    assert ready["attack_version"] == "19.2"
+    assert ready["attack_version"] == LATEST_ATTACK_VERSION
 
     response = client.post(
         f"/api/v1/ttx/{exercise['ttx']['id']}/msel/attack-upgrade", headers=_csrf(client)
@@ -1195,10 +1206,10 @@ def test_an_msel_is_upgraded_explicitly_and_its_snapshot_keeps_the_old_release(
     profile = [t["technique_id"] for t in msel["threat_actors"][0]["techniques"]]
     assert "T1566.001" in profile and "T1566" not in profile and "T1490" not in profile
     assert "TECHNIQUE_OFF_ACTOR_PROFILE" not in _codes(msel["validation"]["warnings"])
-    # Like an edit: a READY MSEL opens a new version; the frozen one keeps v19.2.
+    # Like an edit: a READY MSEL opens a new version; the frozen one keeps its release.
     assert (msel["status"], msel["version"]) == ("draft", ready["version"] + 1)
     snapshot = db_session.exec(select(MselSnapshot)).one().payload
-    assert snapshot["attack_version"] == "19.2"
+    assert snapshot["attack_version"] == LATEST_ATTACK_VERSION
     assert "Phishing" in [r["technique_name"] for r in snapshot["attack_techniques"]]
 
     again = client.post(
@@ -1397,7 +1408,7 @@ def test_threat_actors_are_added_and_removed_one_at_a_time(
         json={
             "name": "APT28",
             "mitre_group_id": "G0007",
-            "attack_version": "19.2",
+            "attack_version": LATEST_ATTACK_VERSION,
             "techniques": [{"domain": "enterprise", "technique_id": "T1566.001"}],
             "origin": "organization",
             "origin_id": "0b7c9f5e-1111-4111-8111-111111111111",

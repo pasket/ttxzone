@@ -5,7 +5,7 @@ language: "en"
 title: "Can we trust the batch records?"
 exported_at: "2026-11-05T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # Can we trust the batch records?
@@ -277,7 +277,7 @@ Day 28. No new systems show malicious behaviour.
   "msel": {
     "title": "Food traceability",
     "summary": "{organization} makes and distributes food under the brand {brand} from {plant_1} and {plant_2}. Recipes live in {recipe_system}, and lots, pallets and release decisions in {traceability_system}. Retailers and consumers trust those records without ever seeing them.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 180,
     "time_compression": 20,
     "phases": [

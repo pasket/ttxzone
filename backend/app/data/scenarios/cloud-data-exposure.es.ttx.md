@@ -5,7 +5,7 @@ language: "es"
 title: "Datos de clientes en un almacenamiento abierto"
 exported_at: "2026-10-31T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # Datos de clientes en un almacenamiento abierto
@@ -195,7 +195,7 @@ Miércoles, 11:00. Veinticuatro horas desde el aviso.
   "msel": {
     "title": "exports-prod",
     "summary": "Un mensaje de un investigador independiente dice que un contenedor llamado exports-prod muestra ficheros de clientes a cualquiera en internet. Llegó por el contacto de seguridad de la web.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 170,
     "time_compression": 1,
     "phases": [

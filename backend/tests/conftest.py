@@ -146,16 +146,18 @@ def db_session() -> Generator[Session, None, None]:
 
 @pytest.fixture
 def next_release(tmp_path, monkeypatch):
-    """A fake ATT&CK v99.0 next to the real v19.2: T1566 revoked by
-    T1566.001, T1490 deprecated, T1021 moved from Lateral Movement to
+    """A fake ATT&CK v99.0 after the shipped releases, built from the
+    latest one: T1566 revoked by T1566.001, T1490 deprecated, T1021 moved from Lateral Movement to
     Stealth, group G9998 new and G0049 gone, the rest unchanged."""
     import json
 
     from app.data import attack_catalog
     from app.services import ttx_msel_service as msel_service
 
+    shipped = attack_catalog.ATTACK_VERSIONS
+    versions = (*shipped, "99.0")
     for domain in ("enterprise", "ics"):
-        raw = json.loads((attack_catalog._DIR / f"{domain}-v19.2.json").read_text())
+        raw = json.loads((attack_catalog._DIR / f"{domain}-v{shipped[-1]}.json").read_text())
         raw["version"] = "99.0"
         if domain == "enterprise":
             raw["techniques"] = [t for t in raw["techniques"] if t["id"] != "T1566"]
@@ -175,12 +177,12 @@ def next_release(tmp_path, monkeypatch):
         raw["groups"] = [g for g in raw["groups"] if g["id"] != "G0049"]
         raw["revoked_groups"] = {k: v for k, v in raw["revoked_groups"].items() if v != "G0049"}
         (tmp_path / f"{domain}-v99.0.json").write_text(json.dumps(raw))
-        (tmp_path / f"{domain}-v19.2.json").write_text(
-            (attack_catalog._DIR / f"{domain}-v19.2.json").read_text()
-        )
+        for version in shipped:
+            name = f"{domain}-v{version}.json"
+            (tmp_path / name).write_text((attack_catalog._DIR / name).read_text())
     monkeypatch.setattr(attack_catalog, "_DIR", tmp_path)
-    monkeypatch.setattr(attack_catalog, "ATTACK_VERSIONS", ("19.2", "99.0"))
-    monkeypatch.setattr(msel_service, "ATTACK_VERSIONS", ("19.2", "99.0"))
+    monkeypatch.setattr(attack_catalog, "ATTACK_VERSIONS", versions)
+    monkeypatch.setattr(msel_service, "ATTACK_VERSIONS", versions)
     monkeypatch.setattr(msel_service.upgrade_attack, "__defaults__", ("99.0",))
     attack_catalog.load_domain.cache_clear()
     attack_catalog.load_groups.cache_clear()

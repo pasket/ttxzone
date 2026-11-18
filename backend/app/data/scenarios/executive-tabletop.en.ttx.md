@@ -5,7 +5,7 @@ language: "en"
 title: "Executive tabletop: trusted access"
 exported_at: "2026-10-12T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # Executive tabletop: trusted access
@@ -384,7 +384,7 @@ Tuesday 5 May, 14:00. The crisis response phase is over and recovery is underway
   "msel": {
     "title": "Trusted access",
     "summary": "It is **Sunday 3 May, 08:00**. A quiet weekend morning across the Group: {group_name} (Group functions), {company_1} and {company_2}.\n\nOvernight, the Group Security Operations Centre detected **unusual login activity** linked to a contractor from **{supplier}**, the Group’s IT services provider, with **privileged access across the entire Group** in {country_1} and {country_2}.\n\nThe Crisis Management Team has just received a **formal incident notification** and a request for an **emergency call within the hour**. _Information is incomplete and will keep changing._\n\nYour role is to **lead the Group’s response as you would on a real day**, using your current plans, authority and processes. Accept the scenario as presented, and **focus on the decisions only you can make**.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 140,
     "time_compression": 5,
     "phases": [

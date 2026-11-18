@@ -5,7 +5,7 @@ language: "en"
 title: "Ransomware at a hospital group"
 exported_at: "2026-11-05T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # Ransomware at a hospital group
@@ -286,7 +286,7 @@ Day 6. Containment is complete and hospitals still work on paper. The leading pr
   "msel": {
     "title": "Hospital network",
     "summary": "{organization} runs {hospital_1}, {hospital_2} and a network of laboratories and outpatient clinics. Clinical teams rely on {ehr_system}, laboratory and imaging platforms, and connected medical devices that share interfaces with corporate IT.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 175,
     "time_compression": 15,
     "phases": [

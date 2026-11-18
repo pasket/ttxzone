@@ -9,7 +9,7 @@ language: "en"
 sectors: ["finance"]
 families: []
 capabilities: ["continuity_recovery", "regulatory_notification", "third_party_supply_chain"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: []
 attack_groups: []
 related: ["KB-OBJ-006"]

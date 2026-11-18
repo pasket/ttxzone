@@ -5,7 +5,7 @@ language: "es"
 title: "Ataque destructivo contra una flota energética distribuida"
 exported_at: "2026-10-31T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # Ataque destructivo contra una flota energética distribuida
@@ -204,7 +204,7 @@ Día 2. Los equipos de campo confirman equipos destruidos; llaman las autoridade
   "msel": {
     "title": "Instalaciones a oscuras en plena ola de frío",
     "summary": "De madrugada, dos días antes de un festivo, la sala de control de {organization} empieza a perder el contacto con sus instalaciones remotas de generación una tras otra. Horas después, la protección de endpoints de la planta de calor detecta un borrado masivo de ficheros. Nadie pide nada: el ataque es puramente destructivo.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 170,
     "time_compression": 1,
     "phases": [

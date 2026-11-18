@@ -5,7 +5,7 @@ language: "en"
 title: "Stolen SaaS integration tokens"
 exported_at: "2026-10-31T00:00:00+00:00"
 generator: "ttx-zone"
-attack_version: "19.2"
+attack_version: "20.1"
 ---
 
 # Stolen SaaS integration tokens
@@ -201,7 +201,7 @@ Day 4. Customers start asking.
   "msel": {
     "title": "The integration nobody owned",
     "summary": "On a Monday morning the CRM platform used by {organization} revokes every token of a sales chatbot integration and publishes an advisory. The sales team just wants the chatbot back.",
-    "attack_version": "19.2",
+    "attack_version": "20.1",
     "duration_minutes": 170,
     "time_compression": 1,
     "phases": [

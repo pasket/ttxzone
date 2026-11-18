@@ -9,7 +9,7 @@ language: "en"
 sectors: ["cross-sector", "retail-ecommerce"]
 families: ["cloud_compromise", "generic"]
 capabilities: ["continuity_recovery", "third_party_supply_chain", "crisis_decision_making"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: []
 attack_groups: []
 related: ["KB-CAS-005", "KB-CAS-010", "KB-TRD-002", "KB-TRD-018"]

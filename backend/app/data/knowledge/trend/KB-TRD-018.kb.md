@@ -9,7 +9,7 @@ language: "en"
 sectors: ["transport-logistics"]
 families: ["ransomware", "supply_chain", "data_breach", "ddos"]
 capabilities: ["continuity_recovery", "third_party_supply_chain", "internal_external_comms"]
-attack_version: "19.2"
+attack_version: "20.1"
 attack_techniques: ["enterprise:T1199", "enterprise:T1190", "enterprise:T1567.002", "enterprise:T1486", "enterprise:T1498"]
 attack_groups: ["G0007"]
 related: ["KB-TRD-003", "KB-CAS-003", "KB-TRD-016"]
