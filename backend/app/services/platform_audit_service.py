@@ -104,6 +104,7 @@ AuditAction = Literal[
     "exercise.needs_approved",
     "exercise.needs_approval_recorded",
     "exercise.scenario_applied",
+    "exercise.placeholders_filled",
     "exercise.aar_final",
     "exercise.aar_reopened",
     # Authentication, of any account (auth_event_service).

@@ -68,6 +68,7 @@ from app.models import (
 from app.models.msel_file import InjectFile, MselFile
 from app.models.msel_image import InjectImage, MselImage
 from app.schemas.scenario import (
+    MAX_VARIABLE_USES,
     ScenarioActor,
     ScenarioCheck,
     ScenarioCounts,
@@ -88,11 +89,13 @@ from app.schemas.scenario import (
     ScenarioObjective,
     ScenarioPhaseObjective,
     ScenarioPhaseV2,
+    ScenarioPlaceholder,
     ScenarioRisk,
     ScenarioRoom,
     ScenarioTag,
     ScenarioThreatActor,
     ScenarioVariable,
+    ScenarioVariableUse,
 )
 from app.services.image_processing import InvalidImageError, process_attachment_image
 from app.services.msel_file_service import ensure_msel_file_dir, file_path, safe_filename
@@ -277,7 +280,7 @@ def export_ttx(session: Session, ttx: TTX, locale: str) -> ScenarioDocument:
             log_level=logging.WARNING,
             params={"max_mb": settings.SCENARIO_MAX_BYTES // (1024 * 1024)},
         )
-    return ScenarioDocument(
+    doc = ScenarioDocument(
         language=ttx.content_language or _locale_language(locale),
         exported_at=datetime.now(UTC),
         exercise=ScenarioExercise(name=ttx.name, description=ttx.description),
@@ -292,6 +295,14 @@ def export_ttx(session: Session, ttx: TTX, locale: str) -> ScenarioDocument:
         rooms=[ScenarioRoom(code=r.code, name=r.name, description=r.description) for r in rooms],
         next_room_number=ttx.next_room_number,
     )
+    # What was said about the placeholders the text still uses goes back out.
+    used = {variable.name for variable in document_variables(doc)}
+    doc.placeholders = [
+        ScenarioPlaceholder.model_validate(item)
+        for item in ttx.scenario_placeholders or []
+        if item.get("name") in used
+    ]
+    return doc
 
 
 def _export_msel(
@@ -918,35 +929,103 @@ _NOT_TEXT = {
     "files",
     "file",
     "key",
+    # What the scenario says about its placeholders, not text that uses them.
+    "placeholders",
 }
 
 
-def _texts(value, key: str | None = None):
+def _texts(value, key: str | None = None, path: tuple = ()):
     """Every free-text string of a dumped document, with its parent and key
-    (to write a replacement back)."""
+    (to write a replacement back) and its location in the document."""
     if key in _NOT_TEXT:
         return
     if isinstance(value, dict):
         for k, v in value.items():
             if isinstance(v, str) and k not in _NOT_TEXT:
-                yield value, k, v
+                yield value, k, v, (*path, k)
             else:
-                yield from _texts(v, k)
+                yield from _texts(v, k, (*path, k))
     elif isinstance(value, list):
         for i, v in enumerate(value):
             if isinstance(v, str):
-                yield value, i, v
+                yield value, i, v, (*path, i)
             else:
-                yield from _texts(v, key)
+                yield from _texts(v, key, (*path, i))
+
+
+# Text kept on each side of a placeholder when quoting where it's used.
+_EXCERPT_CONTEXT = 70
+
+
+def excerpt_around(text: str, start: int, end: int) -> str:
+    """`text[start:end]` with some of what surrounds it, cut at a word."""
+    left = max(0, start - _EXCERPT_CONTEXT)
+    right = min(len(text), end + _EXCERPT_CONTEXT)
+    if left > 0:
+        space = text.find(" ", left, start)
+        left = space + 1 if space != -1 else left
+    if right < len(text):
+        space = text.rfind(" ", end, right)
+        right = space if space != -1 else right
+    out = " ".join(text[left:right].split())
+    return ("…" if left > 0 else "") + out + ("…" if right < len(text) else "")
+
+
+# The lists whose rows carry a code and a name to quote a use by.
+_CODED_ROWS = {
+    ("needs", "needs"): "title",
+    ("needs", "objectives"): "title",
+    ("msel", "phases"): "name",
+    ("msel", "injects"): "title",
+    ("msel", "threat_actors"): "name",
+    ("cast",): "name",
+    ("rooms",): "name",
+}
+
+
+def _row_of(data: dict, path: tuple) -> tuple[str | None, str | None]:
+    """The coded row a location belongs to: its code and name."""
+    for prefix, name_key in _CODED_ROWS.items():
+        size = len(prefix)
+        if path[:size] == prefix and len(path) > size and isinstance(path[size], int):
+            row = data
+            for part in path[: size + 1]:
+                row = row[part]
+            return row.get("code"), row.get(name_key) or None
+    return None, None
+
+
+def text_variables(
+    data: dict, declared: list[ScenarioPlaceholder] | None = None
+) -> list[ScenarioVariable]:
+    """The {placeholders} a dumped document's text uses, in first-use
+    order, each with where it appears and what was declared about it."""
+    found: dict[str, ScenarioVariable] = {}
+    for _, _, text, path in _texts(data):
+        for match in _PLACEHOLDER.finditer(text):
+            name = match.group(1)
+            variable = found.setdefault(name, ScenarioVariable(name=name, count=0))
+            variable.count += 1
+            if len(variable.uses) < MAX_VARIABLE_USES:
+                code, title = _row_of(data, path)
+                variable.uses.append(
+                    ScenarioVariableUse(
+                        path=scenario_path(path),
+                        code=code,
+                        title=title,
+                        excerpt=excerpt_around(text, match.start(), match.end()),
+                    )
+                )
+    for item in declared or []:
+        if item.name in found:
+            found[item.name].description = item.description
+            found[item.name].suggested = item.suggested
+    return list(found.values())
 
 
 def document_variables(doc: ScenarioDocument) -> list[ScenarioVariable]:
     """The {placeholders} the scenario's text uses, in first-use order."""
-    found: dict[str, int] = {}
-    for _, _, text in _texts(doc.model_dump(mode="json")):
-        for name in _PLACEHOLDER.findall(text):
-            found[name] = found.get(name, 0) + 1
-    return [ScenarioVariable(name=name, count=count) for name, count in found.items()]
+    return text_variables(doc.model_dump(mode="json"), doc.placeholders)
 
 
 def fill_variables(
@@ -958,7 +1037,7 @@ def fill_variables(
     if not filled:
         return doc, []
     data = doc.model_dump(mode="json")
-    for parent, key, text in list(_texts(data)):
+    for parent, key, text, _ in list(_texts(data)):
         parent[key] = _PLACEHOLDER.sub(lambda m: filled.get(m.group(1), m.group(0)), text)
     try:
         return ScenarioDocument.model_validate(data), []
@@ -1401,6 +1480,17 @@ def apply_document(
     doc, fill_errors = fill_variables(doc, variables or {})
     checked = check_document(doc)
     checked.errors = fill_errors + checked.errors
+    used = {variable.name for variable in placeholders}
+    for i, item in enumerate(doc.placeholders):
+        if item.name not in used:
+            checked.warnings.append(
+                scenario_issue(
+                    f"placeholders[{i}]",
+                    "SCENARIO_UNUSED_PLACEHOLDER",
+                    "The template describes the placeholder {name}, which its text never uses.",
+                    name=item.name,
+                )
+            )
     # Every run, live or archived, plays snapshots hanging off the MSEL and
     # the plan this would delete: a played exercise keeps its design.
     if has_runs(session, ttx):
@@ -1443,6 +1533,11 @@ def apply_document(
             None,
             None,
         )
+        # Only the ones still to fill in: the rest are text by now.
+        left = {variable.name for variable in document_variables(doc)}
+        ttx.scenario_placeholders = [
+            item.model_dump(mode="json") for item in doc.placeholders if item.name in left
+        ]
         objective_id = _write_needs(session, form, doc, user)
         actor_id = _write_cast(session, ttx, doc, checked)
         _write_tags(session, ttx, doc, checked)

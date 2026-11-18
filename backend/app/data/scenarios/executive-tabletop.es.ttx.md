@@ -1,6 +1,6 @@
 ---
 format: "ttx-zone.scenario"
-format_version: 1
+format_version: 9
 language: "es"
 title: "Ejercicio ejecutivo: acceso de confianza"
 exported_at: "2026-10-12T00:00:00+00:00"
@@ -102,10 +102,33 @@ Martes 5 de mayo, 14:00. La fase de respuesta a la crisis ha terminado y la recu
 - **ACT-13** Sala de control de {business_d}
 - **ACT-07** Scattered Spider
 
+## Placeholders
+
+- `{company_1}` La primera empresa operativa del grupo, en el primer país.
+- `{country_1}` El primer país donde opera el grupo (el de la primera empresa).
+- `{company_2}` La segunda empresa operativa del grupo, en el segundo país.
+- `{business_d}` La principal línea de negocio de la segunda empresa, que también es un equipo participante.
+- `{business_e}` Una línea de negocio de la segunda empresa, que también es un equipo participante.
+- `{group_name}` El grupo matriz; participan sus funciones corporativas.
+- `{business_a}` Una línea de negocio de la primera empresa.
+- `{business_b}` Una línea de negocio de la primera empresa, en riesgo de ser la siguiente cifrada.
+- `{business_c}` Una línea de negocio de la primera empresa.
+- `{country_2}` El segundo país donde opera el grupo.
+- `{supplier}` El proveedor de TI cuya cuenta comprometida da entrada al atacante.
+- `{ir_provider}` La firma externa de respuesta a incidentes que diseña y facilita el ejercicio.
+- `{person_2}` El facilitador principal.
+- `{person_3}` El cofacilitador.
+- `{person_1}` El contratista del proveedor cuya cuenta está comprometida.
+- `{project_1}` El nombre del proyecto de despliegue de portátiles que gestionaba el contratista.
+- `{control_centre_1}` El centro de control que pierde la conexión con las plantas renovables.
+- `{city_2}` La ciudad del centro de respaldo.
+- `{grid_operator}` El operador de la red eléctrica que pide garantías sobre su estabilidad.
+- `{city_1}` La ciudad donde está el equipo de ciberseguridad del grupo.
+
 ```json ttx-zone-scenario
 {
   "format": "ttx-zone.scenario",
-  "format_version": 1,
+  "format_version": 9,
   "language": "es",
   "exported_at": "2026-10-12T00:00:00Z",
   "exercise": {
@@ -387,7 +410,8 @@ Martes 5 de mayo, 14:00. La fase de respuesta a la crisis ha terminado y la recu
             "code": "OBJ-04",
             "due": true
           }
-        ]
+        ],
+        "headline": ""
       },
       {
         "code": "PH-02",
@@ -412,7 +436,8 @@ Martes 5 de mayo, 14:00. La fase de respuesta a la crisis ha terminado y la recu
             "code": "OBJ-02",
             "due": false
           }
-        ]
+        ],
+        "headline": ""
       },
       {
         "code": "PH-03",
@@ -436,7 +461,8 @@ Martes 5 de mayo, 14:00. La fase de respuesta a la crisis ha terminado y la recu
             "code": "OBJ-02",
             "due": false
           }
-        ]
+        ],
+        "headline": ""
       },
       {
         "code": "PH-04",
@@ -460,7 +486,8 @@ Martes 5 de mayo, 14:00. La fase de respuesta a la crisis ha terminado y la recu
             "code": "OBJ-05",
             "due": false
           }
-        ]
+        ],
+        "headline": ""
       },
       {
         "code": "PH-05",
@@ -484,7 +511,8 @@ Martes 5 de mayo, 14:00. La fase de respuesta a la crisis ha terminado y la recu
             "code": "OBJ-02",
             "due": true
           }
-        ]
+        ],
+        "headline": ""
       },
       {
         "code": "PH-06",
@@ -508,7 +536,8 @@ Martes 5 de mayo, 14:00. La fase de respuesta a la crisis ha terminado y la recu
             "code": "OBJ-02",
             "due": true
           }
-        ]
+        ],
+        "headline": ""
       },
       {
         "code": "PH-07",
@@ -532,7 +561,8 @@ Martes 5 de mayo, 14:00. La fase de respuesta a la crisis ha terminado y la recu
             "code": "OBJ-02",
             "due": true
           }
-        ]
+        ],
+        "headline": ""
       },
       {
         "code": "PH-08",
@@ -546,7 +576,8 @@ Martes 5 de mayo, 14:00. La fase de respuesta a la crisis ha terminado y la recu
           "¿Qué decisiones tardaron demasiado porque el gobierno o la autoridad no estaban claros, y cómo lo arreglas?",
           "¿Cuál es la inversión más importante que harás en los próximos 90 días a raíz de este ejercicio?"
         ],
-        "objectives": []
+        "objectives": [],
+        "headline": ""
       }
     ],
     "threat_actors": [
@@ -701,7 +732,6 @@ Martes 5 de mayo, 14:00. La fase de respuesta a la crisis ha terminado y la recu
           }
         ],
         "facilitator_notes": "Atento al solapamiento entre CISO, CSO y CIO. Si en el minuto 10 no ha surgido un responsable, lanza C-01. No reveles aún la exfiltración de datos.",
-        "scored": true,
         "objective_codes": [
           "OBJ-01",
           "OBJ-04"
@@ -751,7 +781,15 @@ Martes 5 de mayo, 14:00. La fase de respuesta a la crisis ha terminado y la recu
             ]
           }
         ],
-        "images": []
+        "images": [],
+        "room_codes": [],
+        "files": [],
+        "artifact": null,
+        "format": "inject",
+        "poll_question": "",
+        "poll_options": [],
+        "poll_outcomes": [],
+        "poll_impacts": []
       },
       {
         "origin": null,
@@ -810,7 +848,6 @@ Martes 5 de mayo, 14:00. La fase de respuesta a la crisis ha terminado y la recu
           }
         ],
         "facilitator_notes": "Si los participantes proponen «esperar a una fuga pública», recuérdales que el plazo de 72 horas del RGPD empieza al tener conocimiento. No reveles aún la atribución.",
-        "scored": true,
         "objective_codes": [
           "OBJ-02",
           "OBJ-05"
@@ -856,7 +893,15 @@ Martes 5 de mayo, 14:00. La fase de respuesta a la crisis ha terminado y la recu
             "objective_codes": []
           }
         ],
-        "images": []
+        "images": [],
+        "room_codes": [],
+        "files": [],
+        "artifact": null,
+        "format": "inject",
+        "poll_question": "",
+        "poll_options": [],
+        "poll_outcomes": [],
+        "poll_impacts": []
       },
       {
         "origin": null,
@@ -922,7 +967,6 @@ Martes 5 de mayo, 14:00. La fase de respuesta a la crisis ha terminado y la recu
           }
         ],
         "facilitator_notes": "Lanza la encuesta en directo («{business_d}/{business_b}: ¿parar o seguir operando?») antes de la discusión. Atento a si la decisión sobre la OT se deja a TI o a Seguridad; debe tomarla el responsable de negocio (si no, lanza C-02 en el minuto 15). Pregunta clave para presionar: «¿Estamos más expuestos con una parada controlada o con una caída que nos imponga el atacante?»",
-        "scored": true,
         "objective_codes": [
           "OBJ-02",
           "OBJ-03"
@@ -972,7 +1016,15 @@ Martes 5 de mayo, 14:00. La fase de respuesta a la crisis ha terminado y la recu
             ]
           }
         ],
-        "images": []
+        "images": [],
+        "room_codes": [],
+        "files": [],
+        "artifact": null,
+        "format": "inject",
+        "poll_question": "",
+        "poll_options": [],
+        "poll_outcomes": [],
+        "poll_impacts": []
       },
       {
         "origin": null,
@@ -1002,7 +1054,6 @@ Martes 5 de mayo, 14:00. La fase de respuesta a la crisis ha terminado y la recu
         "attachment_notes": [],
         "attack_techniques": [],
         "facilitator_notes": "Entrega INJ-04a, 04b y 04c seguidos para aumentar la presión. Pregunta de cierre de la fase: «El silencio, el retraso o la incoherencia también son decisiones. ¿Cuál es nuestra posición?»",
-        "scored": true,
         "objective_codes": [
           "OBJ-05"
         ],
@@ -1026,7 +1077,15 @@ Martes 5 de mayo, 14:00. La fase de respuesta a la crisis ha terminado y la recu
             ]
           }
         ],
-        "images": []
+        "images": [],
+        "room_codes": [],
+        "files": [],
+        "artifact": null,
+        "format": "inject",
+        "poll_question": "",
+        "poll_options": [],
+        "poll_outcomes": [],
+        "poll_impacts": []
       },
       {
         "origin": null,
@@ -1056,7 +1115,6 @@ Martes 5 de mayo, 14:00. La fase de respuesta a la crisis ha terminado y la recu
         "attachment_notes": [],
         "attack_techniques": [],
         "facilitator_notes": "",
-        "scored": true,
         "objective_codes": [
           "OBJ-04",
           "OBJ-05"
@@ -1082,7 +1140,15 @@ Martes 5 de mayo, 14:00. La fase de respuesta a la crisis ha terminado y la recu
             ]
           }
         ],
-        "images": []
+        "images": [],
+        "room_codes": [],
+        "files": [],
+        "artifact": null,
+        "format": "inject",
+        "poll_question": "",
+        "poll_options": [],
+        "poll_outcomes": [],
+        "poll_impacts": []
       },
       {
         "origin": null,
@@ -1115,7 +1181,6 @@ Martes 5 de mayo, 14:00. La fase de respuesta a la crisis ha terminado y la recu
         "attachment_notes": [],
         "attack_techniques": [],
         "facilitator_notes": "",
-        "scored": true,
         "objective_codes": [
           "OBJ-04",
           "OBJ-05"
@@ -1151,7 +1216,15 @@ Martes 5 de mayo, 14:00. La fase de respuesta a la crisis ha terminado y la recu
             ]
           }
         ],
-        "images": []
+        "images": [],
+        "room_codes": [],
+        "files": [],
+        "artifact": null,
+        "format": "inject",
+        "poll_question": "",
+        "poll_options": [],
+        "poll_outcomes": [],
+        "poll_impacts": []
       },
       {
         "origin": null,
@@ -1193,7 +1266,6 @@ Martes 5 de mayo, 14:00. La fase de respuesta a la crisis ha terminado y la recu
           }
         ],
         "facilitator_notes": "Fase corta (10 min). Pregunta clave: «¿Cambia nuestra respuesta la implicación de un actor estatal?» El uso que hace Scattered Spider del acceso vendido (T1078) ya está reflejado en INJ-03.",
-        "scored": true,
         "objective_codes": [
           "OBJ-02",
           "OBJ-04"
@@ -1236,7 +1308,15 @@ Martes 5 de mayo, 14:00. La fase de respuesta a la crisis ha terminado y la recu
             ]
           }
         ],
-        "images": []
+        "images": [],
+        "room_codes": [],
+        "files": [],
+        "artifact": null,
+        "format": "inject",
+        "poll_question": "",
+        "poll_options": [],
+        "poll_outcomes": [],
+        "poll_impacts": []
       },
       {
         "origin": null,
@@ -1284,7 +1364,6 @@ Martes 5 de mayo, 14:00. La fase de respuesta a la crisis ha terminado y la recu
           }
         ],
         "facilitator_notes": "Pregunta cómo condiciona la posición del DPD la decisión ejecutiva. Pregunta de cierre de la fase: «¿Siguen siendo defendibles nuestras decisiones anteriores ahora que esto es público?»",
-        "scored": true,
         "objective_codes": [
           "OBJ-02",
           "OBJ-05"
@@ -1309,7 +1388,15 @@ Martes 5 de mayo, 14:00. La fase de respuesta a la crisis ha terminado y la recu
             ]
           }
         ],
-        "images": []
+        "images": [],
+        "room_codes": [],
+        "files": [],
+        "artifact": null,
+        "format": "inject",
+        "poll_question": "",
+        "poll_options": [],
+        "poll_outcomes": [],
+        "poll_impacts": []
       },
       {
         "origin": null,
@@ -1340,7 +1427,6 @@ Martes 5 de mayo, 14:00. La fase de respuesta a la crisis ha terminado y la recu
         "attachment_notes": [],
         "attack_techniques": [],
         "facilitator_notes": "",
-        "scored": true,
         "objective_codes": [
           "OBJ-04",
           "OBJ-05"
@@ -1382,7 +1468,15 @@ Martes 5 de mayo, 14:00. La fase de respuesta a la crisis ha terminado y la recu
             "objective_codes": []
           }
         ],
-        "images": []
+        "images": [],
+        "room_codes": [],
+        "files": [],
+        "artifact": null,
+        "format": "inject",
+        "poll_question": "",
+        "poll_options": [],
+        "poll_outcomes": [],
+        "poll_impacts": []
       },
       {
         "origin": null,
@@ -1429,7 +1523,6 @@ Martes 5 de mayo, 14:00. La fase de respuesta a la crisis ha terminado y la recu
           }
         ],
         "facilitator_notes": "Lanza una encuesta en directo sobre las tres opciones antes de la discusión. Presiona en dos puntos: «¿Han ensayado {business_b} y {business_d} la desconexión de la red?» y «Si las tres entidades no están de acuerdo, ¿quién decide?» Si en el minuto 15 no hay decisión, lanza C-03.",
-        "scored": true,
         "objective_codes": [
           "OBJ-02",
           "OBJ-04"
@@ -1473,7 +1566,15 @@ Martes 5 de mayo, 14:00. La fase de respuesta a la crisis ha terminado y la recu
             ]
           }
         ],
-        "images": []
+        "images": [],
+        "room_codes": [],
+        "files": [],
+        "artifact": null,
+        "format": "inject",
+        "poll_question": "",
+        "poll_options": [],
+        "poll_outcomes": [],
+        "poll_impacts": []
       },
       {
         "origin": null,
@@ -1514,7 +1615,6 @@ Martes 5 de mayo, 14:00. La fase de respuesta a la crisis ha terminado y la recu
         "attachment_notes": [],
         "attack_techniques": [],
         "facilitator_notes": "Esta fase alimenta el debriefing, no la puntuación. Da la palabra al menos una vez a cada entidad ({group_name}, {company_1}, {company_2}).",
-        "scored": false,
         "objective_codes": [],
         "expected_actions": [
           {
@@ -1532,7 +1632,15 @@ Martes 5 de mayo, 14:00. La fase de respuesta a la crisis ha terminado y la recu
             "objective_codes": []
           }
         ],
-        "images": []
+        "images": [],
+        "room_codes": [],
+        "files": [],
+        "artifact": null,
+        "format": "discussion",
+        "poll_question": "",
+        "poll_options": [],
+        "poll_outcomes": [],
+        "poll_impacts": []
       },
       {
         "origin": null,
@@ -1563,7 +1671,6 @@ Martes 5 de mayo, 14:00. La fase de respuesta a la crisis ha terminado y la recu
         "attachment_notes": [],
         "attack_techniques": [],
         "facilitator_notes": "Entrégalo solo si en el minuto 10 no se ha nombrado un responsable. En la evaluación, registra que el responsable se nombró tras el aviso (logro parcial de OBJ-01).",
-        "scored": true,
         "objective_codes": [
           "OBJ-01",
           "OBJ-04"
@@ -1587,7 +1694,15 @@ Martes 5 de mayo, 14:00. La fase de respuesta a la crisis ha terminado y la recu
             "objective_codes": []
           }
         ],
-        "images": []
+        "images": [],
+        "room_codes": [],
+        "files": [],
+        "artifact": null,
+        "format": "inject",
+        "poll_question": "",
+        "poll_options": [],
+        "poll_outcomes": [],
+        "poll_impacts": []
       },
       {
         "origin": null,
@@ -1618,7 +1733,6 @@ Martes 5 de mayo, 14:00. La fase de respuesta a la crisis ha terminado y la recu
         "attachment_notes": [],
         "attack_techniques": [],
         "facilitator_notes": "Lánzalo también si TI o Seguridad intentan tomar por su cuenta la decisión sobre la OT. Registra si la decisión final vino del responsable de negocio (necesario para OBJ-03).",
-        "scored": true,
         "objective_codes": [
           "OBJ-02",
           "OBJ-03"
@@ -1643,7 +1757,15 @@ Martes 5 de mayo, 14:00. La fase de respuesta a la crisis ha terminado y la recu
             ]
           }
         ],
-        "images": []
+        "images": [],
+        "room_codes": [],
+        "files": [],
+        "artifact": null,
+        "format": "inject",
+        "poll_question": "",
+        "poll_options": [],
+        "poll_outcomes": [],
+        "poll_impacts": []
       },
       {
         "origin": null,
@@ -1683,7 +1805,6 @@ Martes 5 de mayo, 14:00. La fase de respuesta a la crisis ha terminado y la recu
           }
         ],
         "facilitator_notes": "Entrégalo solo si en el minuto 15 no hay decisión. Si ya se ha tomado, sáltalo. Atento a si la amenaza a {control_centre_1} les hace cambiar una decisión ya tomada, y a si el cambio tiene responsable y está justificado.",
-        "scored": true,
         "objective_codes": [
           "OBJ-02",
           "OBJ-04"
@@ -1715,12 +1836,21 @@ Martes 5 de mayo, 14:00. La fase de respuesta a la crisis ha terminado y la recu
             "objective_codes": []
           }
         ],
-        "images": []
+        "images": [],
+        "room_codes": [],
+        "files": [],
+        "artifact": null,
+        "format": "inject",
+        "poll_question": "",
+        "poll_options": [],
+        "poll_outcomes": [],
+        "poll_impacts": []
       }
     ],
     "next_phase_number": 9,
     "next_inject_number": 15,
-    "next_threat_actor_number": 5
+    "next_threat_actor_number": 5,
+    "meters": []
   },
   "cast": [
     {
@@ -1836,6 +1966,112 @@ Martes 5 de mayo, 14:00. La fase de respuesta a la crisis ha terminado y la recu
   ],
   "next_actor_number": 14,
   "tags": [],
-  "images": []
+  "images": [],
+  "uses_rooms": false,
+  "rooms": [],
+  "next_room_number": 1,
+  "files": [],
+  "placeholders": [
+    {
+      "name": "company_1",
+      "description": "La primera empresa operativa del grupo, en el primer país.",
+      "suggested": ""
+    },
+    {
+      "name": "country_1",
+      "description": "El primer país donde opera el grupo (el de la primera empresa).",
+      "suggested": ""
+    },
+    {
+      "name": "company_2",
+      "description": "La segunda empresa operativa del grupo, en el segundo país.",
+      "suggested": ""
+    },
+    {
+      "name": "business_d",
+      "description": "La principal línea de negocio de la segunda empresa, que también es un equipo participante.",
+      "suggested": ""
+    },
+    {
+      "name": "business_e",
+      "description": "Una línea de negocio de la segunda empresa, que también es un equipo participante.",
+      "suggested": ""
+    },
+    {
+      "name": "group_name",
+      "description": "El grupo matriz; participan sus funciones corporativas.",
+      "suggested": ""
+    },
+    {
+      "name": "business_a",
+      "description": "Una línea de negocio de la primera empresa.",
+      "suggested": ""
+    },
+    {
+      "name": "business_b",
+      "description": "Una línea de negocio de la primera empresa, en riesgo de ser la siguiente cifrada.",
+      "suggested": ""
+    },
+    {
+      "name": "business_c",
+      "description": "Una línea de negocio de la primera empresa.",
+      "suggested": ""
+    },
+    {
+      "name": "country_2",
+      "description": "El segundo país donde opera el grupo.",
+      "suggested": ""
+    },
+    {
+      "name": "supplier",
+      "description": "El proveedor de TI cuya cuenta comprometida da entrada al atacante.",
+      "suggested": ""
+    },
+    {
+      "name": "ir_provider",
+      "description": "La firma externa de respuesta a incidentes que diseña y facilita el ejercicio.",
+      "suggested": ""
+    },
+    {
+      "name": "person_2",
+      "description": "El facilitador principal.",
+      "suggested": ""
+    },
+    {
+      "name": "person_3",
+      "description": "El cofacilitador.",
+      "suggested": ""
+    },
+    {
+      "name": "person_1",
+      "description": "El contratista del proveedor cuya cuenta está comprometida.",
+      "suggested": ""
+    },
+    {
+      "name": "project_1",
+      "description": "El nombre del proyecto de despliegue de portátiles que gestionaba el contratista.",
+      "suggested": ""
+    },
+    {
+      "name": "control_centre_1",
+      "description": "El centro de control que pierde la conexión con las plantas renovables.",
+      "suggested": ""
+    },
+    {
+      "name": "city_2",
+      "description": "La ciudad del centro de respaldo.",
+      "suggested": ""
+    },
+    {
+      "name": "grid_operator",
+      "description": "El operador de la red eléctrica que pide garantías sobre su estabilidad.",
+      "suggested": ""
+    },
+    {
+      "name": "city_1",
+      "description": "La ciudad donde está el equipo de ciberseguridad del grupo.",
+      "suggested": ""
+    }
+  ]
 }
 ```

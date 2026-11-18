@@ -287,7 +287,7 @@ def test_a_scenario_carries_its_files_and_checks_their_digest(
 
     text = _export_scenario(client, ttx_id)
     doc = parse(text)
-    assert doc.format_version == 8
+    assert doc.format_version == 9
     assert [(f.key, f.name, f.sha256) for f in doc.files] == [
         ("FILE-01", "edge-fw.pcap", capture["sha256"])
     ]

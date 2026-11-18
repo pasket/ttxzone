@@ -140,6 +140,7 @@ const WORK_ACTIONS: PlatformAuditAction[] = [
   'exercise.needs_approved',
   'exercise.needs_approval_recorded',
   'exercise.scenario_applied',
+  'exercise.placeholders_filled',
   'exercise.aar_final',
   'exercise.aar_reopened',
 ]
@@ -209,6 +210,7 @@ const AUDIT_ACTION_KEYS = {
   'exercise.needs_approved': 'platform.activity.actions.exercise.needs_approved',
   'exercise.needs_approval_recorded': 'platform.activity.actions.exercise.needs_approval_recorded',
   'exercise.scenario_applied': 'platform.activity.actions.exercise.scenario_applied',
+  'exercise.placeholders_filled': 'platform.activity.actions.exercise.placeholders_filled',
   'exercise.aar_final': 'platform.activity.actions.exercise.aar_final',
   'exercise.aar_reopened': 'platform.activity.actions.exercise.aar_reopened',
   'auth.login': 'platform.activity.actions.auth.login',
@@ -330,6 +332,11 @@ function EventTarget({ event }: { event: PlatformAuditEvent }) {
         : null
   } else if (event.action === 'exercise.scenario_applied') {
     extra = typeof details.name === 'string' ? details.name : null
+  } else if (event.action === 'exercise.placeholders_filled') {
+    // Which ones, never what was written.
+    extra = Array.isArray(details.placeholders)
+      ? details.placeholders.map((name) => `{${String(name)}}`).join(' ')
+      : null
   } else if (event.action === 'organization.create') {
     extra = typeof details.program_manager === 'string' ? details.program_manager : null
   } else if (event.action === 'legal.publish') {

@@ -851,10 +851,21 @@
       "contingent": "contingent",
       "variables": {
         "legend": "Placeholders",
-        "hint": "The template’s {placeholders}, most used first: those are the core of the exercise. What you write here replaces them throughout the copy; anything left blank stays as {placeholder} to complete later.",
+        "hint": "The template’s {placeholders}, most used first: those are the core of the exercise. What you write here replaces them throughout the copy.",
+        "later": "Nothing here is final. Anything left blank stays as {placeholder}, and Creator → MSEL → Review lists them to fill in together later. Every text of the exercise can be edited after it’s created.",
         "used_one": "used once",
         "used_other": "used {{count}} times"
       }
+    },
+    "variables": {
+      "suggestedHint": "The template suggests values that fit its story.",
+      "useAllSuggested": "Use the suggested values",
+      "useSuggested": "Use “{{value}}”",
+      "useSuggestedFor": "Use “{{value}}” for {{name}}",
+      "example": "e.g. {{value}}…",
+      "where": "Where it appears",
+      "moreUses_one": "and one more place",
+      "moreUses_other": "and {{count}} more places"
     },
     "picker": {
       "title": "Start from an exercise template",
@@ -1919,7 +1930,19 @@
       "leftover": {
         "row": "Unfilled:",
         "review_one": "{{count}} template placeholder is still unfilled; it would reach the table as written:",
-        "review_other": "{{count}} template placeholders are still unfilled; they would reach the table as written:"
+        "review_other": "{{count}} template placeholders are still unfilled; they would reach the table as written:",
+        "elsewhere_one": "{{count}} is unfilled in the rest of the exercise (its needs analysis, simulated actors or threat actors):",
+        "elsewhere_other": "{{count}} are unfilled in the rest of the exercise (its needs analysis, simulated actors or threat actors):",
+        "fill": "Fill them in…",
+        "dialogTitle": "Fill in the template’s placeholders",
+        "dialogHint": "What the template left to fill in, across the whole exercise: its needs analysis, MSEL, simulated actors and threat actors. What you write replaces each one everywhere it appears; anything left blank stays for another time.",
+        "loading": "Looking for placeholders…",
+        "none": "No placeholders left to fill in.",
+        "reopensNeeds": "Some are in the needs analysis, which is past draft: filling them sends it back to draft to be approved again.",
+        "reopensMsel": "Some are in the MSEL, which is past draft: filling them sends it back to draft.",
+        "submit": "Fill in",
+        "filled_one": "{{count}} placeholder filled in",
+        "filled_other": "{{count}} placeholders filled in"
       },
       "title": "Master Scenario Events List (MSEL)",
       "intro": "Build the session here: one simulated incident that moves through 2 to 8 phases, driven by injects. Each phase opens with a situation update and the key questions to discuss. Inside each phase, injects are the messages simulated actors deliver to the players: mandatory injects set the storyline at a fixed T+ (session time; scenario time moves faster, per the time compression), and contingent injects branch off it when an expected action isn’t observed, then rejoin it.",
@@ -5263,6 +5286,7 @@
           "needs_approved": "Approved the needs analysis",
           "needs_approval_recorded": "Recorded an approval of the needs analysis",
           "scenario_applied": "Applied an exercise template to an exercise",
+          "placeholders_filled": "Filled in the placeholders of an exercise",
           "aar_final": "Marked the after-action report final",
           "aar_reopened": "Reopened the after-action report"
         }

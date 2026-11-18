@@ -309,7 +309,9 @@ export function ScenarioApplyDialog({
       : t('templates.scenarios.newExerciseFileTitle')
 
   return (
-    <Modal titleId="scenario-apply-title" onClose={guard.requestClose} size="lg">
+    // From the top: it opens with the language alone and grows once the
+    // check answers; centred, it would jump under the reader's eyes.
+    <Modal titleId="scenario-apply-title" onClose={guard.requestClose} size="lg" align="top">
       <form onSubmit={submit} className="space-y-4" onChange={guard.touch}>
         <h2 id="scenario-apply-title" className="text-balance text-lg font-semibold tracking-tight">
           {title}
@@ -364,7 +366,11 @@ export function ScenarioApplyDialog({
                 count: check?.variables.find((v) => v.name === name)?.count ?? 0,
               })
             }
+            details={Object.fromEntries((check?.variables ?? []).map((v) => [v.name, v]))}
           />
+        )}
+        {ready && placeholders.length > 0 && (
+          <p className={mutedClass}>{t('templates.scenarios.variables.later')}</p>
         )}
         {ready && !replacing && (
           <p className={mutedClass}>{t('templates.scenarios.newExerciseNote')}</p>

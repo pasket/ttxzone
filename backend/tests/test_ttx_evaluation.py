@@ -248,6 +248,8 @@ DESIGN_ENDPOINTS = [
     ("GET", "/scenario/export"),
     ("POST", "/scenario/apply"),
     ("POST", "/scenario/import"),
+    ("GET", "/placeholders"),
+    ("POST", "/placeholders/fill"),
     ("POST", "/aar"),
     ("PUT", "/aar"),
     ("POST", "/aar/transitions"),

@@ -60,7 +60,7 @@ from app.schemas.ttx_msel import (
 )
 
 SCENARIO_FORMAT = "ttx-zone.scenario"
-SCENARIO_FORMAT_VERSION = 8
+SCENARIO_FORMAT_VERSION = 9
 
 ShortText = Annotated[str, Field(max_length=255)]
 LongText = Annotated[str, Field(max_length=5000)]
@@ -488,7 +488,36 @@ class ScenarioDocumentV8(ScenarioDocumentV7):
     msel: ScenarioMselV8 | None = None
 
 
-ScenarioDocument = ScenarioDocumentV8
+# -- format version 9: declared placeholders ------------------------------------
+
+MAX_PLACEHOLDERS = 100
+PlaceholderName = Annotated[str, Field(pattern=r"^\w{1,64}$")]
+
+
+class ScenarioPlaceholder(_Strict):
+    """What a `{placeholder}` of the text stands for, and a value that fits
+    the story: shown to whoever fills it in, never applied on its own."""
+
+    name: PlaceholderName
+    description: ShortText = ""
+    suggested: ShortText = ""
+
+
+class ScenarioDocumentV9(ScenarioDocumentV8):
+    format_version: Literal[9] = 9
+    placeholders: list[ScenarioPlaceholder] = Field(
+        default_factory=list, max_length=MAX_PLACEHOLDERS
+    )
+
+    @model_validator(mode="after")
+    def _unique_placeholders(self) -> "ScenarioDocumentV9":
+        names = [p.name for p in self.placeholders]
+        if len(names) != len(set(names)):
+            raise ValueError("A placeholder is declared more than once.")
+        return self
+
+
+ScenarioDocument = ScenarioDocumentV9
 
 
 # -- what the API returns ---------------------------------------------------------
@@ -506,16 +535,52 @@ class ScenarioCounts(BaseModel):
     files: int = 0
 
 
+# How many of a placeholder's uses a report quotes (`count` has them all).
+MAX_VARIABLE_USES = 5
+
+
+class ScenarioVariableUse(BaseModel):
+    """One place a `{placeholder}` appears: `path` in the document (e.g.
+    `msel.injects[3].content`), the coded row it belongs to (if any) and
+    the text around it."""
+
+    path: str
+    code: str | None = None
+    title: str | None = None
+    excerpt: str
+
+
 class ScenarioVariable(BaseModel):
-    """A `{placeholder}` the scenario's text uses, and how often."""
+    """A `{placeholder}` the scenario's text uses, how often and where,
+    with what the scenario says about it (format version 9)."""
 
     name: str
     count: int
+    description: str = ""
+    suggested: str = ""
+    uses: list[ScenarioVariableUse] = Field(default_factory=list)
 
 
 VariableName = Annotated[str, Field(pattern=r"^\w{1,64}$")]
 VariableValue = Annotated[str, Field(max_length=255)]
 ScenarioVariables = Annotated[dict[VariableName, VariableValue], Field(max_length=100)]
+
+
+class TTXPlaceholders(BaseModel):
+    """The {placeholders} an exercise's texts still carry. `reopens_*`:
+    filling them changes a document past DRAFT, which goes back to it."""
+
+    variables: list[ScenarioVariable] = Field(default_factory=list)
+    reopens_needs: bool = False
+    reopens_msel: bool = False
+
+
+class TTXPlaceholderFillRequest(BaseModel):
+    """Values for the exercise's {placeholders}; blank ones stay."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    variables: ScenarioVariables
 
 
 class ScenarioIssue(BaseModel):

@@ -1,6 +1,6 @@
 ---
 format: "ttx-zone.scenario"
-format_version: 3
+format_version: 9
 language: "es"
 title: "Extorsión tras un día cero en la transferencia de ficheros"
 exported_at: "2026-10-31T00:00:00+00:00"
@@ -57,10 +57,15 @@ Cinco días después. El sitio de filtraciones incluye a {organization} entre la
 - **ACT-05** Autoridad de protección de datos
 - **ACT-06** Medios de comunicación
 
+## Placeholders
+
+- `{organization}` La organización sobre la que trata el ejercicio.
+- `{product}` El producto de transferencia gestionada de ficheros con la vulnerabilidad explotada.
+
 ```json ttx-zone-scenario
 {
   "format": "ttx-zone.scenario",
-  "format_version": 3,
+  "format_version": 9,
   "language": "es",
   "exported_at": "2026-10-31T00:00:00Z",
   "exercise": {
@@ -338,7 +343,6 @@ Cinco días después. El sitio de filtraciones incluye a {organization} entre la
           }
         ],
         "facilitator_notes": "",
-        "scored": true,
         "objective_codes": [
           "OBJ-01"
         ],
@@ -354,7 +358,14 @@ Cinco días después. El sitio de filtraciones incluye a {organization} entre la
           }
         ],
         "images": [],
-        "room_codes": []
+        "room_codes": [],
+        "files": [],
+        "artifact": null,
+        "format": "inject",
+        "poll_question": "",
+        "poll_options": [],
+        "poll_outcomes": [],
+        "poll_impacts": []
       },
       {
         "origin": null,
@@ -389,7 +400,6 @@ Cinco días después. El sitio de filtraciones incluye a {organization} entre la
           }
         ],
         "facilitator_notes": "",
-        "scored": true,
         "objective_codes": [
           "OBJ-01",
           "OBJ-02"
@@ -415,7 +425,14 @@ Cinco días después. El sitio de filtraciones incluye a {organization} entre la
           }
         ],
         "images": [],
-        "room_codes": []
+        "room_codes": [],
+        "files": [],
+        "artifact": null,
+        "format": "inject",
+        "poll_question": "",
+        "poll_options": [],
+        "poll_outcomes": [],
+        "poll_impacts": []
       },
       {
         "origin": null,
@@ -450,7 +467,6 @@ Cinco días después. El sitio de filtraciones incluye a {organization} entre la
           }
         ],
         "facilitator_notes": "",
-        "scored": true,
         "objective_codes": [
           "OBJ-02",
           "OBJ-03"
@@ -476,7 +492,14 @@ Cinco días después. El sitio de filtraciones incluye a {organization} entre la
           }
         ],
         "images": [],
-        "room_codes": []
+        "room_codes": [],
+        "files": [],
+        "artifact": null,
+        "format": "inject",
+        "poll_question": "",
+        "poll_options": [],
+        "poll_outcomes": [],
+        "poll_impacts": []
       },
       {
         "origin": null,
@@ -505,7 +528,6 @@ Cinco días después. El sitio de filtraciones incluye a {organization} entre la
         "attachment_notes": [],
         "attack_techniques": [],
         "facilitator_notes": "",
-        "scored": true,
         "objective_codes": [
           "OBJ-02"
         ],
@@ -521,7 +543,14 @@ Cinco días después. El sitio de filtraciones incluye a {organization} entre la
           }
         ],
         "images": [],
-        "room_codes": []
+        "room_codes": [],
+        "files": [],
+        "artifact": null,
+        "format": "inject",
+        "poll_question": "",
+        "poll_options": [],
+        "poll_outcomes": [],
+        "poll_impacts": []
       },
       {
         "origin": "system",
@@ -550,7 +579,6 @@ Cinco días después. El sitio de filtraciones incluye a {organization} entre la
         "attachment_notes": [],
         "attack_techniques": [],
         "facilitator_notes": "",
-        "scored": true,
         "objective_codes": [
           "OBJ-02"
         ],
@@ -566,7 +594,14 @@ Cinco días después. El sitio de filtraciones incluye a {organization} entre la
           }
         ],
         "images": [],
-        "room_codes": []
+        "room_codes": [],
+        "files": [],
+        "artifact": null,
+        "format": "inject",
+        "poll_question": "",
+        "poll_options": [],
+        "poll_outcomes": [],
+        "poll_impacts": []
       },
       {
         "origin": null,
@@ -595,7 +630,6 @@ Cinco días después. El sitio de filtraciones incluye a {organization} entre la
         "attachment_notes": [],
         "attack_techniques": [],
         "facilitator_notes": "",
-        "scored": true,
         "objective_codes": [
           "OBJ-03"
         ],
@@ -611,7 +645,14 @@ Cinco días después. El sitio de filtraciones incluye a {organization} entre la
           }
         ],
         "images": [],
-        "room_codes": []
+        "room_codes": [],
+        "files": [],
+        "artifact": null,
+        "format": "inject",
+        "poll_question": "",
+        "poll_options": [],
+        "poll_outcomes": [],
+        "poll_impacts": []
       },
       {
         "origin": null,
@@ -646,7 +687,6 @@ Cinco días después. El sitio de filtraciones incluye a {organization} entre la
           }
         ],
         "facilitator_notes": "",
-        "scored": true,
         "objective_codes": [
           "OBJ-03"
         ],
@@ -662,12 +702,20 @@ Cinco días después. El sitio de filtraciones incluye a {organization} entre la
           }
         ],
         "images": [],
-        "room_codes": []
+        "room_codes": [],
+        "files": [],
+        "artifact": null,
+        "format": "inject",
+        "poll_question": "",
+        "poll_options": [],
+        "poll_outcomes": [],
+        "poll_impacts": []
       }
     ],
     "next_phase_number": 4,
     "next_inject_number": 8,
-    "next_threat_actor_number": 2
+    "next_threat_actor_number": 2,
+    "meters": []
   },
   "cast": [
     {
@@ -773,6 +821,19 @@ Cinco días después. El sitio de filtraciones incluye a {organization} entre la
   "images": [],
   "uses_rooms": false,
   "rooms": [],
-  "next_room_number": 1
+  "next_room_number": 1,
+  "files": [],
+  "placeholders": [
+    {
+      "name": "organization",
+      "description": "La organización sobre la que trata el ejercicio.",
+      "suggested": ""
+    },
+    {
+      "name": "product",
+      "description": "El producto de transferencia gestionada de ficheros con la vulnerabilidad explotada.",
+      "suggested": ""
+    }
+  ]
 }
 ```

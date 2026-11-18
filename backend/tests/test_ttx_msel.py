@@ -1516,6 +1516,17 @@ def test_a_poll_asks_a_question_and_evaluates_nothing(client: TestClient, exerci
     payload["summary"] = "An attack on the bank."
     saved = _put(client, exercise["ttx"]["id"], payload).json()
     assert "PLACEHOLDER_UNFILLED" not in _codes(saved["validation"]["warnings"])
+    # A rendered artifact's own fields reach the table too.
+    payload = _payload_from(saved)
+    row = next(i for i in payload["injects"] if i["id"] == inject["id"])
+    row.update(artifact={"kind": "email", "sender": "{supplier} support"})
+    saved = _put(client, exercise["ttx"]["id"], payload).json()
+    assert "PLACEHOLDER_UNFILLED" in _codes(saved["validation"]["warnings"])
+    payload = _payload_from(saved)
+    row = next(i for i in payload["injects"] if i["id"] == inject["id"])
+    row.update(artifact=None)
+    saved = _put(client, exercise["ttx"]["id"], payload).json()
+    assert "PLACEHOLDER_UNFILLED" not in _codes(saved["validation"]["warnings"])
 
     # The meters: each needs a name of its own, and some poll to move it. A
     # meter that goes takes its impacts with it.

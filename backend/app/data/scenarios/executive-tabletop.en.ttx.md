@@ -1,6 +1,6 @@
 ---
 format: "ttx-zone.scenario"
-format_version: 1
+format_version: 9
 language: "en"
 title: "Executive tabletop: trusted access"
 exported_at: "2026-10-12T00:00:00+00:00"
@@ -102,10 +102,33 @@ Tuesday 5 May, 14:00. The crisis response phase is over and recovery is underway
 - **ACT-13** {business_d} control room
 - **ACT-07** Scattered Spider
 
+## Placeholders
+
+- `{company_1}` The first operating company of the group, in the first country.
+- `{country_1}` The first country the group operates in (where the first company is).
+- `{company_2}` The second operating company of the group, in the second country.
+- `{business_d}` The main business line of the second company, also a participating team.
+- `{business_e}` A business line of the second company, also a participating team.
+- `{group_name}` The parent group; its Group functions take part.
+- `{business_a}` A business line of the first company.
+- `{business_b}` A business line of the first company, at risk of being encrypted next.
+- `{business_c}` A business line of the first company.
+- `{country_2}` The second country the group operates in.
+- `{supplier}` The IT supplier whose compromised account lets the attacker in.
+- `{ir_provider}` The external incident response firm that designs and facilitates the exercise.
+- `{person_2}` The lead facilitator.
+- `{person_3}` The co-facilitator.
+- `{person_1}` The supplier's contractor whose account is compromised.
+- `{project_1}` The name of the laptop deployment project the contractor managed.
+- `{control_centre_1}` The control centre that loses connection with the renewable plants.
+- `{city_2}` The city of the failover site.
+- `{grid_operator}` The grid operator asking for reassurance about grid stability.
+- `{city_1}` The city where the Group cyber team sits.
+
 ```json ttx-zone-scenario
 {
   "format": "ttx-zone.scenario",
-  "format_version": 1,
+  "format_version": 9,
   "language": "en",
   "exported_at": "2026-10-12T00:00:00Z",
   "exercise": {
@@ -387,7 +410,8 @@ Tuesday 5 May, 14:00. The crisis response phase is over and recovery is underway
             "code": "OBJ-04",
             "due": true
           }
-        ]
+        ],
+        "headline": ""
       },
       {
         "code": "PH-02",
@@ -412,7 +436,8 @@ Tuesday 5 May, 14:00. The crisis response phase is over and recovery is underway
             "code": "OBJ-02",
             "due": false
           }
-        ]
+        ],
+        "headline": ""
       },
       {
         "code": "PH-03",
@@ -436,7 +461,8 @@ Tuesday 5 May, 14:00. The crisis response phase is over and recovery is underway
             "code": "OBJ-02",
             "due": false
           }
-        ]
+        ],
+        "headline": ""
       },
       {
         "code": "PH-04",
@@ -460,7 +486,8 @@ Tuesday 5 May, 14:00. The crisis response phase is over and recovery is underway
             "code": "OBJ-05",
             "due": false
           }
-        ]
+        ],
+        "headline": ""
       },
       {
         "code": "PH-05",
@@ -484,7 +511,8 @@ Tuesday 5 May, 14:00. The crisis response phase is over and recovery is underway
             "code": "OBJ-02",
             "due": true
           }
-        ]
+        ],
+        "headline": ""
       },
       {
         "code": "PH-06",
@@ -508,7 +536,8 @@ Tuesday 5 May, 14:00. The crisis response phase is over and recovery is underway
             "code": "OBJ-02",
             "due": true
           }
-        ]
+        ],
+        "headline": ""
       },
       {
         "code": "PH-07",
@@ -532,7 +561,8 @@ Tuesday 5 May, 14:00. The crisis response phase is over and recovery is underway
             "code": "OBJ-02",
             "due": true
           }
-        ]
+        ],
+        "headline": ""
       },
       {
         "code": "PH-08",
@@ -546,7 +576,8 @@ Tuesday 5 May, 14:00. The crisis response phase is over and recovery is underway
           "Which decisions took too long because governance or authority was unclear, and how do you fix that?",
           "What is the single most important investment you will make in the next 90 days as a result of this exercise?"
         ],
-        "objectives": []
+        "objectives": [],
+        "headline": ""
       }
     ],
     "threat_actors": [
@@ -701,7 +732,6 @@ Tuesday 5 May, 14:00. The crisis response phase is over and recovery is underway
           }
         ],
         "facilitator_notes": "Watch for overlap between CISO, CSO and CIO. If no lead emerges by minute 10, fire C-01. Do not reveal data exfiltration yet.",
-        "scored": true,
         "objective_codes": [
           "OBJ-01",
           "OBJ-04"
@@ -751,7 +781,15 @@ Tuesday 5 May, 14:00. The crisis response phase is over and recovery is underway
             ]
           }
         ],
-        "images": []
+        "images": [],
+        "room_codes": [],
+        "files": [],
+        "artifact": null,
+        "format": "inject",
+        "poll_question": "",
+        "poll_options": [],
+        "poll_outcomes": [],
+        "poll_impacts": []
       },
       {
         "origin": null,
@@ -810,7 +848,6 @@ Tuesday 5 May, 14:00. The crisis response phase is over and recovery is underway
           }
         ],
         "facilitator_notes": "If participants propose \"waiting for a public leak\", remind them that the GDPR 72-hour clock starts at awareness. Do not reveal attribution yet.",
-        "scored": true,
         "objective_codes": [
           "OBJ-02",
           "OBJ-05"
@@ -856,7 +893,15 @@ Tuesday 5 May, 14:00. The crisis response phase is over and recovery is underway
             "objective_codes": []
           }
         ],
-        "images": []
+        "images": [],
+        "room_codes": [],
+        "files": [],
+        "artifact": null,
+        "format": "inject",
+        "poll_question": "",
+        "poll_options": [],
+        "poll_outcomes": [],
+        "poll_impacts": []
       },
       {
         "origin": null,
@@ -922,7 +967,6 @@ Tuesday 5 May, 14:00. The crisis response phase is over and recovery is underway
           }
         ],
         "facilitator_notes": "Run the live poll (\"{business_d}/{business_b}: shut down or keep operating?\") before the discussion. Watch whether the OT decision is left to IT or Security; the business owner must take it (otherwise fire C-02 at minute 15). Key question to push: \"Are we more exposed by a controlled shutdown or by an outage the attacker forces on us?\"",
-        "scored": true,
         "objective_codes": [
           "OBJ-02",
           "OBJ-03"
@@ -972,7 +1016,15 @@ Tuesday 5 May, 14:00. The crisis response phase is over and recovery is underway
             ]
           }
         ],
-        "images": []
+        "images": [],
+        "room_codes": [],
+        "files": [],
+        "artifact": null,
+        "format": "inject",
+        "poll_question": "",
+        "poll_options": [],
+        "poll_outcomes": [],
+        "poll_impacts": []
       },
       {
         "origin": null,
@@ -1002,7 +1054,6 @@ Tuesday 5 May, 14:00. The crisis response phase is over and recovery is underway
         "attachment_notes": [],
         "attack_techniques": [],
         "facilitator_notes": "Deliver INJ-04a, 04b and 04c one after another to build pressure. Closing question for the phase: \"Silence, delay or inconsistency are also decisions. What is our position?\"",
-        "scored": true,
         "objective_codes": [
           "OBJ-05"
         ],
@@ -1026,7 +1077,15 @@ Tuesday 5 May, 14:00. The crisis response phase is over and recovery is underway
             ]
           }
         ],
-        "images": []
+        "images": [],
+        "room_codes": [],
+        "files": [],
+        "artifact": null,
+        "format": "inject",
+        "poll_question": "",
+        "poll_options": [],
+        "poll_outcomes": [],
+        "poll_impacts": []
       },
       {
         "origin": null,
@@ -1056,7 +1115,6 @@ Tuesday 5 May, 14:00. The crisis response phase is over and recovery is underway
         "attachment_notes": [],
         "attack_techniques": [],
         "facilitator_notes": "",
-        "scored": true,
         "objective_codes": [
           "OBJ-04",
           "OBJ-05"
@@ -1082,7 +1140,15 @@ Tuesday 5 May, 14:00. The crisis response phase is over and recovery is underway
             ]
           }
         ],
-        "images": []
+        "images": [],
+        "room_codes": [],
+        "files": [],
+        "artifact": null,
+        "format": "inject",
+        "poll_question": "",
+        "poll_options": [],
+        "poll_outcomes": [],
+        "poll_impacts": []
       },
       {
         "origin": null,
@@ -1115,7 +1181,6 @@ Tuesday 5 May, 14:00. The crisis response phase is over and recovery is underway
         "attachment_notes": [],
         "attack_techniques": [],
         "facilitator_notes": "",
-        "scored": true,
         "objective_codes": [
           "OBJ-04",
           "OBJ-05"
@@ -1151,7 +1216,15 @@ Tuesday 5 May, 14:00. The crisis response phase is over and recovery is underway
             ]
           }
         ],
-        "images": []
+        "images": [],
+        "room_codes": [],
+        "files": [],
+        "artifact": null,
+        "format": "inject",
+        "poll_question": "",
+        "poll_options": [],
+        "poll_outcomes": [],
+        "poll_impacts": []
       },
       {
         "origin": null,
@@ -1193,7 +1266,6 @@ Tuesday 5 May, 14:00. The crisis response phase is over and recovery is underway
           }
         ],
         "facilitator_notes": "Short phase (10 min). Key question: \"Does nation-state involvement change our response?\" Scattered Spider's use of the brokered access (T1078) is already reflected in INJ-03.",
-        "scored": true,
         "objective_codes": [
           "OBJ-02",
           "OBJ-04"
@@ -1236,7 +1308,15 @@ Tuesday 5 May, 14:00. The crisis response phase is over and recovery is underway
             ]
           }
         ],
-        "images": []
+        "images": [],
+        "room_codes": [],
+        "files": [],
+        "artifact": null,
+        "format": "inject",
+        "poll_question": "",
+        "poll_options": [],
+        "poll_outcomes": [],
+        "poll_impacts": []
       },
       {
         "origin": null,
@@ -1284,7 +1364,6 @@ Tuesday 5 May, 14:00. The crisis response phase is over and recovery is underway
           }
         ],
         "facilitator_notes": "Ask how the DPO's position constrains the executive decision. Closing question for the phase: \"Are our earlier decisions still defensible now that this is public?\"",
-        "scored": true,
         "objective_codes": [
           "OBJ-02",
           "OBJ-05"
@@ -1309,7 +1388,15 @@ Tuesday 5 May, 14:00. The crisis response phase is over and recovery is underway
             ]
           }
         ],
-        "images": []
+        "images": [],
+        "room_codes": [],
+        "files": [],
+        "artifact": null,
+        "format": "inject",
+        "poll_question": "",
+        "poll_options": [],
+        "poll_outcomes": [],
+        "poll_impacts": []
       },
       {
         "origin": null,
@@ -1340,7 +1427,6 @@ Tuesday 5 May, 14:00. The crisis response phase is over and recovery is underway
         "attachment_notes": [],
         "attack_techniques": [],
         "facilitator_notes": "",
-        "scored": true,
         "objective_codes": [
           "OBJ-04",
           "OBJ-05"
@@ -1382,7 +1468,15 @@ Tuesday 5 May, 14:00. The crisis response phase is over and recovery is underway
             "objective_codes": []
           }
         ],
-        "images": []
+        "images": [],
+        "room_codes": [],
+        "files": [],
+        "artifact": null,
+        "format": "inject",
+        "poll_question": "",
+        "poll_options": [],
+        "poll_outcomes": [],
+        "poll_impacts": []
       },
       {
         "origin": null,
@@ -1429,7 +1523,6 @@ Tuesday 5 May, 14:00. The crisis response phase is over and recovery is underway
           }
         ],
         "facilitator_notes": "Run a live poll on the three options before the discussion. Push on two points: \"Have {business_b} and {business_d} rehearsed network disconnection?\" and \"If the three entities disagree, who decides?\" If there is no decision by minute 15, fire C-03.",
-        "scored": true,
         "objective_codes": [
           "OBJ-02",
           "OBJ-04"
@@ -1473,7 +1566,15 @@ Tuesday 5 May, 14:00. The crisis response phase is over and recovery is underway
             ]
           }
         ],
-        "images": []
+        "images": [],
+        "room_codes": [],
+        "files": [],
+        "artifact": null,
+        "format": "inject",
+        "poll_question": "",
+        "poll_options": [],
+        "poll_outcomes": [],
+        "poll_impacts": []
       },
       {
         "origin": null,
@@ -1514,7 +1615,6 @@ Tuesday 5 May, 14:00. The crisis response phase is over and recovery is underway
         "attachment_notes": [],
         "attack_techniques": [],
         "facilitator_notes": "This phase feeds the debrief, not the scoring. Give every entity ({group_name}, {company_1}, {company_2}) the floor at least once.",
-        "scored": false,
         "objective_codes": [],
         "expected_actions": [
           {
@@ -1532,7 +1632,15 @@ Tuesday 5 May, 14:00. The crisis response phase is over and recovery is underway
             "objective_codes": []
           }
         ],
-        "images": []
+        "images": [],
+        "room_codes": [],
+        "files": [],
+        "artifact": null,
+        "format": "discussion",
+        "poll_question": "",
+        "poll_options": [],
+        "poll_outcomes": [],
+        "poll_impacts": []
       },
       {
         "origin": null,
@@ -1563,7 +1671,6 @@ Tuesday 5 May, 14:00. The crisis response phase is over and recovery is underway
         "attachment_notes": [],
         "attack_techniques": [],
         "facilitator_notes": "Deliver only if no lead has been named by minute 10. In the evaluation, record that the lead was named after prompting (partial achievement of OBJ-01).",
-        "scored": true,
         "objective_codes": [
           "OBJ-01",
           "OBJ-04"
@@ -1587,7 +1694,15 @@ Tuesday 5 May, 14:00. The crisis response phase is over and recovery is underway
             "objective_codes": []
           }
         ],
-        "images": []
+        "images": [],
+        "room_codes": [],
+        "files": [],
+        "artifact": null,
+        "format": "inject",
+        "poll_question": "",
+        "poll_options": [],
+        "poll_outcomes": [],
+        "poll_impacts": []
       },
       {
         "origin": null,
@@ -1618,7 +1733,6 @@ Tuesday 5 May, 14:00. The crisis response phase is over and recovery is underway
         "attachment_notes": [],
         "attack_techniques": [],
         "facilitator_notes": "Also fire it if IT or Security try to take the OT decision on their own. Record whether the final decision came from the business owner (needed for OBJ-03).",
-        "scored": true,
         "objective_codes": [
           "OBJ-02",
           "OBJ-03"
@@ -1643,7 +1757,15 @@ Tuesday 5 May, 14:00. The crisis response phase is over and recovery is underway
             ]
           }
         ],
-        "images": []
+        "images": [],
+        "room_codes": [],
+        "files": [],
+        "artifact": null,
+        "format": "inject",
+        "poll_question": "",
+        "poll_options": [],
+        "poll_outcomes": [],
+        "poll_impacts": []
       },
       {
         "origin": null,
@@ -1683,7 +1805,6 @@ Tuesday 5 May, 14:00. The crisis response phase is over and recovery is underway
           }
         ],
         "facilitator_notes": "Deliver only if there is no decision by minute 15. If the decision has already been taken, skip it. Watch whether the threat to {control_centre_1} makes them change a decision already taken, and whether the change is properly owned and justified.",
-        "scored": true,
         "objective_codes": [
           "OBJ-02",
           "OBJ-04"
@@ -1715,12 +1836,21 @@ Tuesday 5 May, 14:00. The crisis response phase is over and recovery is underway
             "objective_codes": []
           }
         ],
-        "images": []
+        "images": [],
+        "room_codes": [],
+        "files": [],
+        "artifact": null,
+        "format": "inject",
+        "poll_question": "",
+        "poll_options": [],
+        "poll_outcomes": [],
+        "poll_impacts": []
       }
     ],
     "next_phase_number": 9,
     "next_inject_number": 15,
-    "next_threat_actor_number": 5
+    "next_threat_actor_number": 5,
+    "meters": []
   },
   "cast": [
     {
@@ -1836,6 +1966,112 @@ Tuesday 5 May, 14:00. The crisis response phase is over and recovery is underway
   ],
   "next_actor_number": 14,
   "tags": [],
-  "images": []
+  "images": [],
+  "uses_rooms": false,
+  "rooms": [],
+  "next_room_number": 1,
+  "files": [],
+  "placeholders": [
+    {
+      "name": "company_1",
+      "description": "The first operating company of the group, in the first country.",
+      "suggested": ""
+    },
+    {
+      "name": "country_1",
+      "description": "The first country the group operates in (where the first company is).",
+      "suggested": ""
+    },
+    {
+      "name": "company_2",
+      "description": "The second operating company of the group, in the second country.",
+      "suggested": ""
+    },
+    {
+      "name": "business_d",
+      "description": "The main business line of the second company, also a participating team.",
+      "suggested": ""
+    },
+    {
+      "name": "business_e",
+      "description": "A business line of the second company, also a participating team.",
+      "suggested": ""
+    },
+    {
+      "name": "group_name",
+      "description": "The parent group; its Group functions take part.",
+      "suggested": ""
+    },
+    {
+      "name": "business_a",
+      "description": "A business line of the first company.",
+      "suggested": ""
+    },
+    {
+      "name": "business_b",
+      "description": "A business line of the first company, at risk of being encrypted next.",
+      "suggested": ""
+    },
+    {
+      "name": "business_c",
+      "description": "A business line of the first company.",
+      "suggested": ""
+    },
+    {
+      "name": "country_2",
+      "description": "The second country the group operates in.",
+      "suggested": ""
+    },
+    {
+      "name": "supplier",
+      "description": "The IT supplier whose compromised account lets the attacker in.",
+      "suggested": ""
+    },
+    {
+      "name": "ir_provider",
+      "description": "The external incident response firm that designs and facilitates the exercise.",
+      "suggested": ""
+    },
+    {
+      "name": "person_2",
+      "description": "The lead facilitator.",
+      "suggested": ""
+    },
+    {
+      "name": "person_3",
+      "description": "The co-facilitator.",
+      "suggested": ""
+    },
+    {
+      "name": "person_1",
+      "description": "The supplier's contractor whose account is compromised.",
+      "suggested": ""
+    },
+    {
+      "name": "project_1",
+      "description": "The name of the laptop deployment project the contractor managed.",
+      "suggested": ""
+    },
+    {
+      "name": "control_centre_1",
+      "description": "The control centre that loses connection with the renewable plants.",
+      "suggested": ""
+    },
+    {
+      "name": "city_2",
+      "description": "The city of the failover site.",
+      "suggested": ""
+    },
+    {
+      "name": "grid_operator",
+      "description": "The grid operator asking for reassurance about grid stability.",
+      "suggested": ""
+    },
+    {
+      "name": "city_1",
+      "description": "The city where the Group cyber team sits.",
+      "suggested": ""
+    }
+  ]
 }
 ```

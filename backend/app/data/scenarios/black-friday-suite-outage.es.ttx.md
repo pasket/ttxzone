@@ -1,6 +1,6 @@
 ---
 format: "ttx-zone.scenario"
-format_version: 8
+format_version: 9
 language: "es"
 title: "Víspera del Black Friday: continuidad de las operaciones ante la caída de un tercero crítico"
 exported_at: "2026-11-14T00:00:00+00:00"
@@ -140,10 +140,25 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
 - **ACT-09** Clientes
 - **ACT-10** Presidencia del Consejo
 
+## Placeholders
+
+- `{organization}` La organización sobre la que trata el ejercicio.
+- `{online_share}` La parte de los ingresos que llega por el canal online, como expresión. (p. ej. cerca de una cuarta parte)
+- `{brand}` La marca comercial que lanza la campaña de Black Friday. (p. ej. Kubo)
+- `{collab_suite}` La suite de correo, chat y archivos compartidos que se cae. Va en mitad de frase: usa un nombre o una expresión como la sugerida. (p. ej. la suite de productividad)
+- `{attacker_group}` El nombre del grupo que está detrás de la campaña de phishing (el actor de amenaza). (p. ej. Marea)
+- `{online_revenue_hour}` Lo que vende el canal online por hora en el pico de esta noche. (p. ej. 4 millones de euros)
+- `{media_spend}` Inversión en medios de Black Friday ya comprometida e irrecuperable. (p. ej. 12 millones de euros)
+- `{carrier_penalty}` Lo que cobra el transportista por las recogidas perdidas. (p. ej. 300.000 euros al día)
+- `{staff_count}` Cuántos empleados tiene el grupo. (p. ej. 120.000)
+- `{temp_staff}` Personal temporal de Black Friday que empezaba esa mañana. (p. ej. 3.000)
+- `{queued_emails}` Mensajes en cola cuando se reanuda el correo. (p. ej. 1,2 millones)
+- `{lost_sales}` Primera estimación de lo que ha costado la caída. (p. ej. más de 60 millones de euros)
+
 ```json ttx-zone-scenario
 {
   "format": "ttx-zone.scenario",
-  "format_version": 8,
+  "format_version": 9,
   "language": "es",
   "exported_at": "2026-11-14T00:00:00Z",
   "exercise": {
@@ -554,7 +569,7 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
         "delivery_method": "phone",
         "attachment_notes": [],
         "attack_techniques": [],
-        "facilitator_notes": "Pregunta clave: ¿Quién convoca el comité de crisis, y por qué canal?\n\nRegistra si el canal del comité existía antes de hoy o se improvisa. Si nadie sabe cómo localizar a los miembros sin la suite, ese es el primer hallazgo.\n\nValores sugeridos al aplicar\n- brand: Kubo\n- collab_suite: la suite de productividad\n- online_share: cerca de una cuarta parte\n- online_revenue_hour: 4 millones de euros\n- media_spend: 12 millones de euros\n- carrier_penalty: 300.000 euros al día\n- staff_count: 120.000\n- temp_staff: 3.000\n- queued_emails: 1,2 millones\n- lost_sales: más de 60 millones de euros\n- attacker_group: Marea\nMantén las cifras coherentes entre sí.",
+        "facilitator_notes": "Pregunta clave: ¿Quién convoca el comité de crisis, y por qué canal?\n\nRegistra si el canal del comité existía antes de hoy o se improvisa. Si nadie sabe cómo localizar a los miembros sin la suite, ese es el primer hallazgo.\n\nLa plantilla sugiere un valor para cada marcador: mantén las cifras coherentes entre sí.",
         "objective_codes": [
           "OBJ-01"
         ],
@@ -2570,6 +2585,68 @@ Sábado, 10:00. El proveedor da el servicio por restablecido. El Consejo quiere 
   "uses_rooms": false,
   "rooms": [],
   "next_room_number": 1,
-  "files": []
+  "files": [],
+  "placeholders": [
+    {
+      "name": "organization",
+      "description": "La organización sobre la que trata el ejercicio.",
+      "suggested": ""
+    },
+    {
+      "name": "online_share",
+      "description": "La parte de los ingresos que llega por el canal online, como expresión.",
+      "suggested": "cerca de una cuarta parte"
+    },
+    {
+      "name": "brand",
+      "description": "La marca comercial que lanza la campaña de Black Friday.",
+      "suggested": "Kubo"
+    },
+    {
+      "name": "collab_suite",
+      "description": "La suite de correo, chat y archivos compartidos que se cae. Va en mitad de frase: usa un nombre o una expresión como la sugerida.",
+      "suggested": "la suite de productividad"
+    },
+    {
+      "name": "attacker_group",
+      "description": "El nombre del grupo que está detrás de la campaña de phishing (el actor de amenaza).",
+      "suggested": "Marea"
+    },
+    {
+      "name": "online_revenue_hour",
+      "description": "Lo que vende el canal online por hora en el pico de esta noche.",
+      "suggested": "4 millones de euros"
+    },
+    {
+      "name": "media_spend",
+      "description": "Inversión en medios de Black Friday ya comprometida e irrecuperable.",
+      "suggested": "12 millones de euros"
+    },
+    {
+      "name": "carrier_penalty",
+      "description": "Lo que cobra el transportista por las recogidas perdidas.",
+      "suggested": "300.000 euros al día"
+    },
+    {
+      "name": "staff_count",
+      "description": "Cuántos empleados tiene el grupo.",
+      "suggested": "120.000"
+    },
+    {
+      "name": "temp_staff",
+      "description": "Personal temporal de Black Friday que empezaba esa mañana.",
+      "suggested": "3.000"
+    },
+    {
+      "name": "queued_emails",
+      "description": "Mensajes en cola cuando se reanuda el correo.",
+      "suggested": "1,2 millones"
+    },
+    {
+      "name": "lost_sales",
+      "description": "Primera estimación de lo que ha costado la caída.",
+      "suggested": "más de 60 millones de euros"
+    }
+  ]
 }
 ```

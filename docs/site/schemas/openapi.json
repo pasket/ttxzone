@@ -19963,7 +19963,7 @@
         "title": "ScenarioCounts",
         "type": "object"
       },
-      "ScenarioDocumentV8": {
+      "ScenarioDocumentV9": {
         "additionalProperties": false,
         "properties": {
           "cast": {
@@ -20004,8 +20004,8 @@
             "type": "string"
           },
           "format_version": {
-            "const": 8,
-            "default": 8,
+            "const": 9,
+            "default": 9,
             "title": "Format Version",
             "type": "integer"
           },
@@ -20052,6 +20052,14 @@
             "title": "Next Room Number",
             "type": "integer"
           },
+          "placeholders": {
+            "items": {
+              "$ref": "#/components/schemas/ScenarioPlaceholder"
+            },
+            "maxItems": 100,
+            "title": "Placeholders",
+            "type": "array"
+          },
           "rooms": {
             "items": {
               "$ref": "#/components/schemas/ScenarioRoom"
@@ -20079,7 +20087,7 @@
           "exercise",
           "needs"
         ],
-        "title": "ScenarioDocumentV8",
+        "title": "ScenarioDocumentV9",
         "type": "object"
       },
       "ScenarioExercise": {
@@ -21193,6 +21201,34 @@
         "title": "ScenarioPhaseV2",
         "type": "object"
       },
+      "ScenarioPlaceholder": {
+        "additionalProperties": false,
+        "description": "What a `{placeholder}` of the text stands for, and a value that fits\nthe story: shown to whoever fills it in, never applied on its own.",
+        "properties": {
+          "description": {
+            "default": "",
+            "maxLength": 255,
+            "title": "Description",
+            "type": "string"
+          },
+          "name": {
+            "pattern": "^\\w{1,64}$",
+            "title": "Name",
+            "type": "string"
+          },
+          "suggested": {
+            "default": "",
+            "maxLength": 255,
+            "title": "Suggested",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "ScenarioPlaceholder",
+        "type": "object"
+      },
       "ScenarioRead": {
         "properties": {
           "attack_version": {
@@ -21245,7 +21281,7 @@
             "title": "Disabled At"
           },
           "document": {
-            "$ref": "#/components/schemas/ScenarioDocumentV8"
+            "$ref": "#/components/schemas/ScenarioDocumentV9"
           },
           "format_version": {
             "title": "Format Version",
@@ -21682,15 +21718,32 @@
         "type": "object"
       },
       "ScenarioVariable": {
-        "description": "A `{placeholder}` the scenario's text uses, and how often.",
+        "description": "A `{placeholder}` the scenario's text uses, how often and where,\nwith what the scenario says about it (format version 9).",
         "properties": {
           "count": {
             "title": "Count",
             "type": "integer"
           },
+          "description": {
+            "default": "",
+            "title": "Description",
+            "type": "string"
+          },
           "name": {
             "title": "Name",
             "type": "string"
+          },
+          "suggested": {
+            "default": "",
+            "title": "Suggested",
+            "type": "string"
+          },
+          "uses": {
+            "items": {
+              "$ref": "#/components/schemas/ScenarioVariableUse"
+            },
+            "title": "Uses",
+            "type": "array"
           }
         },
         "required": [
@@ -21698,6 +21751,47 @@
           "count"
         ],
         "title": "ScenarioVariable",
+        "type": "object"
+      },
+      "ScenarioVariableUse": {
+        "description": "One place a `{placeholder}` appears: `path` in the document (e.g.\n`msel.injects[3].content`), the coded row it belongs to (if any) and\nthe text around it.",
+        "properties": {
+          "code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code"
+          },
+          "excerpt": {
+            "title": "Excerpt",
+            "type": "string"
+          },
+          "path": {
+            "title": "Path",
+            "type": "string"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          }
+        },
+        "required": [
+          "path",
+          "excerpt"
+        ],
+        "title": "ScenarioVariableUse",
         "type": "object"
       },
       "SecurityPolicyRead": {
@@ -22753,6 +22847,52 @@
           "offset"
         ],
         "title": "TTXListResponse",
+        "type": "object"
+      },
+      "TTXPlaceholderFillRequest": {
+        "additionalProperties": false,
+        "description": "Values for the exercise's {placeholders}; blank ones stay.",
+        "properties": {
+          "variables": {
+            "maxProperties": 100,
+            "patternProperties": {
+              "^\\w{1,64}$": {
+                "maxLength": 255,
+                "type": "string"
+              }
+            },
+            "title": "Variables",
+            "type": "object"
+          }
+        },
+        "required": [
+          "variables"
+        ],
+        "title": "TTXPlaceholderFillRequest",
+        "type": "object"
+      },
+      "TTXPlaceholders": {
+        "description": "The {placeholders} an exercise's texts still carry. `reopens_*`:\nfilling them changes a document past DRAFT, which goes back to it.",
+        "properties": {
+          "reopens_msel": {
+            "default": false,
+            "title": "Reopens Msel",
+            "type": "boolean"
+          },
+          "reopens_needs": {
+            "default": false,
+            "title": "Reopens Needs",
+            "type": "boolean"
+          },
+          "variables": {
+            "items": {
+              "$ref": "#/components/schemas/ScenarioVariable"
+            },
+            "title": "Variables",
+            "type": "array"
+          }
+        },
+        "title": "TTXPlaceholders",
         "type": "object"
       },
       "TTXPlayerRead": {
@@ -35337,7 +35477,7 @@
     },
     "/api/v1/scenario-format/{version}/schema.json": {
       "get": {
-        "description": "The JSON Schema of a scenario file's data block, per format version\n(2 adds a phase's headline, 3 rooms, 4 inject files, 5 rendered\nartifacts, 6 inject formats and polls, 7 poll outcomes, 8 impact\nmeters): for anyone writing or checking files outside TTX-Zone.",
+        "description": "The JSON Schema of a scenario file's data block, per format version\n(2 adds a phase's headline, 3 rooms, 4 inject files, 5 rendered\nartifacts, 6 inject formats and polls, 7 poll outcomes, 8 impact\nmeters, 9 declared placeholders): for anyone writing or checking files outside TTX-Zone.",
         "operationId": "scenario_schema_endpoint_api_v1_scenario_format__version__schema_json_get",
         "parameters": [
           {
@@ -40347,6 +40487,81 @@
         "summary": "Set person tags",
         "tags": [
           "Exercise team"
+        ]
+      }
+    },
+    "/api/v1/ttx/{ttx_id}/placeholders": {
+      "get": {
+        "description": "The {placeholders} left in the exercise's texts (a scenario's, left\nblank when it was applied), with where each appears.",
+        "operationId": "ttx_placeholders_endpoint_api_v1_ttx__ttx_id__placeholders_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TTXPlaceholders"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Exercise placeholders",
+        "tags": [
+          "Scenarios"
+        ]
+      }
+    },
+    "/api/v1/ttx/{ttx_id}/placeholders/fill": {
+      "post": {
+        "description": "Write the values in place of their {placeholders} throughout the\nexercise (blank ones stay); returns the ones still left. 422\nPLACEHOLDER_VALUE_TOO_LONG changes nothing.",
+        "operationId": "fill_ttx_placeholders_endpoint_api_v1_ttx__ttx_id__placeholders_fill_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TTXPlaceholderFillRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TTXPlaceholders"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "csrfToken": [],
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Fill exercise placeholders",
+        "tags": [
+          "Scenarios"
         ]
       }
     },

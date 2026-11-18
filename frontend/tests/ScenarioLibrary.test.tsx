@@ -387,4 +387,74 @@ describe('ScenarioLibrary', () => {
       })
     })
   })
+
+  it('says what each placeholder is, offers its suggested value and quotes where it’s used', async () => {
+    const check = {
+      ok: true,
+      errors: [],
+      warnings: [],
+      name: 'Our ransomware',
+      counts,
+      replaces: empty,
+      variables: [
+        {
+          name: 'brand',
+          count: 7,
+          description: 'The brand running the campaign',
+          suggested: 'Kubo',
+          uses: [
+            {
+              path: 'msel.injects[11].content',
+              code: 'INJ-12',
+              title: 'Lookalike domains',
+              excerpt: '…several domains imitating {brand} and the provider…',
+            },
+          ],
+        },
+        { name: 'staff_count', count: 1, suggested: '120,000', uses: [] },
+        { name: 'group_name', count: 1, suggested: 'Ignored', uses: [] },
+      ],
+    }
+    const fetchMock = routes({
+      'POST /ttx/ttx-1/scenario/apply': [json(200, check), json(200, check)],
+    })
+    renderLibrary('/creator/ttx-1/library/scenarios?tab=organization')
+
+    fireEvent.click(await screen.findByLabelText('Duplicate Our ransomware'))
+    fireEvent.click(screen.getByRole('button', { name: 'Replace this exercise…' }))
+    const dialog = await screen.findByRole('dialog')
+    const brand = await within(dialog).findByRole('textbox', { name: /\{brand\}/ })
+    // Suggested, never written in on its own.
+    expect(brand).toHaveValue('')
+    expect(brand).toHaveAttribute('placeholder', 'e.g. Kubo…')
+    expect(brand).toHaveAccessibleDescription('The brand running the campaign')
+    expect(within(dialog).getByText('INJ-12')).toBeInTheDocument()
+    expect(within(dialog).getByText('and 6 more places')).toBeInTheDocument()
+    expect(within(dialog).getByText(/Nothing here is final/)).toBeInTheDocument()
+
+    fireEvent.change(within(dialog).getByRole('textbox', { name: /\{staff_count\}/ }), {
+      target: { value: '90,000' },
+    })
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Use the suggested values' }))
+    // Only the blank ones: what was typed, or proposed from the organization, stays.
+    expect(brand).toHaveValue('Kubo')
+    expect(within(dialog).getByRole('textbox', { name: /\{staff_count\}/ })).toHaveValue('90,000')
+    expect(within(dialog).getByRole('textbox', { name: /\{group_name\}/ })).toHaveValue(
+      'Acme Energy',
+    )
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Use “120,000” for {staff_count}' }))
+    fireEvent.change(within(dialog).getByLabelText('Type “Q4 drill” to confirm'), {
+      target: { value: 'Q4 drill' },
+    })
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Replace exercise' }))
+
+    await waitFor(() => {
+      const call = fetchMock.mock.calls.find(([url]) => String(url).includes('dry_run=false'))
+      expect(JSON.parse(String(call?.[1]?.body)).variables).toEqual({
+        brand: 'Kubo',
+        staff_count: '120,000',
+        group_name: 'Acme Energy',
+      })
+    })
+  })
 })

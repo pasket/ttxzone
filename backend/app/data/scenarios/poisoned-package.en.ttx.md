@@ -1,6 +1,6 @@
 ---
 format: "ttx-zone.scenario"
-format_version: 8
+format_version: 9
 language: "en"
 title: "From a poisoned package to production data"
 exported_at: "2026-11-05T00:00:00+00:00"
@@ -132,10 +132,19 @@ Three weeks later. The incident is closed and the final report is being drafted.
 - **ACT-08** Employee
 - **ACT-09** Board chair
 
+## Placeholders
+
+- `{organization}` The organization the exercise is about.
+- `{cloud_platform}` The cloud platform its teams, AI assistant and databases run on.
+- `{ai_assistant}` The name of the internal AI assistant (a chatbot) the actor reaches.
+- `{internal_wiki}` The internal wiki connected to the assistant as a knowledge source.
+- `{customer_database}` The production database holding customer data.
+- `{finance_database}` The production database holding financial data.
+
 ```json ttx-zone-scenario
 {
   "format": "ttx-zone.scenario",
-  "format_version": 8,
+  "format_version": 9,
   "language": "en",
   "exported_at": "2026-11-05T00:00:00Z",
   "exercise": {
@@ -1822,6 +1831,38 @@ Three weeks later. The incident is closed and the final report is being drafted.
   "uses_rooms": false,
   "rooms": [],
   "next_room_number": 1,
-  "files": []
+  "files": [],
+  "placeholders": [
+    {
+      "name": "organization",
+      "description": "The organization the exercise is about.",
+      "suggested": ""
+    },
+    {
+      "name": "cloud_platform",
+      "description": "The cloud platform its teams, AI assistant and databases run on.",
+      "suggested": ""
+    },
+    {
+      "name": "ai_assistant",
+      "description": "The name of the internal AI assistant (a chatbot) the actor reaches.",
+      "suggested": ""
+    },
+    {
+      "name": "internal_wiki",
+      "description": "The internal wiki connected to the assistant as a knowledge source.",
+      "suggested": ""
+    },
+    {
+      "name": "customer_database",
+      "description": "The production database holding customer data.",
+      "suggested": ""
+    },
+    {
+      "name": "finance_database",
+      "description": "The production database holding financial data.",
+      "suggested": ""
+    }
+  ]
 }
 ```

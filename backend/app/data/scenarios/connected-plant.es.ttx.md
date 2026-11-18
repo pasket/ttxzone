@@ -1,6 +1,6 @@
 ---
 format: "ttx-zone.scenario"
-format_version: 8
+format_version: 9
 language: "es"
 title: "Dos incidentes, una campaña contra la planta"
 exported_at: "2026-11-05T00:00:00+00:00"
@@ -89,10 +89,18 @@ Tres semanas después. La restauración está casi terminada.
 - **ACT-10** Empleado
 - **ACT-11** Presidencia del consejo
 
+## Placeholders
+
+- `{organization}` La organización sobre la que trata el ejercicio.
+- `{assembly_plant}` La planta de montaje de vehículos.
+- `{supplier}` El proveedor que mantiene en remoto robots y controladores.
+- `{country_1}` El país al que salen los datos robados.
+- `{ransom_amount}` El rescate exigido, como importe. (p. ej. 5 millones de euros)
+
 ```json ttx-zone-scenario
 {
   "format": "ttx-zone.scenario",
-  "format_version": 8,
+  "format_version": 9,
   "language": "es",
   "exported_at": "2026-11-05T00:00:00Z",
   "exercise": {
@@ -1782,6 +1790,33 @@ Tres semanas después. La restauración está casi terminada.
     }
   ],
   "next_room_number": 3,
-  "files": []
+  "files": [],
+  "placeholders": [
+    {
+      "name": "organization",
+      "description": "La organización sobre la que trata el ejercicio.",
+      "suggested": ""
+    },
+    {
+      "name": "assembly_plant",
+      "description": "La planta de montaje de vehículos.",
+      "suggested": ""
+    },
+    {
+      "name": "supplier",
+      "description": "El proveedor que mantiene en remoto robots y controladores.",
+      "suggested": ""
+    },
+    {
+      "name": "country_1",
+      "description": "El país al que salen los datos robados.",
+      "suggested": ""
+    },
+    {
+      "name": "ransom_amount",
+      "description": "El rescate exigido, como importe.",
+      "suggested": "5 millones de euros"
+    }
+  ]
 }
 ```

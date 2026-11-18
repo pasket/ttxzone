@@ -1,6 +1,6 @@
 ---
 format: "ttx-zone.scenario"
-format_version: 8
+format_version: 9
 language: "es"
 title: "¿Podemos fiarnos de los registros de lote?"
 exported_at: "2026-11-05T00:00:00+00:00"
@@ -96,10 +96,21 @@ Día 28. Ningún sistema nuevo muestra comportamiento malicioso.
 - **ACT-09** Autoridad de seguridad alimentaria
 - **ACT-10** Representantes de la plantilla
 
+## Placeholders
+
+- `{organization}` La organización sobre la que trata el ejercicio.
+- `{brand}` La marca de consumo con la que vende sus alimentos.
+- `{plant_1}` La primera planta de producción.
+- `{plant_2}` La segunda planta de producción, donde aparece el palé mal etiquetado.
+- `{recipe_system}` El sistema donde están las recetas.
+- `{traceability_system}` El sistema que registra lotes, palés y decisiones de liberación.
+- `{customer}` El mayor cliente de distribución.
+- `{product}` El producto afectado por la duda de etiquetado y la falsa retirada.
+
 ```json ttx-zone-scenario
 {
   "format": "ttx-zone.scenario",
-  "format_version": 8,
+  "format_version": 9,
   "language": "es",
   "exported_at": "2026-11-05T00:00:00Z",
   "exercise": {
@@ -1709,6 +1720,48 @@ Día 28. Ningún sistema nuevo muestra comportamiento malicioso.
   "uses_rooms": false,
   "rooms": [],
   "next_room_number": 1,
-  "files": []
+  "files": [],
+  "placeholders": [
+    {
+      "name": "organization",
+      "description": "La organización sobre la que trata el ejercicio.",
+      "suggested": ""
+    },
+    {
+      "name": "brand",
+      "description": "La marca de consumo con la que vende sus alimentos.",
+      "suggested": ""
+    },
+    {
+      "name": "plant_1",
+      "description": "La primera planta de producción.",
+      "suggested": ""
+    },
+    {
+      "name": "plant_2",
+      "description": "La segunda planta de producción, donde aparece el palé mal etiquetado.",
+      "suggested": ""
+    },
+    {
+      "name": "recipe_system",
+      "description": "El sistema donde están las recetas.",
+      "suggested": ""
+    },
+    {
+      "name": "traceability_system",
+      "description": "El sistema que registra lotes, palés y decisiones de liberación.",
+      "suggested": ""
+    },
+    {
+      "name": "customer",
+      "description": "El mayor cliente de distribución.",
+      "suggested": ""
+    },
+    {
+      "name": "product",
+      "description": "El producto afectado por la duda de etiquetado y la falsa retirada.",
+      "suggested": ""
+    }
+  ]
 }
 ```

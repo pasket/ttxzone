@@ -39,13 +39,16 @@ from app.schemas.scenario import (
     ScenarioDocumentV6,
     ScenarioDocumentV7,
     ScenarioDocumentV8,
+    ScenarioDocumentV9,
     ScenarioListResponse,
     ScenarioRead,
     ScenarioSummary,
     ScenarioVariables,
+    TTXPlaceholderFillRequest,
+    TTXPlaceholders,
 )
 from app.services import organization_scenario_service as library
-from app.services import platform_audit_service
+from app.services import platform_audit_service, ttx_placeholder_service
 from app.services.actor_library_service import require_library_manager, require_library_reader
 from app.services.library_usage_service import delete_or_disable, enable, usage, usage_counts
 from app.services.scenario_document import file_name, render
@@ -80,7 +83,7 @@ def scenario_schema_endpoint(version: int, _user: User = Depends(get_current_use
     """The JSON Schema of a scenario file's data block, per format version
     (2 adds a phase's headline, 3 rooms, 4 inject files, 5 rendered
     artifacts, 6 inject formats and polls, 7 poll outcomes, 8 impact
-    meters): for anyone writing or checking files outside TTX-Zone."""
+    meters, 9 declared placeholders): for anyone writing or checking files outside TTX-Zone."""
     models = {
         1: ScenarioDocumentV1,
         2: ScenarioDocumentV2,
@@ -90,6 +93,7 @@ def scenario_schema_endpoint(version: int, _user: User = Depends(get_current_use
         6: ScenarioDocumentV6,
         7: ScenarioDocumentV7,
         8: ScenarioDocumentV8,
+        9: ScenarioDocumentV9,
     }
     if version not in models:
         raise AppException(
@@ -333,6 +337,33 @@ def _audit_applied(
         platform_audit_service.record_exercise(
             session, user, "exercise.scenario_applied", ttx, {"name": report.name, **source}
         )
+
+
+@router.get("/ttx/{ttx_id}/placeholders", response_model=TTXPlaceholders)
+def ttx_placeholders_endpoint(
+    ttx: TTX = Depends(_planner),
+    session: Session = Depends(get_session),
+) -> TTXPlaceholders:
+    """The {placeholders} left in the exercise's texts (a scenario's, left
+    blank when it was applied), with where each appears."""
+    return ttx_placeholder_service.scan(session, ttx)
+
+
+@router.post(
+    "/ttx/{ttx_id}/placeholders/fill",
+    response_model=TTXPlaceholders,
+    dependencies=[Depends(verify_csrf)],
+)
+def fill_ttx_placeholders_endpoint(
+    payload: TTXPlaceholderFillRequest,
+    ttx: TTX = Depends(_planner),
+    user: User = Depends(get_current_user),
+    session: Session = Depends(get_session),
+) -> TTXPlaceholders:
+    """Write the values in place of their {placeholders} throughout the
+    exercise (blank ones stay); returns the ones still left. 422
+    PLACEHOLDER_VALUE_TOO_LONG changes nothing."""
+    return ttx_placeholder_service.fill(session, ttx, payload.variables, user)
 
 
 @router.post(

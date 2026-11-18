@@ -47,7 +47,17 @@ To change the shape, add a new `ScenarioDocumentV{n}` in `backend/app/schemas/sc
 
 ## Placeholders
 
-Text may use `{placeholders}`, such as `{organization}`, `{company_1}` or `{supplier}`. Applying the scenario lists them with how often each is used, and asks for a value.
+Text may use `{placeholders}`, such as `{organization}`, `{company_1}` or `{supplier}`. Applying the scenario lists them with how often each is used and where, and asks for a value.
+
+Declare them in the data block's `placeholders` list (format version 9), so whoever applies the scenario knows what to write:
+
+```json
+"placeholders": [
+  { "name": "brand", "description": "The retail brand running the campaign.", "suggested": "Kubo" }
+]
+```
+
+`description` says what the placeholder stands for. `suggested` is a value that fits the story, in the file's language; it's offered, never applied on its own. Leave it empty when no value reads well in every sentence that uses the placeholder. A scenario with more than one placeholder declares them all.
 
 ## Checking
 

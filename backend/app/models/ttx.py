@@ -1,7 +1,8 @@
 import uuid
 from datetime import UTC, datetime
 
-from sqlalchemy import UniqueConstraint
+from sqlalchemy import Column, UniqueConstraint
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel
 
 
@@ -40,6 +41,12 @@ class TTX(SQLModel, table=True):
     scenario_origin: str | None = Field(default=None, max_length=16)
     scenario_origin_id: str | None = Field(default=None, max_length=64)
     scenario_origin_name: str | None = Field(default=None, max_length=255)
+    # What the scenario applied to it says about its {placeholders}
+    # (`ScenarioPlaceholder` dumps: name, description, suggested value), to
+    # help fill in the ones left for later and to go back out on export.
+    scenario_placeholders: list = Field(
+        default_factory=list, sa_column=Column(JSONB, nullable=False, server_default="[]")
+    )
     # The language its content (injects, briefings, the needs analysis) is
     # written in -- not anyone's interface language. Set from the creator's
     # language, then from a scenario applied to it; the Planners change it.

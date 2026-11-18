@@ -851,10 +851,21 @@
       "contingent": "contingente",
       "variables": {
         "legend": "Marcadores",
-        "hint": "Los {marcadores} de la plantilla, de más a menos usados: los primeros son el núcleo del ejercicio. Lo que escribas aquí los sustituye en toda la copia; lo que dejes en blanco se queda como {marcador} para completarlo después.",
+        "hint": "Los {marcadores} de la plantilla, de más a menos usados: los primeros son el núcleo del ejercicio. Lo que escribas aquí los sustituye en toda la copia.",
+        "later": "Nada de esto es definitivo. Lo que dejes en blanco se queda como {marcador}, y Creator → MSEL → Revisión los lista para rellenarlos juntos más adelante. Todos los textos del ejercicio se pueden editar después de crearlo.",
         "used_one": "usado una vez",
         "used_other": "usado {{count}} veces"
       }
+    },
+    "variables": {
+      "suggestedHint": "La plantilla sugiere valores que encajan con su historia.",
+      "useAllSuggested": "Usar los valores sugeridos",
+      "useSuggested": "Usar «{{value}}»",
+      "useSuggestedFor": "Usar «{{value}}» en {{name}}",
+      "example": "p. ej. {{value}}…",
+      "where": "Dónde aparece",
+      "moreUses_one": "y un sitio más",
+      "moreUses_other": "y {{count}} sitios más"
     },
     "picker": {
       "title": "Empezar desde una plantilla de ejercicio",
@@ -1919,7 +1930,19 @@
       "leftover": {
         "row": "Sin rellenar:",
         "review_one": "Queda {{count}} marcador de plantilla sin rellenar; llegaría a la mesa tal cual:",
-        "review_other": "Quedan {{count}} marcadores de plantilla sin rellenar; llegarían a la mesa tal cual:"
+        "review_other": "Quedan {{count}} marcadores de plantilla sin rellenar; llegarían a la mesa tal cual:",
+        "elsewhere_one": "Queda {{count}} sin rellenar en el resto del ejercicio (su análisis de necesidades, los actores simulados o los actores de amenaza):",
+        "elsewhere_other": "Quedan {{count}} sin rellenar en el resto del ejercicio (su análisis de necesidades, los actores simulados o los actores de amenaza):",
+        "fill": "Rellenarlos…",
+        "dialogTitle": "Rellenar los marcadores de la plantilla",
+        "dialogHint": "Lo que la plantilla dejó por rellenar, en todo el ejercicio: su análisis de necesidades, el MSEL, los actores simulados y los actores de amenaza. Lo que escribas sustituye a cada uno en todos los sitios donde aparece; lo que dejes en blanco se queda para otro momento.",
+        "loading": "Buscando marcadores…",
+        "none": "No quedan marcadores por rellenar.",
+        "reopensNeeds": "Algunos están en el análisis de necesidades, que ya pasó de borrador: al rellenarlos vuelve a borrador y hay que aprobarlo de nuevo.",
+        "reopensMsel": "Algunos están en el MSEL, que ya pasó de borrador: al rellenarlos vuelve a borrador.",
+        "submit": "Rellenar",
+        "filled_one": "{{count}} marcador rellenado",
+        "filled_other": "{{count}} marcadores rellenados"
       },
       "title": "Lista maestra de eventos del escenario (MSEL)",
       "intro": "Aquí se construye la sesión: un único incidente simulado que avanza en 2 a 8 fases, impulsado por injects. Cada fase empieza con una actualización de la situación y las preguntas clave para debatir. Dentro de cada fase, los injects son los mensajes que los actores simulados hacen llegar a los jugadores: los obligatorios marcan la historia principal a una hora T+ fija (tiempo de sesión; el tiempo del escenario avanza más rápido según la compresión temporal), y los contingentes se desvían de ella cuando no se observa una acción esperada y luego vuelven.",
@@ -5263,6 +5286,7 @@
           "needs_approved": "Aprobó el análisis de necesidades",
           "needs_approval_recorded": "Registró una aprobación del análisis de necesidades",
           "scenario_applied": "Aplicó una plantilla de ejercicio a un ejercicio",
+          "placeholders_filled": "Rellenó los marcadores de un ejercicio",
           "aar_final": "Marcó como final el informe posterior a la acción",
           "aar_reopened": "Reabrió el informe posterior a la acción"
         }

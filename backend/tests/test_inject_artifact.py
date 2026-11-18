@@ -54,7 +54,7 @@ def test_an_artifact_is_saved_validated_and_carried_by_a_scenario(
 
     text = _export_scenario(client, ttx_id)
     doc = parse(text)
-    assert doc.format_version == 8
+    assert doc.format_version == 9
     assert doc.msel.injects[0].artifact.subject == "Mandatory password reset"
     target = _create_ttx(client, exercise["org_id"], "Copy")
     applied = _import_scenario(client, target["id"], text, dry_run=False)

@@ -1,6 +1,6 @@
 ---
 format: "ttx-zone.scenario"
-format_version: 8
+format_version: 9
 language: "en"
 title: "Black Friday eve: operations continuity when a critical third party goes down"
 exported_at: "2026-11-14T00:00:00+00:00"
@@ -140,10 +140,25 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
 - **ACT-09** Customers
 - **ACT-10** Board chair
 
+## Placeholders
+
+- `{organization}` The organization the exercise is about.
+- `{online_share}` The share of revenue that comes from the online channel, as a phrase. (e.g. about a quarter)
+- `{brand}` The retail brand running the Black Friday campaign. (e.g. Kubo)
+- `{collab_suite}` The email, chat and shared-files suite that goes down. Written mid-sentence: use a name or a phrase such as the suggested one. (e.g. the productivity suite)
+- `{attacker_group}` The name of the group behind the phishing campaign (the threat actor). (e.g. Marea)
+- `{online_revenue_hour}` What the online channel sells per hour at tonight's peak. (e.g. €4 million)
+- `{media_spend}` Black Friday media already committed that can't be recovered. (e.g. €12 million)
+- `{carrier_penalty}` What the carrier charges for missed collection slots. (e.g. €300,000 a day)
+- `{staff_count}` How many employees the group has. (e.g. 120,000)
+- `{temp_staff}` Temporary Black Friday staff due to start that morning. (e.g. 3,000)
+- `{queued_emails}` Messages waiting when email delivery resumes. (e.g. 1.2 million)
+- `{lost_sales}` First estimate of what the outage cost. (e.g. over €60 million)
+
 ```json ttx-zone-scenario
 {
   "format": "ttx-zone.scenario",
-  "format_version": 8,
+  "format_version": 9,
   "language": "en",
   "exported_at": "2026-11-14T00:00:00Z",
   "exercise": {
@@ -554,7 +569,7 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
         "delivery_method": "phone",
         "attachment_notes": [],
         "attack_techniques": [],
-        "facilitator_notes": "Key question: Who convenes the crisis committee, and through which channel?\n\nRecord whether the committee channel existed before today or is improvised. If nobody knows how to reach the members without the suite, that is the first finding.\n\nSuggested values when applying\n- brand: Kubo\n- collab_suite: the productivity suite\n- online_share: about a quarter\n- online_revenue_hour: €4 million\n- media_spend: €12 million\n- carrier_penalty: €300,000 a day\n- staff_count: 120,000\n- temp_staff: 3,000\n- queued_emails: 1.2 million\n- lost_sales: over €60 million\n- attacker_group: Marea\nKeep the figures consistent with each other.",
+        "facilitator_notes": "Key question: Who convenes the crisis committee, and through which channel?\n\nRecord whether the committee channel existed before today or is improvised. If nobody knows how to reach the members without the suite, that is the first finding.\n\nThe template suggests a value for each placeholder: keep the figures consistent with each other.",
         "objective_codes": [
           "OBJ-01"
         ],
@@ -2570,6 +2585,68 @@ Saturday, 10:00. The provider declares the service fully restored. The board wan
   "uses_rooms": false,
   "rooms": [],
   "next_room_number": 1,
-  "files": []
+  "files": [],
+  "placeholders": [
+    {
+      "name": "organization",
+      "description": "The organization the exercise is about.",
+      "suggested": ""
+    },
+    {
+      "name": "online_share",
+      "description": "The share of revenue that comes from the online channel, as a phrase.",
+      "suggested": "about a quarter"
+    },
+    {
+      "name": "brand",
+      "description": "The retail brand running the Black Friday campaign.",
+      "suggested": "Kubo"
+    },
+    {
+      "name": "collab_suite",
+      "description": "The email, chat and shared-files suite that goes down. Written mid-sentence: use a name or a phrase such as the suggested one.",
+      "suggested": "the productivity suite"
+    },
+    {
+      "name": "attacker_group",
+      "description": "The name of the group behind the phishing campaign (the threat actor).",
+      "suggested": "Marea"
+    },
+    {
+      "name": "online_revenue_hour",
+      "description": "What the online channel sells per hour at tonight's peak.",
+      "suggested": "€4 million"
+    },
+    {
+      "name": "media_spend",
+      "description": "Black Friday media already committed that can't be recovered.",
+      "suggested": "€12 million"
+    },
+    {
+      "name": "carrier_penalty",
+      "description": "What the carrier charges for missed collection slots.",
+      "suggested": "€300,000 a day"
+    },
+    {
+      "name": "staff_count",
+      "description": "How many employees the group has.",
+      "suggested": "120,000"
+    },
+    {
+      "name": "temp_staff",
+      "description": "Temporary Black Friday staff due to start that morning.",
+      "suggested": "3,000"
+    },
+    {
+      "name": "queued_emails",
+      "description": "Messages waiting when email delivery resumes.",
+      "suggested": "1.2 million"
+    },
+    {
+      "name": "lost_sales",
+      "description": "First estimate of what the outage cost.",
+      "suggested": "over €60 million"
+    }
+  ]
 }
 ```

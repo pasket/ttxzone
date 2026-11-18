@@ -1,6 +1,6 @@
 ---
 format: "ttx-zone.scenario"
-format_version: 8
+format_version: 9
 language: "en"
 title: "Two incidents, one campaign against the plant"
 exported_at: "2026-11-05T00:00:00+00:00"
@@ -89,10 +89,18 @@ Three weeks later. Restoration is nearly complete.
 - **ACT-10** Employee
 - **ACT-11** Board chair
 
+## Placeholders
+
+- `{organization}` The organization the exercise is about.
+- `{assembly_plant}` The vehicle assembly plant.
+- `{supplier}` The supplier that maintains robots and controllers remotely.
+- `{country_1}` The country the stolen data is sent to.
+- `{ransom_amount}` The ransom demanded, as an amount. (e.g. €5 million)
+
 ```json ttx-zone-scenario
 {
   "format": "ttx-zone.scenario",
-  "format_version": 8,
+  "format_version": 9,
   "language": "en",
   "exported_at": "2026-11-05T00:00:00Z",
   "exercise": {
@@ -1782,6 +1790,33 @@ Three weeks later. Restoration is nearly complete.
     }
   ],
   "next_room_number": 3,
-  "files": []
+  "files": [],
+  "placeholders": [
+    {
+      "name": "organization",
+      "description": "The organization the exercise is about.",
+      "suggested": ""
+    },
+    {
+      "name": "assembly_plant",
+      "description": "The vehicle assembly plant.",
+      "suggested": ""
+    },
+    {
+      "name": "supplier",
+      "description": "The supplier that maintains robots and controllers remotely.",
+      "suggested": ""
+    },
+    {
+      "name": "country_1",
+      "description": "The country the stolen data is sent to.",
+      "suggested": ""
+    },
+    {
+      "name": "ransom_amount",
+      "description": "The ransom demanded, as an amount.",
+      "suggested": "€5 million"
+    }
+  ]
 }
 ```

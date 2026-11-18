@@ -19,16 +19,19 @@ from app.models import (
     Inject,
     InjectFormat,
     MselImage,
+    NeedsFormStatus,
     OrganizationScenario,
     PlatformAuditEvent,
+    TTXMsel,
     TTXNeed,
     TTXNeedsForm,
     TTXNeedsFormApproval,
     User,
     UserSession,
 )
-from app.schemas.scenario import SCENARIO_FORMAT_VERSION
+from app.schemas.scenario import SCENARIO_FORMAT_VERSION, ScenarioPlaceholder
 from app.services.scenario_document import FENCE_INFO, parse, render
+from app.services.scenario_service import document_variables
 from tests.msel_helpers import example_payload
 from tests.test_ttx_msel import _move, _open, _put
 from tests.test_ttx_msel import _payload_from as _msel_payload_from
@@ -116,7 +119,7 @@ def test_an_export_leaves_out_people_approvals_and_dates(
     # The export's own timestamp is today's date, which may be the sample's.
     content = "\n".join(line for line in text.splitlines() if "exported_at" not in line)
 
-    assert text.startswith('---\nformat: "ttx-zone.scenario"\nformat_version: 8\n')
+    assert text.startswith('---\nformat: "ttx-zone.scenario"\nformat_version: 9\n')
     assert "# Ransomware drill" in text
     for private in (
         "Sponsor Example",
@@ -209,8 +212,8 @@ def test_a_file_with_errors_is_refused_and_nothing_changes(
     doc.msel.injects[0].phase_code = "PH-99"
     doc.needs.objectives[0].need_codes = ["NEED-42"]
     broken_refs = render(doc)
-    newer = text.replace('"format_version": 8', '"format_version": 9').replace(
-        "format_version: 8", "format_version: 9"
+    newer = text.replace('"format_version": 9', '"format_version": 10').replace(
+        "format_version: 9", "format_version: 10"
     )
 
     cases = {
@@ -475,9 +478,11 @@ def test_the_format_schema_is_published(client: TestClient, designed: dict) -> N
     assert "scored" in v5["$defs"]["ScenarioInjectV5"]["properties"]
     assert "scored" not in injects and "poll_options" in injects
     v7 = client.get("/api/v1/scenario-format/7/schema.json").json()
-    v8 = client.get(f"/api/v1/scenario-format/{SCENARIO_FORMAT_VERSION}/schema.json").json()
+    v8 = client.get("/api/v1/scenario-format/8/schema.json").json()
+    v9 = client.get(f"/api/v1/scenario-format/{SCENARIO_FORMAT_VERSION}/schema.json").json()
     assert "poll_outcomes" not in json.dumps(v6) and "poll_outcomes" in json.dumps(v7)
     assert "poll_impacts" not in json.dumps(v7) and "poll_impacts" in json.dumps(v8)
+    assert "ScenarioPlaceholder" not in json.dumps(v8) and "ScenarioPlaceholder" in json.dumps(v9)
     newer = client.get(f"/api/v1/scenario-format/{SCENARIO_FORMAT_VERSION + 1}/schema.json")
     assert newer.status_code == 404
 
@@ -498,12 +503,12 @@ def test_a_version_5_file_turns_scored_into_a_format(
         inject["scored"] = True
     injects[0]["scored"] = False
     old = (
-        head.replace("format_version: 8", "format_version: 5")
+        head.replace("format_version: 9", "format_version: 5")
         + f"```{FENCE_INFO}\n{json.dumps(data)}\n```{rest}"
     )
 
     doc = parse(old)
-    assert doc.format_version == 8
+    assert doc.format_version == SCENARIO_FORMAT_VERSION
     assert doc.msel.injects[0].format == InjectFormat.DISCUSSION
     assert doc.msel.injects[1].format == InjectFormat.INJECT
 
@@ -513,12 +518,12 @@ def test_a_version_1_file_still_imports_and_a_phase_headline_round_trips(
 ) -> None:
     text = _export(client, designed["ttx"]["id"])
     doc = parse(text)
-    assert doc.format_version == 8
+    assert doc.format_version == SCENARIO_FORMAT_VERSION
     # The same file as a version 1 one (no headlines) upgrades on reading.
-    v1 = text.replace('"format_version": 8', '"format_version": 1').replace(
-        "format_version: 8", "format_version: 1"
+    v1 = text.replace('"format_version": 9', '"format_version": 1').replace(
+        "format_version: 9", "format_version: 1"
     )
-    assert parse(v1).format_version == 8
+    assert parse(v1).format_version == SCENARIO_FORMAT_VERSION
 
     doc.msel.phases[0].headline = "Supplier breach"
     again = parse(render(doc))
@@ -552,6 +557,173 @@ def test_a_scenario_lists_its_placeholders_and_fills_them_on_copy(
     assert "{group_name}" not in text and "{country_1}" not in text
     # A blank value leaves its placeholder to complete later.
     assert "{company_2}" in text
+
+
+def test_a_placeholder_comes_with_where_it_is_used_and_what_the_template_says(
+    client: TestClient, db_session: Session, designed: dict
+) -> None:
+    doc = scenario_catalog()["executive-tabletop"].documents["en"].model_copy(deep=True)
+    doc.placeholders = [
+        # The block describes placeholders: it isn't text that uses them.
+        ScenarioPlaceholder(
+            name="supplier", description="The vendor behind {supplier}", suggested="Nortia"
+        ),
+        ScenarioPlaceholder(name="never_used", description="Nothing uses it"),
+    ]
+    target = _create_ttx(client, designed["org_id"], "Empty")
+    url = f"/api/v1/ttx/{target['id']}/scenario/import"
+    files = {"file": ("x.ttx.md", render(doc).encode(), "text/markdown")}
+
+    check = client.post(url, files=files, headers=_csrf(client)).json()
+
+    assert check["ok"] is True, check["errors"]
+    plain = scenario_catalog()["executive-tabletop"].documents["en"]
+    counts = {v.name: v.count for v in document_variables(plain)}
+    supplier = next(v for v in check["variables"] if v["name"] == "supplier")
+    assert supplier["count"] == counts["supplier"]
+    assert supplier["description"] == "The vendor behind {supplier}"
+    assert supplier["suggested"] == "Nortia"
+    assert 0 < len(supplier["uses"]) <= 5
+    for use in supplier["uses"]:
+        assert "{supplier}" in use["excerpt"] and len(use["excerpt"]) < 200
+        assert use["path"]
+    assert any(use["code"] for v in check["variables"] for use in v["uses"])
+    assert "never_used" not in {v["name"] for v in check["variables"]}
+    assert [w["code"] for w in check["warnings"]].count("SCENARIO_UNUSED_PLACEHOLDER") == 1
+
+    applied = client.post(
+        f"{url}?dry_run=false",
+        files=files,
+        data={"variables": json.dumps({"group_name": "Acme"})},
+        headers=_csrf(client),
+    )
+    assert applied.json()["ok"] is True, applied.json()["errors"]
+    db_session.expire_all()
+    # What it said about the placeholders still to fill in goes back out.
+    exported = parse(_export(client, target["id"]))
+    assert [p.name for p in exported.placeholders] == ["supplier"]
+    assert exported.placeholders[0].suggested == "Nortia"
+    assert "## Placeholders" in _export(client, target["id"])
+
+
+def test_placeholders_left_blank_are_filled_in_place_later(
+    client: TestClient, db_session: Session, designed: dict
+) -> None:
+    doc = scenario_catalog()["black-friday-suite-outage"].documents["en"]
+    target = _create_ttx(client, designed["org_id"], "Empty")
+    base = f"/api/v1/ttx/{target['id']}"
+    applied = client.post(
+        f"{base}/scenario/import?dry_run=false",
+        files={"file": ("x.ttx.md", render(doc).encode(), "text/markdown")},
+        data={"variables": json.dumps({"organization": "Acme"})},
+        headers=_csrf(client),
+    )
+    assert applied.json()["ok"] is True, applied.json()["errors"]
+    db_session.expire_all()
+    inject_ids = sorted(
+        db_session.exec(select(Inject.id).where(Inject.ttx_id == uuid.UUID(target["id"])))
+    )
+    revision = db_session.exec(
+        select(TTXMsel.revision).where(TTXMsel.ttx_id == uuid.UUID(target["id"]))
+    ).one()
+
+    left = client.get(f"{base}/placeholders").json()
+    by_name = {v["name"]: v for v in left["variables"]}
+    assert "organization" not in by_name and by_name["brand"]["suggested"] == "Kubo"
+    assert by_name["brand"]["description"] and by_name["brand"]["uses"][0]["excerpt"]
+    # Every text a scenario writes is scanned: the exercise has each
+    # placeholder as often as the document did (TEXT_FIELDS follows the
+    # format), in an artifact and as a threat actor's whole name too.
+    assert {v["name"]: v["count"] for v in left["variables"]} == {
+        v.name: v.count for v in document_variables(doc) if v.name != "organization"
+    }
+    assert by_name["collab_suite"]["count"] == 4 and by_name["attacker_group"]["count"] == 1
+    # A draft needs analysis, a draft MSEL: nothing to send back.
+    assert left["reopens_needs"] is False and left["reopens_msel"] is False
+
+    too_long = client.post(
+        f"{base}/placeholders/fill",
+        json={"variables": {"queued_emails": "x" * 255, "brand": "Kubo"}},
+        headers=_csrf(client),
+    )
+    assert too_long.status_code == 422
+    assert too_long.json()["error"]["code"] == "PLACEHOLDER_VALUE_TOO_LONG"
+    assert "brand" in {v["name"] for v in client.get(f"{base}/placeholders").json()["variables"]}
+
+    def audited() -> list:
+        db_session.expire_all()
+        return list(
+            db_session.exec(
+                select(PlatformAuditEvent).where(
+                    PlatformAuditEvent.action == "exercise.placeholders_filled"
+                )
+            )
+        )
+
+    assert audited() == []
+
+    values = {"brand": "Kubo", "collab_suite": "the suite", "attacker_group": "Marea", "x": " "}
+    after = client.post(
+        f"{base}/placeholders/fill", json={"variables": values}, headers=_csrf(client)
+    )
+    assert after.status_code == 200, after.text
+    names = {v["name"] for v in after.json()["variables"]}
+    assert not names & set(values) and "queued_emails" in names
+    # The activity log names the ones written, never their values.
+    [event] = audited()
+    assert event.target_id == uuid.UUID(target["id"])
+    assert event.details["placeholders"] == ["attacker_group", "brand", "collab_suite"]
+    assert "Kubo" not in json.dumps(event.details)
+
+    db_session.expire_all()
+    text = parse(_export(client, target["id"])).model_dump_json()
+    assert "{brand}" not in text and "Kubo" in text and "the suite status" in text
+    assert "{queued_emails}" in text
+    # In place: the rows are the same ones, and the MSEL has a new revision.
+    assert inject_ids == sorted(
+        db_session.exec(select(Inject.id).where(Inject.ttx_id == uuid.UUID(target["id"])))
+    )
+    assert (
+        db_session.exec(
+            select(TTXMsel.revision).where(TTXMsel.ttx_id == uuid.UUID(target["id"]))
+        ).one()
+        == revision + 1
+    )
+    # What the scenario said goes on only for the ones still left.
+    kept = {p["name"] for p in db_session.get(TTX, uuid.UUID(target["id"])).scenario_placeholders}
+    assert "brand" not in kept and "queued_emails" in kept
+
+
+def test_filling_a_placeholder_of_an_approved_needs_analysis_sends_it_back_to_draft(
+    client: TestClient, db_session: Session, designed: dict
+) -> None:
+    ttx_id = designed["ttx"]["id"]
+    form = db_session.exec(
+        select(TTXNeedsForm).where(TTXNeedsForm.ttx_id == uuid.UUID(ttx_id))
+    ).one()
+    assert form.status == NeedsFormStatus.APPROVED
+    form.perimeter = "The {plant} site"
+    db_session.add(form)
+    db_session.commit()
+    version = form.version
+
+    left = client.get(f"/api/v1/ttx/{ttx_id}/placeholders").json()
+    assert [v["name"] for v in left["variables"]] == ["plant"]
+    assert left["variables"][0]["uses"][0]["path"] == "needs.perimeter"
+    assert left["reopens_needs"] is True
+
+    after = client.post(
+        f"/api/v1/ttx/{ttx_id}/placeholders/fill",
+        json={"variables": {"plant": "Zaragoza"}},
+        headers=_csrf(client),
+    )
+    assert after.status_code == 200 and after.json()["variables"] == []
+    db_session.expire_all()
+    form = db_session.exec(
+        select(TTXNeedsForm).where(TTXNeedsForm.ttx_id == uuid.UUID(ttx_id))
+    ).one()
+    assert form.perimeter == "The Zaragoza site"
+    assert form.status == NeedsFormStatus.DRAFT and form.version == version + 1
 
 
 def test_a_value_too_long_for_a_field_is_refused_and_nothing_changes(

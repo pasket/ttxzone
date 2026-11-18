@@ -89,6 +89,12 @@ def _upgrade_7_to_8(data: dict[str, Any]) -> dict[str, Any]:
     return data
 
 
+def _upgrade_8_to_9(data: dict[str, Any]) -> dict[str, Any]:
+    """Version 9 adds what each {placeholder} stands for and a suggested
+    value (optional)."""
+    return data
+
+
 UPGRADERS: dict[int, Callable[[dict[str, Any]], dict[str, Any]]] = {
     1: _upgrade_1_to_2,
     2: _upgrade_2_to_3,
@@ -97,6 +103,7 @@ UPGRADERS: dict[int, Callable[[dict[str, Any]], dict[str, Any]]] = {
     5: _upgrade_5_to_6,
     6: _upgrade_6_to_7,
     7: _upgrade_7_to_8,
+    8: _upgrade_8_to_9,
 }
 
 
@@ -360,6 +367,16 @@ def render_body(doc: ScenarioDocument) -> str:
     if doc.cast:
         out += [f"## {label('Simulated actors', 'Actores simulados')}", ""]
         out += [f"- **{a.code}** {_heading_text(a.name)}" for a in doc.cast]
+        out.append("")
+    if doc.placeholders:
+        out += [f"## {label('Placeholders', 'Placeholders')}", ""]
+        for item in doc.placeholders:
+            line = f"- `{{{item.name}}}`"
+            if item.description:
+                line += f" {_heading_text(item.description)}"
+            if item.suggested:
+                line += f" ({label('e.g.', 'p. ej.')} {_heading_text(item.suggested)})"
+            out.append(line)
         out.append("")
     return "\n".join(out)
 

@@ -15,6 +15,7 @@ import { useUndoableRowRemoval, restoreRow } from '../../../hooks/useUndoableRow
 import { useUnsavedChangesWarning } from '../../../hooks/useUnsavedChangesWarning'
 import { apiFetch, ApiError } from '../../../lib/api'
 import { leftoverVariables } from '../../../lib/injectLibrary'
+import type { TtxPlaceholders } from '../../../lib/scenarios'
 import { btnPrimary, btnSecondary, linkAccent } from '../../../lib/buttonStyles'
 import {
   adoptSavedIds,
@@ -58,6 +59,7 @@ import { SectionHeader } from '../../common/SectionHeader'
 import { TlpBadge } from '../../common/TlpBadge'
 import { FieldGroup } from '../../common/FieldGroup'
 import { CoverageTab, LoadTable } from './AnalysisTabs'
+import { PlaceholderFillDialog } from './PlaceholderFillDialog'
 import { StorylineStrip } from './StorylineStrip'
 import { InjectsTab } from './InjectsTab'
 import { MselDownloads } from './MselDownloads'
@@ -915,6 +917,9 @@ function MselEditor({
                     busy={busy}
                     readOnly={readOnly}
                     onTransition={(to) => void transition(to)}
+                    ttxId={ttxId}
+                    canFill={!oversight}
+                    onFilled={onReload}
                   />
                 </FieldGroup>
                 <FieldGroup
@@ -1047,19 +1052,48 @@ function ReviewTab({
   busy,
   readOnly,
   onTransition,
+  ttxId,
+  canFill,
+  onFilled,
 }: {
   msel: Msel
   dirty: boolean
   busy: boolean
   readOnly: boolean
   onTransition: (to: MselStatus) => void
+  ttxId: string
+  /** On the exercise's team: may fill in what a template left unfilled. */
+  canFill: boolean
+  onFilled: () => void
 }) {
   const { t, i18n } = useTranslation()
+  const [filling, setFilling] = useState(false)
   const disabled = busy || dirty || readOnly
   const { ready: blocking, approved: unvalidated } = msel.validation
   // What a template left unfilled in the scenario, its phases and injects:
   // a notice (the server takes the MSEL either way).
   const leftover = leftoverVariables([msel.title, msel.summary, msel.phases, msel.injects])
+  // The rest of the exercise (its needs analysis, cast, threat actors) can
+  // hold some too, which only the server sees: asked again after a fill.
+  const [everywhere, setEverywhere] = useState<string[]>([])
+  const [fills, setFills] = useState(0)
+  useEffect(() => {
+    if (!canFill) return
+    let cancelled = false
+    async function load() {
+      try {
+        const found = await apiFetch<TtxPlaceholders>(`/ttx/${ttxId}/placeholders`)
+        if (!cancelled) setEverywhere(found.variables.map((variable) => variable.name))
+      } catch {
+        // The MSEL's own still show; the dialog reports what fails.
+      }
+    }
+    void load()
+    return () => {
+      cancelled = true
+    }
+  }, [ttxId, canFill, msel.revision, fills])
+  const elsewhere = everywhere.filter((name) => !leftover.includes(name))
   const reason = readOnly
     ? t('creator.msel.review.readOnly')
     : dirty
@@ -1073,11 +1107,46 @@ function ReviewTab({
         {t('creator.msel.version', { version: msel.version })}
       </p>
       {reason && <p className="text-sm text-paper-ink/70 dark:text-fg-muted">{reason}</p>}
-      {leftover.length > 0 && (
+      {(leftover.length > 0 || elsewhere.length > 0) && (
         <p role="note" className="text-sm">
-          {t('creator.msel.leftover.review', { count: leftover.length })}{' '}
-          <VariableText text={leftover.map((name) => `{${name}}`).join(' ')} />
+          {leftover.length > 0 && (
+            <>
+              {t('creator.msel.leftover.review', { count: leftover.length })}{' '}
+              <VariableText text={leftover.map((name) => `{${name}}`).join(' ')} />
+            </>
+          )}
+          {elsewhere.length > 0 && (
+            <>
+              {leftover.length > 0 && ' '}
+              {t('creator.msel.leftover.elsewhere', { count: elsewhere.length })}{' '}
+              <VariableText text={elsewhere.map((name) => `{${name}}`).join(' ')} />
+            </>
+          )}
+          {canFill && (
+            <>
+              {' '}
+              <button
+                type="button"
+                // It rewrites the saved MSEL: unsaved edits go first.
+                disabled={busy || dirty}
+                onClick={() => setFilling(true)}
+                className={`${linkAccent} whitespace-nowrap underline disabled:cursor-not-allowed disabled:opacity-50`}
+              >
+                {t('creator.msel.leftover.fill')}
+              </button>
+            </>
+          )}
         </p>
+      )}
+      {filling && (
+        <PlaceholderFillDialog
+          ttxId={ttxId}
+          onClose={() => setFilling(false)}
+          onFilled={() => {
+            setFills((count) => count + 1)
+            onFilled()
+          }}
+        />
       )}
       <div className="flex flex-wrap gap-2">
         {msel.status === 'draft' && (

@@ -1,6 +1,6 @@
 ---
 format: "ttx-zone.scenario"
-format_version: 8
+format_version: 9
 language: "en"
 title: "Ransomware at a hospital group"
 exported_at: "2026-11-05T00:00:00+00:00"
@@ -96,10 +96,17 @@ Day 6. Containment is complete and hospitals still work on paper. The leading pr
 - **ACT-06** Health authority
 - **ACT-07** Clinical operations team
 
+## Placeholders
+
+- `{organization}` The organization the exercise is about.
+- `{hospital_1}` The first hospital of the network.
+- `{hospital_2}` The second hospital of the network.
+- `{ehr_system}` The electronic health record system clinical teams rely on.
+
 ```json ttx-zone-scenario
 {
   "format": "ttx-zone.scenario",
-  "format_version": 8,
+  "format_version": 9,
   "language": "en",
   "exported_at": "2026-11-05T00:00:00Z",
   "exercise": {
@@ -1467,6 +1474,28 @@ Day 6. Containment is complete and hospitals still work on paper. The leading pr
   "uses_rooms": false,
   "rooms": [],
   "next_room_number": 1,
-  "files": []
+  "files": [],
+  "placeholders": [
+    {
+      "name": "organization",
+      "description": "The organization the exercise is about.",
+      "suggested": ""
+    },
+    {
+      "name": "hospital_1",
+      "description": "The first hospital of the network.",
+      "suggested": ""
+    },
+    {
+      "name": "hospital_2",
+      "description": "The second hospital of the network.",
+      "suggested": ""
+    },
+    {
+      "name": "ehr_system",
+      "description": "The electronic health record system clinical teams rely on.",
+      "suggested": ""
+    }
+  ]
 }
 ```

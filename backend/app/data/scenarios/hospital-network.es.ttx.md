@@ -1,6 +1,6 @@
 ---
 format: "ttx-zone.scenario"
-format_version: 8
+format_version: 9
 language: "es"
 title: "Ransomware en un grupo hospitalario"
 exported_at: "2026-11-05T00:00:00+00:00"
@@ -96,10 +96,17 @@ Día 6. La contención ha terminado y los hospitales siguen en papel. El princip
 - **ACT-06** Autoridad sanitaria
 - **ACT-07** Equipo de operaciones clínicas
 
+## Placeholders
+
+- `{organization}` La organización sobre la que trata el ejercicio.
+- `{hospital_1}` El primer hospital de la red.
+- `{hospital_2}` El segundo hospital de la red.
+- `{ehr_system}` El sistema de historia clínica electrónica del que dependen los equipos clínicos.
+
 ```json ttx-zone-scenario
 {
   "format": "ttx-zone.scenario",
-  "format_version": 8,
+  "format_version": 9,
   "language": "es",
   "exported_at": "2026-11-05T00:00:00Z",
   "exercise": {
@@ -1467,6 +1474,28 @@ Día 6. La contención ha terminado y los hospitales siguen en papel. El princip
   "uses_rooms": false,
   "rooms": [],
   "next_room_number": 1,
-  "files": []
+  "files": [],
+  "placeholders": [
+    {
+      "name": "organization",
+      "description": "La organización sobre la que trata el ejercicio.",
+      "suggested": ""
+    },
+    {
+      "name": "hospital_1",
+      "description": "El primer hospital de la red.",
+      "suggested": ""
+    },
+    {
+      "name": "hospital_2",
+      "description": "El segundo hospital de la red.",
+      "suggested": ""
+    },
+    {
+      "name": "ehr_system",
+      "description": "El sistema de historia clínica electrónica del que dependen los equipos clínicos.",
+      "suggested": ""
+    }
+  ]
 }
 ```

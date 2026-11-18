@@ -77,6 +77,7 @@ from app.schemas.ttx_msel import (
     AttackReplacement,
     ExpectedActionRead,
     FrozenVersionRead,
+    InjectArtifact,
     InjectFileRead,
     InjectImageRead,
     InjectRead,
@@ -670,6 +671,13 @@ def _phase_view(phase: PhaseRead) -> SimpleNamespace:
     )
 
 
+def _artifact_texts(artifact: InjectArtifact | None) -> list[str]:
+    """What a rendered artifact shows besides the inject's content."""
+    if artifact is None:
+        return []
+    return [v for k, v in artifact.model_dump().items() if k != "kind" and isinstance(v, str)]
+
+
 def _inject_view(inject: InjectRead) -> SimpleNamespace:
     return SimpleNamespace(
         id=str(inject.id),
@@ -686,6 +694,7 @@ def _inject_view(inject: InjectRead) -> SimpleNamespace:
         poll_options=inject.poll_options,
         poll_outcomes=inject.poll_outcomes,
         poll_impacts=inject.poll_impacts,
+        artifact_texts=_artifact_texts(inject.artifact),
         branch_from=str(inject.branch_from_id) if inject.branch_from_id else None,
         branch_action=str(inject.branch_action_id) if inject.branch_action_id else None,
         rejoin=str(inject.rejoin_inject_id) if inject.rejoin_inject_id else None,
@@ -919,6 +928,8 @@ def validation_report(
             inject.poll_options,
             inject.poll_outcomes,
             [a.description for a in inject.actions],
+            # The table sees the artifact's fields too (a sender, a subject).
+            inject.artifact_texts,
         ):
             issue(warnings, "PLACEHOLDER_UNFILLED", INJECTS, "content", inject.id)
         # M13 -- expected actions an evaluator can't observe (warning).
@@ -1159,6 +1170,7 @@ def draft_report(
             poll_options=item.poll_options,
             poll_outcomes=item.poll_outcomes,
             poll_impacts=item.poll_impacts,
+            artifact_texts=_artifact_texts(item.artifact),
             branch_from=view_ids.get(item.branch_from_key or "") if contingent else None,
             branch_action=action_ids.get(item.branch_action_key or "") if contingent else None,
             rejoin=view_ids.get(item.rejoin_key or "") if contingent else None,

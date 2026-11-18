@@ -1,6 +1,6 @@
 ---
 format: "ttx-zone.scenario"
-format_version: 8
+format_version: 9
 language: "es"
 title: "Del paquete envenenado a los datos de producción"
 exported_at: "2026-11-05T00:00:00+00:00"
@@ -132,10 +132,19 @@ Tres semanas después. El incidente está cerrado y se redacta el informe final.
 - **ACT-08** Empleado
 - **ACT-09** Presidencia del consejo
 
+## Placeholders
+
+- `{organization}` La organización sobre la que trata el ejercicio.
+- `{cloud_platform}` La plataforma en la nube donde funcionan sus equipos, su asistente de IA y sus bases de datos.
+- `{ai_assistant}` El nombre del asistente interno de IA (un chatbot) al que llega el actor.
+- `{internal_wiki}` La wiki interna conectada al asistente como fuente de conocimiento.
+- `{customer_database}` La base de datos de producción con los datos de clientes.
+- `{finance_database}` La base de datos de producción con los datos financieros.
+
 ```json ttx-zone-scenario
 {
   "format": "ttx-zone.scenario",
-  "format_version": 8,
+  "format_version": 9,
   "language": "es",
   "exported_at": "2026-11-05T00:00:00Z",
   "exercise": {
@@ -1822,6 +1831,38 @@ Tres semanas después. El incidente está cerrado y se redacta el informe final.
   "uses_rooms": false,
   "rooms": [],
   "next_room_number": 1,
-  "files": []
+  "files": [],
+  "placeholders": [
+    {
+      "name": "organization",
+      "description": "La organización sobre la que trata el ejercicio.",
+      "suggested": ""
+    },
+    {
+      "name": "cloud_platform",
+      "description": "La plataforma en la nube donde funcionan sus equipos, su asistente de IA y sus bases de datos.",
+      "suggested": ""
+    },
+    {
+      "name": "ai_assistant",
+      "description": "El nombre del asistente interno de IA (un chatbot) al que llega el actor.",
+      "suggested": ""
+    },
+    {
+      "name": "internal_wiki",
+      "description": "La wiki interna conectada al asistente como fuente de conocimiento.",
+      "suggested": ""
+    },
+    {
+      "name": "customer_database",
+      "description": "La base de datos de producción con los datos de clientes.",
+      "suggested": ""
+    },
+    {
+      "name": "finance_database",
+      "description": "La base de datos de producción con los datos financieros.",
+      "suggested": ""
+    }
+  ]
 }
 ```

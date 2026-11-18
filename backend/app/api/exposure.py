@@ -285,6 +285,8 @@ INTERNAL_ONLY: frozenset[tuple[str, str]] = frozenset(
         ("GET", "/scenario-catalog"),
         ("GET", "/scenario-catalog/{scenario_id}"),
         ("GET", "/scenario-format/{version}/schema.json"),
+        ("GET", "/ttx/{ttx_id}/placeholders"),
+        ("POST", "/ttx/{ttx_id}/placeholders/fill"),
         ("GET", "/ttx/{ttx_id}/scenario"),
         ("POST", "/ttx/{ttx_id}/scenario/apply"),
         ("GET", "/ttx/{ttx_id}/scenario/export"),

@@ -1,6 +1,6 @@
 ---
 format: "ttx-zone.scenario"
-format_version: 8
+format_version: 9
 language: "en"
 title: "Can we trust the batch records?"
 exported_at: "2026-11-05T00:00:00+00:00"
@@ -96,10 +96,21 @@ Day 28. No new systems show malicious behaviour.
 - **ACT-09** Food safety authority
 - **ACT-10** Workforce representatives
 
+## Placeholders
+
+- `{organization}` The organization the exercise is about.
+- `{brand}` The consumer brand its food is sold under.
+- `{plant_1}` The first production plant.
+- `{plant_2}` The second production plant, where the mislabelled pallet is found.
+- `{recipe_system}` The system that holds the recipes.
+- `{traceability_system}` The system that tracks lots, pallets and release decisions.
+- `{customer}` The biggest retail customer.
+- `{product}` The product affected by the labelling doubt and the fake recall.
+
 ```json ttx-zone-scenario
 {
   "format": "ttx-zone.scenario",
-  "format_version": 8,
+  "format_version": 9,
   "language": "en",
   "exported_at": "2026-11-05T00:00:00Z",
   "exercise": {
@@ -1709,6 +1720,48 @@ Day 28. No new systems show malicious behaviour.
   "uses_rooms": false,
   "rooms": [],
   "next_room_number": 1,
-  "files": []
+  "files": [],
+  "placeholders": [
+    {
+      "name": "organization",
+      "description": "The organization the exercise is about.",
+      "suggested": ""
+    },
+    {
+      "name": "brand",
+      "description": "The consumer brand its food is sold under.",
+      "suggested": ""
+    },
+    {
+      "name": "plant_1",
+      "description": "The first production plant.",
+      "suggested": ""
+    },
+    {
+      "name": "plant_2",
+      "description": "The second production plant, where the mislabelled pallet is found.",
+      "suggested": ""
+    },
+    {
+      "name": "recipe_system",
+      "description": "The system that holds the recipes.",
+      "suggested": ""
+    },
+    {
+      "name": "traceability_system",
+      "description": "The system that tracks lots, pallets and release decisions.",
+      "suggested": ""
+    },
+    {
+      "name": "customer",
+      "description": "The biggest retail customer.",
+      "suggested": ""
+    },
+    {
+      "name": "product",
+      "description": "The product affected by the labelling doubt and the fake recall.",
+      "suggested": ""
+    }
+  ]
 }
 ```

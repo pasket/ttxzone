@@ -39,9 +39,32 @@ export interface ScenarioIssue {
   message: string
 }
 
+/** One place a {placeholder} appears, with the text around it. */
+export interface ScenarioVariableUse {
+  /** Where in the document, e.g. `msel.injects[3].content`. */
+  path: string
+  /** The coded row it belongs to (an inject, a phase…), if any. */
+  code?: string | null
+  title?: string | null
+  excerpt: string
+}
+
 export interface ScenarioVariable {
   name: string
   count: number
+  /** What the template says it stands for, and a value that fits. */
+  description?: string
+  suggested?: string
+  /** Its first uses (`count` has them all). */
+  uses?: ScenarioVariableUse[]
+}
+
+/** The {placeholders} an exercise's texts still carry. */
+export interface TtxPlaceholders {
+  variables: ScenarioVariable[]
+  /** Filling them sends an approved needs analysis / a ready MSEL back to draft. */
+  reopens_needs: boolean
+  reopens_msel: boolean
 }
 
 export interface ScenarioCheck {

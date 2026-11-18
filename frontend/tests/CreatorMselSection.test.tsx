@@ -375,6 +375,66 @@ describe('CreatorMselSection', () => {
     ).not.toHaveLength(0)
   })
 
+  it('fills in what a template left unfilled, across the exercise, and reloads the MSEL', async () => {
+    const base = msel()
+    const left = msel({ summary: 'An attack on {supplier}.' })
+    const found = {
+      variables: [
+        {
+          name: 'supplier',
+          count: 3,
+          description: 'The vendor that was breached',
+          suggested: 'Nortia',
+          uses: [{ path: 'msel.summary', excerpt: 'An attack on {supplier}.' }],
+        },
+        {
+          name: 'plant',
+          count: 1,
+          uses: [{ path: 'needs.perimeter', excerpt: 'The {plant} site' }],
+        },
+      ],
+      reopens_needs: true,
+      reopens_msel: false,
+    }
+    const fetchMock = stubApi({
+      'GET /ttx/ttx-1/msel': [json(200, left), json(200, base)],
+      'GET /attack/19.2': [json(200, catalog)],
+      'GET /ttx/ttx-1/placeholders': [
+        json(200, found),
+        json(200, found),
+        // After the fill.
+        json(200, { variables: [], reopens_needs: false, reopens_msel: false }),
+      ],
+      'POST /ttx/ttx-1/placeholders/fill': [json(200, { variables: [] })],
+    })
+    renderPage('/creator/ttx-1/msel?tab=review')
+
+    // The needs analysis' one isn't in the MSEL: the server tells of it.
+    expect(await screen.findByText(/1 is unfilled in the rest of the exercise/)).toBeInTheDocument()
+    fireEvent.click(await screen.findByRole('button', { name: 'Fill them in…' }))
+    const dialog = await screen.findByRole('dialog')
+    const supplier = await within(dialog).findByRole('textbox', { name: /\{supplier\}/ })
+    expect(supplier).toHaveAccessibleDescription('The vendor that was breached')
+    // The needs analysis' own placeholders are there too, with the warning.
+    expect(within(dialog).getByRole('textbox', { name: /\{plant\}/ })).toBeInTheDocument()
+    expect(
+      within(dialog).getByText(/sends it back to draft to be approved again/),
+    ).toBeInTheDocument()
+    expect(within(dialog).getByRole('button', { name: 'Fill in' })).toBeDisabled()
+
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Use the suggested values' }))
+    expect(supplier).toHaveValue('Nortia')
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Fill in' }))
+
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+    const call = fetchMock.mock.calls.find(([url]) => String(url).includes('/placeholders/fill'))
+    expect(JSON.parse(String(call?.[1]?.body))).toEqual({ variables: { supplier: 'Nortia' } })
+    // Read again: the notice goes with the placeholder.
+    await waitFor(() =>
+      expect(screen.queryByRole('button', { name: 'Fill them in…' })).not.toBeInTheDocument(),
+    )
+  })
+
   it('offers compression presets and shows what the session adds up to', async () => {
     stubApi({
       'GET /ttx/ttx-1/msel': [json(200, msel())],
