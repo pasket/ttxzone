@@ -2,7 +2,7 @@
 
 Notable changes to TTX-Zone, by release. Versions follow [Semantic Versioning](https://semver.org/). Before upgrading a deployment, read the release's entry and [Upgrade](https://docs.ttxzone.com/instance/upgrade/).
 
-## [Unreleased]
+## [0.3.0] - 2026-11-20
 
 ### Added
 - **Creator → New exercise**: start from an exercise template. Pick one of TTX-Zone's or the organization's from a searchable list, or import a `.ttx.md` file.
