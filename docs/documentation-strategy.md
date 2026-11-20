@@ -56,7 +56,7 @@ Astro Starlight, with starlight-openapi and starlight-links-validator, versions 
 - The OpenAPI description is exported and checked for drift in CI, in the manner of `alembic check`; a test requires every operation to have a description (`backend/tests/test_openapi_description.py`).
 - A change users can see updates its guide page in the same commit (a root `CLAUDE.md` invariant).
 - `npm run docs:screenshots` in `frontend/` regenerates the screenshots in both themes with Playwright over `scripts.seed_demo` (demo exercise in English, `SEED_DEMO_LOCALE`), never by hand. Diagrams are inline SVG in `docs/site/src/components/diagrams/`, with real text and the site's colours.
-- The repository's `README.md` shows five of those screenshots by path, in both themes (`control-center`, `msel`, `playground`, `evaluator-panel`, `improvement-plan`): renaming or removing one means updating the README too.
+- The repository's `README.md` shows five of those screenshots by path, in both themes (`control-center`, `msel`, `vote`, `evaluator-panel`, `improvement-plan`): renaming or removing one means updating the README too.
 - The glossary is generated from `frontend/src/locales/en.json` at build time.
 - The project's rules apply to the site: long role names in descriptive copy, the external doctrine never named. There's no automatic check for the doctrine, since one would have to spell the term in this repository, so it's searched for by hand before a release.
 - The documentation is under the repository's licence.

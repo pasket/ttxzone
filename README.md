@@ -38,7 +38,7 @@ TTX-Zone is a self-hosted web application for designing, running and evaluating 
 
 <table>
   <tr>
-    <td width="25%" valign="top">
+    <td width="50%" valign="top">
       <a href="https://docs.ttxzone.com/guide/design/msel/">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="docs/site/src/assets/screens/msel-dark.png">
@@ -51,12 +51,12 @@ TTX-Zone is a self-hosted web application for designing, running and evaluating 
       <br>
       From the needs analysis to the scenario, its injects and the session plan.
     </td>
-    <td width="25%" valign="top">
+    <td width="50%" valign="top">
       <a href="https://docs.ttxzone.com/guide/conduct/playground/">
         <picture>
-          <source media="(prefers-color-scheme: dark)" srcset="docs/site/src/assets/screens/playground-dark.png">
-          <source media="(prefers-color-scheme: light)" srcset="docs/site/src/assets/screens/playground-light.png">
-          <img alt="The Playground during a live session" src="docs/site/src/assets/screens/playground-light.png">
+          <source media="(prefers-color-scheme: dark)" srcset="docs/site/src/assets/screens/vote-dark.png">
+          <source media="(prefers-color-scheme: light)" srcset="docs/site/src/assets/screens/vote-light.png">
+          <img alt="A Player voting on a poll during a session" src="docs/site/src/assets/screens/vote-light.png">
         </picture>
       </a>
       <br>
@@ -64,7 +64,9 @@ TTX-Zone is a self-hosted web application for designing, running and evaluating 
       <br>
       Run the live session: deliver the injects and follow what the Players decide.
     </td>
-    <td width="25%" valign="top">
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
       <a href="https://docs.ttxzone.com/guide/evaluate/rating/">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="docs/site/src/assets/screens/evaluator-panel-dark.png">
@@ -77,7 +79,7 @@ TTX-Zone is a self-hosted web application for designing, running and evaluating 
       <br>
       Take notes during the session and rate it against its objectives.
     </td>
-    <td width="25%" valign="top">
+    <td width="50%" valign="top">
       <a href="https://docs.ttxzone.com/guide/improve/">
         <picture>
           <source media="(prefers-color-scheme: dark)" srcset="docs/site/src/assets/screens/improvement-plan-dark.png">
@@ -99,23 +101,25 @@ How to use it, install it and run it is at [docs.ttxzone.com](https://docs.ttxzo
 
 <table>
   <tr>
-    <td width="25%" valign="top">
-      <a href="https://docs.ttxzone.com/guide/first-exercise/"><strong>Your first exercise&nbsp;→</strong></a>
+    <td width="50%" valign="top">
+      <a href="https://docs.ttxzone.com/guide/first-exercise/"><strong>Your first exercise →</strong></a>
       <br>
       New here? Take one exercise through the whole cycle.
     </td>
-    <td width="25%" valign="top">
-      <a href="https://docs.ttxzone.com/instance/"><strong>Instance administration&nbsp;→</strong></a>
+    <td width="50%" valign="top">
+      <a href="https://docs.ttxzone.com/instance/"><strong>Instance administration →</strong></a>
       <br>
       Choose a deployment, install and run an instance.
     </td>
-    <td width="25%" valign="top">
-      <a href="https://docs.ttxzone.com/api/"><strong>API reference&nbsp;→</strong></a>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <a href="https://docs.ttxzone.com/api/"><strong>API reference →</strong></a>
       <br>
       Integrate with the HTTP API.
     </td>
-    <td width="25%" valign="top">
-      <a href="https://docs.ttxzone.com/contributing/"><strong>Contributing&nbsp;→</strong></a>
+    <td width="50%" valign="top">
+      <a href="https://docs.ttxzone.com/contributing/"><strong>Contributing →</strong></a>
       <br>
       Improve the product, its scenarios or the documentation.
     </td>
