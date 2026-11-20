@@ -4,9 +4,48 @@ Notable changes to TTX-Zone, by release. Versions follow [Semantic Versioning](h
 
 ## [Unreleased]
 
+### Added
+- **Creator → New exercise**: start from an exercise template. Pick one of TTX-Zone's or the organization's from a searchable list, or import a `.ttx.md` file.
+- **Exercise templates**: placeholders say what they stand for. Format version 9 adds a `placeholders` block with a description and a suggested value for each, and TTX-Zone's templates with several placeholders declare them. Copying a template onto an exercise shows each placeholder's description, its suggested value and where it appears; a suggested value is only offered, never applied on its own.
+- **Creator → MSEL**: a placeholder nobody filled in is marked on its inject's row and raises a warning that never blocks (M31). Review lists the ones left anywhere in the exercise and "Fill them in…" replaces them across it in one step.
+- **Several rows at once**: tick boxes and a selection bar in Players → Pending (approve or reject), Players → Confirmed (remove) and both lists of exercises (archive or unarchive). An action that takes rows away asks first, naming them; a row that fails doesn't stop the others.
+- **Admin → Exercises**: an Exercise Program Manager opens any exercise of the organization read-only (profile, needs analysis, MSEL, session plan and after-action report), with or without a seat on its team, and "Documents" on each row downloads its PDFs.
+- **Control center**: "View as Player" shows the planning and control team exactly what a room's Players see, read-only and without being marked present.
+- **Exercise team**: an Exercise Program Manager grants a person's missing organization role from the team dialog, and under the single and managed tenancy rules adds someone new from the allowed domains there. The exercise's profile shows its team and rooms without entering the edit mode.
+- **Admin → Users and roles → Add a person**: under the single and managed tenancy rules, the email field suggests the allowed-domain accounts that hold no role yet, by name or email.
+- **Playground → My exercises**: a Session column says where each exercise's session stands, the exercise selector marks the one in play, and whoever takes part in an exercise in play lands on it on arrival.
+- **After-action report**: an index of its parts with where each stands and the Draft → Final track, and the line with the exercise's code, version, status and TLP the other documents have. Marking it as final asks first, naming the objectives without a level and the empty conclusions; a final report reads as text until it is reopened.
+- **Preferences**: each account corrects its own name; the change is recorded in the activity log.
+- **Keyboard**: Cmd/Ctrl+Enter commits a dialog's form and "/" takes the focus to a list's search. Neither applies in the Control center.
+- **API**: `PUT /auth/name`, `GET /ttx/{id}/placeholders`, `POST /ttx/{id}/placeholders/fill`, `POST /ttx/{id}/access-requests/decide`, `POST /ttx/{id}/players/remove`, `POST /ttx/archive-many`, and `GET /ttx/{id}/run?preview=player`. `GET /ttx` also carries each exercise's `run_state` and `session_date`.
+
 ### Changed
-- **MITRE ATT&CK v20.1** is the release new exercises, TTX-Zone's scenarios, its inject catalog and the assistant's knowledge base use: 18 new techniques (9 Enterprise, 9 ICS) and two new groups (G1058, G1059). Nothing changes on its own: an existing MSEL and the organization's library stay on v19.2 and offer the update. Updating removes the two ICS techniques v20.1 deprecates (T0807, T0853) from what uses them, and says so. No database migration.
+- **MITRE ATT&CK v20.1** is the release new exercises, TTX-Zone's exercise templates, its inject catalog and the assistant's knowledge base use: 18 new techniques (9 Enterprise, 9 ICS) and two new groups (G1058, G1059). Nothing changes on its own: an existing MSEL and the organization's library stay on v19.2 and offer the update. Updating removes the two ICS techniques v20.1 deprecates (T0807, T0853) from what uses them, and says so. This update needs no database migration of its own.
 - **Creator → MSEL**: a newer ATT&CK version is no longer offered only at the foot of the Threat actors tab. A draft it changes nothing in moves to it when opened, with a message. Otherwise a notice above every tab says what the update would change in that MSEL, and an MSEL in review or ready keeps its status when nothing in it changes (before, updating always sent it back to draft). A technique kept under another tactic is now reported too.
+- **Library**: the item that packages a whole exercise is now called an "exercise template" ("plantilla de ejercicio"); "scenario" is only the exercise's story. The API paths, the Library's URL, the `SCENARIO_*` error codes and the `.ttx.md` format keep their names.
+- **Creator → Players** lives under the exercise's own URL (`/creator/{exercise}/players`), so a shared link opens the sender's exercise. The earlier URL redirects.
+- **Phones and tablets**: the Playground and the Control center show the stage and the panel side by side from 768 px. On a phone only the EXERCISE strip with the stop keyword stays at the top, wide tables (needs analysis, MSEL, improvement plan) scroll inside their panel, and the bottom menu shows an icon over one word and scrolls sideways.
+- **Control center**: starting the exercise asks first and says how many Players are present; the inject that is due has the one named button, "Release"; an action that fails says why in its own dialog; ending the exercise is confirmed as an action that can't be undone; the inject in play stays beside the panel while it scrolls; once the session is over, a link leads to the report.
+- **Lists**: filters sit in one row under the panel's header, each under its visible label.
+- **AI assistant**: with several proposals only the first shows its changes; "Accept all" is the panel's main action, a proposal names the row it changes with its code and title, and a notice says when an accepted one is in the form.
+- **Playground → Evaluation**: with every point on screen each objective folds and says how many of its points are rated.
+- **Admin → Organization**: deleting the organization is a panel of its own at the end of the edit page.
+- **Browser tabs** are named after the page and, on an exercise's pages, the exercise.
+- **Library**: its form dialogs ask before discarding what was typed.
+- **Platform → Activity log**: an entry names its exercise by code and name, as the rest of the application does.
+- **Spanish**: "Borrar" for Delete and "Quitar" for Remove everywhere, "Terminar" for ending an exercise, and a contingent inject is "activated" rather than released.
+- **Database**: one migration (`0003`), applied when the backend starts.
+
+### Fixed
+- **Library**: sixteen TTX-Zone exercise templates ran sixty times faster than written, so the storyline and the session clock drifted days away from their situation updates. They now run in real time within each phase; phases and deadlines are unchanged.
+- **Legal documents** published while someone was signed in left every screen refusing to work with no way to reach them. A banner now says what to accept and links to Preferences → Privacy, where each document is accepted on its own.
+- **Stop keyword**: it is accepted without accents, in any case and with spare spaces, so "pinzon de hierro" pauses an exercise whose keyword is "PINZÓN DE HIERRO".
+- **Creator → MSEL**: the injects table no longer squeezes an inject's title to one letter per line on a narrow screen, and two storyline labels that fell under AA contrast are readable.
+- **Dialogs**: closing one returns the focus to what opened it, and the Control center keeps the focus after an action instead of dropping it to the page.
+- **Platform → Accounts**: the list no longer moves under the pointer when the first account is ticked.
+
+### Security
+- Frontend image: Nginx 1.30.7 (CVE-2026-113425, CVE-2026-121810, CVE-2026-123007, CVE-2026-123633, CVE-2026-118899, CVE-2026-123634). The image now takes Nginx's own fixes at every build, not only Alpine's.
 
 ## [0.2.0] - 2026-11-15
 
