@@ -9,6 +9,7 @@
 <p align="center"><em>Build muscle memory into your organization.</em></p>
 
 <p align="center">
+  <a href="https://github.com/pasket/ttxzone/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/pasket/ttxzone/actions/workflows/ci.yml/badge.svg?branch=main"></a>
   <a href="https://github.com/pasket/ttxzone/releases"><img alt="Latest release" src="https://img.shields.io/github/v/release/pasket/ttxzone?label=release"></a>
   <a href="#license"><img alt="License: AGPL-3.0-or-later" src="https://img.shields.io/badge/license-AGPL--3.0--or--later-blue"></a>
   <a href="https://docs.ttxzone.com/"><img alt="Documentation: docs.ttxzone.com" src="https://img.shields.io/badge/docs-docs.ttxzone.com-0aa5b5"></a>
