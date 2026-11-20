@@ -9,15 +9,120 @@
 <p align="center"><em>Build muscle memory into your organization.</em></p>
 
 <p align="center">
+  <a href="https://github.com/pasket/ttxzone/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/pasket/ttxzone/actions/workflows/ci.yml/badge.svg?branch=main"></a>
+  <a href="https://github.com/pasket/ttxzone/releases"><img alt="Latest release" src="https://img.shields.io/github/v/release/pasket/ttxzone?label=release"></a>
+  <a href="#license"><img alt="License: AGPL-3.0-or-later" src="https://img.shields.io/badge/license-AGPL--3.0--or--later-blue"></a>
+  <a href="https://docs.ttxzone.com/"><img alt="Documentation: docs.ttxzone.com" src="https://img.shields.io/badge/docs-docs.ttxzone.com-0aa5b5"></a>
+</p>
+
+<p align="center">
   <a href="https://ttxzone.com/">Website</a> ·
   <a href="https://docs.ttxzone.com/">Documentation</a> ·
   <a href="https://github.com/pasket/ttxzone/releases">Releases</a> ·
   <a href="https://github.com/pasket?tab=packages&repo_name=ttxzone">Container images</a>
 </p>
 
+<p align="center">
+  <a href="https://docs.ttxzone.com/guide/conduct/control-center/">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="docs/site/src/assets/screens/control-center-dark.png">
+      <source media="(prefers-color-scheme: light)" srcset="docs/site/src/assets/screens/control-center-light.png">
+      <img alt="The Control center during a live session: the storyline, the inject in play and the session controls" src="docs/site/src/assets/screens/control-center-light.png" width="860">
+    </picture>
+  </a>
+</p>
+
 TTX-Zone is a self-hosted web application for designing, running and evaluating cybersecurity tabletop exercises: the needs analysis, the scenario and its injects, the live session with its Players, the evaluation, the after-action report and the improvement plan. Free and open source under the [AGPL-3.0](#license).
 
-What it is and who it's for: [ttxzone.com](https://ttxzone.com/). How to use it, install it and run it: [docs.ttxzone.com](https://docs.ttxzone.com/). This README is about the code.
+## The exercise cycle
+
+<table>
+  <tr>
+    <td width="25%" valign="top">
+      <a href="https://docs.ttxzone.com/guide/design/msel/">
+        <picture>
+          <source media="(prefers-color-scheme: dark)" srcset="docs/site/src/assets/screens/msel-dark.png">
+          <source media="(prefers-color-scheme: light)" srcset="docs/site/src/assets/screens/msel-light.png">
+          <img alt="The MSEL of an exercise" src="docs/site/src/assets/screens/msel-light.png">
+        </picture>
+      </a>
+      <br>
+      <a href="https://docs.ttxzone.com/guide/design/msel/"><strong>Design</strong></a>
+      <br>
+      From the needs analysis to the scenario, its injects and the session plan.
+    </td>
+    <td width="25%" valign="top">
+      <a href="https://docs.ttxzone.com/guide/conduct/playground/">
+        <picture>
+          <source media="(prefers-color-scheme: dark)" srcset="docs/site/src/assets/screens/playground-dark.png">
+          <source media="(prefers-color-scheme: light)" srcset="docs/site/src/assets/screens/playground-light.png">
+          <img alt="The Playground during a live session" src="docs/site/src/assets/screens/playground-light.png">
+        </picture>
+      </a>
+      <br>
+      <a href="https://docs.ttxzone.com/guide/conduct/playground/"><strong>Conduct</strong></a>
+      <br>
+      Run the live session: deliver the injects and follow what the Players decide.
+    </td>
+    <td width="25%" valign="top">
+      <a href="https://docs.ttxzone.com/guide/evaluate/rating/">
+        <picture>
+          <source media="(prefers-color-scheme: dark)" srcset="docs/site/src/assets/screens/evaluator-panel-dark.png">
+          <source media="(prefers-color-scheme: light)" srcset="docs/site/src/assets/screens/evaluator-panel-light.png">
+          <img alt="The Evaluator's panel" src="docs/site/src/assets/screens/evaluator-panel-light.png">
+        </picture>
+      </a>
+      <br>
+      <a href="https://docs.ttxzone.com/guide/evaluate/rating/"><strong>Evaluate</strong></a>
+      <br>
+      Take notes during the session and rate it against its objectives.
+    </td>
+    <td width="25%" valign="top">
+      <a href="https://docs.ttxzone.com/guide/improve/">
+        <picture>
+          <source media="(prefers-color-scheme: dark)" srcset="docs/site/src/assets/screens/improvement-plan-dark.png">
+          <source media="(prefers-color-scheme: light)" srcset="docs/site/src/assets/screens/improvement-plan-light.png">
+          <img alt="The improvement plan" src="docs/site/src/assets/screens/improvement-plan-light.png">
+        </picture>
+      </a>
+      <br>
+      <a href="https://docs.ttxzone.com/guide/improve/"><strong>Improve</strong></a>
+      <br>
+      Turn the after-action report into an improvement plan and track it.
+    </td>
+  </tr>
+</table>
+
+## Documentation
+
+How to use it, install it and run it is at [docs.ttxzone.com](https://docs.ttxzone.com/):
+
+<table>
+  <tr>
+    <td width="25%" valign="top">
+      <a href="https://docs.ttxzone.com/guide/first-exercise/"><strong>Your first exercise&nbsp;→</strong></a>
+      <br>
+      New here? Take one exercise through the whole cycle.
+    </td>
+    <td width="25%" valign="top">
+      <a href="https://docs.ttxzone.com/instance/"><strong>Instance administration&nbsp;→</strong></a>
+      <br>
+      Choose a deployment, install and run an instance.
+    </td>
+    <td width="25%" valign="top">
+      <a href="https://docs.ttxzone.com/api/"><strong>API reference&nbsp;→</strong></a>
+      <br>
+      Integrate with the HTTP API.
+    </td>
+    <td width="25%" valign="top">
+      <a href="https://docs.ttxzone.com/contributing/"><strong>Contributing&nbsp;→</strong></a>
+      <br>
+      Improve the product, its scenarios or the documentation.
+    </td>
+  </tr>
+</table>
+
+What it is and who it's for: [ttxzone.com](https://ttxzone.com/). This README is about the code.
 
 ## Releases and images
 
@@ -69,7 +174,10 @@ Or start empty: register an account, then make it the instance administrator wit
 
 ### Checks
 
-CI (GitHub Actions) runs these on every push to `main`, on every pull request, and on demand. Run them before pushing:
+CI (GitHub Actions) runs these on every push to `main`, on every pull request, and on demand. Run them before pushing.
+
+<details>
+<summary>The commands</summary>
 
 ```bash
 # backend/ (inside the container: docker compose exec backend …)
@@ -84,6 +192,8 @@ npm run e2e             # browser tests, on their own stack
 # docs/site/
 npm ci && npm run build
 ```
+
+</details>
 
 Always point the backend tests at `ttx_zone_test` inside the container: they drop and recreate the schema of the database they're given.
 
