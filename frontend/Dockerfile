@@ -53,10 +53,23 @@ RUN find dist/assets -type f \( -name '*.js' -o -name '*.css' \) -exec gzip -9 -
 
 FROM nginxinc/nginx-unprivileged:1.30-alpine AS prod
 
-# The base image is rebuilt upstream on its own schedule: take the Alpine
-# fixes published since, at every build. The image runs as uid 101.
+# The base image is rebuilt upstream on its own schedule: take the fixes
+# published since, at every build. Alpine's come with a plain upgrade. Nginx's
+# don't: the base image installs it from nginx.org's stable repository, pins
+# that exact version and doesn't keep the repository configured (its signing
+# key stays in /etc/apk/keys). So the Nginx packages are upgraded from that
+# repository alone, never from Alpine's own nginx, which is another build. The
+# configuration the base image adapted to run unprivileged is kept (apk leaves
+# the new defaults beside it as .apk-new, removed here). That repository
+# follows the stable branch, so the build stops if the upgrade leaves 1.30:
+# move the FROM tag and this check together. The image runs as uid 101.
 USER root
-RUN apk upgrade --no-cache
+RUN apk upgrade --no-cache \
+ && apk add --no-cache --upgrade --repositories-file /dev/null \
+      -X "https://nginx.org/packages/alpine/v$(cut -d. -f1,2 /etc/alpine-release)/main" \
+      $(sed -n 's/^\(nginx[a-z-]*\)=.*/\1/p' /etc/apk/world) \
+ && find /etc/nginx -name '*.apk-new' -delete \
+ && nginx -v 2>&1 | grep -q 'nginx/1\.30\.'
 USER 101
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf
