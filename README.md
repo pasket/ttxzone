@@ -22,13 +22,13 @@
 </p>
 
 <p align="center">
-  <a href="https://docs.ttxzone.com/guide/conduct/control-center/">
+  <kbd><a href="https://docs.ttxzone.com/guide/conduct/control-center/">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="docs/site/src/assets/screens/control-center-dark.png">
       <source media="(prefers-color-scheme: light)" srcset="docs/site/src/assets/screens/control-center-light.png">
       <img alt="The Control center during a live session: the storyline, the inject in play and the session controls" src="docs/site/src/assets/screens/control-center-light.png" width="860">
     </picture>
-  </a>
+  </a></kbd>
 </p>
 
 TTX-Zone is a self-hosted web application for designing, running and evaluating cybersecurity tabletop exercises: the needs analysis, the scenario and its injects, the live session with its Players, the evaluation, the after-action report and the improvement plan. Free and open source under the [AGPL-3.0](#license).
