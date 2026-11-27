@@ -33,6 +33,7 @@ TOOL_ORDER = (
     "propose_threat_actors",
     "propose_injects",
     "propose_eeg_points",
+    "propose_session_texts",
 )
 
 _SCOPE_FIELDS = {
@@ -206,6 +207,12 @@ def fix_for(
             return _by("propose_injects", field)
     if document == "session_plan" and field in {"text", "points"}:
         return _by("propose_eeg_points", field)
+    if document == "session_plan" and field in {
+        "invitation_text",
+        "data_collection_methods",
+        "data_collection_other",
+    }:
+        return _by("propose_session_texts", field)
     return _you(SCREENS.get(document, "TTX-Zone"), "the person sets it on the screen")
 
 

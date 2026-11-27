@@ -225,6 +225,27 @@ class DefaultContextRequest(BaseModel):
     ttx_id: uuid.UUID | None = None
 
 
+class OrganizationContext(BaseModel):
+    """What exercises are designed around (Admin → Organization): read and
+    saved whole. Free text in the organization's words; no personal data."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    sector: str = Field(default="", max_length=255)
+    size: str = Field(default="", max_length=255)
+    regulators: str = Field(default="", max_length=1000)
+    technologies: str = Field(default="", max_length=2000)
+    critical_assets: str = Field(default="", max_length=2000)
+
+    @field_validator("*", mode="before")
+    @classmethod
+    def _strip(cls, value: object) -> object:
+        return value.strip() if isinstance(value, str) else value
+
+
+CONTEXT_FIELDS = tuple(OrganizationContext.model_fields)
+
+
 class OrganizationProfileUpdateRequest(BaseModel):
     """Program Manager-editable organization profile fields, past signup --
     tax_id lives here rather than on OrganizationProfileCreate, since it's

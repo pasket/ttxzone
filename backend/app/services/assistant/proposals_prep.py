@@ -3,15 +3,19 @@ EEGs (docs/features/ai-assistant.md#session-plan). Checked like the rest
 (proposals.py) against the plan's save schema and the report it would
 have, never applied: the Session plan page accepts them into its draft.
 
+The plan's own texts (the invitation, the briefing's and the session's
+notes, how data is collected) are one proposal on the plan.
+
 What stays with people is left out of the schema: dates, the people
-(evaluators, attendees, the log keeper), logistics and READY. A seeded
+(evaluators, attendees, the log keeper), what the briefing covered, the
+venue and READY. A seeded
 point's text follows its source (a criterion clause, an expected action, a
 notification requirement), so only a custom point's text is proposed; any
 point's P/S/M/U criteria are."""
 
 import logging
 import uuid
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import Field, ValidationError
 from sqlmodel import Session
@@ -19,7 +23,11 @@ from sqlmodel import Session
 from app.core.exceptions import AppException
 from app.models import TTX, User
 from app.models.ttx_conduct_prep import EegPointKind
-from app.schemas.ttx_conduct_prep import ConductPrepRead, ConductPrepSaveRequest
+from app.schemas.ttx_conduct_prep import (
+    DATA_COLLECTION_METHODS,
+    ConductPrepRead,
+    ConductPrepSaveRequest,
+)
 from app.schemas.ttx_needs_form import ValidationReport
 from app.services import ttx_conduct_prep_service
 from app.services.assistant.proposals import (
@@ -39,6 +47,16 @@ from app.services.assistant.proposals import (
 
 TARGET = "eeg_point"
 POINT_FIELDS = ("text", "criteria_p", "criteria_s", "criteria_m", "criteria_u")
+# The plan's texts: one row, the plan itself.
+TEXTS_TARGET = "prep_texts"
+TEXT_FIELDS = (
+    "invitation_text",
+    "briefing_notes",
+    "session_notes",
+    "data_collection_methods",
+    "data_collection_other",
+)
+TARGETS = (TARGET, TEXTS_TARGET)
 _LISTS = {
     "evaluators": ("id", "user_id", "areas", "briefed", "objective_ids"),
     "findings": ("id", "kind", "found_in", "description", "inject_id", "phase_id", "resolved"),
@@ -69,6 +87,30 @@ class EegPointItem(_Item):
         default=None, max_length=5000, description="Performed with major challenges."
     )
     criteria_u: str | None = Field(default=None, max_length=5000, description="Unable to perform.")
+
+
+class SessionTextsItem(_Item):
+    invitation_text: str | None = Field(
+        default=None,
+        max_length=20000,
+        description="The invitation the participants receive: what the exercise is, what's "
+        "expected of them, never the scenario. Roles, not names; the date and place are the "
+        "plan's own fields.",
+    )
+    briefing_notes: str | None = Field(
+        default=None,
+        max_length=5000,
+        description="Notes for the Controllers' and Evaluators' briefing.",
+    )
+    session_notes: str | None = Field(
+        default=None, max_length=5000, description="Notes on the session's logistics."
+    )
+    data_collection_methods: list[Literal[DATA_COLLECTION_METHODS]] | None = Field(  # type: ignore[valid-type]
+        default=None, description="How the evaluation's data is collected; the whole list."
+    )
+    data_collection_other: str | None = Field(
+        default=None, max_length=255, description="Which, when the methods have other."
+    )
 
 
 def payload_from_prep(read: ConductPrepRead) -> dict[str, Any]:
@@ -151,6 +193,59 @@ def apply_point(payload: dict, proposal) -> None:
         for point in eeg["points"]:
             if point["id"] == str(proposal.target_id):
                 patch_row(point, patch, proposal.base, proposal.operation)
+
+
+def apply_prep(payload: dict, proposal) -> None:
+    """Any session plan proposal into a save payload."""
+    if proposal.target == TEXTS_TARGET:
+        patch_row(payload, proposal.patch, proposal.base, proposal.operation)
+    else:
+        apply_point(payload, proposal)
+
+
+def saved_texts(session: Session, ttx: TTX) -> dict[str, dict[str, Any]]:
+    """The saved plan's texts as one row, by the plan's id."""
+    prep = ttx_conduct_prep_service.find_prep(session, ttx.id)
+    if prep is None:
+        return {}
+    read = ttx_conduct_prep_service.prep_read(session, ttx, prep)
+    return {str(read.id): {"id": str(read.id), **{f: getattr(read, f) for f in TEXT_FIELDS}}}
+
+
+def propose_session_texts(
+    session: Session,
+    ttx: TTX,
+    user: User,
+    item: SessionTextsItem,
+    *,
+    dry_run: bool = False,
+    include_pending: bool = True,
+) -> dict[str, Any]:
+    """The plan's texts, as one proposal on the plan."""
+    _check_room(session, ttx, user, 1)
+    read, payload = prep_context(session, ttx)
+    wanted = item.model_dump(exclude_unset=True, include=set(TEXT_FIELDS), mode="json")
+    if not wanted:
+        raise _refused("ASSISTANT_PROPOSAL_EMPTY", "Propose at least one item.")
+    current = {f: payload.get(f) for f in TEXT_FIELDS}
+    patch, base = _update_patch(current, wanted, read.exercise_code)
+    proposal = _new(
+        ttx, user, uuid.uuid4(), TEXTS_TARGET, item, patch, target_id=read.id, base=base
+    )
+    counted = (
+        [p for p in _pending(session, ttx.id, user.id) if p.target in TARGETS]
+        if include_pending
+        else []
+    )
+    return _close(
+        session,
+        [proposal],
+        _with_pending(payload, counted, apply_prep, _validate),
+        apply_prep,
+        lambda p: _report(session, ttx, p),
+        "Creator → Session plan",
+        dry_run=dry_run,
+    )
 
 
 def saved_points(session: Session, ttx: TTX) -> dict[str, dict[str, Any]]:
@@ -267,15 +362,15 @@ def propose_eeg_points(
             )
         proposals.append(_new(ttx, user, batch, TARGET, item, {"eeg_id": str(eeg.id), **wanted}))
     counted = (
-        [p for p in _pending(session, ttx.id, user.id) if p.target == TARGET]
+        [p for p in _pending(session, ttx.id, user.id) if p.target in TARGETS]
         if include_pending
         else []
     )
     return _close(
         session,
         proposals,
-        _with_pending(payload, counted, apply_point, _validate),
-        apply_point,
+        _with_pending(payload, counted, apply_prep, _validate),
+        apply_prep,
         lambda p: _report(session, ttx, p),
         "Creator → Session plan → Evaluation plan",
         dry_run=dry_run,

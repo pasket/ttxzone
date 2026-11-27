@@ -102,6 +102,11 @@ _WORKFLOW = """# Designing an exercise with TTX-Zone
 Each document builds on the one before; a Planner approves or marks each
 READY, never the assistant.
 
+Start with `list_requests`: what the person asked for from TTX-Zone's pages,
+answered with proposals that pass its `request_id`. `get_organization_profile`
+says what the organization is (sector, regulators, technologies, critical
+assets): design for it, not for a generic one.
+
 1. **Needs analysis** -- scope first (`propose_scope`: participating areas,
    third parties, perimeter, frameworks) and its context (`propose_context`:
    motivation, triggers, levels, date window, stop keyword), then needs
@@ -121,14 +126,17 @@ READY, never the assistant.
    filled with `propose_placeholder_values`. A Planner validates each inject
    and takes the MSEL to review and READY.
 3. **Session plan** (opens once the MSEL is READY) -- the EEG's observation
-   points (`propose_eeg_points`); the people, dates and logistics are the
-   Planners'. A Planner marks it READY.
+   points (`propose_eeg_points`) and its texts (`propose_session_texts`: the
+   invitation, briefing notes, how data is collected); the people, dates
+   and venue are the Planners'. A Planner marks it READY.
 4. **After the session** -- the after-action report and improvement plan
    (`propose_report_text`, `propose_objective_assessments`,
    `propose_improvement_actions`), each claim backed by the session's
    record.
 
-At any step: `plan_to_ready` says what's left in order; `dry_run` measures a
+At any step: `get_design_review` lays the design out as one chain (what
+each objective has hanging from it, the gaps, the session's pace, unused
+techniques); `plan_to_ready` says what's left in order; `dry_run` measures a
 proposal (warnings added and resolved) before making it; deletions are
 `delete: true` with the row's code. Before proposing again on rows you
 proposed on before, read `list_my_proposals` with status discarded: the
@@ -299,8 +307,9 @@ PROMPTS = {
                 },
             ),
             "Help me design the exercise {exercise} starting from an exercise template"
-            "{scenario_hint}. Steps: get_exercise_overview; search_scenarios and get_scenario "
-            "to pick one with me; then adapt it to this organization (its sector, areas, "
+            "{scenario_hint}. Steps: get_exercise_overview and get_organization_profile; "
+            "search_scenarios and get_scenario to pick one with me; then adapt it to this "
+            "organization (its sector, areas, "
             "systems) and propose it in stages: scope and context (propose_scope, "
             "propose_context), needs, objectives and risks with propose_needs, "
             "propose_objectives and propose_risks. Once I approve the needs analysis, continue "
@@ -315,8 +324,9 @@ PROMPTS = {
             "Build the MSEL",
             "Build or complete the MSEL from the approved needs analysis.",
             (_EXERCISE_ARG,),
-            "Help me build the MSEL of the exercise {exercise}. Read get_needs_analysis and "
-            "get_msel. Search the inject catalog, the knowledge base and MITRE ATT&CK for "
+            "Help me build the MSEL of the exercise {exercise}. Read get_needs_analysis, "
+            "get_msel and get_design_review (what each objective still lacks, the pace). "
+            "Search the inject catalog, the knowledge base and MITRE ATT&CK for "
             "what fits its objectives. Propose what's missing in order: phases "
             "(propose_phases), simulated and threat actors (propose_actors, "
             "propose_threat_actors), then injects (propose_injects) that test every "
@@ -326,6 +336,18 @@ PROMPTS = {
             "the timeline within each phase. Before changing an inject, read it whole with "
             "get_inject; before proposing again, read what I discarded and why "
             "(list_my_proposals, status discarded).",
+        ),
+        Prompt(
+            "work_my_requests",
+            "Work through my requests",
+            "Answer what you asked the assistant for from TTX-Zone's pages.",
+            (_EXERCISE_ARG,),
+            "Work through my requests on the exercise {exercise}. Call list_requests. For "
+            "each one, read what it's about (the document, and the row with get_inject when "
+            "it's an inject) and get_organization_profile, then make the proposals that "
+            "answer it, passing its request_id; measure with dry_run first when a proposal "
+            "could add warnings. Tell me which requests you answered and how, and which you "
+            "couldn't and why.",
         ),
         Prompt(
             "review_before_ready",

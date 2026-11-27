@@ -75,6 +75,18 @@ const DISCARD_REASON_KEYS = {
   other: 'assistant.discardReasons.other',
 } as const satisfies Record<DiscardReason, string>
 
+const DATA_METHOD_KEYS = {
+  direct_observation: 'creator.conductPrep.dataCollection.methods.direct_observation',
+  decision_timeline: 'creator.conductPrep.dataCollection.methods.decision_timeline',
+  communications_log: 'creator.conductPrep.dataCollection.methods.communications_log',
+  observation_notes: 'creator.conductPrep.dataCollection.methods.observation_notes',
+  document_review: 'creator.conductPrep.dataCollection.methods.document_review',
+  feedback_forms: 'creator.conductPrep.dataCollection.methods.feedback_forms',
+  interviews: 'creator.conductPrep.dataCollection.methods.interviews',
+  hot_wash: 'creator.conductPrep.dataCollection.methods.hot_wash',
+  other: 'creator.conductPrep.dataCollection.methods.other',
+} as const
+
 const ARTIFACT_KIND_KEYS = {
   email: 'artifacts.kinds.email',
   press_release: 'artifacts.kinds.press_release',
@@ -615,6 +627,10 @@ export function ProposalsPanel<D>({
     if (field === 'format') return t(`creator.msel.formats.${value as 'inject' | 'poll'}`)
     if (field === 'triggers') return t(`creator.needs.triggers.${value as NeedsTrigger}`)
     if (field === 'levels') return t(`creator.needs.levels.${value as ExerciseLevel}`)
+    if (field === 'data_collection_methods') {
+      const key = DATA_METHOD_KEYS[value as keyof typeof DATA_METHOD_KEYS]
+      return key ? t(key) : null
+    }
     if (field === 'tlp') return `TLP:${value.replace('_', '+').toUpperCase()}`
     if (field === 'content_language' && (value === 'en' || value === 'es')) {
       return t(LANGUAGE_NAME_KEYS[value])
@@ -629,6 +645,7 @@ export function ProposalsPanel<D>({
     const forms = [
       t('creator.msel.fields', { returnObjects: true }),
       t('creator.needs.fields', { returnObjects: true }),
+      t('creator.conductPrep.fields', { returnObjects: true }),
     ] as Record<string, unknown>[]
     for (const labels of forms) {
       if (typeof labels[field] === 'string') return labels[field] as string
@@ -704,6 +721,7 @@ export function ProposalsPanel<D>({
     if (proposal.operation === 'delete') return t('assistant.remove', { target, code: code ?? '' })
     if (proposal.target === 'needs_scope') return t('assistant.changeScope')
     if (proposal.target === 'needs_context') return t('assistant.changeContext')
+    if (proposal.target === 'prep_texts') return t('assistant.changeSessionTexts')
     if (proposal.target === 'needs_tlp') return t('assistant.changeTlp')
     if (proposal.target === 'ttx_meta') return t('assistant.changeExercise')
     if (proposal.target === 'msel_meta') return t('assistant.changeMselSettings')
@@ -722,6 +740,7 @@ export function ProposalsPanel<D>({
         'placeholders',
         'needs_scope',
         'needs_context',
+        'prep_texts',
         'needs_tlp',
         'ttx_meta',
         'msel_meta',
@@ -833,6 +852,9 @@ export function ProposalsPanel<D>({
             <span id={`proposal-${proposal.id}`} className="font-medium">
               {titleNode(proposal)}
             </span>
+          )}
+          {proposal.request_id && (
+            <span className={badgeNeutral}>{t('assistant.requests.answer')}</span>
           )}
           {proposal.outdated && <span className={badgeNeutral}>{t('assistant.outdated')}</span>}
           {accepted && <span className={badgeNeutral}>{t('assistant.acceptedUnsaved')}</span>}

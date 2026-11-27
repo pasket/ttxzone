@@ -12,6 +12,7 @@ from app.core.security import is_program_manager
 from app.models import (
     TTX,
     AssistantProposal,
+    AssistantRequest,
     ImprovementAction,
     InvitationToken,
     InvitationTokenRedemption,
@@ -402,6 +403,7 @@ def delete_exercises(session: Session, ttx_ids: list[uuid.UUID]) -> list[str | N
     delete_for_ttxs(session, ttx_ids)
     # The AI assistant's proposals on them, decided or not.
     session.exec(delete(AssistantProposal).where(col(AssistantProposal.ttx_id).in_(ttx_ids)))
+    session.exec(delete(AssistantRequest).where(col(AssistantRequest.ttx_id).in_(ttx_ids)))
     token_ids = list(
         session.exec(select(InvitationToken.id).where(InvitationToken.ttx_id.in_(ttx_ids)))
     )

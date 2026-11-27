@@ -63,10 +63,7 @@ Grouped by theme. Section numbers are stable references (other documents cite th
 ### 10. AI assistant (Later)
 The design: TTX-Zone serves an MCP endpoint and each person uses an AI client they run themselves, as themselves, with a personal access token; only for building an exercise and writing its after-action report, never in the Playground. Proposals wait for a person to accept or discard them. No data filtering, responsible-use notices instead; an instance switch; no embeddings (`docs/features/ai-assistant.md`).
 - The server marks a proposal applied when the form's save holds it, instead of the page.
-- **A design review tool** (`get_design_review`): computed by the server -- the chain need → objective → phase → inject → expected action → observation point with its gaps, the pace (injects per stretch, long silences, load per recipient area, share of contingent injects) and the threat actor's techniques no inject uses. The same matrix as a tab of MSEL → Review.
-- **The session plan's texts** as proposals: the invitation, the briefing's checklist and notes, the data collection methods. Dates, people and READY stay with the Planners.
-- **Asking from the page**: "Ask the assistant" on a row, a validation issue or a section leaves a request (exercise, row, a note) the client reads (`list_requests`, a prompt to work through them); each proposal names the request it answers. No model in the server.
-- **The organization's profile** (Admin → Organization): sector, size, regulators, technologies and critical assets in its own words, read by the client so proposals fit the organization without the Planner retyping it.
+- Asking from the page (built: a request about a document or one of its rows): the same from a validation issue, and from each row's own menu.
 - **Other roles**, each behind the switch below:
   - Program Manager: a programme overview (portfolio, capabilities exercised and not, overdue actions, retests due) and a proposed new exercise accepted in Creator.
   - Controller and Facilitator, before the session only (refused while one is in play): the MSEL in running order with notes, key questions and contingent injects, to rehearse the session and write the Facilitator's script.

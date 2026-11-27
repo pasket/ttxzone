@@ -21,4 +21,12 @@ class Organization(SQLModel, table=True):
     subscription_tier: str = Field(default="free", max_length=50)
     description: str | None = Field(default=None, max_length=2000)
     logo_path: str | None = Field(default=None, max_length=255)
+    # What exercises are designed around, in the organization's own words
+    # (Admin → Organization): read by its Planners' AI client so proposals
+    # fit it. Free text; never personal data.
+    sector: str | None = Field(default=None, max_length=255)
+    size: str | None = Field(default=None, max_length=255)
+    regulators: str | None = Field(default=None, max_length=1000)
+    technologies: str | None = Field(default=None, max_length=2000)
+    critical_assets: str | None = Field(default=None, max_length=2000)
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))

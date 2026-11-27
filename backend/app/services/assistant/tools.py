@@ -36,13 +36,15 @@ from app.services import (
     after_action_service,
     inject_library_service,
     organization_scenario_service,
+    organization_service,
     ttx_placeholder_service,
 )
 from app.services.actor_library_service import require_library_reader
-from app.services.assistant import fixes, proposals, proposals_aar, proposals_prep
+from app.services.assistant import fixes, proposals, proposals_aar, proposals_prep, requests
 from app.services.assistant.search import inject_index, knowledge_index, objective_index
 from app.services.assistant.session_record import SECTIONS, session_record
 from app.services.assistant.switch import SESSION_DATA_NOTICE
+from app.services.design_review_service import design_review
 from app.services.needs_markdown_service import render_needs_markdown
 from app.services.organization_scenario_service import library_document
 from app.services.ttx_conduct_prep_service import find_prep, prep_read
@@ -158,6 +160,10 @@ class ScenarioInput(BaseModel):
     language: Literal["en", "es"] = Field(
         default="en", description="A TTX-Zone template's language; an organization's has one."
     )
+
+
+class OrganizationInput(_Input):
+    organization_id: uuid.UUID = Field(description="From list_exercises.")
 
 
 class ImprovementPlanInput(BaseModel):
@@ -455,6 +461,11 @@ def _session_plan(session: Session, user: User, args: ExerciseInput) -> ToolResu
             for e in read.evaluators
         ],
         "data_collection_methods": read.data_collection_methods,
+        "data_collection_other": read.data_collection_other,
+        # The texts propose_session_texts changes, whole.
+        "invitation_text": read.invitation_text,
+        "briefing_notes": read.briefing_notes,
+        "session_notes": read.session_notes,
         "briefing_checklist": read.briefing_checklist,
         "logistics_checklist": read.logistics_checklist,
         "documents_reviewed": read.documents_reviewed,
@@ -993,6 +1004,32 @@ def _msel(session: Session, user: User, args: MselInput) -> ToolResult:
     return ToolResult(data, ttx.id, ttx.organization_id)
 
 
+def _organization_profile(session: Session, user: User, args: OrganizationInput) -> ToolResult:
+    require_library_reader(session, user, args.organization_id)
+    organization = organization_service.get_organization(session, args.organization_id)
+    context = organization_service.organization_context(organization).model_dump()
+    return ToolResult(
+        {
+            "name": organization.name,
+            "description": organization.description or "",
+            **context,
+            "note": (
+                None
+                if any(context.values())
+                else "Nothing written yet: a Program Manager fills it in Admin → Organization. "
+                "Ask the person about their sector, systems and regulators instead."
+            ),
+        },
+        organization_id=organization.id,
+    )
+
+
+def _design_review(session: Session, user: User, args: ExerciseInput) -> ToolResult:
+    ttx = _authorize(session, user, args.ttx_id)
+    review = design_review(session, ttx)
+    return ToolResult(review.model_dump(mode="json"), ttx.id, ttx.organization_id)
+
+
 def _inject(session: Session, user: User, args: InjectInput) -> ToolResult:
     ttx = _authorize(session, user, args.ttx_id)
     msel = find_msel(session, ttx.id)
@@ -1228,6 +1265,11 @@ class ProposeInput(ExerciseInput):
         description='A name for a set of proposals made over several calls ("Close MSEL '
         'v5"): the person reviews and accepts them together.',
     )
+    request_id: uuid.UUID | None = Field(
+        default=None,
+        description="The person's request (list_requests) these proposals answer: it stops "
+        "waiting, and the page shows them as its answer.",
+    )
 
 
 class ProposeScopeInput(ProposeInput, proposals.ScopeItem):
@@ -1242,6 +1284,13 @@ class ProposePlaceholdersInput(ExerciseInput):
     summary: str = Field(default="", max_length=500, description="Why, in one sentence.")
     dry_run: bool = Field(default=False, description="True: check without keeping it.")
     changeset: str | None = Field(default=None, max_length=80)
+    request_id: uuid.UUID | None = Field(
+        default=None, description="The person's request (list_requests) this answers."
+    )
+
+
+class ProposeSessionTextsInput(ProposeInput, proposals_prep.SessionTextsItem):
+    pass
 
 
 class ProposeContextInput(ProposeInput, proposals.ContextItem):
@@ -1313,6 +1362,12 @@ class ProposeObjectiveAssessmentsInput(ProposeInput):
 
 class ProposeImprovementActionsInput(ProposeInput):
     items: list[proposals_aar.ImprovementActionItem] = Field(min_length=1, max_length=20)
+
+
+class ListRequestsInput(ExerciseInput):
+    status: Literal["open", "answered"] = Field(
+        default="open", description="open: waiting for you; answered: already proposed for."
+    )
 
 
 class ListProposalsInput(ExerciseInput):
@@ -1400,7 +1455,7 @@ def _propose_aar(
     def handler(session: Session, user: User, args: Any) -> ToolResult:
         ttx = _authorize_report_author(session, user, args.ttx_id, write=True)
         answer = make(session, ttx, user, args.items, dry_run=args.dry_run)
-        return ToolResult(_label(session, answer, args.changeset), ttx.id, ttx.organization_id)
+        return ToolResult(_label(session, answer, args, ttx, user), ttx.id, ttx.organization_id)
 
     return handler
 
@@ -1427,15 +1482,22 @@ def _propose(kind: str) -> Callable[[Session, User, Any], ToolResult]:
             dry_run=args.dry_run,
             include_pending=args.include_pending,
         )
-        return ToolResult(_label(session, answer, args.changeset), ttx.id, ttx.organization_id)
+        return ToolResult(_label(session, answer, args, ttx, user), ttx.id, ttx.organization_id)
 
     return handler
 
 
-def _label(session: Session, answer: dict[str, Any], changeset: str | None) -> dict[str, Any]:
-    """The proposals just kept, under the changeset's name."""
-    name = (changeset or "").strip()
+def _label(
+    session: Session, answer: dict[str, Any], args: Any, ttx: TTX, user: User
+) -> dict[str, Any]:
+    """The proposals just kept, under the changeset's name, and as the
+    answer to the request they were made for."""
+    name = (args.changeset or "").strip()
     ids = [uuid.UUID(p["id"]) for p in answer.get("proposals", []) if "id" in p]
+    request_id = getattr(args, "request_id", None)
+    if request_id and ids:
+        requests.answer(session, ttx, user, request_id, ids)
+        answer["answers_request"] = str(request_id)
     if name and ids:
         for row in session.exec(
             select(AssistantProposal).where(col(AssistantProposal.id).in_(ids))
@@ -1457,7 +1519,7 @@ def _propose_exercise(session: Session, user: User, args: ProposeExerciseInput) 
     answer = proposals.propose_exercise(
         session, ttx, user, item, dry_run=args.dry_run, include_pending=args.include_pending
     )
-    return ToolResult(_label(session, answer, args.changeset), ttx.id, ttx.organization_id)
+    return ToolResult(_label(session, answer, args, ttx, user), ttx.id, ttx.organization_id)
 
 
 def _propose_msel_settings(
@@ -1472,7 +1534,7 @@ def _propose_msel_settings(
     answer = proposals.propose_msel_settings(
         session, ttx, user, item, dry_run=args.dry_run, include_pending=args.include_pending
     )
-    return ToolResult(_label(session, answer, args.changeset), ttx.id, ttx.organization_id)
+    return ToolResult(_label(session, answer, args, ttx, user), ttx.id, ttx.organization_id)
 
 
 def _propose_scope(session: Session, user: User, args: ProposeScopeInput) -> ToolResult:
@@ -1485,7 +1547,7 @@ def _propose_scope(session: Session, user: User, args: ProposeScopeInput) -> Too
     answer = proposals.propose_scope(
         session, ttx, user, item, dry_run=args.dry_run, include_pending=args.include_pending
     )
-    return ToolResult(_label(session, answer, args.changeset), ttx.id, ttx.organization_id)
+    return ToolResult(_label(session, answer, args, ttx, user), ttx.id, ttx.organization_id)
 
 
 def _placeholders(session: Session, user: User, args: ExerciseInput) -> ToolResult:
@@ -1522,7 +1584,22 @@ def _propose_placeholders(
     answer = proposals.propose_placeholder_values(
         session, ttx, user, args.values, args.summary, dry_run=args.dry_run
     )
-    return ToolResult(_label(session, answer, args.changeset), ttx.id, ttx.organization_id)
+    return ToolResult(_label(session, answer, args, ttx, user), ttx.id, ttx.organization_id)
+
+
+def _propose_session_texts(
+    session: Session, user: User, args: ProposeSessionTextsInput
+) -> ToolResult:
+    ttx = _authorize_design(session, user, args.ttx_id)
+    item = proposals_prep.SessionTextsItem.model_validate(
+        args.model_dump(
+            exclude_unset=True, exclude={"ttx_id", "dry_run", "include_pending", "changeset"}
+        )
+    )
+    answer = proposals_prep.propose_session_texts(
+        session, ttx, user, item, dry_run=args.dry_run, include_pending=args.include_pending
+    )
+    return ToolResult(_label(session, answer, args, ttx, user), ttx.id, ttx.organization_id)
 
 
 def _propose_context(session: Session, user: User, args: ProposeContextInput) -> ToolResult:
@@ -1535,7 +1612,7 @@ def _propose_context(session: Session, user: User, args: ProposeContextInput) ->
     answer = proposals.propose_context(
         session, ttx, user, item, dry_run=args.dry_run, include_pending=args.include_pending
     )
-    return ToolResult(_label(session, answer, args.changeset), ttx.id, ttx.organization_id)
+    return ToolResult(_label(session, answer, args, ttx, user), ttx.id, ttx.organization_id)
 
 
 def _search_risk_catalog(session: Session, user: User, args: RiskSearchInput) -> ToolResult:
@@ -1595,6 +1672,44 @@ def _list_proposals(session: Session, user: User, args: ListProposalsInput) -> T
     )
 
 
+_REQUEST_PAGES = {
+    "needs": "needs analysis",
+    "msel": "MSEL",
+    "conduct-prep": "session plan",
+}
+
+
+def _list_requests(session: Session, user: User, args: ListRequestsInput) -> ToolResult:
+    ttx = _authorize_design(session, user, args.ttx_id)
+    items = requests.list_for_author(session, ttx, user, status=args.status)
+    codes = proposals.row_codes(session, ttx) if any(r.row_id for r in items) else {}
+    return ToolResult(
+        {
+            "requests": [
+                {
+                    "request_id": str(r.id),
+                    "document": _REQUEST_PAGES.get(r.section, r.section),
+                    # The row it's about, by the code the screens show; None: the
+                    # whole document, or a row deleted since.
+                    "row": codes.get(str(r.row_id)) if r.row_id else None,
+                    "note": r.note,
+                    "status": r.status,
+                    "asked_at": r.created_at.isoformat(),
+                }
+                for r in items
+            ],
+            "how_to_answer": (
+                "Read the document (and the row with get_inject when it is one), then make the "
+                "proposals that answer each request passing its request_id: the request stops "
+                "waiting and the person finds the proposals marked as its answer. What a "
+                "proposal can't do, tell the person in the conversation."
+            ),
+        },
+        ttx.id,
+        ttx.organization_id,
+    )
+
+
 def _not_found(message: str) -> AppException:
     return AppException("ASSISTANT_ENTRY_NOT_FOUND", message, 404)
 
@@ -1647,6 +1762,31 @@ TOOLS: dict[str, ToolSpec] = {
             "before proposing a change to it." + _DATA_NOTE,
             InjectInput,
             _inject,
+        ),
+        ToolSpec(
+            "get_organization_profile",
+            "What the organization's exercises are designed around, in its own words: its "
+            "sector, size, the regulators it answers to, its technologies and its critical "
+            "assets. Read it before adapting an exercise template or proposing needs, a "
+            "scenario or injects, so they fit this organization instead of a generic one."
+            + _DATA_NOTE,
+            OrganizationInput,
+            _organization_profile,
+        ),
+        ToolSpec(
+            "get_design_review",
+            "The exercise's design reviewed as a whole, computed by TTX-Zone from what's "
+            "saved: each objective with the needs it answers, the phases that name it, the "
+            "injects that test it and how many expected actions and observation points hang "
+            "from it; gaps (a need no objective answers, an objective no inject tests, an "
+            "inject without expected actions, an empty phase...); the pace (injects per "
+            "phase, quiet stretches without a timed inject, contingent injects); how many "
+            "injects each recipient gets and the areas in scope none addresses; formats and "
+            "delivery methods; and each threat actor's techniques no inject uses. Read it "
+            "before proposing injects, and after, to see what the design still lacks. It "
+            "judges nothing the validation doesn't: get_validation_report says what blocks.",
+            ExerciseInput,
+            _design_review,
         ),
         ToolSpec(
             "get_session_plan",
@@ -1919,6 +2059,18 @@ TOOLS: dict[str, ToolSpec] = {
             annotations=_WRITE,
         ),
         ToolSpec(
+            "propose_session_texts",
+            "Propose the session plan's texts: invitation_text (what the participants "
+            "receive: what the exercise is and what's expected of them, never the scenario), "
+            "briefing_notes for the Controllers' and Evaluators' briefing, session_notes on "
+            "logistics, and data_collection_methods (with data_collection_other). One "
+            "proposal on the plan. Dates, people, the venue, what the briefing covered and "
+            "READY stay with the Planners." + _PROPOSAL_NOTE,
+            ProposeSessionTextsInput,
+            _propose_session_texts,
+            annotations=_WRITE,
+        ),
+        ToolSpec(
             "get_after_action_report",
             "The exercise's after-action report as it stands: classification (TLP), status, its "
             "texts, each objective (OBJ-nn) with its level and text, and the improvement plan "
@@ -1965,6 +2117,15 @@ TOOLS: dict[str, ToolSpec] = {
             _propose_aar(proposals_aar.propose_improvement_actions),
             annotations=_WRITE,
             notice=SESSION_DATA_NOTICE,
+        ),
+        ToolSpec(
+            "list_requests",
+            "What the person asked you for from TTX-Zone's design pages: each request with "
+            "its request_id, the document it was asked on, the row it's about (by code) and "
+            "their note. Check it when a conversation about an exercise starts. Answer with "
+            "proposals that pass the request_id." + _DATA_NOTE,
+            ListRequestsInput,
+            _list_requests,
         ),
         ToolSpec(
             "list_my_proposals",
@@ -2021,6 +2182,12 @@ def call_tool(session: Session, user: User, spec: ToolSpec, arguments: Any) -> C
     except ValueError as exc:
         return CallOutcome(f"INVALID_ARGUMENTS: {exc}", True, "INVALID_ARGUMENTS")
     try:
+        asked = getattr(args, "request_id", None)
+        if asked is not None:
+            # Before anything is kept: a request of the person's, on this exercise.
+            requests.check(
+                session, _authorize_report_author(session, user, args.ttx_id), user, asked
+            )
         result = spec.handler(session, user, args)
     except AppException as exc:
         session.rollback()

@@ -1259,6 +1259,18 @@
             "title": "Patch",
             "type": "object"
           },
+          "request_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Request Id"
+          },
           "status": {
             "enum": [
               "pending",
@@ -1289,6 +1301,7 @@
               "msel_meta",
               "msel_renumber",
               "eeg_point",
+              "prep_texts",
               "aar_text",
               "aar_objective",
               "aar_action"
@@ -1326,6 +1339,137 @@
           "decided_at"
         ],
         "title": "AssistantProposalRead",
+        "type": "object"
+      },
+      "AssistantRequestCreate": {
+        "additionalProperties": false,
+        "description": "Something to ask the AI assistant for, from a design page.",
+        "properties": {
+          "note": {
+            "maxLength": 1000,
+            "minLength": 1,
+            "title": "Note",
+            "type": "string"
+          },
+          "row_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Row Id"
+          },
+          "section": {
+            "enum": [
+              "needs",
+              "msel",
+              "conduct-prep"
+            ],
+            "title": "Section",
+            "type": "string"
+          }
+        },
+        "required": [
+          "section",
+          "note"
+        ],
+        "title": "AssistantRequestCreate",
+        "type": "object"
+      },
+      "AssistantRequestListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AssistantRequestRead"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "AssistantRequestListResponse",
+        "type": "object"
+      },
+      "AssistantRequestRead": {
+        "properties": {
+          "answered_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Answered At"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "note": {
+            "title": "Note",
+            "type": "string"
+          },
+          "row_code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Row Code"
+          },
+          "row_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Row Id"
+          },
+          "section": {
+            "title": "Section",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "open",
+              "answered"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "section",
+          "row_id",
+          "note",
+          "status",
+          "created_at",
+          "answered_at"
+        ],
+        "title": "AssistantRequestRead",
         "type": "object"
       },
       "AssistantSettingsRead": {
@@ -3985,6 +4129,121 @@
         ],
         "title": "DeliveryMethod",
         "type": "string"
+      },
+      "DesignGap": {
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "need_without_objective",
+              "objective_without_phase",
+              "objective_without_inject",
+              "objective_without_expected_action",
+              "objective_without_observation_point",
+              "inject_without_objective",
+              "inject_without_expected_action",
+              "phase_without_inject"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "title": {
+            "default": "",
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "code"
+        ],
+        "title": "DesignGap",
+        "type": "object"
+      },
+      "DesignReviewRead": {
+        "properties": {
+          "delivery_methods": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Delivery Methods",
+            "type": "object"
+          },
+          "formats": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Formats",
+            "type": "object"
+          },
+          "gaps": {
+            "items": {
+              "$ref": "#/components/schemas/DesignGap"
+            },
+            "title": "Gaps",
+            "type": "array"
+          },
+          "has_msel": {
+            "title": "Has Msel",
+            "type": "boolean"
+          },
+          "has_session_plan": {
+            "title": "Has Session Plan",
+            "type": "boolean"
+          },
+          "objectives": {
+            "items": {
+              "$ref": "#/components/schemas/ObjectiveTrace"
+            },
+            "title": "Objectives",
+            "type": "array"
+          },
+          "pace": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PaceRead"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "recipients": {
+            "items": {
+              "$ref": "#/components/schemas/RecipientLoad"
+            },
+            "title": "Recipients",
+            "type": "array"
+          },
+          "threat_actors": {
+            "items": {
+              "$ref": "#/components/schemas/ThreatCoverage"
+            },
+            "title": "Threat Actors",
+            "type": "array"
+          },
+          "with_artifact": {
+            "title": "With Artifact",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "has_msel",
+          "has_session_plan",
+          "objectives",
+          "gaps",
+          "pace",
+          "recipients",
+          "formats",
+          "delivery_methods",
+          "with_artifact",
+          "threat_actors"
+        ],
+        "title": "DesignReviewRead",
+        "type": "object"
       },
       "DomainAccountListResponse": {
         "properties": {
@@ -12691,6 +12950,65 @@
         "title": "ObjectiveTemplateRead",
         "type": "object"
       },
+      "ObjectiveTrace": {
+        "description": "One objective and what hangs from it, by code.",
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "expected_actions": {
+            "title": "Expected Actions",
+            "type": "integer"
+          },
+          "injects": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Injects",
+            "type": "array"
+          },
+          "needs": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Needs",
+            "type": "array"
+          },
+          "observation_points": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Observation Points"
+          },
+          "phases": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Phases",
+            "type": "array"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "title",
+          "needs",
+          "phases",
+          "injects",
+          "expected_actions"
+        ],
+        "title": "ObjectiveTrace",
+        "type": "object"
+      },
       "OidcPublicConfig": {
         "description": "What the sign-in page needs to offer single sign-on.",
         "properties": {
@@ -13608,6 +13926,44 @@
           }
         },
         "title": "OrganizationAllowedDomainUpdateRequest",
+        "type": "object"
+      },
+      "OrganizationContext": {
+        "additionalProperties": false,
+        "description": "What exercises are designed around (Admin → Organization): read and\nsaved whole. Free text in the organization's words; no personal data.",
+        "properties": {
+          "critical_assets": {
+            "default": "",
+            "maxLength": 2000,
+            "title": "Critical Assets",
+            "type": "string"
+          },
+          "regulators": {
+            "default": "",
+            "maxLength": 1000,
+            "title": "Regulators",
+            "type": "string"
+          },
+          "sector": {
+            "default": "",
+            "maxLength": 255,
+            "title": "Sector",
+            "type": "string"
+          },
+          "size": {
+            "default": "",
+            "maxLength": 255,
+            "title": "Size",
+            "type": "string"
+          },
+          "technologies": {
+            "default": "",
+            "maxLength": 2000,
+            "title": "Technologies",
+            "type": "string"
+          }
+        },
+        "title": "OrganizationContext",
         "type": "object"
       },
       "OrganizationDashboardRead": {
@@ -15094,6 +15450,69 @@
         "title": "OrganizationThreatActorRead",
         "type": "object"
       },
+      "PaceRead": {
+        "properties": {
+          "contingent_injects": {
+            "title": "Contingent Injects",
+            "type": "integer"
+          },
+          "duration_minutes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Minutes"
+          },
+          "injects": {
+            "title": "Injects",
+            "type": "integer"
+          },
+          "phases": {
+            "items": {
+              "$ref": "#/components/schemas/PhasePace"
+            },
+            "title": "Phases",
+            "type": "array"
+          },
+          "quiet_stretches": {
+            "items": {
+              "$ref": "#/components/schemas/QuietStretch"
+            },
+            "title": "Quiet Stretches",
+            "type": "array"
+          },
+          "quiet_threshold_minutes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quiet Threshold Minutes"
+          },
+          "timed_injects": {
+            "title": "Timed Injects",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "duration_minutes",
+          "injects",
+          "timed_injects",
+          "contingent_injects",
+          "phases",
+          "quiet_stretches",
+          "quiet_threshold_minutes"
+        ],
+        "title": "PaceRead",
+        "type": "object"
+      },
       "PasswordChangeRequest": {
         "properties": {
           "current_password": {
@@ -15483,6 +15902,45 @@
           "key"
         ],
         "title": "PhaseInput",
+        "type": "object"
+      },
+      "PhasePace": {
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "injects": {
+            "title": "Injects",
+            "type": "integer"
+          },
+          "minutes": {
+            "title": "Minutes",
+            "type": "integer"
+          },
+          "minutes_per_inject": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Minutes Per Inject"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "name",
+          "minutes",
+          "injects"
+        ],
+        "title": "PhasePace",
         "type": "object"
       },
       "PhaseRead": {
@@ -16296,6 +16754,47 @@
         "title": "ProgramManagerRead",
         "type": "object"
       },
+      "QuietStretch": {
+        "description": "Session minutes with no timed inject; `after`/`before` are the injects\naround it (None: the session's start or end).",
+        "properties": {
+          "after": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "After"
+          },
+          "before": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Before"
+          },
+          "from_minute": {
+            "title": "From Minute",
+            "type": "integer"
+          },
+          "to_minute": {
+            "title": "To Minute",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "from_minute",
+          "to_minute"
+        ],
+        "title": "QuietStretch",
+        "type": "object"
+      },
       "RatingLevel": {
         "description": "The common rating scale: performed without challenges (P), with\nsome (S), with major ones (M), or unable to be performed (U).",
         "enum": [
@@ -16306,6 +16805,29 @@
         ],
         "title": "RatingLevel",
         "type": "string"
+      },
+      "RecipientLoad": {
+        "properties": {
+          "in_scope": {
+            "title": "In Scope",
+            "type": "boolean"
+          },
+          "injects": {
+            "title": "Injects",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "injects",
+          "in_scope"
+        ],
+        "title": "RecipientLoad",
+        "type": "object"
       },
       "RedeemAccountCreate": {
         "properties": {
@@ -24042,6 +24564,47 @@
         "title": "ThreatActorTechniqueRead",
         "type": "object"
       },
+      "ThreatCoverage": {
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "injects": {
+            "title": "Injects",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "techniques": {
+            "title": "Techniques",
+            "type": "integer"
+          },
+          "unused": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Unused",
+            "type": "array"
+          },
+          "used": {
+            "title": "Used",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "code",
+          "name",
+          "techniques",
+          "used",
+          "injects",
+          "unused"
+        ],
+        "title": "ThreatCoverage",
+        "type": "object"
+      },
       "Tlp": {
         "description": "FIRST Traffic Light Protocol 2.0 labels.",
         "enum": [
@@ -30980,6 +31543,113 @@
         ]
       }
     },
+    "/api/v1/organizations/{organization_id}/context": {
+      "get": {
+        "description": "What the organization's exercises are designed around: its sector,\nsize, regulators, technologies and critical assets, in its own words.",
+        "operationId": "get_organization_context_endpoint_api_v1_organizations__organization_id__context_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organization_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Organization Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationContext"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Get organization context",
+        "tags": [
+          "Organizations"
+        ]
+      },
+      "put": {
+        "description": "Save the organization's design context, whole.",
+        "operationId": "update_organization_context_endpoint_api_v1_organizations__organization_id__context_put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organization_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Organization Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrganizationContext"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationContext"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "csrfToken": [],
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Update organization context",
+        "tags": [
+          "Organizations"
+        ]
+      }
+    },
     "/api/v1/organizations/{organization_id}/dashboard": {
       "get": {
         "description": "Read-only aggregates for Admin's per-organization dashboard.\nExplicit org id, checked against the caller's own Program Manager\nmembership (BOLA-safe, same as GET /organizations/{organization_id}).",
@@ -37166,6 +37836,7 @@
                     "msel_meta",
                     "msel_renumber",
                     "eeg_point",
+                    "prep_texts",
                     "aar_text",
                     "aar_objective",
                     "aar_action"
@@ -37335,6 +38006,155 @@
           }
         ],
         "summary": "Discard",
+        "tags": [
+          "AI assistant"
+        ]
+      }
+    },
+    "/api/v1/ttx/{ttx_id}/assistant/requests": {
+      "get": {
+        "description": "What the caller asked the AI assistant for on this exercise.",
+        "operationId": "list_requests_endpoint_api_v1_ttx__ttx_id__assistant_requests_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "open",
+                    "answered"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "open",
+              "title": "Status"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistantRequestListResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "List requests",
+        "tags": [
+          "AI assistant"
+        ]
+      },
+      "post": {
+        "description": "Ask the AI assistant for something on a document or one of its rows:\nkept until the caller's own AI client reads it.",
+        "operationId": "create_request_endpoint_api_v1_ttx__ttx_id__assistant_requests_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssistantRequestCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistantRequestRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "csrfToken": [],
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Create request",
+        "tags": [
+          "AI assistant"
+        ]
+      }
+    },
+    "/api/v1/ttx/{ttx_id}/assistant/requests/{request_id}": {
+      "delete": {
+        "description": "Withdraw one of the caller's requests.",
+        "operationId": "withdraw_request_endpoint_api_v1_ttx__ttx_id__assistant_requests__request_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "request_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Request Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "csrfToken": [],
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Withdraw request",
         "tags": [
           "AI assistant"
         ]
@@ -37731,6 +38551,33 @@
         "summary": "Get exercise dashboard",
         "tags": [
           "Exercises"
+        ]
+      }
+    },
+    "/api/v1/ttx/{ttx_id}/design-review": {
+      "get": {
+        "description": "The chain need → objective → phase → inject → expected action →\nobservation point with the links it lacks, the session's pace, who the\ninjects go to and the threat actors' techniques no inject uses.",
+        "operationId": "design_review_endpoint_api_v1_ttx__ttx_id__design_review_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DesignReviewRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Design review",
+        "tags": [
+          "MSEL"
         ]
       }
     },

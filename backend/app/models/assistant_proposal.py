@@ -60,6 +60,8 @@ class AssistantProposal(SQLModel, table=True):
     applied_row_id: uuid.UUID | None = Field(default=None)
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     decided_at: datetime | None = Field(default=None)
+    # The person's request (AssistantRequest) it answers, when it was made for one.
+    request_id: uuid.UUID | None = Field(default=None, index=True)
     # Why it was discarded, for the assistant to read before proposing again:
     # the person's reason (DISCARD_REASONS in the service) and a line of
     # theirs, or "dependency" / "superseded" when the server discarded it.

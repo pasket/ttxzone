@@ -94,6 +94,7 @@ TARGETS = (
     "msel_meta",
     "msel_renumber",
     "eeg_point",
+    "prep_texts",
     *AAR_TARGETS,
 )
 NEEDS_TARGETS = ("need", "objective", RISK_TARGET, SCOPE_TARGET, CONTEXT_TARGET, TLP_TARGET)
@@ -2591,6 +2592,10 @@ def saved_rows(session: Session, ttx: TTX, target: str) -> dict[str, dict[str, A
         from app.services.assistant.proposals_prep import saved_points
 
         return saved_points(session, ttx)
+    if target == "prep_texts":
+        from app.services.assistant.proposals_prep import saved_texts
+
+        return saved_texts(session, ttx)
     if target in NEEDS_TARGETS:
         form = ttx_needs_form_service.get_form(session, ttx.id)
         read = ttx_needs_form_service.form_read(session, ttx, form)
@@ -2666,6 +2671,7 @@ _TARGET_NAMES = {
     "msel_meta": "MSEL settings",
     RENUMBER_TARGET: "code reset",
     "eeg_point": "observation point",
+    "prep_texts": "session plan texts",
     "aar_text": "report text",
     "aar_objective": "objective assessment",
     "aar_action": "improvement action",

@@ -30,6 +30,7 @@ from app.schemas.organization import (
     OrganizationAllowedDomainListResponse,
     OrganizationAllowedDomainRead,
     OrganizationAllowedDomainUpdateRequest,
+    OrganizationContext,
     OrganizationDeleteRequest,
     OrganizationFoundRequest,
     OrganizationLeavePreviewRead,
@@ -98,6 +99,7 @@ from app.services.organization_service import (
     list_tags_for_planner_memberships,
     list_user_organizations,
     member_exercise_accesses,
+    organization_context,
     remove_allowed_domain,
     revoke_member_role,
     revoke_program_manager,
@@ -106,6 +108,7 @@ from app.services.organization_service import (
     set_member_tags,
     set_program_manager_tags,
     update_allowed_domain_scopes,
+    update_organization_context,
     update_organization_profile,
 )
 from app.services.organization_tag_service import (
@@ -805,6 +808,34 @@ def update_organization_by_id_endpoint(
         name=payload.name,
     )
     return _organization_read(organization)
+
+
+@router.get("/{organization_id}/context", response_model=OrganizationContext)
+def get_organization_context_endpoint(
+    organization_id: uuid.UUID,
+    user: User = Depends(get_current_user),
+    session: Session = Depends(get_session),
+) -> OrganizationContext:
+    """What the organization's exercises are designed around: its sector,
+    size, regulators, technologies and critical assets, in its own words."""
+    require_program_manager(session, user, organization_id)
+    return organization_context(get_organization(session, organization_id))
+
+
+@router.put(
+    "/{organization_id}/context",
+    response_model=OrganizationContext,
+    dependencies=[Depends(verify_csrf)],
+)
+def update_organization_context_endpoint(
+    organization_id: uuid.UUID,
+    payload: OrganizationContext,
+    user: User = Depends(get_current_user),
+    session: Session = Depends(get_session),
+) -> OrganizationContext:
+    """Save the organization's design context, whole."""
+    require_program_manager(session, user, organization_id)
+    return update_organization_context(session, organization_id, payload)
 
 
 @router.post(

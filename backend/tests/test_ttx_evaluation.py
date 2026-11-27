@@ -166,6 +166,10 @@ def test_the_evaluator_reads_the_eeg_and_nothing_of_the_design(
 
 DESIGN_ENDPOINTS = [
     ("GET", "/attention"),
+    ("GET", "/design-review"),
+    ("GET", "/assistant/requests"),
+    ("POST", "/assistant/requests"),
+    ("DELETE", "/assistant/requests/00000000-0000-0000-0000-000000000000"),
     ("GET", "/assistant/proposals"),
     ("POST", "/assistant/proposals/00000000-0000-0000-0000-000000000000/applied"),
     ("POST", "/assistant/proposals/00000000-0000-0000-0000-000000000000/discard"),

@@ -28,7 +28,12 @@ from app.models import (
     User,
     active_membership,
 )
-from app.schemas.organization import OrganizationSignupRequest, OrganizationSummary
+from app.schemas.organization import (
+    CONTEXT_FIELDS,
+    OrganizationContext,
+    OrganizationSignupRequest,
+    OrganizationSummary,
+)
 from app.services import account_email_service
 from app.services.org_creation_security import validate_organization_signup
 from app.services.organization_logo_service import logo_url
@@ -964,6 +969,25 @@ def update_organization_profile(
     session.refresh(organization)
     module_logger.info("Profile updated for organization %s.", organization_id)
     return organization
+
+
+def organization_context(organization: Organization) -> OrganizationContext:
+    return OrganizationContext(
+        **{name: getattr(organization, name) or "" for name in CONTEXT_FIELDS}
+    )
+
+
+def update_organization_context(
+    session: Session, organization_id: uuid.UUID, payload: OrganizationContext
+) -> OrganizationContext:
+    organization = get_organization(session, organization_id)
+    for name in CONTEXT_FIELDS:
+        setattr(organization, name, getattr(payload, name) or None)
+    session.add(organization)
+    session.commit()
+    session.refresh(organization)
+    module_logger.info("Design context updated for organization %s.", organization_id)
+    return organization_context(organization)
 
 
 def set_organization_domain(

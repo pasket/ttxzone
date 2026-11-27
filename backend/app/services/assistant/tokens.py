@@ -13,7 +13,14 @@ from sqlmodel import Session, col, delete, func, select, update
 
 from app.core.exceptions import AppException
 from app.core.security import enforce_account_gates
-from app.models import AssistantCall, AssistantProposal, PersonalAccessToken, User, UserSession
+from app.models import (
+    AssistantCall,
+    AssistantProposal,
+    AssistantRequest,
+    PersonalAccessToken,
+    User,
+    UserSession,
+)
 from app.services.assistant import switch
 from app.services.auth_event_service import auth_event
 
@@ -170,6 +177,7 @@ def forget_user(session: Session, user_id: uuid.UUID) -> None:
     (in the caller's transaction)."""
     session.exec(delete(AssistantCall).where(col(AssistantCall.user_id) == user_id))
     session.exec(delete(AssistantProposal).where(col(AssistantProposal.user_id) == user_id))
+    session.exec(delete(AssistantRequest).where(col(AssistantRequest.user_id) == user_id))
     session.exec(delete(PersonalAccessToken).where(col(PersonalAccessToken.user_id) == user_id))
 
 

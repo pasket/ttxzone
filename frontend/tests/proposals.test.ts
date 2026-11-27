@@ -15,6 +15,7 @@ import {
   mergeMselProposals,
   mselMetaRow,
   mergeNeedsProposals,
+  prepTextsRow,
   scopeRow,
   tlpRow,
   withDependencies,
@@ -842,5 +843,41 @@ describe('an inject drawn as an artifact', () => {
     expect(row.room_ids).toEqual(['room-1'])
     expect(merged.conflicts).toEqual([])
     expect(acceptedState(change, 'i1', [row], [row])).toEqual({ state: 'saved', rowId: 'i1' })
+  })
+})
+
+describe('the session plan’s texts', () => {
+  it('changes the texts, adds a collection method and reads back as saved', () => {
+    const draft = {
+      eeg: [],
+      invitation_text: '',
+      briefing_notes: 'Old notes',
+      session_notes: '',
+      data_collection_methods: ['hot_wash'],
+      data_collection_other: '',
+    } as unknown as ConductPrepDraft
+    const texts = proposal({
+      target: 'prep_texts',
+      operation: 'update',
+      target_id: 'plan-1',
+      base: { invitation_text: '', data_collection_methods: ['hot_wash'] },
+      patch: {
+        invitation_text: 'You are invited to a tabletop exercise.',
+        data_collection_methods: ['hot_wash', 'interviews'],
+      },
+    })
+
+    const merged = mergeConductPrepProposals(draft, [texts])
+
+    expect(merged.patch.invitation_text).toBe('You are invited to a tabletop exercise.')
+    expect(merged.patch.data_collection_methods).toEqual(['hot_wash', 'interviews'])
+    // What it didn't propose stays the page's.
+    expect('briefing_notes' in merged.patch).toBe(false)
+    expect(merged.keys.p1).toBe('plan-1')
+    const saved = prepTextsRow('plan-1', { ...draft, ...merged.patch } as ConductPrepDraft)
+    expect(acceptedState(texts, 'plan-1', [saved], [saved])).toEqual({
+      state: 'saved',
+      rowId: 'plan-1',
+    })
   })
 })

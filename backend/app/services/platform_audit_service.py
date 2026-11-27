@@ -641,6 +641,9 @@ async def forward_forever() -> None:
                 from app.services.assistant import proposals as assistant_proposals
 
                 assistant_proposals.prune_expired(session, now)
+                from app.services.assistant import requests as assistant_requests
+
+                assistant_requests.prune_expired(session, now)
                 from app.services import login_throttle_service
 
                 login_throttle_service.prune_expired(session, now)

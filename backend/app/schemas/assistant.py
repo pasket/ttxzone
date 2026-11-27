@@ -76,6 +76,7 @@ class AssistantProposalRead(BaseModel):
         "msel_meta",
         "msel_renumber",
         "eeg_point",
+        "prep_texts",
         "aar_text",
         "aar_objective",
         "aar_action",
@@ -95,12 +96,48 @@ class AssistantProposalRead(BaseModel):
     decided_at: datetime | None
     decision_reason: str | None = None
     decision_note: str | None = None
+    # The person's request it answers, when it was made for one.
+    request_id: uuid.UUID | None = None
     # An update whose row changed (or went) since it was proposed.
     outdated: bool = False
 
 
 class AssistantProposalListResponse(BaseModel):
     items: list[AssistantProposalRead]
+
+
+class AssistantRequestCreate(BaseModel):
+    """Something to ask the AI assistant for, from a design page."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    section: Literal["needs", "msel", "conduct-prep"]
+    # A saved row of the exercise it's about; None: the document.
+    row_id: uuid.UUID | None = None
+    note: str = Field(min_length=1, max_length=1000)
+
+    @field_validator("note", mode="before")
+    @classmethod
+    def _strip(cls, value: object) -> object:
+        return value.strip() if isinstance(value, str) else value
+
+
+class AssistantRequestRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    section: str
+    row_id: uuid.UUID | None
+    # The row's code, as the screens show it (None: the document, or a row gone).
+    row_code: str | None = None
+    note: str
+    status: Literal["open", "answered"]
+    created_at: datetime
+    answered_at: datetime | None
+
+
+class AssistantRequestListResponse(BaseModel):
+    items: list[AssistantRequestRead]
 
 
 class AssistantProposalAppliedRequest(BaseModel):

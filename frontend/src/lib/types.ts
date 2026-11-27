@@ -431,6 +431,15 @@ export interface OrganizationProfile {
   created_at: string
 }
 
+/** GET/PUT /organizations/{id}/context: what its exercises are designed around. */
+export interface OrganizationContext {
+  sector: string
+  size: string
+  regulators: string
+  technologies: string
+  critical_assets: string
+}
+
 export interface OrganizationAllowedDomain {
   id: number
   domain: string
@@ -3069,4 +3078,78 @@ export interface AssistantCallListResponse {
   items: AssistantCall[]
   callers: { user_id: string; name: string; email: string }[]
   retention_days: number
+}
+
+/** GET /ttx/{id}/design-review: the saved design as one chain. */
+export type DesignGapKind =
+  | 'need_without_objective'
+  | 'objective_without_phase'
+  | 'objective_without_inject'
+  | 'objective_without_expected_action'
+  | 'objective_without_observation_point'
+  | 'inject_without_objective'
+  | 'inject_without_expected_action'
+  | 'phase_without_inject'
+
+export interface DesignReview {
+  has_msel: boolean
+  has_session_plan: boolean
+  objectives: {
+    code: string
+    title: string
+    needs: string[]
+    phases: string[]
+    injects: string[]
+    expected_actions: number
+    observation_points: number | null
+  }[]
+  gaps: { kind: DesignGapKind; code: string; title: string }[]
+  pace: {
+    duration_minutes: number | null
+    injects: number
+    timed_injects: number
+    contingent_injects: number
+    phases: {
+      code: string
+      name: string
+      minutes: number
+      injects: number
+      minutes_per_inject: number | null
+    }[]
+    quiet_stretches: {
+      from_minute: number
+      to_minute: number
+      after: string | null
+      before: string | null
+    }[]
+    quiet_threshold_minutes: number | null
+  } | null
+  recipients: { name: string; injects: number; in_scope: boolean }[]
+  formats: Record<string, number>
+  delivery_methods: Record<string, number>
+  with_artifact: number
+  threat_actors: {
+    code: string
+    name: string
+    techniques: number
+    used: number
+    injects: number
+    unused: string[]
+  }[]
+}
+
+/** What a person asks the AI assistant for from a design page. */
+export interface AssistantRequest {
+  id: string
+  section: 'needs' | 'msel' | 'conduct-prep'
+  row_id: string | null
+  row_code: string | null
+  note: string
+  status: 'open' | 'answered'
+  created_at: string
+  answered_at: string | null
+}
+
+export interface AssistantRequestList {
+  items: AssistantRequest[]
 }

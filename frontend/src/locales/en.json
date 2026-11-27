@@ -2888,6 +2888,34 @@
           "medium": "Medium",
           "high": "High"
         }
+      },
+      "designReview": {
+        "title": "Design review",
+        "hint": "The saved design read as one chain, from the needs to the observation points: what it still lacks, where the session goes quiet and which of the threat actors’ techniques no inject uses. It blocks nothing; the list of issues above says what does.",
+        "loading": "Reading the design…",
+        "chain": "The chain",
+        "noGaps": "Every need has an objective, and every objective a phase, injects and expected actions.",
+        "noSessionPlan": "The session plan isn’t open yet, so observation points aren’t counted.",
+        "gaps": {
+          "need_without_objective": "Needs no objective answers",
+          "objective_without_phase": "Objectives no phase works on",
+          "objective_without_inject": "Objectives no inject tests",
+          "objective_without_expected_action": "Objectives without expected actions",
+          "objective_without_observation_point": "Objectives without observation points",
+          "inject_without_objective": "Injects that test no objective",
+          "inject_without_expected_action": "Injects without expected actions",
+          "phase_without_inject": "Phases without injects"
+        },
+        "pace": "Pace",
+        "noQuiet": "No long stretch without a timed inject.",
+        "quietHint_one": "Stretches of {{count}} minute or more with no timed inject. A discussion can fill them; check each is meant.",
+        "quietHint_other": "Stretches of {{count}} minutes or more with no timed inject. A discussion can fill them; check each is meant.",
+        "quietStretch_one": "Minute {{from}} to {{to}}: {{count}} minute",
+        "quietStretch_other": "Minute {{from}} to {{to}}: {{count}} minutes",
+        "techniques": "Threat actors’ techniques",
+        "techniquesUsed_one": "{{used}} of {{count}} technique used by its injects.",
+        "techniquesUsed_other": "{{used}} of {{count}} techniques used by its injects.",
+        "unused": "Not used:"
       }
     },
     "conductPrep": {
@@ -3623,7 +3651,23 @@
       "editProfile": "Edit profile",
       "noTags": "No tags",
       "programManagerCount": "Exercise Program Managers",
-      "noTagsYet": "Your organization has no tags yet."
+      "noTagsYet": "Your organization has no tags yet.",
+      "context": {
+        "title": "Context for exercise design",
+        "description": "What your exercises are designed around, in your own words. Where the AI assistant is on, your Exercise Planners’ AI client reads it so its proposals fit this organization; it leaves the server for their AI provider like the rest of what the assistant reads. Write no personal data here, and nothing you wouldn’t put in an exercise.",
+        "sector": "Sector",
+        "sectorPlaceholder": "Electricity distribution…",
+        "size": "Size and footprint",
+        "sizePlaceholder": "2,400 people in three countries…",
+        "regulators": "Regulators and frameworks",
+        "regulatorsPlaceholder": "The authorities you report incidents to and the frameworks you answer for…",
+        "technologies": "Technologies",
+        "technologiesPlaceholder": "The systems an incident would touch: networks, platforms, key suppliers…",
+        "criticalAssets": "Critical assets and services",
+        "criticalAssetsPlaceholder": "What must not stop, and what you protect first…",
+        "save": "Save context",
+        "saved": "Context saved"
+      }
     },
     "domainAllowlist": {
       "title": "Allowed email domains",
@@ -5802,7 +5846,8 @@
       "exercise": "exercise",
       "risk": "risk",
       "placeholders": "placeholder values",
-      "context": "context"
+      "context": "context",
+      "sessionTexts": "session plan texts"
     },
     "create": "New {{target}}",
     "update": "Change {{target}} {{code}}",
@@ -5944,7 +5989,27 @@
     "placeholdersHint": "Accepting opens the fill dialog with these values, for you to review before they’re written throughout the exercise.",
     "updateNamed": "Change {{target}} “{{name}}”",
     "removeNamed": "Delete {{target}} “{{name}}”",
-    "changeContext": "Change the context"
+    "changeContext": "Change the context",
+    "changeSessionTexts": "Change the session plan’s texts",
+    "requests": {
+      "title": "Ask the AI assistant",
+      "count_one": "{{count}} waiting",
+      "count_other": "{{count}} waiting",
+      "description": "Leave a request about this document or one of its rows. Your AI client reads it the next time you work on this exercise with it, and what it proposes comes back here for you to accept or discard.",
+      "ask": "Ask the assistant",
+      "empty": "Nothing waiting for the assistant.",
+      "wholeDocument": "The whole document",
+      "withdraw": "Withdraw",
+      "withdrawn": "Request withdrawn",
+      "asked": "Request left for the assistant",
+      "dialogTitle": "Ask the AI assistant",
+      "dialogHint": "Nothing happens until your AI client reads it: open it and ask it to work through your requests. What you write leaves the server for your AI provider with the rest of what the assistant reads.",
+      "about": "About",
+      "note": "What you need",
+      "notePlaceholder": "Make this read like a real alert from the SOC…",
+      "submit": "Leave request",
+      "answer": "Answers your request"
+    }
   },
   "roleInvitations": {
     "title_one": "Invitation to an organization",

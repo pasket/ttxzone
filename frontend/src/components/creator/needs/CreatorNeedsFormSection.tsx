@@ -8,6 +8,7 @@ import { useAuth } from '../../../hooks/useAuth'
 import { useAutosavedDocument } from '../../../hooks/useAutosavedDocument'
 import { useNeedsIssueMessage } from '../../../hooks/useNeedsIssueMessage'
 import { contextRow, mergeNeedsProposals, scopeRow, tlpRow } from '../../../lib/proposals'
+import { AssistantRequestsPanel } from '../../assistant/AssistantRequestsPanel'
 import { ProposalsPanel } from '../../assistant/ProposalsPanel'
 import { useApiDownload } from '../../../hooks/useApiDownload'
 import { useRenumberCodes } from '../../../hooks/useRenumberCodes'
@@ -742,6 +743,23 @@ function NeedsFormEditor({
           issueMessage={needsIssueMessage}
           apply={update}
           disabledReason={pendingPatch ? t('assistant.confirming') : null}
+        />
+      )}
+      {!archived && (
+        <AssistantRequestsPanel
+          ttxId={ttxId}
+          section="needs"
+          rows={[...baseline.needs, ...baseline.objectives].flatMap((row) =>
+            row.id
+              ? [
+                  {
+                    id: row.id,
+                    code: row.code,
+                    title: 'statement' in row ? row.title || row.statement : row.title,
+                  },
+                ]
+              : [],
+          )}
         />
       )}
 

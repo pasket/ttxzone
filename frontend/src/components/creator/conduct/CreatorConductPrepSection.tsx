@@ -10,7 +10,7 @@ import { useToast } from '../../../hooks/useToast'
 import { useUndoableRowRemoval } from '../../../hooks/useUndoableRowRemoval'
 import { useUnsavedChangesWarning } from '../../../hooks/useUnsavedChangesWarning'
 import { ApiError, apiFetch } from '../../../lib/api'
-import { mergeConductPrepProposals } from '../../../lib/proposals'
+import { mergeConductPrepProposals, prepTextsRow } from '../../../lib/proposals'
 import { btnPrimary, btnSecondary, linkAccent } from '../../../lib/buttonStyles'
 import {
   adoptSavedIds,
@@ -40,6 +40,7 @@ import { Panel } from '../../common/Panel'
 import { SaveStatus } from '../../common/SaveStatus'
 import { SectionHeader } from '../../common/SectionHeader'
 import { TlpBadge } from '../../common/TlpBadge'
+import { AssistantRequestsPanel } from '../../assistant/AssistantRequestsPanel'
 import { ProposalsPanel } from '../../assistant/ProposalsPanel'
 import { ConductPrepDownloads } from './ConductPrepDownloads'
 import { DocumentsStep } from './DocumentsStep'
@@ -442,9 +443,12 @@ function ConductPrepEditor({
 
       <ProposalsPanel<ConductPrepDraft>
         ttxId={ttxId}
-        targets={['eeg_point']}
-        draftRows={{ eeg_point: pointRows(draft) }}
-        savedRows={{ eeg_point: pointRows(baseline) }}
+        targets={['prep_texts', 'eeg_point']}
+        draftRows={{ prep_texts: [prepTextsRow(prep.id, draft)], eeg_point: pointRows(draft) }}
+        savedRows={{
+          prep_texts: [prepTextsRow(prep.id, baseline)],
+          eeg_point: pointRows(baseline),
+        }}
         codeOf={(id) => {
           const eeg = prep.eeg.find((o) => o.id === id)
           if (eeg) return eeg.code
@@ -458,6 +462,7 @@ function ConductPrepEditor({
           readOnly ? t('assistant.readOnly') : pendingPatch ? t('assistant.confirming') : null
         }
       />
+      {!readOnly && <AssistantRequestsPanel ttxId={ttxId} section="conduct-prep" rows={[]} />}
 
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
         <aside className="shrink-0 space-y-4 lg:sticky lg:top-4 lg:w-60">

@@ -6,6 +6,7 @@ import {
   placeholdersRow,
   renumberRow,
 } from '../../../lib/proposals'
+import { AssistantRequestsPanel } from '../../assistant/AssistantRequestsPanel'
 import { ProposalsPanel } from '../../assistant/ProposalsPanel'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 
@@ -66,6 +67,7 @@ import { TlpBadge } from '../../common/TlpBadge'
 import { FieldGroup } from '../../common/FieldGroup'
 import { CoverageTab, LoadTable } from './AnalysisTabs'
 import { AttackUpgradeNotice } from './AttackSection'
+import { DesignReviewGroup } from './DesignReviewGroup'
 import { PlaceholderFillDialog } from './PlaceholderFillDialog'
 import { StorylineStrip } from './StorylineStrip'
 import { InjectsTab } from './InjectsTab'
@@ -760,6 +762,22 @@ function MselEditor({
           readOnly ? t('assistant.readOnly') : pendingPatch ? t('assistant.confirming') : null
         }
       />
+      {!readOnly && (
+        <AssistantRequestsPanel
+          ttxId={ttxId}
+          section="msel"
+          rows={[
+            ...baseline.phases.map((row) => ({ id: row.id, code: row.code, title: row.name })),
+            ...baseline.injects.map((row) => ({ id: row.id, code: row.code, title: row.title })),
+            ...baseline.actors.map((row) => ({ id: row.id, code: row.code, title: row.name })),
+            ...baseline.threat_actors.map((row) => ({
+              id: row.id,
+              code: row.code,
+              title: row.name,
+            })),
+          ].flatMap((row) => (row.id ? [{ ...row, id: row.id }] : []))}
+        />
+      )}
 
       {/* The storyline map, above every tab: the exercise as it takes shape,
           and a place to edit it. */}
@@ -986,6 +1004,13 @@ function MselEditor({
                     everywhere={placeholdersLeft ?? []}
                     onFilled={filled}
                   />
+                </FieldGroup>
+                <FieldGroup
+                  id="msel-design-review-title"
+                  title={t('creator.msel.designReview.title')}
+                  hint={t('creator.msel.designReview.hint')}
+                >
+                  <DesignReviewGroup key={msel.revision} ttxId={ttxId} />
                 </FieldGroup>
                 <FieldGroup
                   id="msel-load-title"

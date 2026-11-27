@@ -2888,6 +2888,34 @@
           "medium": "Medio",
           "high": "Alto"
         }
+      },
+      "designReview": {
+        "title": "Revisión del diseño",
+        "hint": "El diseño guardado leído como una cadena, de las necesidades a los puntos de observación: lo que aún le falta, dónde la sesión se queda en silencio y qué técnicas de los actores de amenaza no usa ningún inject. No bloquea nada; lo que bloquea está en la lista de incidencias de arriba.",
+        "loading": "Leyendo el diseño…",
+        "chain": "La cadena",
+        "noGaps": "Cada necesidad tiene un objetivo, y cada objetivo una fase, injects y acciones esperadas.",
+        "noSessionPlan": "El plan de sesión aún no está abierto, así que no se cuentan los puntos de observación.",
+        "gaps": {
+          "need_without_objective": "Necesidades a las que no responde ningún objetivo",
+          "objective_without_phase": "Objetivos que no trabaja ninguna fase",
+          "objective_without_inject": "Objetivos que no pone a prueba ningún inject",
+          "objective_without_expected_action": "Objetivos sin acciones esperadas",
+          "objective_without_observation_point": "Objetivos sin puntos de observación",
+          "inject_without_objective": "Injects que no ponen a prueba ningún objetivo",
+          "inject_without_expected_action": "Injects sin acciones esperadas",
+          "phase_without_inject": "Fases sin injects"
+        },
+        "pace": "Ritmo",
+        "noQuiet": "Ningún tramo largo sin un inject programado.",
+        "quietHint_one": "Tramos de {{count}} minuto o más sin ningún inject programado. Un debate puede llenarlos; comprueba que cada uno es intencionado.",
+        "quietHint_other": "Tramos de {{count}} minutos o más sin ningún inject programado. Un debate puede llenarlos; comprueba que cada uno es intencionado.",
+        "quietStretch_one": "Del minuto {{from}} al {{to}}: {{count}} minuto",
+        "quietStretch_other": "Del minuto {{from}} al {{to}}: {{count}} minutos",
+        "techniques": "Técnicas de los actores de amenaza",
+        "techniquesUsed_one": "Sus injects usan {{used}} de {{count}} técnica.",
+        "techniquesUsed_other": "Sus injects usan {{used}} de {{count}} técnicas.",
+        "unused": "Sin usar:"
       }
     },
     "conductPrep": {
@@ -3623,7 +3651,23 @@
       "editProfile": "Editar perfil",
       "noTags": "Sin etiquetas",
       "programManagerCount": "Responsables del Programa de Ejercicios",
-      "noTagsYet": "Tu organización aún no tiene etiquetas."
+      "noTagsYet": "Tu organización aún no tiene etiquetas.",
+      "context": {
+        "title": "Contexto para diseñar ejercicios",
+        "description": "En torno a qué se diseñan tus ejercicios, con tus propias palabras. Donde el asistente de IA está activado, el cliente de IA de tus Planificadores lo lee para que sus propuestas encajen con esta organización; sale del servidor hacia su proveedor de IA, como el resto de lo que lee el asistente. No escribas aquí datos personales ni nada que no pondrías en un ejercicio.",
+        "sector": "Sector",
+        "sectorPlaceholder": "Distribución eléctrica…",
+        "size": "Tamaño y presencia",
+        "sizePlaceholder": "2400 personas en tres países…",
+        "regulators": "Reguladores y marcos",
+        "regulatorsPlaceholder": "Las autoridades a las que notificas incidentes y los marcos de los que respondes…",
+        "technologies": "Tecnologías",
+        "technologiesPlaceholder": "Los sistemas a los que afectaría un incidente: redes, plataformas, proveedores clave…",
+        "criticalAssets": "Activos y servicios críticos",
+        "criticalAssetsPlaceholder": "Lo que no puede parar y lo que proteges primero…",
+        "save": "Guardar contexto",
+        "saved": "Contexto guardado"
+      }
     },
     "domainAllowlist": {
       "title": "Dominios de correo permitidos",
@@ -5802,7 +5846,8 @@
       "exercise": "ejercicio",
       "risk": "riesgo",
       "placeholders": "valores de marcadores",
-      "context": "contexto"
+      "context": "contexto",
+      "sessionTexts": "textos del plan de sesión"
     },
     "create": "Nueva fila: {{target}}",
     "update": "Cambiar {{target}} {{code}}",
@@ -5944,7 +5989,27 @@
     "placeholdersHint": "Al aceptar se abre el diálogo de relleno con estos valores, para que los revises antes de escribirlos en todo el ejercicio.",
     "updateNamed": "Cambiar {{target}} «{{name}}»",
     "removeNamed": "Eliminar {{target}} «{{name}}»",
-    "changeContext": "Cambiar el contexto"
+    "changeContext": "Cambiar el contexto",
+    "changeSessionTexts": "Cambiar los textos del plan de sesión",
+    "requests": {
+      "title": "Pedir al asistente de IA",
+      "count_one": "{{count}} en espera",
+      "count_other": "{{count}} en espera",
+      "description": "Deja una petición sobre este documento o una de sus filas. Tu cliente de IA la lee la próxima vez que trabajes en este ejercicio con él, y lo que proponga vuelve aquí para que lo aceptes o lo descartes.",
+      "ask": "Pedir al asistente",
+      "empty": "Nada en espera del asistente.",
+      "wholeDocument": "Todo el documento",
+      "withdraw": "Retirar",
+      "withdrawn": "Petición retirada",
+      "asked": "Petición dejada para el asistente",
+      "dialogTitle": "Pedir al asistente de IA",
+      "dialogHint": "No ocurre nada hasta que tu cliente de IA la lea: ábrelo y pídele que atienda tus peticiones. Lo que escribas sale del servidor hacia tu proveedor de IA, con el resto de lo que lee el asistente.",
+      "about": "Sobre",
+      "note": "Qué necesitas",
+      "notePlaceholder": "Que se lea como una alerta real del SOC…",
+      "submit": "Dejar petición",
+      "answer": "Responde a tu petición"
+    }
   },
   "roleInvitations": {
     "title_one": "Invitación a una organización",

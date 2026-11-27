@@ -88,6 +88,7 @@ def test_every_reference_to_an_account_is_classified() -> None:
         ("personal_access_token", "user_id"),
         ("assistant_call", "user_id"),
         ("assistant_proposal", "user_id"),
+        ("assistant_request", "user_id"),
         ("platform_audit_event", "actor_user_id"),
     }
     unclassified = [

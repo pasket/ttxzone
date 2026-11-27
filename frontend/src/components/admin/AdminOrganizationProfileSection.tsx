@@ -36,6 +36,7 @@ import { TagChip } from '../common/TagChip'
 import { panelClass, textFaint, textPrimary, textSecondary } from '../dashboard/styles'
 import { panelFormFields } from '../../lib/panelStyles'
 import { AdminOrganizationDashboard } from './AdminOrganizationDashboard'
+import { OrganizationContextPanel } from './OrganizationContextPanel'
 
 /** The profile page's identity panel: who this organization is (logo,
  * name, alias, domain, Program Manager count, applied tags) plus the two
@@ -568,6 +569,7 @@ export function AdminOrganizationProfileSection() {
               </button>
             </div>
           </form>
+          <OrganizationContextPanel organizationId={organizationId} />
           {/* Apart from the profile's own form, and only here: it takes
               the organization and everything in it. */}
           <Panel

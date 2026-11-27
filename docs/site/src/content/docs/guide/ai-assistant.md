@@ -17,7 +17,8 @@ It acts as you, so it reaches only what you can.
 
 - **Read** the exercises you plan, their needs analysis and MSEL, down to one inject in full.
 - **Search** the knowledge base, the inject and objective catalogs, MITRE ATT&CK and your organization's library.
-- **Read** the session plan and what's left before each document can move on.
+- **Read** the session plan and what's left before each document can move on, and a review of the design as a whole: what each objective has hanging from it, what's missing, where the session goes quiet.
+- **Read** what your Exercise Program Manager wrote about the organization (its sector, regulators, technologies and critical assets), so what it proposes fits it.
 - **Start from an exercise template** of the Library and adapt it, and **remember**: past exercises' reports and the improvement plan, to learn from what happened before.
 - **Propose** needs, objectives, the needs analysis' context and risks, the MSEL's phases, simulated actors and threat actors, injects, polls, values for a template's placeholders, the session plan's observation points and parts of the report.
 
@@ -41,11 +42,17 @@ It can propose resetting the MSEL's codes to its order after deletions leave gap
 
 On the MSEL it can also propose an inject's expected actions anew, where a contingent inject branches off and rejoins, the MSEL's own settings and its impact meters. A newer proposal on the same fields replaces an older one, so you don't review outdated versions.
 
+In the session plan it can also propose the invitation's text, the briefing's and the session's notes and how the evaluation's data is collected. Dates, people and the venue stay with you.
+
 It can build an MSEL from an empty one: it proposes the phases and actors first, then injects on them. Accepting an inject brings the phase and actors it needs with it, and discarding a phase discards the injects that need it.
+
+## Ask from the page
+
+You don't have to explain in your client what you're looking at. On the needs analysis, the MSEL and the session plan, **Ask the AI assistant** leaves a request: about the whole document or one of its rows, with a note saying what you need. Nothing happens yet. The next time you open your client, ask it to work through your requests (there's a guided flow for it): it reads them and answers with proposals, which come back to the page marked **Answers your request**. You can withdraw a request while it waits.
 
 ## Guided flows and attachments
 
-Your client's menu offers guided flows that know which steps to take: design an exercise from a template, build the MSEL, review before READY, prepare the evaluation, draft the after-action report, and lessons from past exercises. Each asks for the exercise; type part of its code or name and pick it from the suggestions.
+Your client's menu offers guided flows that know which steps to take: design an exercise from a template, build the MSEL, review before READY, prepare the evaluation, draft the after-action report, lessons from past exercises, and work through your requests. Each asks for the exercise; type part of its code or name and pick it from the suggestions.
 
 It can also name a set of proposals, such as "Close MSEL v5": the set shows together on the page, to accept or discard at once. Every answer about an exercise reminds it of the exercise's TLP. Accepting or discarding a proposal is recorded in the activity log, without its content.
 

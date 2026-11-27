@@ -405,6 +405,8 @@
     "Catalog inject not found.": "Inject del catálogo no encontrado.",
     "That ATT&CK version isn't shipped with this server.": "Esa versión de ATT&CK no viene con este servidor.",
     "There is no need {code} in this exercise.": "No hay ninguna necesidad {code} en este ejercicio.",
+    "Request not found.": "No se encuentra la petición.",
+    "Too many requests wait for the assistant on this exercise ({limit} at most): withdraw some first.": "Hay demasiadas peticiones esperando al asistente en este ejercicio ({limit} como máximo): retira alguna antes.",
     "There is no placeholder {code} left in this exercise.": "No queda ningún marcador {code} en este ejercicio.",
     "Those placeholders are still in the exercise's texts.": "Esos marcadores siguen en los textos del ejercicio.",
     "There is no risk number {code} in this exercise.": "No hay ningún riesgo número {code} en este ejercicio.",

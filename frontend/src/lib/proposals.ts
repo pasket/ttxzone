@@ -35,6 +35,7 @@ export type ProposalTarget =
   | 'msel_meta'
   | 'msel_renumber'
   | 'eeg_point'
+  | 'prep_texts'
   | 'aar_text'
   | 'aar_objective'
   | 'aar_action'
@@ -68,6 +69,8 @@ export interface Proposal {
   decided_at: string | null
   /** An update whose row changed (or went) since it was proposed. */
   outdated: boolean
+  /** The person's request it answers, when it was made for one. */
+  request_id?: string | null
 }
 
 export interface ProposalListResponse {
@@ -754,8 +757,24 @@ export function mergeMselProposals(
   }
 }
 
+/** The session plan's texts a proposal may change, as one row. */
+export const PREP_TEXT_FIELDS = [
+  'invitation_text',
+  'briefing_notes',
+  'session_notes',
+  'data_collection_methods',
+  'data_collection_other',
+] as const
+
+export function prepTextsRow(id: string, draft: ConductPrepDraft) {
+  const row: Record<string, unknown> = { id, key: id }
+  for (const field of PREP_TEXT_FIELDS) row[field] = draft[field]
+  return row as { id: string; key: string } & Record<string, unknown>
+}
+
 /** Observation points into the session plan's draft: a new one on the EEG
- * its proposal names (`eeg_id`), a change on the point by id. */
+ * its proposal names (`eeg_id`), a change on the point by id; and the
+ * plan's texts. */
 export function mergeConductPrepProposals(
   draft: ConductPrepDraft,
   group: Proposal[],
@@ -764,7 +783,19 @@ export function mergeConductPrepProposals(
   const keys: Record<string, string> = {}
   const conflicts: Conflict[] = []
   const missing: string[] = []
+  let texts: Record<string, unknown> | null = null
+  // Only the fields a proposal names go back to the page.
+  const proposed = new Set<string>()
   for (const proposal of group) {
+    if (proposal.target === 'prep_texts') {
+      const current: Record<string, unknown> =
+        texts ?? prepTextsRow(proposal.target_id ?? '', draft)
+      conflicts.push(...updateConflicts(proposal, current))
+      texts = patchRow(current, proposal)
+      for (const field of Object.keys(proposal.patch)) proposed.add(field)
+      keys[proposal.id] = proposal.target_id ?? ''
+      continue
+    }
     if (proposal.target !== 'eeg_point') continue
     const patch = { ...proposal.patch }
     if (proposal.operation === 'create') {
@@ -807,7 +838,11 @@ export function mergeConductPrepProposals(
         : o,
     )
   }
-  return { patch: { eeg }, keys, conflicts, missing }
+  const changed: Partial<ConductPrepDraft> = {}
+  for (const field of PREP_TEXT_FIELDS) {
+    if (texts && proposed.has(field)) (changed as Record<string, unknown>)[field] = texts[field]
+  }
+  return { patch: { ...changed, eeg }, keys, conflicts, missing }
 }
 
 /** The report's rows as the proposals name them: its texts, as one row. */

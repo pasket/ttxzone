@@ -10,9 +10,14 @@ Notable changes to TTX-Zone, by release. Versions follow [Semantic Versioning](h
 - **AI assistant**: proposals for the needs analysis' context (motivation, triggers, levels, date window, stop keyword) and for the risks to the exercise, with a search of TTX-Zone's risk library; an objective proposal can say what achieved, partially achieved and not achieved look like.
 - **AI assistant**: values for the placeholders an exercise template left unfilled. Accepting the proposal opens "Fill them in…" with the proposed values to review.
 - **AI proposals**: Discard asks first and takes an optional reason and note, which the assistant reads before proposing again.
+- **Creator → MSEL → Review**: a design review reads the saved design as one chain, from the needs to the observation points. It names what's missing (an objective no inject tests, an inject without expected actions, an empty phase), the long stretches with no timed inject and the threat actors' techniques no inject uses. It blocks nothing. The AI assistant reads the same review.
+- **Admin → Organization**: "Context for exercise design" takes the organization's sector, size, regulators, technologies and critical assets in its own words. Where the AI assistant is on, the Exercise Planners' AI client reads it so proposals fit the organization.
+- **Ask the AI assistant** from the needs analysis, the MSEL and the session plan: leave a request about the document or one of its rows; your AI client reads it the next time you work with it, and its proposals come back marked as the answer.
+- **AI assistant**: proposals for the session plan's texts (the invitation, briefing and session notes, how data is collected).
+- **API**: `GET /ttx/{id}/design-review`, `GET|PUT /organizations/{id}/context`, `GET|POST /ttx/{id}/assistant/requests` and `DELETE /ttx/{id}/assistant/requests/{id}`.
 
 ### Changed
-- **API**: `POST /ttx/{id}/assistant/proposals/{id}/discard` takes an optional `{reason, note}`. This release includes a database migration (`0004`), applied when the backend starts.
+- **API**: `POST /ttx/{id}/assistant/proposals/{id}/discard` takes an optional `{reason, note}`. This release includes database migrations (`0004` to `0006`), applied when the backend starts.
 
 ## [0.3.0] - 2026-11-20
 

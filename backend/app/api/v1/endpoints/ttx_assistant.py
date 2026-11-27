@@ -18,16 +18,19 @@ from app.core.security import (
     is_program_manager,
     verify_csrf,
 )
-from app.models import TTX, AssistantProposal, TTXContextRole, User
+from app.models import TTX, AssistantProposal, AssistantRequest, RoleEnum, TTXContextRole, User
 from app.schemas.assistant import (
     AssistantProposalAppliedRequest,
     AssistantProposalDiscardRequest,
     AssistantProposalDiscardResponse,
     AssistantProposalListResponse,
     AssistantProposalRead,
+    AssistantRequestCreate,
+    AssistantRequestListResponse,
+    AssistantRequestRead,
 )
 from app.services.after_action_service import can_write
-from app.services.assistant import proposals
+from app.services.assistant import proposals, requests, switch
 
 router = APIRouter(prefix="/ttx/{ttx_id}/assistant/proposals", tags=["assistant"])
 
@@ -74,6 +77,7 @@ def list_proposals_endpoint(
         "msel_meta",
         "msel_renumber",
         "eeg_point",
+        "prep_texts",
         "aar_text",
         "aar_objective",
         "aar_action",
@@ -133,3 +137,60 @@ def discard_endpoint(
             note=payload.note if payload else "",
         )
     )
+
+
+# --- Requests: what the person asks the assistant for from a page -------------
+
+requests_router = APIRouter(prefix="/ttx/{ttx_id}/assistant/requests", tags=["assistant"])
+
+_planner = RequiresOrgAndTTXAccess(RoleEnum.PLANNER)
+
+
+def _request_read(request: AssistantRequest, codes: dict[str, str]) -> AssistantRequestRead:
+    read = AssistantRequestRead.model_validate(request)
+    read.row_code = codes.get(str(request.row_id)) if request.row_id else None
+    return read
+
+
+@requests_router.get("", response_model=AssistantRequestListResponse)
+def list_requests_endpoint(
+    status: Literal["open", "answered"] | None = Query("open"),
+    ttx: TTX = Depends(_planner),
+    user: User = Depends(get_current_user),
+    session: Session = Depends(get_session),
+) -> AssistantRequestListResponse:
+    """What the caller asked the AI assistant for on this exercise."""
+    items = requests.list_for_author(session, ttx, user, status=status)
+    codes = proposals.row_codes(session, ttx) if any(r.row_id for r in items) else {}
+    return AssistantRequestListResponse(items=[_request_read(r, codes) for r in items])
+
+
+@requests_router.post(
+    "",
+    response_model=AssistantRequestRead,
+    status_code=201,
+    dependencies=[Depends(verify_csrf)],
+)
+def create_request_endpoint(
+    payload: AssistantRequestCreate,
+    ttx: TTX = Depends(_planner),
+    user: User = Depends(get_current_user),
+    session: Session = Depends(get_session),
+) -> AssistantRequestRead:
+    """Ask the AI assistant for something on a document or one of its rows:
+    kept until the caller's own AI client reads it."""
+    switch.require_enabled(session)
+    request = requests.create(session, ttx, user, payload.section, payload.row_id, payload.note)
+    codes = proposals.row_codes(session, ttx) if request.row_id else {}
+    return _request_read(request, codes)
+
+
+@requests_router.delete("/{request_id}", status_code=204, dependencies=[Depends(verify_csrf)])
+def withdraw_request_endpoint(
+    request_id: uuid.UUID,
+    ttx: TTX = Depends(_planner),
+    user: User = Depends(get_current_user),
+    session: Session = Depends(get_session),
+) -> None:
+    """Withdraw one of the caller's requests."""
+    requests.withdraw(session, ttx, user, request_id)

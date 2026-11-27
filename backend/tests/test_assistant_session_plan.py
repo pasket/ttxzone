@@ -219,3 +219,55 @@ def test_a_seeded_point_leaves_with_its_source_never_from_the_plan(
     assert action["source_action_code"] in from_action["content"][0]["text"]
     assert "propose_injects" in from_action["content"][0]["text"]
     assert _list(client, ttx_id) == []
+
+
+def test_the_plans_texts_are_proposed_and_read_back_once_saved(
+    client: TestClient, db_session: Session, assistant_planner: dict
+) -> None:
+    ttx_id, read = _with_plan(client, db_session, assistant_planner)
+    token = create_token(client)["token"]
+
+    made = _data(
+        call(
+            client,
+            token,
+            "propose_session_texts",
+            {
+                "ttx_id": ttx_id,
+                "invitation_text": "You are invited to a tabletop exercise on crisis decisions.",
+                "briefing_notes": "Evaluators don't intervene; Controllers keep the pace.",
+                "data_collection_methods": [*read["data_collection_methods"], "interviews"],
+            },
+        )
+    )
+    [proposal] = (db_session.get(AssistantProposal, uuid.UUID(p["id"])) for p in made["proposals"])
+    assert (proposal.target, proposal.operation) == ("prep_texts", "update")
+    assert proposal.target_id == uuid.UUID(read["id"])
+
+    # Dates and what the briefing covered aren't in the schema.
+    refused = call(
+        client, token, "propose_session_texts", {"ttx_id": ttx_id, "briefing_checklist": ["eeg"]}
+    )
+    assert _error_code(refused) == "INVALID_ARGUMENTS"
+    unknown = call(
+        client, token, "propose_session_texts", {"ttx_id": ttx_id, "data_collection_methods": ["x"]}
+    )
+    assert _error_code(unknown) == "INVALID_ARGUMENTS"
+
+    db_session.expire_all()
+    ttx = db_session.get(TTX, uuid.UUID(ttx_id))
+    payload = proposals_prep.payload_from_prep(
+        prep_read(db_session, ttx, find_prep(db_session, ttx.id))
+    )
+    _round_trip(
+        client,
+        db_session,
+        ttx_id,
+        [proposal],
+        payload=payload,
+        apply=proposals_prep.apply_prep,
+        path="conduct-prep",
+    )
+    plan = _data(call(client, token, "get_session_plan", {"ttx_id": ttx_id}))
+    assert plan["invitation_text"].startswith("You are invited")
+    assert "interviews" in plan["data_collection_methods"]
