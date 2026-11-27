@@ -7,7 +7,7 @@ import { useApiResource } from '../../../hooks/useApiResource'
 import { useAuth } from '../../../hooks/useAuth'
 import { useAutosavedDocument } from '../../../hooks/useAutosavedDocument'
 import { useNeedsIssueMessage } from '../../../hooks/useNeedsIssueMessage'
-import { mergeNeedsProposals, scopeRow, tlpRow } from '../../../lib/proposals'
+import { contextRow, mergeNeedsProposals, scopeRow, tlpRow } from '../../../lib/proposals'
 import { ProposalsPanel } from '../../assistant/ProposalsPanel'
 import { useApiDownload } from '../../../hooks/useApiDownload'
 import { useRenumberCodes } from '../../../hooks/useRenumberCodes'
@@ -717,18 +717,22 @@ function NeedsFormEditor({
       {!archived && (
         <ProposalsPanel<NeedsFormDraft>
           ttxId={ttxId}
-          targets={['needs_tlp', 'needs_scope', 'need', 'objective']}
+          targets={['needs_tlp', 'needs_context', 'needs_scope', 'need', 'objective', 'risk']}
           draftRows={{
             needs_tlp: [tlpRow(form.id, draft)],
+            needs_context: [contextRow(form.id, draft)],
             needs_scope: [scopeRow(form.id, draft)],
             need: draft.needs,
             objective: draft.objectives,
+            risk: draft.risks,
           }}
           savedRows={{
             needs_tlp: [tlpRow(form.id, baseline)],
+            needs_context: [contextRow(form.id, baseline)],
             needs_scope: [scopeRow(form.id, baseline)],
             need: baseline.needs,
             objective: baseline.objectives,
+            risk: baseline.risks,
           }}
           codeOf={(id) =>
             [...draft.needs, ...draft.objectives].find((row) => row.id === id || row.key === id)

@@ -60,3 +60,8 @@ class AssistantProposal(SQLModel, table=True):
     applied_row_id: uuid.UUID | None = Field(default=None)
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     decided_at: datetime | None = Field(default=None)
+    # Why it was discarded, for the assistant to read before proposing again:
+    # the person's reason (DISCARD_REASONS in the service) and a line of
+    # theirs, or "dependency" / "superseded" when the server discarded it.
+    decision_reason: str | None = Field(default=None, max_length=24)
+    decision_note: str | None = Field(default=None, max_length=500)

@@ -2,6 +2,18 @@
 
 Notable changes to TTX-Zone, by release. Versions follow [Semantic Versioning](https://semver.org/). Before upgrading a deployment, read the release's entry and [Upgrade](https://docs.ttxzone.com/instance/upgrade/).
 
+## [Unreleased]
+
+### Added
+- **AI assistant**: it reads one inject in full (`get_inject`) and the MSEL with each inject's recipients, rooms and where a contingent one branches; a long MSEL can be read by phase or by inject.
+- **AI assistant**: an inject proposal can carry the artifact it's drawn as (email, press release, social media post, chat message), what would be attached, and its rooms.
+- **AI assistant**: proposals for the needs analysis' context (motivation, triggers, levels, date window, stop keyword) and for the risks to the exercise, with a search of TTX-Zone's risk library; an objective proposal can say what achieved, partially achieved and not achieved look like.
+- **AI assistant**: values for the placeholders an exercise template left unfilled. Accepting the proposal opens "Fill them in…" with the proposed values to review.
+- **AI proposals**: Discard asks first and takes an optional reason and note, which the assistant reads before proposing again.
+
+### Changed
+- **API**: `POST /ttx/{id}/assistant/proposals/{id}/discard` takes an optional `{reason, note}`. This release includes a database migration (`0004`), applied when the backend starts.
+
 ## [0.3.0] - 2026-11-20
 
 ### Added

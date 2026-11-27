@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class AssistantSettingsRead(BaseModel):
@@ -63,7 +63,10 @@ class AssistantProposalRead(BaseModel):
     target: Literal[
         "need",
         "objective",
+        "placeholders",
+        "risk",
         "needs_scope",
+        "needs_context",
         "needs_tlp",
         "ttx_meta",
         "inject",
@@ -90,6 +93,8 @@ class AssistantProposalRead(BaseModel):
     applied_row_id: uuid.UUID | None
     created_at: datetime
     decided_at: datetime | None
+    decision_reason: str | None = None
+    decision_note: str | None = None
     # An update whose row changed (or went) since it was proposed.
     outdated: bool = False
 
@@ -100,6 +105,18 @@ class AssistantProposalListResponse(BaseModel):
 
 class AssistantProposalAppliedRequest(BaseModel):
     row_id: uuid.UUID
+
+
+class AssistantProposalDiscardRequest(BaseModel):
+    """Why, when the person says: the assistant reads it before proposing
+    again. Both optional."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    reason: (
+        Literal["duplicate", "unrealistic", "out_of_scope", "tone", "incorrect", "other"] | None
+    ) = None
+    note: str = Field(default="", max_length=500)
 
 
 class AssistantProposalDiscardResponse(BaseModel):

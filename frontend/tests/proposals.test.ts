@@ -8,6 +8,7 @@ import type { AarRead } from '../src/lib/types'
 import {
   aarRows,
   acceptedState,
+  contextRow,
   heldBySaved,
   mergeAarProposals,
   mergeConductPrepProposals,
@@ -730,5 +731,116 @@ describe('the classification (TLP)', () => {
     expect(merged.patch.tlp).toBe('red')
     const saved = tlpRow('f1', { ...draft, ...merged.patch } as NeedsFormDraft)
     expect(acceptedState(tlp, 'f1', [saved], [saved])).toEqual({ state: 'saved', rowId: 'f1' })
+  })
+})
+
+describe('risks and the context', () => {
+  const RISK = { id: 'r1', key: 'r1', risk: 'Scenario leak', mitigation: 'Need to know', owner: '' }
+
+  it('adds a risk, changes one and deletes another', () => {
+    const other = { ...RISK, id: 'r2', key: 'r2', risk: 'Key people absent' }
+    const draft = needsDraft({ risks: [RISK, other] })
+    const created = proposal({
+      id: 'new',
+      target: 'risk',
+      patch: { risk: 'Read as blame', mitigation: 'No-fault rule', owner: 'Facilitation' },
+    })
+    const changed = proposal({
+      id: 'upd',
+      target: 'risk',
+      operation: 'update',
+      target_id: 'r1',
+      base: { owner: '' },
+      patch: { owner: 'Planning team' },
+    })
+    const removed = proposal({ id: 'del', target: 'risk', operation: 'delete', target_id: 'r2' })
+
+    const merged = mergeNeedsProposals(draft, [created, changed, removed])
+
+    expect(merged.patch.risks?.map((r) => [r.risk, r.owner])).toEqual([
+      ['Scenario leak', 'Planning team'],
+      ['Read as blame', 'Facilitation'],
+    ])
+    expect(merged.keys.upd).toBe('r1')
+    expect(merged.keys.del).toBe('r2')
+    expect(merged.missing).toEqual([])
+  })
+
+  it('changes the context, dates as the form keeps them, and reads back as saved', () => {
+    const draft = needsDraft({
+      sponsor_motivation: '',
+      triggers: ['annual_program'],
+      trigger_other: '',
+      levels: [],
+      date_window_start: '',
+      date_window_end: '2031-03-31',
+      key_participants_availability: '',
+      stop_exercise_keyword: '',
+    } as Partial<NeedsFormDraft>)
+    const context = proposal({
+      target: 'needs_context',
+      operation: 'update',
+      target_id: 'f1',
+      base: {
+        triggers: ['annual_program'],
+        date_window_start: null,
+        date_window_end: '2031-03-31',
+      },
+      patch: {
+        triggers: ['annual_program', 'recent_incident'],
+        date_window_start: '2031-03-01',
+        date_window_end: null,
+      },
+    })
+
+    const merged = mergeNeedsProposals(draft, [context])
+
+    expect(merged.patch.triggers).toEqual(['annual_program', 'recent_incident'])
+    expect(merged.patch.date_window_start).toBe('2031-03-01')
+    expect(merged.patch.date_window_end).toBe('')
+    expect(merged.conflicts).toEqual([])
+    const saved = contextRow('f1', { ...draft, ...merged.patch } as NeedsFormDraft)
+    expect(acceptedState(context, 'f1', [saved], [saved])).toEqual({ state: 'saved', rowId: 'f1' })
+  })
+})
+
+describe('an inject drawn as an artifact', () => {
+  it('takes the artifact whole and adds to its attachments and rooms', () => {
+    const inject = {
+      id: 'i1',
+      key: 'i1',
+      code: 'INJ-01',
+      objective_ids: [],
+      expected_actions: [],
+      phase_key: 'ph1',
+      actor_key: null,
+      threat_actor_key: null,
+      artifact: null,
+      attachment_notes: ['Old log'],
+      room_ids: [],
+    }
+    const draft = {
+      phases: [{ id: 'ph1', key: 'ph1', code: 'PH-01' }],
+      actors: [],
+      threat_actors: [],
+      injects: [inject],
+    } as unknown as MselDraft
+    const artifact = { kind: 'email', sender: 'SOC', subject: 'Mass encryption' }
+    const change = proposal({
+      target: 'inject',
+      operation: 'update',
+      target_id: 'i1',
+      base: { artifact: null, attachment_notes: ['Old log'], room_ids: [] },
+      patch: { artifact, attachment_notes: ['Old log', 'EDR screenshot'], room_ids: ['room-1'] },
+    })
+
+    const merged = mergeMselProposals(draft, [change])
+
+    const [row] = merged.patch.injects ?? []
+    expect(row.artifact).toEqual(artifact)
+    expect(row.attachment_notes).toEqual(['Old log', 'EDR screenshot'])
+    expect(row.room_ids).toEqual(['room-1'])
+    expect(merged.conflicts).toEqual([])
+    expect(acceptedState(change, 'i1', [row], [row])).toEqual({ state: 'saved', rowId: 'i1' })
   })
 })

@@ -20,8 +20,12 @@ export function PlaceholderFillDialog({
   ttxId,
   onClose,
   onFilled,
+  initialValues = {},
 }: {
   ttxId: string
+  /** Values to start from (an AI proposal the person accepted): reviewed
+   * here before anything is written. */
+  initialValues?: Record<string, string>
   onClose: () => void
   /** The exercise's texts changed: read them again. */
   onFilled: () => void
@@ -30,7 +34,7 @@ export function PlaceholderFillDialog({
   const { showToast } = useToast()
   const guard = useDiscardGuard(onClose)
   const [found, setFound] = useState<TtxPlaceholders | null>(null)
-  const [values, setValues] = useState<Record<string, string>>({})
+  const [values, setValues] = useState<Record<string, string>>(initialValues)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -58,9 +62,12 @@ export function PlaceholderFillDialog({
     setBusy(true)
     setError(null)
     try {
+      // Only what's still there: a proposed value for one filled since is dropped.
+      const left = new Set(variables.map((variable) => variable.name))
+      const kept = Object.fromEntries(Object.entries(values).filter(([name]) => left.has(name)))
       await apiFetch<TtxPlaceholders>(`/ttx/${ttxId}/placeholders/fill`, {
         method: 'POST',
-        body: JSON.stringify({ variables: values }),
+        body: JSON.stringify({ variables: kept }),
       })
       showToast(t('creator.msel.leftover.filled', { count: written }))
       onFilled()

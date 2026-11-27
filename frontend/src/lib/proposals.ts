@@ -15,14 +15,17 @@ import type {
   ThreatActorDraft,
 } from './msel'
 import { emptyInjectDraft, newMselKey } from './msel'
-import type { NeedDraft, NeedsFormDraft, ObjectiveDraft } from './needsForm'
+import type { NeedDraft, NeedsFormDraft, ObjectiveDraft, RiskDraft } from './needsForm'
 import { newRowKey } from './needsForm'
 import type { AarRead, Capability } from './types'
 
 export type ProposalTarget =
   | 'need'
   | 'objective'
+  | 'risk'
+  | 'placeholders'
   | 'needs_scope'
+  | 'needs_context'
   | 'needs_tlp'
   | 'ttx_meta'
   | 'inject'
@@ -253,6 +256,37 @@ export function scopeRow(id: string, draft: NeedsFormDraft) {
   return row as { id: string; key: string } & Record<string, unknown>
 }
 
+/** The needs analysis' context fields a proposal may change. */
+export const CONTEXT_FIELDS = [
+  'sponsor_motivation',
+  'triggers',
+  'trigger_other',
+  'levels',
+  'date_window_start',
+  'date_window_end',
+  'key_participants_availability',
+  'stop_exercise_keyword',
+] as const
+
+const CONTEXT_DATES = new Set<string>(['date_window_start', 'date_window_end'])
+
+/** The context as one row, in the server's shape (the draft keeps an
+ * unset date as ''), so a context proposal can be compared with it. */
+export function contextRow(id: string, draft: NeedsFormDraft) {
+  const row: Record<string, unknown> = { id, key: id }
+  for (const field of CONTEXT_FIELDS) {
+    const value = draft[field as keyof NeedsFormDraft]
+    row[field] = CONTEXT_DATES.has(field) && value === '' ? null : value
+  }
+  return row as { id: string; key: string } & Record<string, unknown>
+}
+
+/** The exercise's unfilled {placeholders} as one row: a values proposal
+ * is done once none of the names it fills is left. */
+export function placeholdersRow(id: string, remaining: readonly string[]) {
+  return { id, key: id, remaining: [...remaining] }
+}
+
 /** The needs analysis' classification as one row. */
 export function tlpRow(id: string, draft: NeedsFormDraft) {
   return { id, key: id, tlp: draft.tlp }
@@ -283,6 +317,7 @@ export function mergeNeedsProposals(
 ): Merge<NeedsFormDraft> {
   let needs = [...draft.needs]
   let objectives = [...draft.objectives]
+  let risks = [...draft.risks]
   const capabilities = [...draft.capabilities]
   const keys: Record<string, string> = {}
   const conflicts: Conflict[] = []
@@ -298,8 +333,44 @@ export function mergeNeedsProposals(
   }
 
   let scope: Record<string, unknown> = {}
+  let context: Record<string, unknown> = {}
   for (const proposal of group) {
     const patch = { ...proposal.patch }
+    if (proposal.target === 'needs_context') {
+      const current = { ...contextRow(proposal.target_id ?? '', draft), ...context }
+      conflicts.push(...updateConflicts(proposal, current))
+      context = patchRow(current, proposal)
+      keys[proposal.id] = proposal.target_id ?? ''
+      continue
+    }
+    if (proposal.target === 'risk') {
+      if (proposal.operation === 'create') {
+        const row: RiskDraft = {
+          id: null,
+          key: newRowKey(),
+          risk: '',
+          mitigation: '',
+          owner: '',
+          ...(patch as Partial<RiskDraft>),
+        }
+        risks = [...risks, row]
+        keys[proposal.id] = row.key
+        continue
+      }
+      const index = risks.findIndex((r) => r.id === proposal.target_id)
+      if (index < 0) {
+        missing.push(proposal.id)
+        continue
+      }
+      keys[proposal.id] = risks[index].key
+      if (proposal.operation === 'delete') {
+        risks = risks.filter((_, i) => i !== index)
+      } else {
+        conflicts.push(...updateConflicts(proposal, risks[index]))
+        risks = risks.map((r, i) => (i === index ? patchRow(r, proposal, patch) : r))
+      }
+      continue
+    }
     if (proposal.target === 'needs_tlp') {
       conflicts.push(...updateConflicts(proposal, tlpRow(proposal.target_id ?? '', draft)))
       scope = { ...scope, tlp: patch.tlp }
@@ -406,7 +477,18 @@ export function mergeNeedsProposals(
     ;(scoped as Record<string, unknown>)[field] =
       field === 'max_duration_hours' ? (value === null ? '' : String(value)) : value
   }
-  return { patch: { ...scoped, needs, objectives, capabilities }, keys, conflicts, missing }
+  for (const field of CONTEXT_FIELDS) {
+    if (!(field in context)) continue
+    const value = context[field]
+    ;(scoped as Record<string, unknown>)[field] =
+      CONTEXT_DATES.has(field) && value === null ? '' : value
+  }
+  return {
+    patch: { ...scoped, needs, objectives, risks, capabilities },
+    keys,
+    conflicts,
+    missing,
+  }
 }
 
 /** The MSEL's settings a proposal may change, as one row. */

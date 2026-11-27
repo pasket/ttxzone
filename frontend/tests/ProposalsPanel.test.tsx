@@ -195,9 +195,20 @@ describe('ProposalsPanel', () => {
     expect(await screen.findByRole('button', { name: 'Accept' })).toBeDisabled()
     expect(screen.getByText('Answer the open question first.')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Discard' }))
+    // It asks first, with room to say why: the assistant reads it later.
+    const dialog = await screen.findByRole('dialog', { name: 'Discard this proposal?' })
+    fireEvent.change(within(dialog).getByLabelText(/^Why/), { target: { value: 'duplicate' } })
+    fireEvent.change(within(dialog).getByLabelText(/^Note for the assistant/), {
+      target: { value: ' NEED-01 already says this. ' },
+    })
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Discard' }))
 
     expect(await screen.findByText('Proposal discarded')).toBeInTheDocument()
     expect(fetchMock.mock.calls[1][0]).toMatch(/proposals\/p-create\/discard$/)
+    expect(JSON.parse(fetchMock.mock.calls[1][1].body)).toEqual({
+      reason: 'duplicate',
+      note: 'NEED-01 already says this.',
+    })
     await waitFor(() => expect(screen.queryByText('AI proposals')).not.toBeInTheDocument())
   })
 
@@ -328,6 +339,8 @@ describe('ProposalsPanel', () => {
       expect.stringMatching(/p-create\/discard$/),
       expect.stringMatching(/p-update\/discard$/),
     ])
+    // No reason given: nothing is sent about why.
+    expect(fetchMock.mock.calls[1][1].body).toBeUndefined()
   })
 
   it('shows the changes of the first one and folds the rest', async () => {
@@ -544,6 +557,63 @@ describe('ProposalsPanel', () => {
       expect(fetchMock).toHaveBeenCalledWith(
         expect.stringMatching(/proposals\/p-reset\/applied$/),
         expect.objectContaining({ body: JSON.stringify({ row_id: 'm1' }) }),
+      ),
+    )
+  })
+
+  it('opens the fill dialog for placeholder values, applied once none of them is left', async () => {
+    const values = proposal({
+      id: 'p-values',
+      target: 'placeholders',
+      operation: 'update',
+      target_id: 't1',
+      base: { brand: '', supplier: '' },
+      patch: { brand: 'Kubo', supplier: 'Northwind Hosting' },
+    })
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(respond({ items: [values] }))
+      .mockResolvedValue(respond({}))
+    vi.stubGlobal('fetch', fetchMock)
+    const onAction = vi.fn()
+
+    function Page({ remaining }: { remaining: string[] | null }) {
+      return (
+        <ProposalsPanel<NeedsFormDraft>
+          ttxId="t1"
+          targets={['placeholders']}
+          draftRows={{}}
+          savedRows={
+            remaining ? { placeholders: [{ id: 't1', key: 't1', remaining } as never] } : {}
+          }
+          codeOf={() => undefined}
+          merge={() => ({ patch: {}, keys: {}, conflicts: [], missing: [] })}
+          apply={() => undefined}
+          disabledReason={null}
+          onAction={onAction}
+          actionBlocked={() => null}
+        />
+      )
+    }
+
+    // Not known yet what's left: nothing is marked.
+    const { rerender } = render(<Page remaining={null} />)
+
+    expect(await screen.findByText('Fill in 2 placeholders')).toBeInTheDocument()
+    expect(screen.getByText('{brand}')).toBeInTheDocument()
+    expect(screen.getByText('Northwind Hosting')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Accept' }))
+    expect(onAction).toHaveBeenCalledWith(expect.objectContaining({ id: 'p-values' }))
+
+    rerender(<Page remaining={['brand', 'supplier', 'country_1']} />)
+    rerender(<Page remaining={['supplier', 'country_1']} />)
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+
+    rerender(<Page remaining={['country_1']} />)
+    await waitFor(() =>
+      expect(fetchMock).toHaveBeenCalledWith(
+        expect.stringMatching(/proposals\/p-values\/applied$/),
+        expect.objectContaining({ body: JSON.stringify({ row_id: 't1' }) }),
       ),
     )
   })

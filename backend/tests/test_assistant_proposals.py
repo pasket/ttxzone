@@ -532,8 +532,16 @@ def test_discarding_takes_its_dependents_and_others_never_see_them(
         )
     )["proposals"][0]["id"]  # fmt: skip
 
+    unknown = client.post(
+        PROPOSALS.format(ttx_id=ttx_id) + f"/{need}/discard",
+        json={"reason": "boring"},
+        headers=_csrf(client),
+    )
+    assert unknown.status_code == 422
     discarded = client.post(
-        PROPOSALS.format(ttx_id=ttx_id) + f"/{need}/discard", headers=_csrf(client)
+        PROPOSALS.format(ttx_id=ttx_id) + f"/{need}/discard",
+        json={"reason": "duplicate", "note": "NEED-01 already says this."},
+        headers=_csrf(client),
     )
 
     assert sorted(discarded.json()["discarded"]) == sorted([need, objective])
@@ -541,6 +549,11 @@ def test_discarding_takes_its_dependents_and_others_never_see_them(
     assert {p["status"] for p in _list(client, ttx_id, status="discarded")} == {"discarded"}
     listed = _data(call(client, token, "list_my_proposals", {"ttx_id": ttx_id}))["proposals"]
     assert {p["status"] for p in listed} == {"discarded"}
+    # The assistant reads why: the person's reason on the one they discarded,
+    # and that the other went with it.
+    why = {p["id"]: (p["discard_reason"], p["discard_note"]) for p in listed}
+    assert why[need] == ("duplicate", "NEED-01 already says this.")
+    assert why[objective] == ("dependency", None)
 
 
 def test_proposals_are_capped_and_pruned(

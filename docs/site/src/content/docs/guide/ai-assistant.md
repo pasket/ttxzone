@@ -15,11 +15,11 @@ What your client reads leaves the server for your AI provider, under that provid
 
 It acts as you, so it reaches only what you can.
 
-- **Read** the exercises you plan, their needs analysis and MSEL.
+- **Read** the exercises you plan, their needs analysis and MSEL, down to one inject in full.
 - **Search** the knowledge base, the inject and objective catalogs, MITRE ATT&CK and your organization's library.
 - **Read** the session plan and what's left before each document can move on.
 - **Start from an exercise template** of the Library and adapt it, and **remember**: past exercises' reports and the improvement plan, to learn from what happened before.
-- **Propose** needs, objectives, the MSEL's phases, simulated actors and threat actors, injects, polls, the session plan's observation points and parts of the report.
+- **Propose** needs, objectives, the needs analysis' context and risks, the MSEL's phases, simulated actors and threat actors, injects, polls, values for a template's placeholders, the session plan's observation points and parts of the report.
 
 It never changes anything by itself. Each proposal waits on the form's page under **AI proposals**, for you to accept it into the draft or discard it. Accepting has the form's usual effects: a ready MSEL reopens, for example. The first proposal shows what it changes; the others show their title and summary, with the changes one click away. Once an accepted proposal is in the form, a notice says so: it saves with the form.
 
@@ -28,6 +28,14 @@ When proposals wait for you, the assistant's spark appears at the top right with
 Proposals on the same row, such as three changes to one inject, are grouped under it, with what they do together shown first: tick the ones you want and accept or discard them together. Proposals that add to the same list, such as recipients, add up rather than replace each other. If saving a proposal would make the form warn about something, the warning is shown in the form's own words. When several are waiting, **Accept all** takes them in one step (a ready MSEL asks once) and **Discard all** clears them. A long list shows each proposal's title and reason, with its changes one click away.
 
 It can propose the exercise's presentation, its name, description and content language, which you accept on the exercise's page and save from its edit form, and its TLP, always as a proposal in the needs analysis since it decides how the exercise's information is handled. It can also propose the scope (the participating areas every inject's recipients must belong to) and propose deleting rows, such as a duplicated inject; a deletion is accepted like any other proposal. Before proposing, it can measure what a change would do, how many warnings it adds and how many it resolves, without leaving anything for you to review.
+
+In the needs analysis it can also propose the context it can't be approved without (why the exercise, what prompted it, the levels that take part, the date window, the stop keyword) and the risks to the exercise itself with their mitigation. Your sponsor's name and role, the approvals and the commitment to act on the findings stay with you.
+
+An inject can come with the artifact it's drawn as for the table (an email, a press release, a social media post or a chat message, with its sender and subject), a description of what would be attached, and the rooms it plays in.
+
+When an exercise template left placeholders unfilled, it can propose values for them. Accepting that proposal, on the MSEL's page, opens the same dialog as **Fill them in…** with the proposed values: you review them there, and nothing is written until you confirm.
+
+**Discard** asks first, and you can say why (already covered, not realistic for us, out of scope, wrong tone, incorrect) and add a note. Both are optional. The assistant reads them before it proposes again, so it doesn't repeat what you turned down.
 
 It can propose resetting the MSEL's codes to its order after deletions leave gaps; accepting it runs the same reset as the button on the MSEL, while it's a draft.
 

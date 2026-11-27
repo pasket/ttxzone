@@ -5799,7 +5799,10 @@
       "mselSettings": "ajustes del MSEL",
       "codeReset": "reinicio de códigos",
       "tlp": "clasificación (TLP)",
-      "exercise": "ejercicio"
+      "exercise": "ejercicio",
+      "risk": "riesgo",
+      "placeholders": "valores de marcadores",
+      "context": "contexto"
     },
     "create": "Nueva fila: {{target}}",
     "update": "Cambiar {{target}} {{code}}",
@@ -5866,7 +5869,11 @@
       "text": "Texto",
       "eeg": "Objetivo",
       "contentLanguage": "Idioma del contenido",
-      "tlp": "TLP"
+      "tlp": "TLP",
+      "artifact": "Artefacto simulado",
+      "achieved": "Logrado",
+      "partiallyAchieved": "Parcialmente logrado",
+      "notAchieved": "No logrado"
     },
     "evidence": {
       "title": "Se basa en",
@@ -5914,7 +5921,30 @@
     "eegGroup": "EEG de {{code}}",
     "changeTlp": "Cambiar la clasificación (TLP)",
     "changeExercise": "Cambiar la presentación del ejercicio",
-    "tlpNote": "El TLP fija cómo se trata y se comparte todo lo de este ejercicio, también las respuestas de la IA: revísalo antes de aceptar."
+    "tlpNote": "El TLP fija cómo se trata y se comparte todo lo de este ejercicio, también las respuestas de la IA: revísalo antes de aceptar.",
+    "discardReasons": {
+      "none": "Sin motivo",
+      "duplicate": "Ya está cubierto",
+      "unrealistic": "Poco realista para nosotros",
+      "outOfScope": "Fuera de alcance",
+      "tone": "Tono o redacción inadecuados",
+      "incorrect": "Incorrecto",
+      "other": "Otro"
+    },
+    "discardTitle_one": "¿Descartar esta propuesta?",
+    "discardTitle_other": "¿Descartar {{count}} propuestas?",
+    "discardBody_one": "Se descarta, junto con las propuestas que la necesitan. El asistente puede volver a proponerla.",
+    "discardBody_other": "Se descartan, junto con las propuestas que las necesitan. El asistente puede volver a proponerlas.",
+    "discardReasonLabel": "Motivo",
+    "discardNoteLabel": "Nota para el asistente",
+    "discardNotePlaceholder": "NEED-02 ya lo dice…",
+    "discardWhyHint": "El asistente lee el motivo y la nota antes de volver a proponer, a través de tu cliente de IA.",
+    "fillPlaceholders_one": "Rellenar {{count}} marcador",
+    "fillPlaceholders_other": "Rellenar {{count}} marcadores",
+    "placeholdersHint": "Al aceptar se abre el diálogo de relleno con estos valores, para que los revises antes de escribirlos en todo el ejercicio.",
+    "updateNamed": "Cambiar {{target}} «{{name}}»",
+    "removeNamed": "Eliminar {{target}} «{{name}}»",
+    "changeContext": "Cambiar el contexto"
   },
   "roleInvitations": {
     "title_one": "Invitación a una organización",

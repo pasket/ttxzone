@@ -23,8 +23,10 @@ SCREENS = {
 # actors before the injects in them, the MSEL before the EEG.
 TOOL_ORDER = (
     "propose_scope",
+    "propose_context",
     "propose_needs",
     "propose_objectives",
+    "propose_risks",
     "propose_msel_settings",
     "propose_phases",
     "propose_actors",
@@ -44,6 +46,17 @@ _SCOPE_FIELDS = {
     "confidentiality_restrictions",
     "budget_and_external_support",
 }
+_CONTEXT_FIELDS = {
+    "sponsor_motivation",
+    "triggers",
+    "trigger_other",
+    "levels",
+    "date_window_start",
+    "date_window_end",
+    "key_participants_availability",
+    "stop_exercise_keyword",
+}
+_RISK_FIELDS = {"risks", "risk", "mitigation"}
 _NEED_FIELDS = {"needs", "source", "finding", "affected_capability", "priority"}
 _OBJECTIVE_FIELDS = {
     "objectives",
@@ -174,6 +187,10 @@ def fix_for(
     if document == "needs_analysis":
         if field in _SCOPE_FIELDS:
             return _by("propose_scope", field)
+        if field in _CONTEXT_FIELDS:
+            return _by("propose_context", field)
+        if field in _RISK_FIELDS:
+            return _by("propose_risks", field)
         if field in _NEED_FIELDS:
             return _by("propose_needs", field)
         if field in _OBJECTIVE_FIELDS:

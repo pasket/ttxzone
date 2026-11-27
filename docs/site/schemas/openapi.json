@@ -1064,6 +1064,39 @@
         "title": "AssistantProposalAppliedRequest",
         "type": "object"
       },
+      "AssistantProposalDiscardRequest": {
+        "additionalProperties": false,
+        "description": "Why, when the person says: the assistant reads it before proposing\nagain. Both optional.",
+        "properties": {
+          "note": {
+            "default": "",
+            "maxLength": 500,
+            "title": "Note",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "enum": [
+                  "duplicate",
+                  "unrealistic",
+                  "out_of_scope",
+                  "tone",
+                  "incorrect",
+                  "other"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "title": "AssistantProposalDiscardRequest",
+        "type": "object"
+      },
       "AssistantProposalDiscardResponse": {
         "properties": {
           "discarded": {
@@ -1156,6 +1189,28 @@
             ],
             "title": "Decided At"
           },
+          "decision_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decision Note"
+          },
+          "decision_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decision Reason"
+          },
           "depends_on": {
             "items": {
               "type": "string"
@@ -1221,7 +1276,10 @@
             "enum": [
               "need",
               "objective",
+              "placeholders",
+              "risk",
               "needs_scope",
+              "needs_context",
               "needs_tlp",
               "ttx_meta",
               "inject",
@@ -37095,7 +37153,10 @@
                   "enum": [
                     "need",
                     "objective",
+                    "placeholders",
+                    "risk",
                     "needs_scope",
+                    "needs_context",
                     "needs_tlp",
                     "ttx_meta",
                     "inject",
@@ -37214,7 +37275,7 @@
     },
     "/api/v1/ttx/{ttx_id}/assistant/proposals/{proposal_id}/discard": {
       "post": {
-        "description": "Discard one of the AI assistant's proposals.",
+        "description": "Discard one of the AI assistant's proposals, optionally saying why.",
         "operationId": "discard_endpoint_api_v1_ttx__ttx_id__assistant_proposals__proposal_id__discard_post",
         "parameters": [
           {
@@ -37228,6 +37289,23 @@
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/AssistantProposalDiscardRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Payload"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "content": {

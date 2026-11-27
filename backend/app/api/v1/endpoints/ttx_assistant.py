@@ -21,6 +21,7 @@ from app.core.security import (
 from app.models import TTX, AssistantProposal, TTXContextRole, User
 from app.schemas.assistant import (
     AssistantProposalAppliedRequest,
+    AssistantProposalDiscardRequest,
     AssistantProposalDiscardResponse,
     AssistantProposalListResponse,
     AssistantProposalRead,
@@ -60,7 +61,10 @@ def list_proposals_endpoint(
     target: Literal[
         "need",
         "objective",
+        "placeholders",
+        "risk",
         "needs_scope",
+        "needs_context",
         "needs_tlp",
         "ttx_meta",
         "inject",
@@ -113,11 +117,19 @@ def mark_applied_endpoint(
 )
 def discard_endpoint(
     proposal_id: uuid.UUID,
+    payload: AssistantProposalDiscardRequest | None = None,
     ttx: TTX = Depends(_author),
     user: User = Depends(get_current_user),
     session: Session = Depends(get_session),
 ) -> AssistantProposalDiscardResponse:
-    """Discard one of the AI assistant's proposals."""
+    """Discard one of the AI assistant's proposals, optionally saying why."""
     return AssistantProposalDiscardResponse(
-        discarded=proposals.discard(session, ttx, user, proposal_id)
+        discarded=proposals.discard(
+            session,
+            ttx,
+            user,
+            proposal_id,
+            reason=payload.reason if payload else None,
+            note=payload.note if payload else "",
+        )
     )

@@ -28,12 +28,15 @@ from app.data.attack_catalog import DOMAIN_NAMES, LATEST_ATTACK_VERSION, load_do
 from app.data.inject_catalog import catalog_inject
 from app.data.knowledge_catalog import load_knowledge_catalog
 from app.data.objective_catalog import objective_catalog_by_id
+from app.data.risk_catalog import RISK_CATALOG, RiskCategory
 from app.data.scenario_catalog import scenario_catalog
 from app.models import TTX, AssistantProposal, Organization, RoleEnum, TTXContextRole, User
+from app.schemas.scenario import ScenarioVariables
 from app.services import (
     after_action_service,
     inject_library_service,
     organization_scenario_service,
+    ttx_placeholder_service,
 )
 from app.services.actor_library_service import require_library_reader
 from app.services.assistant import fixes, proposals, proposals_aar, proposals_prep
@@ -165,6 +168,19 @@ class ImprovementPlanInput(BaseModel):
 
 class ValidationInput(ExerciseInput):
     document: Literal["needs_analysis", "msel", "session_plan"]
+
+
+class MselInput(ExerciseInput):
+    phase: str | None = Field(
+        default=None, max_length=32, description="Only this phase's injects (its code, PH-02)."
+    )
+    codes: list[str] | None = Field(
+        default=None, max_length=50, description="Only these injects (INJ-05...)."
+    )
+
+
+class InjectInput(ExerciseInput):
+    code: str = Field(min_length=1, max_length=32, description="The inject's code (INJ-05).")
 
 
 class NeedsInput(ExerciseInput):
@@ -815,10 +831,100 @@ def _improvement_plan(session: Session, user: User, args: ImprovementPlanInput) 
 def _needs_analysis(session: Session, user: User, args: NeedsInput) -> ToolResult:
     ttx = _authorize(session, user, args.ttx_id)
     content, _filename = render_needs_markdown(session, ttx, args.language)
-    return ToolResult({"format": "markdown", "content": content}, ttx.id, ttx.organization_id)
+    form = form_read(session, ttx, get_form(session, ttx.id))
+    # Risks have no code: propose_risks names one by its number here.
+    risks = [
+        {"number": n, "risk": r.risk, "mitigation": r.mitigation, "owner": r.owner}
+        for n, r in enumerate(form.risks, start=1)
+    ]
+    return ToolResult(
+        {"format": "markdown", "content": content, "risks": risks}, ttx.id, ttx.organization_id
+    )
 
 
-def _msel(session: Session, user: User, args: ExerciseInput) -> ToolResult:
+@dataclass
+class _MselCodes:
+    """The codes of the rows an inject names by id."""
+
+    objectives: dict[uuid.UUID, str]
+    phases: dict[uuid.UUID, str]
+    actors: dict[uuid.UUID, str]
+    threats: dict[uuid.UUID, str]
+    rooms: dict[uuid.UUID, str]
+    injects: dict[uuid.UUID, str]
+    actions: dict[uuid.UUID, str]
+
+    @classmethod
+    def of(cls, read: Any) -> "_MselCodes":
+        return cls(
+            objectives={o.id: o.code for o in read.needs.objectives},
+            phases={p.id: p.code for p in read.phases},
+            actors={a.id: a.code for a in read.actors},
+            threats={t.id: t.code for t in read.threat_actors},
+            rooms={r.id: r.code for r in read.rooms},
+            injects={i.id: i.code for i in read.injects},
+            actions={a.id: a.code for i in read.injects for a in i.expected_actions},
+        )
+
+
+def _inject_row(i: Any, codes: _MselCodes, *, full: bool = False) -> dict[str, Any]:
+    """One inject as the tools return it: cut and flagged in the MSEL's
+    list, whole (`full`) on its own."""
+    text = (lambda t: t or "") if full else _cut
+    row: dict[str, Any] = {
+        "code": i.code,
+        "phase": codes.phases.get(i.phase_id) if i.phase_id else None,
+        "kind": i.kind.value,
+        "format": i.format.value,
+        "title": i.title,
+        "minute": i.offset_minutes,
+        "actor": codes.actors.get(i.simulated_actor_id) if i.simulated_actor_id else None,
+        "threat_actor": codes.threats.get(i.threat_actor_id) if i.threat_actor_id else None,
+        "attack_attribution": i.attack_attribution.value if i.attack_attribution else None,
+        "delivery_method": i.delivery_method.value,
+        "recipients": i.recipients,
+        # Empty: every room.
+        "rooms": [codes.rooms.get(r, "?") for r in i.room_ids],
+        "content": text(i.content),
+        "poll_question": i.poll_question or None,
+        "poll_options": i.poll_options or None,
+        "poll_outcomes": i.poll_outcomes or None,
+        "poll_impacts": i.poll_impacts or None,
+        "trigger_condition": text(i.trigger_condition) or None,
+        "contingent_purpose": text(i.contingent_purpose) or None,
+        "fires_at_minute": i.fires_at_minute,
+        "branch_from": codes.injects.get(i.branch_from_id) if i.branch_from_id else None,
+        "branch_action": codes.actions.get(i.branch_action_id) if i.branch_action_id else None,
+        "rejoin": codes.injects.get(i.rejoin_inject_id) if i.rejoin_inject_id else None,
+        "objectives": [codes.objectives.get(o, "?") for o in i.objective_ids],
+        "attack_techniques": [t.technique_id for t in i.attack_techniques],
+        "expected_actions": [
+            {
+                "code": a.code,
+                "description": a.description,
+                "responsible_role": a.responsible_role,
+                "within_minutes": a.expected_within_minutes,
+            }
+            for a in i.expected_actions
+        ],
+        "review_status": i.review_status.value,
+    }
+    if full:
+        row["facilitator_notes"] = i.facilitator_notes
+        row["attachment_notes"] = i.attachment_notes
+        row["artifact"] = i.artifact.model_dump(mode="json") if i.artifact else None
+        row["images"] = len(i.images)
+        row["files"] = len(i.files)
+        row["origin"] = i.origin_name
+    else:
+        # What get_inject adds.
+        row["has_facilitator_notes"] = bool(i.facilitator_notes)
+        row["has_artifact"] = i.artifact is not None
+        row["attachments"] = len(i.attachment_notes) + len(i.images) + len(i.files)
+    return row
+
+
+def _msel(session: Session, user: User, args: MselInput) -> ToolResult:
     ttx = _authorize(session, user, args.ttx_id)
     msel = find_msel(session, ttx.id)
     if msel is None:
@@ -828,10 +934,14 @@ def _msel(session: Session, user: User, args: ExerciseInput) -> ToolResult:
             ttx.organization_id,
         )
     read = msel_read(session, ttx, msel)
-    objective_codes = {o.id: o.code for o in read.needs.objectives}
-    phase_codes = {p.id: p.code for p in read.phases}
-    actor_codes = {a.id: a.code for a in read.actors}
-    threat_codes = {t.id: t.code for t in read.threat_actors}
+    codes = _MselCodes.of(read)
+    injects = list(read.injects)
+    if args.phase:
+        wanted = args.phase.strip().upper()
+        injects = [i for i in injects if (codes.phases.get(i.phase_id) or "").upper() == wanted]
+    if args.codes:
+        named = {c.strip().upper() for c in args.codes}
+        injects = [i for i in injects if i.code.upper() in named]
     data = {
         "status": read.status.value,
         "version": read.version,
@@ -857,53 +967,45 @@ def _msel(session: Session, user: User, args: ExerciseInput) -> ToolResult:
                 "end_minute": p.end_offset,
                 "situation_update": _cut(p.situation_update),
                 "key_questions": p.key_questions,
-                "objectives": [objective_codes.get(i, "?") for i in p.objective_ids],
+                "objectives": [codes.objectives.get(i, "?") for i in p.objective_ids],
             }
             for p in read.phases
         ],
         "actors": [
-            {"code": a.code, "name": a.name, "type": a.type.value, "played_by": a.played_by}
+            {
+                "code": a.code,
+                "name": a.name,
+                "type": a.type.value,
+                "channel": a.channel.value if a.channel else None,
+                "played_by": a.played_by,
+            }
             for a in read.actors
         ],
         "threat_actors": [
             {"code": t.code, "name": t.name, "mitre_group_id": t.mitre_group_id}
             for t in read.threat_actors
         ],
-        "injects": [
-            {
-                "code": i.code,
-                "phase": phase_codes.get(i.phase_id) if i.phase_id else None,
-                "kind": i.kind.value,
-                "format": i.format.value,
-                "title": i.title,
-                "minute": i.offset_minutes,
-                "actor": actor_codes.get(i.simulated_actor_id) if i.simulated_actor_id else None,
-                "threat_actor": threat_codes.get(i.threat_actor_id) if i.threat_actor_id else None,
-                "delivery_method": i.delivery_method.value,
-                "content": _cut(i.content),
-                "poll_question": i.poll_question or None,
-                "poll_options": i.poll_options or None,
-                "poll_outcomes": i.poll_outcomes or None,
-                "poll_impacts": i.poll_impacts or None,
-                "trigger_condition": _cut(i.trigger_condition) or None,
-                "objectives": [objective_codes.get(o, "?") for o in i.objective_ids],
-                "attack_techniques": [t.technique_id for t in i.attack_techniques],
-                "expected_actions": [
-                    {
-                        "code": a.code,
-                        "description": a.description,
-                        "responsible_role": a.responsible_role,
-                        "within_minutes": a.expected_within_minutes,
-                    }
-                    for a in i.expected_actions
-                ],
-                "review_status": i.review_status.value,
-            }
-            for i in read.injects
-        ],
+        "rooms": [{"code": r.code, "name": r.name} for r in read.rooms],
+        "injects_total": len(read.injects),
+        "injects": [_inject_row(i, codes) for i in injects],
         "validation": _issues(read.validation),
     }
     return ToolResult(data, ttx.id, ttx.organization_id)
+
+
+def _inject(session: Session, user: User, args: InjectInput) -> ToolResult:
+    ttx = _authorize(session, user, args.ttx_id)
+    msel = find_msel(session, ttx.id)
+    read = msel_read(session, ttx, msel) if msel is not None else None
+    wanted = args.code.strip().upper()
+    found = next((i for i in read.injects if i.code.upper() == wanted), None) if read else None
+    if found is None:
+        raise _not_found("No such inject in this MSEL.")
+    return ToolResult(
+        {"inject": _inject_row(found, _MselCodes.of(read), full=True)},
+        ttx.id,
+        ttx.organization_id,
+    )
 
 
 # --- Catalogs ----------------------------------------------------------------
@@ -1132,6 +1234,30 @@ class ProposeScopeInput(ProposeInput, proposals.ScopeItem):
     pass
 
 
+class ProposePlaceholdersInput(ExerciseInput):
+    values: ScenarioVariables = Field(
+        description="A value per placeholder name (without braces), from get_placeholders; "
+        "the ones you leave out stay to fill later."
+    )
+    summary: str = Field(default="", max_length=500, description="Why, in one sentence.")
+    dry_run: bool = Field(default=False, description="True: check without keeping it.")
+    changeset: str | None = Field(default=None, max_length=80)
+
+
+class ProposeContextInput(ProposeInput, proposals.ContextItem):
+    pass
+
+
+class ProposeRisksInput(ProposeInput):
+    items: list[proposals.RiskItem] = Field(min_length=1, max_length=20)
+
+
+class RiskSearchInput(_Input):
+    query: str = Field(default="", max_length=200)
+    category: Literal[tuple(c.value for c in RiskCategory)] | None = None  # type: ignore[valid-type]
+    language: Literal["en", "es"] = "en"
+
+
 class ProposeMselSettingsInput(ProposeInput, proposals.MselSettingsItem):
     pass
 
@@ -1284,6 +1410,7 @@ def _propose(kind: str) -> Callable[[Session, User, Any], ToolResult]:
         "needs": proposals.propose_needs,
         "objectives": proposals.propose_objectives,
         "injects": proposals.propose_injects,
+        "risks": proposals.propose_risks,
         "phases": proposals.propose_phases,
         "actors": proposals.propose_actors,
         "threat_actors": proposals.propose_threat_actors,
@@ -1361,6 +1488,78 @@ def _propose_scope(session: Session, user: User, args: ProposeScopeInput) -> Too
     return ToolResult(_label(session, answer, args.changeset), ttx.id, ttx.organization_id)
 
 
+def _placeholders(session: Session, user: User, args: ExerciseInput) -> ToolResult:
+    ttx = _authorize(session, user, args.ttx_id)
+    found = ttx_placeholder_service.scan(session, ttx)
+    return ToolResult(
+        {
+            "placeholders": [
+                {
+                    "name": v.name,
+                    "count": v.count,
+                    "description": v.description,
+                    "suggested": v.suggested,
+                    "uses": [
+                        {"code": u.code, "title": u.title, "excerpt": _cut(u.excerpt, 200)}
+                        for u in v.uses[:3]
+                    ],
+                }
+                for v in found.variables
+            ],
+            # Filling changes a document past draft, which goes back to it.
+            "reopens_needs_analysis": found.reopens_needs,
+            "reopens_msel": found.reopens_msel,
+        },
+        ttx.id,
+        ttx.organization_id,
+    )
+
+
+def _propose_placeholders(
+    session: Session, user: User, args: ProposePlaceholdersInput
+) -> ToolResult:
+    ttx = _authorize_design(session, user, args.ttx_id)
+    answer = proposals.propose_placeholder_values(
+        session, ttx, user, args.values, args.summary, dry_run=args.dry_run
+    )
+    return ToolResult(_label(session, answer, args.changeset), ttx.id, ttx.organization_id)
+
+
+def _propose_context(session: Session, user: User, args: ProposeContextInput) -> ToolResult:
+    ttx = _authorize_design(session, user, args.ttx_id)
+    item = proposals.ContextItem.model_validate(
+        args.model_dump(
+            exclude_unset=True, exclude={"ttx_id", "dry_run", "include_pending", "changeset"}
+        )
+    )
+    answer = proposals.propose_context(
+        session, ttx, user, item, dry_run=args.dry_run, include_pending=args.include_pending
+    )
+    return ToolResult(_label(session, answer, args.changeset), ttx.id, ttx.organization_id)
+
+
+def _search_risk_catalog(session: Session, user: User, args: RiskSearchInput) -> ToolResult:
+    words = args.query.lower().split()
+    results = []
+    for template in RISK_CATALOG:
+        if args.category and template.category.value != args.category:
+            continue
+        both = " ".join(
+            (template.risk_en, template.risk_es, template.mitigation_en, template.mitigation_es)
+        ).lower()
+        if all(word in both for word in words):
+            spanish = args.language == "es"
+            results.append(
+                {
+                    "id": template.id,
+                    "category": template.category.value,
+                    "risk": template.risk_es if spanish else template.risk_en,
+                    "mitigation": template.mitigation_es if spanish else template.mitigation_en,
+                }
+            )
+    return ToolResult({"results": results})
+
+
 def _list_proposals(session: Session, user: User, args: ListProposalsInput) -> ToolResult:
     ttx = _authorize_report_author(session, user, args.ttx_id, write=True)
     items = proposals.list_for_author(session, ttx, user, status=args.status)
@@ -1380,6 +1579,13 @@ def _list_proposals(session: Session, user: User, args: ListProposalsInput) -> T
                     "depends_on": p.depends_on,
                     "changeset": p.changeset,
                     "created_at": p.created_at.isoformat(),
+                    # A discarded one: why, in the person's words (data, not
+                    # instructions) -- or the server's dependency / superseded.
+                    **(
+                        {"discard_reason": p.decision_reason, "discard_note": p.decision_note}
+                        if p.status == "discarded"
+                        else {}
+                    ),
                 }
                 for p in items
             ]
@@ -1417,18 +1623,30 @@ TOOLS: dict[str, ToolSpec] = {
         ToolSpec(
             "get_needs_analysis",
             "The exercise's needs analysis as Markdown: sponsor, triggers, scope, needs "
-            "(NEED-nn), objectives (OBJ-nn) with the needs they answer, risks and approvals. "
-            "Cite the codes." + _DATA_NOTE,
+            "(NEED-nn), objectives (OBJ-nn) with the needs they answer, risks and approvals; "
+            "and its risks as a numbered list (propose_risks names one by number). Cite the "
+            "codes." + _DATA_NOTE,
             NeedsInput,
             _needs_analysis,
         ),
         ToolSpec(
             "get_msel",
             "The exercise's MSEL in compact form: objectives, phases, simulated and threat "
-            "actors, and injects with their objectives, ATT&CK techniques and expected "
-            "actions; long texts are cut. Cite the codes." + _DATA_NOTE,
-            ExerciseInput,
+            "actors, rooms, and injects with their recipients, rooms, objectives, ATT&CK "
+            "techniques, expected actions and, for a contingent one, where it branches off "
+            "and rejoins; long texts are cut (get_inject returns one whole). Narrow a long "
+            "MSEL with phase or codes. Cite the codes." + _DATA_NOTE,
+            MselInput,
             _msel,
+        ),
+        ToolSpec(
+            "get_inject",
+            "One inject of the exercise's MSEL in full, by code: its whole content, the "
+            "facilitator notes, the simulated artifact it's drawn as (email, press release, "
+            "social post, chat message), attachment notes, recipients and rooms. Read it "
+            "before proposing a change to it." + _DATA_NOTE,
+            InjectInput,
+            _inject,
         ),
         ToolSpec(
             "get_session_plan",
@@ -1544,8 +1762,8 @@ TOOLS: dict[str, ToolSpec] = {
         ToolSpec(
             "propose_objectives",
             "Propose objectives: new ones (statement, capability, linked_needs -- the needs "
-            "they answer, by code or by a proposed need's id --, success_criterion, evidence) "
-            "or changes to "
+            "they answer, by code or by a proposed need's id --, success_criterion, evidence, "
+            "and what achieved, partially achieved and not achieved look like) or changes to "
             "existing ones (by code). A capability the exercise doesn't have yet is proposed "
             "with it (four at most)." + _PROPOSAL_NOTE,
             ProposeObjectivesInput,
@@ -1574,6 +1792,57 @@ TOOLS: dict[str, ToolSpec] = {
             ProposeScopeInput,
             _propose_scope,
             annotations=_WRITE,
+        ),
+        ToolSpec(
+            "get_placeholders",
+            "The {placeholders} an exercise template left unfilled across the exercise's texts "
+            "(a company name, a supplier, a country...): each with how often and where it's "
+            "used, what the template says it stands for and the value it suggests, and "
+            "whether filling them reopens an approved document." + _DATA_NOTE,
+            ExerciseInput,
+            _placeholders,
+        ),
+        ToolSpec(
+            "propose_placeholder_values",
+            "Propose values for the exercise's {placeholders} (names from get_placeholders): "
+            "fictitious ones that fit the organization and the story, coherent with each "
+            "other, never a real company or person. One proposal; accepting it opens the fill "
+            "dialog with your values for the person to review, and writes them throughout the "
+            "exercise at once. Nothing changes until then.",
+            ProposePlaceholdersInput,
+            _propose_placeholders,
+            annotations=_WRITE,
+        ),
+        ToolSpec(
+            "propose_context",
+            "Propose the needs analysis' context, the fields it can't be approved without: "
+            "sponsor_motivation (why the exercise, in the organization's words), triggers "
+            "(what prompted it) and trigger_other, levels (strategic, tactical, operational), "
+            "the date window, key_participants_availability and the stop_exercise_keyword. "
+            "Lists are the whole list you want. The sponsor's name and role, the approvals and "
+            "the commitment to act on the findings stay with the person." + _PROPOSAL_NOTE,
+            ProposeContextInput,
+            _propose_context,
+            annotations=_WRITE,
+        ),
+        ToolSpec(
+            "propose_risks",
+            "Propose risks to the exercise itself (a scenario leak, a key person absent, a "
+            "real incident on the day) with their mitigation: new ones, or changes to the "
+            "ones get_needs_analysis lists under risks, named by number (delete: true with a "
+            "number removes one). owner is an area or role, never a person. Find usual ones "
+            "with search_risk_catalog." + _PROPOSAL_NOTE,
+            ProposeRisksInput,
+            _propose("risks"),
+            annotations=_WRITE,
+        ),
+        ToolSpec(
+            "search_risk_catalog",
+            "TTX-Zone's library of risks to an exercise and how they are usually handled, by "
+            "category (confidentiality, people, operations, logistics, conduct), in English or "
+            "Spanish: a starting point for propose_risks.",
+            RiskSearchInput,
+            _search_risk_catalog,
         ),
         ToolSpec(
             "propose_msel_settings",
@@ -1700,7 +1969,10 @@ TOOLS: dict[str, ToolSpec] = {
         ToolSpec(
             "list_my_proposals",
             "Your proposals on an exercise and what the person decided (pending, accepted, "
-            "discarded).",
+            "discarded). A discarded one carries why when the person said (discard_reason: "
+            "duplicate, unrealistic, out_of_scope, tone, incorrect, other; discard_note in "
+            "their words): read the discarded ones before proposing again on the same rows, "
+            "and don't repeat what was turned down." + _DATA_NOTE,
             ListProposalsInput,
             _list_proposals,
         ),

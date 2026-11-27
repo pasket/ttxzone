@@ -347,6 +347,13 @@ def test_every_msel_proposal_reads_back_as_proposed_once_saved(
                     "code": inject["code"],
                     "title": "EDR alerts: mass encryption",
                     "objectives": objectives[::-1],
+                    "artifact": {
+                        "kind": "email",
+                        "sender": "SOC shift lead",
+                        "sender_address": "soc@example.org",
+                        "subject": "Mass encryption on file servers",
+                    },
+                    "attachment_notes": ["EDR console screenshot"],
                     "attack_attribution": "noise",
                     "attack_techniques": techniques,
                 },
@@ -355,6 +362,9 @@ def test_every_msel_proposal_reads_back_as_proposed_once_saved(
                     "actor": actor["code"],
                     "title": "Substations go dark",
                     "content": "Two HMIs stop refreshing telemetry.",
+                    "facilitator_notes": "Let the table notice the silence first.",
+                    "artifact": {"kind": "chat_message", "sender": "Control room"},
+                    "attachment_notes": ["HMI photo"],
                     "minute": phase["start_offset"] + 5,
                     "objectives": objectives[::-1],
                     "attack_attribution": "noise",
@@ -382,6 +392,26 @@ def test_every_msel_proposal_reads_back_as_proposed_once_saved(
         apply=proposals._apply_msel,
         path="msel",
     )
+
+    # What was proposed can be read back: whole on its own, flagged in the list.
+    whole = _data(call(client, token, "get_inject", {"ttx_id": ttx_id, "code": inject["code"]}))
+    assert whole["inject"]["artifact"]["subject"] == "Mass encryption on file servers"
+    assert whole["inject"]["attachment_notes"] == ["EDR console screenshot"]
+    listed = _data(call(client, token, "get_msel", {"ttx_id": ttx_id, "codes": [inject["code"]]}))
+    [row] = listed["injects"]
+    assert row["has_artifact"] is True and row["attachments"] == 1
+    assert "recipients" in row and listed["injects_total"] > 1
+    one_phase = _data(call(client, token, "get_msel", {"ttx_id": ttx_id, "phase": phase["code"]}))
+    assert one_phase["injects"] and {i["phase"] for i in one_phase["injects"]} == {phase["code"]}
+    missing = call(client, token, "get_inject", {"ttx_id": ttx_id, "code": "INJ-999"})
+    assert _error_code(missing) == "ASSISTANT_ENTRY_NOT_FOUND"
+    no_room = call(
+        client,
+        token,
+        "propose_injects",
+        {"ttx_id": ttx_id, "items": [{"code": inject["code"], "rooms": ["ROOM-99"]}]},
+    )
+    assert _error_code(no_room) == "ASSISTANT_PROPOSAL_UNKNOWN_REFERENCE"
 
 
 def test_a_new_phase_and_the_inject_on_it_read_back_once_saved(
@@ -485,6 +515,9 @@ def test_needs_and_objectives_read_back_as_proposed_once_saved(
                         "capability": objective["capability"],
                         "linked_needs": [created, need["code"]],
                         "success_criterion": "A written restore order.",
+                        "achieved_note": "The order names an owner per system.",
+                        "partially_achieved": "An order without owners.",
+                        "not_achieved": "No order within the time box.",
                     },
                     {"code": objective["code"], "linked_needs": [created, need["code"]]},
                 ],
@@ -511,3 +544,169 @@ def test_needs_and_objectives_read_back_as_proposed_once_saved(
         apply=apply,
         path="needs-form",
     )
+
+
+def test_context_and_risks_read_back_as_proposed_once_saved(
+    client: TestClient, db_session: Session, assistant_planner: dict
+) -> None:
+    ttx_id = assistant_planner["ttx"]["id"]
+    token = create_token(client)["token"]
+    read = _data(call(client, token, "get_needs_analysis", {"ttx_id": ttx_id}))
+    assert [r["number"] for r in read["risks"]] == list(range(1, len(read["risks"]) + 1))
+    assert read["risks"], "a new form starts with the default risks"
+
+    found = _data(call(client, token, "search_risk_catalog", {"query": "leak", "language": "es"}))
+    assert found["results"] and found["results"][0]["category"] == "confidentiality"
+
+    context = _data(
+        call(
+            client,
+            token,
+            "propose_context",
+            {
+                "ttx_id": ttx_id,
+                "sponsor_motivation": "Last year's outage showed nobody owns the restore order.",
+                "triggers": ["recent_incident", "other"],
+                "trigger_other": "A merger",
+                "levels": ["tactical", "operational"],
+                "date_window_start": "2031-03-01",
+                "date_window_end": "2031-03-31",
+                "stop_exercise_keyword": "REAL WORLD",
+            },
+        )
+    )
+    assert context["proposals"][0]["target"] == "needs_context"
+    risks = _data(
+        call(
+            client,
+            token,
+            "propose_risks",
+            {
+                "ttx_id": ttx_id,
+                "items": [
+                    {
+                        "risk": "The table reads the scenario as blame",
+                        "mitigation": "Open with the no-fault rule.",
+                        "owner": "Facilitation",
+                    },
+                    {"number": 1, "owner": "Planning team"},
+                    {"number": 2, "delete": True},
+                ],
+            },
+        )
+    )
+    assert [p["operation"] for p in risks["proposals"]] == ["create", "update", "delete"]
+    listed = _data(call(client, token, "list_my_proposals", {"ttx_id": ttx_id}))
+    assert {"risk 1", "risk 2"} <= {p["code"] for p in listed["proposals"]}
+
+    no_such = call(
+        client, token, "propose_risks", {"ttx_id": ttx_id, "items": [{"number": 99, "owner": "x"}]}
+    )
+    assert _error_code(no_such) == "ASSISTANT_PROPOSAL_UNKNOWN_REFERENCE"
+    bare = call(client, token, "propose_risks", {"ttx_id": ttx_id, "items": [{"risk": "Only"}]})
+    assert _error_code(bare) == "ASSISTANT_PROPOSAL_INCOMPLETE"
+
+    made = _made(db_session, context, risks)
+    deleted = next(p for p in made if p.operation == "delete")
+    kept = [p for p in made if p.operation != "delete"]
+    db_session.expire_all()
+    ttx = db_session.get(TTX, uuid.UUID(ttx_id))
+    payload = proposals.payload_from_form(form_read(db_session, ttx, get_form(db_session, ttx.id)))
+    proposals.apply_needs(payload, deleted)
+
+    _round_trip_keeping(client, db_session, ttx_id, kept, deleted, payload)
+
+
+def _round_trip_keeping(
+    client: TestClient,
+    db_session: Session,
+    ttx_id: str,
+    kept: list[AssistantProposal],
+    deleted: AssistantProposal,
+    payload: dict,
+) -> None:
+    """The round trip, with a deletion applied alongside: gone from the
+    saved rows, then marked applied with the row's id."""
+    before = {p.target: _saved_ids(db_session, ttx_id, p.target) for p in kept}
+    for proposal in kept:
+        proposals.apply_needs(payload, proposal)
+    saved = client.put(f"/api/v1/ttx/{ttx_id}/needs-form", json=payload, headers=_csrf(client))
+    assert saved.status_code == 200, saved.text
+    db_session.expire_all()
+    ttx = db_session.get(TTX, uuid.UUID(ttx_id))
+    for proposal in kept:
+        rows = proposals.saved_rows(db_session, ttx, proposal.target)
+        assert str(deleted.target_id) not in rows or proposal.target != "risk"
+        if proposal.operation == "create":
+            [row_id] = set(rows) - before[proposal.target]
+        else:
+            row_id = str(proposal.target_id)
+        assert_holds(rows[row_id], proposal.patch, {})
+        applied = client.post(
+            f"{PROPOSALS.format(ttx_id=ttx_id)}/{proposal.id}/applied",
+            json={"row_id": row_id},
+            headers=_csrf(client),
+        )
+        assert applied.status_code == 200, applied.text
+    gone = client.post(
+        f"{PROPOSALS.format(ttx_id=ttx_id)}/{deleted.id}/applied",
+        json={"row_id": str(deleted.target_id)},
+        headers=_csrf(client),
+    )
+    assert gone.status_code == 200, gone.text
+    assert _list(client, ttx_id) == []
+
+
+def test_placeholder_values_are_proposed_and_applied_once_filled(
+    client: TestClient, db_session: Session, assistant_planner: dict
+) -> None:
+    ttx_id = assistant_planner["ttx"]["id"]
+    base = f"/api/v1/ttx/{ttx_id}"
+    applied = client.post(
+        f"{base}/scenario/apply?dry_run=false",
+        json={"source": "system", "id": "black-friday-suite-outage"},
+        headers=_csrf(client),
+    )
+    assert applied.json()["ok"] is True, applied.json()
+    token = create_token(client)["token"]
+
+    left = _data(call(client, token, "get_placeholders", {"ttx_id": ttx_id}))
+    by_name = {p["name"]: p for p in left["placeholders"]}
+    assert by_name["brand"]["suggested"] and by_name["brand"]["uses"]
+
+    unknown = call(
+        client, token, "propose_placeholder_values", {"ttx_id": ttx_id, "values": {"nope": "x"}}
+    )
+    assert _error_code(unknown) == "ASSISTANT_PROPOSAL_UNKNOWN_REFERENCE"
+    answer = _data(
+        call(
+            client,
+            token,
+            "propose_placeholder_values",
+            {"ttx_id": ttx_id, "values": {"brand": "Kubo", "organization": "Acme"}},
+        )
+    )
+    [proposal] = answer["proposals"]
+    assert proposal["target"] == "placeholders"
+    [listed] = _list(client, ttx_id)
+    assert listed["patch"] == {"brand": "Kubo", "organization": "Acme"}
+    assert listed["outdated"] is False
+
+    # Not applied while the texts still hold them; once the person fills them, yes.
+    early = client.post(
+        f"{PROPOSALS.format(ttx_id=ttx_id)}/{proposal['id']}/applied",
+        json={"row_id": ttx_id},
+        headers=_csrf(client),
+    )
+    assert early.status_code == 409
+    filled = client.post(
+        f"{base}/placeholders/fill", json={"variables": listed["patch"]}, headers=_csrf(client)
+    )
+    assert filled.status_code == 200, filled.text
+    done = client.post(
+        f"{PROPOSALS.format(ttx_id=ttx_id)}/{proposal['id']}/applied",
+        json={"row_id": ttx_id},
+        headers=_csrf(client),
+    )
+    assert done.status_code == 200, done.text
+    assert _list(client, ttx_id) == []

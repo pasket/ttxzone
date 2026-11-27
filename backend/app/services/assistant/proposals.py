@@ -17,7 +17,7 @@ import copy
 import json
 import logging
 import uuid
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
@@ -37,11 +37,12 @@ from app.models import (
 from app.models.inject import AttackAttribution, DeliveryMethod, InjectFormat, InjectKind
 from app.models.ttx_msel import ActorOrigin, ActorType
 from app.models.ttx_need import NeedPriority, NeedSource
-from app.models.ttx_needs_form import Capability, Tlp
+from app.models.ttx_needs_form import Capability, ExerciseLevel, Tlp, Trigger
 from app.schemas.threat_actor_library import MAX_THREAT_ACTOR_TECHNIQUES
 from app.schemas.ttx_msel import (
     MAX_POLL_OPTIONS,
     AttackRef,
+    InjectArtifact,
     MeterLevel,
     MselRead,
     MselSaveRequest,
@@ -70,10 +71,22 @@ TLP_TARGET = "needs_tlp"
 # row, the exercise itself, saved from Creator → Exercise.
 EXERCISE_TARGET = "ttx_meta"
 EXERCISE_FIELDS = ("name", "description", "content_language")
+# The needs analysis' context (why, when, at which level): one row, the form.
+CONTEXT_TARGET = "needs_context"
+# A risk to the exercise itself, a row of the needs analysis (no code: named
+# by its position in the list).
+RISK_TARGET = "risk"
+# Values for the {placeholders} a template left in the exercise's texts: an
+# action the page runs (its fill dialog, which rewrites several documents),
+# not a field; the patch is {name: value}, the row the exercise.
+PLACEHOLDERS_TARGET = "placeholders"
 TARGETS = (
+    PLACEHOLDERS_TARGET,
     "need",
     "objective",
+    RISK_TARGET,
     SCOPE_TARGET,
+    CONTEXT_TARGET,
     TLP_TARGET,
     EXERCISE_TARGET,
     "inject",
@@ -83,7 +96,7 @@ TARGETS = (
     "eeg_point",
     *AAR_TARGETS,
 )
-NEEDS_TARGETS = ("need", "objective", SCOPE_TARGET, TLP_TARGET)
+NEEDS_TARGETS = ("need", "objective", RISK_TARGET, SCOPE_TARGET, CONTEXT_TARGET, TLP_TARGET)
 # The MSEL's own settings: one row, the MSEL itself.
 META_TARGET = "msel_meta"
 # Resetting one kind of code to the MSEL's order: an action the page runs
@@ -111,6 +124,17 @@ SCOPE_FIELDS = (
     "confidentiality_restrictions",
     "budget_and_external_support",
 )
+CONTEXT_FIELDS = (
+    "sponsor_motivation",
+    "triggers",
+    "trigger_other",
+    "levels",
+    "date_window_start",
+    "date_window_end",
+    "key_participants_availability",
+    "stop_exercise_keyword",
+)
+_RISK_FIELDS = ("risk", "mitigation", "owner")
 MAX_PENDING_PER_EXERCISE = 50
 MAX_PATCH_CHARS = 20_000
 PENDING_RETENTION_DAYS = 30
@@ -462,6 +486,51 @@ class ScopeItem(_Item):
     budget_and_external_support: str | None = Field(default=None, max_length=5000)
 
 
+class ContextItem(_Item):
+    sponsor_motivation: str | None = Field(
+        default=None,
+        max_length=5000,
+        description="Why the sponsor wants the exercise, in the organization's words. The "
+        "sponsor's name and role stay with the person.",
+    )
+    triggers: list[Trigger] | None = Field(
+        default=None, description="What prompted it; the whole list you want."
+    )
+    trigger_other: str | None = Field(
+        default=None, max_length=255, description="Which, when triggers has other."
+    )
+    levels: list[ExerciseLevel] | None = Field(
+        default=None, description="The levels that take part; the whole list you want."
+    )
+    date_window_start: date | None = Field(default=None, description="YYYY-MM-DD.")
+    date_window_end: date | None = Field(default=None, description="YYYY-MM-DD.")
+    key_participants_availability: str | None = Field(default=None, max_length=5000)
+    stop_exercise_keyword: str | None = Field(
+        default=None,
+        max_length=64,
+        description="The word anyone says to halt the exercise if something real happens.",
+    )
+
+
+class RiskItem(_Item):
+    number: int | None = Field(
+        default=None,
+        ge=1,
+        description="An existing risk's position in get_needs_analysis' risks (1 is the "
+        "first) to change it; without one the item is a new risk.",
+    )
+    delete: bool = Field(
+        default=False, description="True, with a number and nothing else: propose removing it."
+    )
+    risk: str | None = Field(
+        default=None, max_length=5000, description="A risk to the exercise itself, not a threat."
+    )
+    mitigation: str | None = Field(default=None, max_length=5000)
+    owner: str | None = Field(
+        default=None, max_length=255, description="An area or role, never a person's name."
+    )
+
+
 class MeterItem(BaseModel):
     model_config = ConfigDict(extra="forbid")
     name: str = Field(min_length=1, max_length=40)
@@ -564,6 +633,17 @@ class ObjectiveItem(_DeletableItem):
     success_criterion: str | None = Field(default=None, max_length=5000)
     achieve_at_least: int | None = Field(default=None, ge=1, le=50)
     time_box_minutes: int | None = Field(default=None, ge=1, le=1440)
+    achieved_note: str | None = Field(
+        default=None,
+        max_length=5000,
+        description="What achieved looks like at the table, beyond the success criterion.",
+    )
+    partially_achieved: str | None = Field(
+        default=None, max_length=5000, description="What counts as partially achieved."
+    )
+    not_achieved: str | None = Field(
+        default=None, max_length=5000, description="What counts as not achieved."
+    )
     evidence: str | None = Field(default=None, max_length=5000)
     regulatory_requirement_ids: list[str] | None = Field(default=None, max_length=20)
 
@@ -604,6 +684,24 @@ class InjectItem(_DeletableItem):
     attack_attribution: AttackAttribution | None = None
     attack_techniques: list[AttackRef] | None = Field(default=None, max_length=20)
     facilitator_notes: str | None = Field(default=None, max_length=5000)
+    artifact: InjectArtifact | None = Field(
+        default=None,
+        description="Draws the inject's content as a simulated artifact: kind (email, press "
+        "release, social post, chat message) and its envelope -- sender, sender_address, "
+        "recipient, subject, timestamp, location -- in plain text; the body is content. "
+        "Fictitious names and example.* addresses only. null removes it.",
+    )
+    attachment_notes: list[str] | None = Field(
+        default=None,
+        max_length=10,
+        description="What would be attached (a log extract, a screenshot), described in a "
+        "line each: the Planner adds the files.",
+    )
+    rooms: list[str] | None = Field(
+        default=None,
+        max_length=50,
+        description="Room codes (see get_msel's rooms) the inject plays in; empty: every room.",
+    )
     expected_actions: list[ExpectedActionItem] | None = Field(
         default=None,
         max_length=8,
@@ -846,8 +944,23 @@ def apply_needs(payload: dict, proposal: AssistantProposal) -> None:
         _apply_need(payload, proposal)
     elif proposal.target == "objective":
         _apply_objective(payload, proposal)
-    elif proposal.target in (SCOPE_TARGET, TLP_TARGET):
+    elif proposal.target == RISK_TARGET:
+        _apply_risk(payload, proposal)
+    elif proposal.target in (SCOPE_TARGET, CONTEXT_TARGET, TLP_TARGET):
         _apply_scope(payload, proposal)
+
+
+def _apply_risk(payload: dict, proposal: AssistantProposal) -> None:
+    if proposal.operation == "create":
+        row = {"id": None, "key": ref(proposal.id), "risk": "", "mitigation": "", "owner": ""}
+        payload["risks"].append({**row, **proposal.patch})
+        return
+    if proposal.operation == "delete":
+        payload["risks"] = [r for r in payload["risks"] if r["id"] != str(proposal.target_id)]
+        return
+    for risk in payload["risks"]:
+        if risk["id"] == str(proposal.target_id):
+            patch_row(risk, proposal.patch, proposal.base, proposal.operation)
 
 
 def _apply_objective(payload: dict, proposal: AssistantProposal) -> None:
@@ -971,6 +1084,7 @@ def _supersede(session: Session, proposals: list[AssistantProposal]) -> list[str
             if new.operation == "delete" or set(old.patch) <= set(new.patch):
                 old.status = "discarded"
                 old.decided_at = now
+                old.decision_reason = "superseded"
                 session.add(old)
                 gone.append(str(old.id))
     return gone
@@ -1137,6 +1251,152 @@ def propose_scope(
     return answer
 
 
+def propose_context(
+    session: Session,
+    ttx: TTX,
+    user: User,
+    item: ContextItem,
+    *,
+    dry_run: bool = False,
+    include_pending: bool = True,
+) -> dict[str, Any]:
+    """The needs analysis' context (motivation, triggers, levels, window,
+    stop keyword), as one proposal on the form."""
+    _check_room(session, ttx, user, 1)
+    read, payload, pending = _needs_context(session, ttx, user)
+    wanted = item.model_dump(exclude_unset=True, include=set(CONTEXT_FIELDS), mode="json")
+    if not wanted:
+        raise _refused("ASSISTANT_PROPOSAL_EMPTY", "Propose at least one item.")
+    current = {f: payload.get(f) for f in CONTEXT_FIELDS}
+    patch, base = _update_patch(current, wanted, read.exercise_code)
+    proposal = _new(
+        ttx, user, uuid.uuid4(), CONTEXT_TARGET, item, patch, target_id=read.id, base=base
+    )
+    return _close(
+        session,
+        [proposal],
+        _needs_base(payload, pending, [], include_pending),
+        apply_needs,
+        lambda p: _report_needs(session, ttx, p),
+        "Creator → Needs analysis",
+        dry_run=dry_run,
+    )
+
+
+def propose_risks(
+    session: Session,
+    ttx: TTX,
+    user: User,
+    items: list[RiskItem],
+    *,
+    dry_run: bool = False,
+    include_pending: bool = True,
+) -> dict[str, Any]:
+    """Risks to the exercise itself: new ones, or changes to the ones the
+    needs analysis lists, named by their position."""
+    _check_room(session, ttx, user, len(items))
+    read, payload, pending = _needs_context(session, ttx, user)
+    rows = payload["risks"]
+    batch = uuid.uuid4()
+    proposals = []
+    for item in items:
+        wanted = item.model_dump(exclude_unset=True, include=set(_RISK_FIELDS), mode="json")
+        row = None
+        if item.number is not None:
+            if item.number > len(rows):
+                raise _refused(
+                    "ASSISTANT_PROPOSAL_UNKNOWN_REFERENCE",
+                    "There is no risk number {code} in this exercise.",
+                    {"code": str(item.number)},
+                )
+            row = rows[item.number - 1]
+        if item.delete:
+            if row is None or wanted:
+                raise _refused(
+                    "ASSISTANT_PROPOSAL_INCOMPLETE",
+                    "A risk to delete is named by its number, with nothing else.",
+                )
+            proposals.append(
+                _new(
+                    ttx,
+                    user,
+                    batch,
+                    RISK_TARGET,
+                    item,
+                    {},
+                    target_id=uuid.UUID(row["id"]),
+                    operation="delete",
+                )
+            )
+        elif row is not None:
+            patch, base = _update_patch(row, wanted, f"risk {item.number}")
+            proposals.append(
+                _new(
+                    ttx,
+                    user,
+                    batch,
+                    RISK_TARGET,
+                    item,
+                    patch,
+                    target_id=uuid.UUID(row["id"]),
+                    base=base,
+                )
+            )
+        else:
+            if not (wanted.get("risk") and wanted.get("mitigation")):
+                raise _refused(
+                    "ASSISTANT_PROPOSAL_INCOMPLETE", "A new risk needs the risk and its mitigation."
+                )
+            proposals.append(_new(ttx, user, batch, RISK_TARGET, item, {"owner": "", **wanted}))
+    return _close(
+        session,
+        proposals,
+        _needs_base(payload, pending, [], include_pending),
+        apply_needs,
+        lambda p: _report_needs(session, ttx, p),
+        "Creator → Needs analysis → Risks",
+        dry_run=dry_run,
+    )
+
+
+def propose_placeholder_values(
+    session: Session,
+    ttx: TTX,
+    user: User,
+    values: dict[str, str],
+    summary: str = "",
+    *,
+    dry_run: bool = False,
+) -> dict[str, Any]:
+    """Values for the {placeholders} still in the exercise's texts, as one
+    proposal: accepting opens the page's fill dialog with them."""
+    from app.services import ttx_placeholder_service
+
+    wanted = {name.strip(): value.strip() for name, value in values.items() if value.strip()}
+    if not wanted:
+        raise _refused("ASSISTANT_PROPOSAL_EMPTY", "Propose at least one item.")
+    _check_room(session, ttx, user, 1)
+    left = {v.name for v in ttx_placeholder_service.scan(session, ttx).variables}
+    for name in wanted:
+        if name not in left:
+            raise _refused(
+                "ASSISTANT_PROPOSAL_UNKNOWN_REFERENCE",
+                "There is no placeholder {code} left in this exercise.",
+                {"code": name},
+            )
+    proposal = _new(
+        ttx,
+        user,
+        uuid.uuid4(),
+        PLACEHOLDERS_TARGET,
+        _Item(summary=summary),
+        wanted,
+        target_id=ttx.id,
+        base={name: "" for name in wanted},
+    )
+    return _finish(session, [proposal], None, None, "Creator → MSEL → Review", dry_run=dry_run)
+
+
 def _scope_on_msel(session: Session, ttx: TTX, before: dict, after: dict) -> dict | None:
     """What a scope does to the MSEL's warnings (an inject's recipients must
     be in it): measured on the MSEL as it stands."""
@@ -1172,6 +1432,8 @@ def _unknown(target: str, code: str) -> AppException:
         return _refused(error, "There is no actor {code} in this MSEL.", params)
     if target == "threat_actor":
         return _refused(error, "There is no threat actor {code} in this MSEL.", params)
+    if target == "room":
+        return _refused(error, "There is no room {code} in this exercise.", params)
     return _refused(error, "There is no inject {code} in this MSEL.", params)
 
 
@@ -1305,6 +1567,9 @@ _INJECT_UPDATABLE = {
     "threat_actor_key",
     "attack_techniques",
     "facilitator_notes",
+    "artifact",
+    "attachment_notes",
+    "room_ids",
     "format",
     "poll_question",
     "poll_options",
@@ -1454,6 +1719,8 @@ def _inject_patch(
         "recipients",
         "attack_attribution",
         "facilitator_notes",
+        "artifact",
+        "attachment_notes",
         "format",
         "poll_question",
         "poll_options",
@@ -1463,6 +1730,9 @@ def _inject_patch(
     for name in simple:
         if name in data:
             wanted[name] = data[name]
+    if item.artifact is not None:
+        # Whole, with its defaults: the saved row is compared with it.
+        wanted["artifact"] = item.artifact.model_dump(mode="json")
     if "minute" in data:
         wanted["offset_minutes"] = data["minute"]
     if item.phase is not None:
@@ -1477,6 +1747,15 @@ def _inject_patch(
         else:
             wanted["threat_actor_key"] = refs["threat_actor"].key(item.threat_actor, depends, used)
             wanted.setdefault("attack_attribution", AttackAttribution.THREAT_ACTOR.value)
+    if item.rooms is not None:
+        rooms = {r.code.upper(): str(r.id) for r in read.rooms}
+        rooms |= {r.name.strip().upper(): str(r.id) for r in read.rooms}
+        room_ids = []
+        for name in item.rooms:
+            if name.strip().upper() not in rooms:
+                raise _unknown("room", name)
+            room_ids.append(rooms[name.strip().upper()])
+        wanted["room_ids"] = list(dict.fromkeys(room_ids))
     if item.objectives is not None:
         ids = []
         for code in item.objectives:
@@ -1576,6 +1855,9 @@ def _inject_row(proposal: AssistantProposal) -> dict[str, Any]:
         "threat_actor_key": patch.get("threat_actor_key"),
         "attack_techniques": _attack_payload(patch.get("attack_techniques", [])),
         "facilitator_notes": patch.get("facilitator_notes", ""),
+        "artifact": patch.get("artifact"),
+        "attachment_notes": patch.get("attachment_notes", []),
+        "room_ids": patch.get("room_ids", []),
         "format": patch.get("format", "inject"),
         "poll_question": patch.get("poll_question", ""),
         "poll_options": patch.get("poll_options", []),
@@ -2300,6 +2582,11 @@ def saved_rows(session: Session, ttx: TTX, target: str) -> dict[str, dict[str, A
         return aar_rows(session, ttx, target)
     if target == EXERCISE_TARGET:
         return {str(ttx.id): {"id": str(ttx.id), **_exercise_current(ttx)}}
+    if target == PLACEHOLDERS_TARGET:
+        from app.services import ttx_placeholder_service
+
+        left = [v.name for v in ttx_placeholder_service.scan(session, ttx).variables]
+        return {str(ttx.id): {"id": str(ttx.id), "remaining": left}}
     if target == "eeg_point":
         from app.services.assistant.proposals_prep import saved_points
 
@@ -2312,7 +2599,10 @@ def saved_rows(session: Session, ttx: TTX, target: str) -> dict[str, dict[str, A
             return {str(read.id): {"id": str(read.id), **{f: payload[f] for f in SCOPE_FIELDS}}}
         if target == TLP_TARGET:
             return {str(read.id): {"id": str(read.id), "tlp": payload["tlp"]}}
-        rows = payload["needs" if target == "need" else "objectives"]
+        if target == CONTEXT_TARGET:
+            return {str(read.id): {"id": str(read.id), **{f: payload[f] for f in CONTEXT_FIELDS}}}
+        lists = {"need": "needs", "objective": "objectives", RISK_TARGET: "risks"}
+        rows = payload[lists[target]]
         return {r["id"]: r for r in rows}
     msel = ttx_msel_service.find_msel(session, ttx.id)
     if msel is None:
@@ -2339,6 +2629,7 @@ def row_codes(session: Session, ttx: TTX) -> dict[str, str]:
     codes[str(read.id)] = read.exercise_code
     codes |= {str(n.id): n.code for n in read.needs}
     codes |= {str(o.id): o.code for o in read.objectives}
+    codes |= {str(r.id): f"risk {n}" for n, r in enumerate(read.risks, start=1)}
     msel = ttx_msel_service.find_msel(session, ttx.id)
     if msel is not None:
         m = ttx_msel_service.msel_read(session, ttx, msel)
@@ -2362,7 +2653,10 @@ def row_codes(session: Session, ttx: TTX) -> dict[str, str]:
 _TARGET_NAMES = {
     "need": "need",
     "objective": "objective",
+    PLACEHOLDERS_TARGET: "placeholder values",
+    RISK_TARGET: "risk",
     SCOPE_TARGET: "scope",
+    CONTEXT_TARGET: "context",
     TLP_TARGET: "classification (TLP)",
     EXERCISE_TARGET: "exercise presentation",
     "inject": "inject",
@@ -2380,12 +2674,19 @@ _TARGET_NAMES = {
 
 def auto_summary(proposal: AssistantProposal, codes: dict[str, str]) -> str:
     """One line when the assistant gave none: the row and what changes."""
-    name = proposal.patch.get("title") or proposal.patch.get("name") or proposal.patch.get("text")
+    name = (
+        proposal.patch.get("title")
+        or proposal.patch.get("name")
+        or proposal.patch.get("text")
+        or proposal.patch.get("risk")
+    )
     code = codes.get(str(proposal.target_id), "") if proposal.target_id else ""
     if proposal.operation == "delete":
         return f"Delete {code}".strip()
     if proposal.target == RENUMBER_TARGET:
         return f"Reset {proposal.patch.get('kind', '')} codes to the MSEL's order"
+    if proposal.target == PLACEHOLDERS_TARGET:
+        return "Values for " + ", ".join("{" + name + "}" for name in proposal.patch)
     if proposal.operation == "create":
         return f"New {_TARGET_NAMES.get(proposal.target, proposal.target)}" + (
             f": {name}" if name else ""
@@ -2398,7 +2699,7 @@ def outdated(proposal: AssistantProposal, rows: dict[str, dict[str, Any]]) -> bo
     deletion whose row is already gone."""
     if proposal.operation == "delete":
         return str(proposal.target_id) not in rows
-    if proposal.target == RENUMBER_TARGET:
+    if proposal.target in (RENUMBER_TARGET, PLACEHOLDERS_TARGET):
         return False
     if proposal.operation != "update":
         return False
@@ -2446,6 +2747,16 @@ def mark_applied(
                 ttx_id=str(ttx.id),
                 log_level=logging.WARNING,
             )
+    elif proposal.target == PLACEHOLDERS_TARGET:
+        row = rows.get(str(row_id))
+        if row is None or set(proposal.patch) & set(row["remaining"]):
+            raise AppException(
+                "ASSISTANT_PROPOSAL_ROW_NOT_SAVED",
+                "Those placeholders are still in the exercise's texts.",
+                409,
+                ttx_id=str(ttx.id),
+                log_level=logging.WARNING,
+            )
     elif proposal.operation == "delete":
         if proposal.target_id != row_id or str(row_id) in rows:
             raise AppException(
@@ -2475,9 +2786,19 @@ def mark_applied(
     return proposal
 
 
-def discard(session: Session, ttx: TTX, user: User, proposal_id: uuid.UUID) -> list[uuid.UUID]:
+def discard(
+    session: Session,
+    ttx: TTX,
+    user: User,
+    proposal_id: uuid.UUID,
+    *,
+    reason: str | None = None,
+    note: str = "",
+) -> list[uuid.UUID]:
     """Discards it, and the pending proposals that depend on it (an
-    objective linked to a need that won't exist). Returns every id."""
+    objective linked to a need that won't exist). Returns every id. The
+    person's reason stays on the one they discarded; its dependents say they
+    went with it."""
     proposal = _get(session, ttx, user, proposal_id)
     now = datetime.now(UTC)
     gone = [proposal]
@@ -2487,6 +2808,8 @@ def discard(session: Session, ttx: TTX, user: User, proposal_id: uuid.UUID) -> l
     for item in gone:
         item.status = "discarded"
         item.decided_at = now
+        item.decision_reason = reason if item is proposal else "dependency"
+        item.decision_note = (note.strip() or None) if item is proposal else None
         session.add(item)
     _audit(session, ttx, user, gone, "assistant.proposal_discarded")
     session.commit()

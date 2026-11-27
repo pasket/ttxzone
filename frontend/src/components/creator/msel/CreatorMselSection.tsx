@@ -1,6 +1,11 @@
 import { useEffect, useRef, useState, type Dispatch, type SetStateAction } from 'react'
 import { useTranslation } from 'react-i18next'
-import { mergeMselProposals, mselMetaRow, renumberRow } from '../../../lib/proposals'
+import {
+  mergeMselProposals,
+  mselMetaRow,
+  placeholdersRow,
+  renumberRow,
+} from '../../../lib/proposals'
 import { ProposalsPanel } from '../../assistant/ProposalsPanel'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 
@@ -281,6 +286,36 @@ function MselEditor({
   // A kind to renumber once the Planner confirms that the frozen versions
   // keep the old codes.
   const [confirmRenumber, setConfirmRenumber] = useState<MselRenumberKind | null>(null)
+  // The {placeholders} still left across the exercise (null until read):
+  // what an AI proposal of values is measured against. Read again whenever
+  // the MSEL is (a fill rewrites it).
+  const [placeholdersLeft, setPlaceholdersLeft] = useState<string[] | null>(null)
+  // Values an accepted AI proposal opens the fill dialog with.
+  const [fillWith, setFillWith] = useState<Record<string, string> | null>(null)
+  // A fill may touch only the needs analysis: counted, so it's read again.
+  const [proposalFills, setProposalFills] = useState(0)
+  const mselRevision = msel.revision
+  useEffect(() => {
+    if (oversight) return
+    let cancelled = false
+    async function load() {
+      try {
+        const found = await apiFetch<TtxPlaceholders>(`/ttx/${ttxId}/placeholders`)
+        if (!cancelled) setPlaceholdersLeft(found.variables.map((variable) => variable.name))
+      } catch {
+        // Unknown: the MSEL's own still show, and a values proposal stays
+        // pending until it can be told.
+      }
+    }
+    void load()
+    return () => {
+      cancelled = true
+    }
+  }, [ttxId, oversight, mselRevision, proposalFills])
+  function filled() {
+    setProposalFills((count) => count + 1)
+    onReload()
+  }
   const canRevertPhases =
     phaseHistory.original !== null &&
     !sameMselDraft(restoreSnapshot(draft, phaseHistory.original), draft)
@@ -668,6 +703,7 @@ function MselEditor({
         targets={[
           'msel_meta',
           'msel_renumber',
+          'placeholders',
           'msel_phase',
           'msel_actor',
           'msel_threat',
@@ -683,6 +719,7 @@ function MselEditor({
         savedRows={{
           msel_meta: [mselMetaRow(msel.id, baseline)],
           msel_renumber: [renumberRow(msel.id, msel.renumberable)],
+          ...(placeholdersLeft ? { placeholders: [placeholdersRow(ttxId, placeholdersLeft)] } : {}),
           msel_phase: baseline.phases,
           msel_actor: baseline.actors,
           msel_threat: baseline.threat_actors,
@@ -695,19 +732,25 @@ function MselEditor({
             ...draft.threat_actors,
             ...draft.injects,
             ...draft.injects.flatMap((i) => i.expected_actions),
+            ...(msel.rooms ?? []).map((r) => ({ id: r.id, key: r.id, code: r.code })),
             ...msel.needs.objectives.map((o) => ({ id: o.id, key: o.id, code: o.code })),
           ].find((row) => row.id === id || row.key === id)?.code || undefined
         }
         merge={(group, accepted) => mergeMselProposals(draft, group, accepted)}
         onAction={(proposal) => {
+          if (proposal.target === 'placeholders') {
+            setFillWith(proposal.patch as Record<string, string>)
+            return
+          }
           const kind = proposal.patch.kind as MselRenumberKind
           if (frozenVersions.length > 0) setConfirmRenumber(kind)
           else void renumbering.renumber(kind)
         }}
-        actionBlocked={
+        actionBlocked={(proposal) =>
           dirty || renumbering.busy
             ? t('assistant.saveFirst')
-            : msel.status !== 'draft'
+            : // Filling placeholders reopens the MSEL itself; a code reset doesn't.
+              proposal.target !== 'placeholders' && msel.status !== 'draft'
               ? t('assistant.draftOnly')
               : null
         }
@@ -940,7 +983,8 @@ function MselEditor({
                     onTransition={(to) => void transition(to)}
                     ttxId={ttxId}
                     canFill={!oversight}
-                    onFilled={onReload}
+                    everywhere={placeholdersLeft ?? []}
+                    onFilled={filled}
                   />
                 </FieldGroup>
                 <FieldGroup
@@ -976,6 +1020,15 @@ function MselEditor({
             </button>
           </div>
         </Modal>
+      )}
+
+      {fillWith && (
+        <PlaceholderFillDialog
+          ttxId={ttxId}
+          initialValues={fillWith}
+          onClose={() => setFillWith(null)}
+          onFilled={filled}
+        />
       )}
 
       {confirmRenumber && (
@@ -1076,6 +1129,7 @@ function ReviewTab({
   ttxId,
   canFill,
   onFilled,
+  everywhere,
 }: {
   msel: Msel
   dirty: boolean
@@ -1086,6 +1140,8 @@ function ReviewTab({
   /** On the exercise's team: may fill in what a template left unfilled. */
   canFill: boolean
   onFilled: () => void
+  /** The {placeholders} left across the whole exercise, as the server finds them. */
+  everywhere: string[]
 }) {
   const { t, i18n } = useTranslation()
   const [filling, setFilling] = useState(false)
@@ -1095,25 +1151,8 @@ function ReviewTab({
   // a notice (the server takes the MSEL either way).
   const leftover = leftoverVariables([msel.title, msel.summary, msel.phases, msel.injects])
   // The rest of the exercise (its needs analysis, cast, threat actors) can
-  // hold some too, which only the server sees: asked again after a fill.
-  const [everywhere, setEverywhere] = useState<string[]>([])
-  const [fills, setFills] = useState(0)
-  useEffect(() => {
-    if (!canFill) return
-    let cancelled = false
-    async function load() {
-      try {
-        const found = await apiFetch<TtxPlaceholders>(`/ttx/${ttxId}/placeholders`)
-        if (!cancelled) setEverywhere(found.variables.map((variable) => variable.name))
-      } catch {
-        // The MSEL's own still show; the dialog reports what fails.
-      }
-    }
-    void load()
-    return () => {
-      cancelled = true
-    }
-  }, [ttxId, canFill, msel.revision, fills])
+  // hold some too, which only the server sees: the page asks, and again
+  // after a fill.
   const elsewhere = everywhere.filter((name) => !leftover.includes(name))
   const reason = readOnly
     ? t('creator.msel.review.readOnly')
@@ -1163,10 +1202,7 @@ function ReviewTab({
         <PlaceholderFillDialog
           ttxId={ttxId}
           onClose={() => setFilling(false)}
-          onFilled={() => {
-            setFills((count) => count + 1)
-            onFilled()
-          }}
+          onFilled={onFilled}
         />
       )}
       <div className="flex flex-wrap gap-2">

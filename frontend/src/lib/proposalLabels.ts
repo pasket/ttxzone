@@ -5,7 +5,10 @@ import type { Proposal, ProposalTarget } from './proposals'
 export const TARGET_LABEL_KEYS = {
   need: 'assistant.targets.need',
   objective: 'assistant.targets.objective',
+  risk: 'assistant.targets.risk',
+  placeholders: 'assistant.targets.placeholders',
   needs_scope: 'assistant.targets.scope',
+  needs_context: 'assistant.targets.context',
   needs_tlp: 'assistant.targets.tlp',
   ttx_meta: 'assistant.targets.exercise',
   inject: 'assistant.targets.inject',
@@ -26,7 +29,10 @@ export type ProposalSection = 'exercise' | 'needs' | 'msel' | 'conduct-prep' | '
 export const PROPOSAL_SECTIONS: Record<ProposalTarget, ProposalSection> = {
   need: 'needs',
   objective: 'needs',
+  risk: 'needs',
+  placeholders: 'msel',
   needs_scope: 'needs',
+  needs_context: 'needs',
   needs_tlp: 'needs',
   ttx_meta: 'exercise',
   inject: 'msel',

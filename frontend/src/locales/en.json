@@ -5799,7 +5799,10 @@
       "mselSettings": "MSEL settings",
       "codeReset": "code reset",
       "tlp": "classification (TLP)",
-      "exercise": "exercise"
+      "exercise": "exercise",
+      "risk": "risk",
+      "placeholders": "placeholder values",
+      "context": "context"
     },
     "create": "New {{target}}",
     "update": "Change {{target}} {{code}}",
@@ -5866,7 +5869,11 @@
       "text": "Text",
       "eeg": "Objective",
       "contentLanguage": "Content language",
-      "tlp": "TLP"
+      "tlp": "TLP",
+      "artifact": "Simulated artifact",
+      "achieved": "Achieved",
+      "partiallyAchieved": "Partially achieved",
+      "notAchieved": "Not achieved"
     },
     "evidence": {
       "title": "Based on",
@@ -5914,7 +5921,30 @@
     "eegGroup": "EEG of {{code}}",
     "changeTlp": "Change the classification (TLP)",
     "changeExercise": "Change the exercise's presentation",
-    "tlpNote": "The TLP binds how everything about this exercise is handled and shared, the AI's answers included: review it before accepting."
+    "tlpNote": "The TLP binds how everything about this exercise is handled and shared, the AI's answers included: review it before accepting.",
+    "discardReasons": {
+      "none": "No reason given",
+      "duplicate": "Already covered",
+      "unrealistic": "Not realistic for us",
+      "outOfScope": "Out of scope",
+      "tone": "Wrong tone or wording",
+      "incorrect": "Incorrect",
+      "other": "Other"
+    },
+    "discardTitle_one": "Discard this proposal?",
+    "discardTitle_other": "Discard {{count}} proposals?",
+    "discardBody_one": "It’s discarded, with the proposals that need it. The assistant can propose it again.",
+    "discardBody_other": "They’re discarded, with the proposals that need them. The assistant can propose them again.",
+    "discardReasonLabel": "Why",
+    "discardNoteLabel": "Note for the assistant",
+    "discardNotePlaceholder": "NEED-02 already says this…",
+    "discardWhyHint": "The assistant reads the reason and the note before it proposes again, through your AI client.",
+    "fillPlaceholders_one": "Fill in {{count}} placeholder",
+    "fillPlaceholders_other": "Fill in {{count}} placeholders",
+    "placeholdersHint": "Accepting opens the fill dialog with these values, for you to review before they’re written throughout the exercise.",
+    "updateNamed": "Change {{target}} “{{name}}”",
+    "removeNamed": "Delete {{target}} “{{name}}”",
+    "changeContext": "Change the context"
   },
   "roleInvitations": {
     "title_one": "Invitation to an organization",

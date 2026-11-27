@@ -10,7 +10,9 @@ import {
   btnDanger,
   btnPrimary,
   btnSecondary,
+  inputBase,
   linkAccent,
+  optionalSuffix,
 } from '../../lib/buttonStyles'
 import { ATTENTION_CHANGED_EVENT, PROPOSALS_ARRIVED_EVENT } from '../../lib/attention'
 import type { IssueMessage } from '../../lib/issueGroups'
@@ -33,9 +35,11 @@ import type {
   ActorType,
   Capability,
   DeliveryMethod,
+  ExerciseLevel,
   InjectKind,
   NeedPriority,
   NeedSource,
+  NeedsTrigger,
 } from '../../lib/types'
 import {
   countBySection,
@@ -50,6 +54,33 @@ import { Modal } from '../common/Modal'
 import { Panel } from '../common/Panel'
 
 type Row = { id: string | null; key: string }
+
+/** Why a proposal is discarded, for the assistant to read before it
+ * proposes again (the server's closed list). */
+const DISCARD_REASONS = [
+  'duplicate',
+  'unrealistic',
+  'out_of_scope',
+  'tone',
+  'incorrect',
+  'other',
+] as const
+type DiscardReason = (typeof DISCARD_REASONS)[number]
+const DISCARD_REASON_KEYS = {
+  duplicate: 'assistant.discardReasons.duplicate',
+  unrealistic: 'assistant.discardReasons.unrealistic',
+  out_of_scope: 'assistant.discardReasons.outOfScope',
+  tone: 'assistant.discardReasons.tone',
+  incorrect: 'assistant.discardReasons.incorrect',
+  other: 'assistant.discardReasons.other',
+} as const satisfies Record<DiscardReason, string>
+
+const ARTIFACT_KIND_KEYS = {
+  email: 'artifacts.kinds.email',
+  press_release: 'artifacts.kinds.press_release',
+  social_post: 'artifacts.kinds.social_post',
+  chat_message: 'artifacts.kinds.chat_message',
+} as const
 
 /** A content language's name, as the exercise form shows it. */
 const LANGUAGE_NAME_KEYS = { en: 'nav.languageEn', es: 'nav.languageEs' } as const
@@ -119,6 +150,10 @@ const FIELD_LABEL_KEYS = {
   eeg_id: 'assistant.fields.eeg',
   content_language: 'assistant.fields.contentLanguage',
   tlp: 'assistant.fields.tlp',
+  artifact: 'assistant.fields.artifact',
+  achieved_note: 'assistant.fields.achieved',
+  partially_achieved: 'assistant.fields.partiallyAchieved',
+  not_achieved: 'assistant.fields.notAchieved',
 } as const
 type FieldLabelKey = (typeof FIELD_LABEL_KEYS)[keyof typeof FIELD_LABEL_KEYS]
 
@@ -149,7 +184,7 @@ export function ProposalsPanel<D>({
   description,
   issueMessage,
   onAction,
-  actionBlocked = null,
+  actionBlocked,
   autoApply = [],
 }: {
   ttxId: string
@@ -170,7 +205,7 @@ export function ProposalsPanel<D>({
    * shows it done. */
   onAction?: (proposal: Proposal) => void
   /** Why an action can't run now (unsaved changes...). */
-  actionBlocked?: string | null
+  actionBlocked?: (proposal: Proposal) => string | null
   /** Targets applied by a form of their own (Creator → Exercise's edit
    * form): marked applied whenever the saved row holds them, since the
    * panel isn't there while the form is open. */
@@ -205,7 +240,10 @@ export function ProposalsPanel<D>({
   }, [])
   // Why closing one that came back failed, by proposal.
   const [stuck, setStuck] = useState<Record<string, string>>({})
-  const [confirmDiscardAll, setConfirmDiscardAll] = useState(false)
+  // The proposals a Discard asks about, with the optional why.
+  const [discarding, setDiscarding] = useState<{ list: Proposal[]; all: boolean } | null>(null)
+  const [discardReason, setDiscardReason] = useState<DiscardReason | ''>('')
+  const [discardNote, setDiscardNote] = useState('')
   // Proposals unticked in their row's group (all are ticked at first).
   const [unselected, setUnselected] = useState<ReadonlySet<string>>(new Set())
   const marking = useRef(new Set<string>())
@@ -307,6 +345,18 @@ export function ProposalsPanel<D>({
           ),
       ),
   )
+  // Placeholder values: done once none of the names they fill is left.
+  for (const p of items) {
+    const row = (savedRows.placeholders ?? []).find((r) => r.id === p.target_id) as
+      (Row & { remaining?: string[] }) | undefined
+    if (
+      p.target === 'placeholders' &&
+      row?.remaining &&
+      !Object.keys(p.patch).some((name) => row.remaining?.includes(name))
+    ) {
+      actionsDone.push(p)
+    }
+  }
   for (const p of items) {
     if (
       autoApply.includes(p.target) &&
@@ -423,12 +473,25 @@ export function ProposalsPanel<D>({
     acceptGroup(group)
   }
 
-  async function discardAll() {
-    setConfirmDiscardAll(false)
-    await discardMany(actionable)
+  /** Asks before discarding, with room to say why (optional). */
+  function askDiscard(list: Proposal[], all = false) {
+    setDiscardReason('')
+    setDiscardNote('')
+    setDiscarding({ list, all })
   }
 
-  async function discardMany(list: Proposal[]) {
+  async function confirmDiscard() {
+    if (!discarding) return
+    const { list } = discarding
+    setDiscarding(null)
+    const note = discardNote.trim()
+    await discardMany(
+      list,
+      discardReason || note ? { reason: discardReason || null, note } : undefined,
+    )
+  }
+
+  async function discardMany(list: Proposal[], why?: { reason: string | null; note: string }) {
     setError(null)
     const gone = new Set<string>()
     try {
@@ -436,7 +499,7 @@ export function ProposalsPanel<D>({
         if (gone.has(p.id)) continue
         const result = await apiFetch<{ discarded: string[] }>(
           `/ttx/${ttxId}/assistant/proposals/${p.id}/discard`,
-          { method: 'POST' },
+          { method: 'POST', ...(why ? { body: JSON.stringify(why) } : {}) },
         )
         for (const id of result.discarded) gone.add(id)
       }
@@ -504,7 +567,7 @@ export function ProposalsPanel<D>({
           .map((v) => {
             if (typeof v === 'string') {
               if (v.startsWith(PROPOSAL_REF)) return proposedLabel(v)
-              return codeOf(v) ?? v
+              return codeOf(v) ?? enumLabel(field, v) ?? v
             }
             if (v && typeof v === 'object') {
               const item = v as Record<string, unknown>
@@ -521,6 +584,15 @@ export function ProposalsPanel<D>({
       if (value.startsWith(PROPOSAL_REF)) return proposedLabel(value)
       if (field.endsWith('_key')) return codeOf(value) ?? value
       return enumLabel(field, value) ?? value
+    }
+    if (typeof value === 'object') {
+      // An inject's simulated artifact: its kind, then what its envelope says.
+      const record = value as Record<string, unknown>
+      const kind = ARTIFACT_KIND_KEYS[record.kind as keyof typeof ARTIFACT_KIND_KEYS]
+      const rest = Object.entries(record)
+        .filter(([key, v]) => key !== 'kind' && typeof v === 'string' && v !== '')
+        .map(([, v]) => v as string)
+      return [kind ? t(kind) : null, ...rest].filter(Boolean).join(' · ') || '—'
     }
     return String(value)
   }
@@ -541,6 +613,8 @@ export function ProposalsPanel<D>({
       return t(`creator.msel.attribution.${value as 'threat_actor' | 'noise'}`)
     }
     if (field === 'format') return t(`creator.msel.formats.${value as 'inject' | 'poll'}`)
+    if (field === 'triggers') return t(`creator.needs.triggers.${value as NeedsTrigger}`)
+    if (field === 'levels') return t(`creator.needs.levels.${value as ExerciseLevel}`)
     if (field === 'tlp') return `TLP:${value.replace('_', '+').toUpperCase()}`
     if (field === 'content_language' && (value === 'en' || value === 'es')) {
       return t(LANGUAGE_NAME_KEYS[value])
@@ -602,7 +676,7 @@ export function ProposalsPanel<D>({
   }
 
   function isAction(p: Proposal): boolean {
-    return p.target === 'msel_renumber'
+    return p.target === 'msel_renumber' || p.target === 'placeholders'
   }
 
   function title(proposal: Proposal): string {
@@ -611,11 +685,25 @@ export function ProposalsPanel<D>({
         `creator.msel.renumber.${proposal.patch.kind as 'phases' | 'injects' | 'threat_actors'}`,
       )
     }
+    if (proposal.target === 'placeholders') {
+      return t('assistant.fillPlaceholders', { count: Object.keys(proposal.patch).length })
+    }
     const code = proposal.target_id ? codeOf(proposal.target_id) : undefined
     const target = t(TARGET_LABEL_KEYS[proposal.target])
     if (proposal.operation === 'create') return t('assistant.create', { target })
+    if (proposal.target === 'risk') {
+      // A risk has no code: named by its own text.
+      return t(
+        proposal.operation === 'delete' ? 'assistant.removeNamed' : 'assistant.updateNamed',
+        {
+          target,
+          name: removedName(proposal),
+        },
+      )
+    }
     if (proposal.operation === 'delete') return t('assistant.remove', { target, code: code ?? '' })
     if (proposal.target === 'needs_scope') return t('assistant.changeScope')
+    if (proposal.target === 'needs_context') return t('assistant.changeContext')
     if (proposal.target === 'needs_tlp') return t('assistant.changeTlp')
     if (proposal.target === 'ttx_meta') return t('assistant.changeExercise')
     if (proposal.target === 'msel_meta') return t('assistant.changeMselSettings')
@@ -629,9 +717,15 @@ export function ProposalsPanel<D>({
     const coded =
       code &&
       proposal.operation !== 'create' &&
-      !['msel_renumber', 'needs_scope', 'needs_tlp', 'ttx_meta', 'msel_meta'].includes(
-        proposal.target,
-      )
+      ![
+        'msel_renumber',
+        'placeholders',
+        'needs_scope',
+        'needs_context',
+        'needs_tlp',
+        'ttx_meta',
+        'msel_meta',
+      ].includes(proposal.target)
     if (!coded) return title(proposal)
     const target = t(TARGET_LABEL_KEYS[proposal.target])
     return (
@@ -649,7 +743,7 @@ export function ProposalsPanel<D>({
     const row = [...(draftRows[proposal.target] ?? []), ...(savedRows[proposal.target] ?? [])].find(
       (r) => r.id === proposal.target_id,
     ) as Record<string, unknown> | undefined
-    const name = row?.title ?? row?.name ?? row?.text ?? row?.statement ?? row?.action
+    const name = row?.title ?? row?.name ?? row?.text ?? row?.statement ?? row?.action ?? row?.risk
     return typeof name === 'string' ? name : ''
   }
 
@@ -775,7 +869,21 @@ export function ProposalsPanel<D>({
             {proposal.target === 'needs_tlp' && (
               <p className="max-w-prose text-sm">{t('assistant.tlpNote')}</p>
             )}
-            {isAction(proposal) ? (
+            {proposal.target === 'placeholders' ? (
+              <>
+                <p className="max-w-prose text-sm text-paper-ink/70 dark:text-fg-muted">
+                  {t('assistant.placeholdersHint')}
+                </p>
+                <dl className="grid gap-x-4 gap-y-1 text-sm sm:grid-cols-[minmax(8rem,auto)_1fr]">
+                  {fields.map(([name, value]) => (
+                    <div key={name} className="contents">
+                      <dt className="font-mono text-paper-ink/60 dark:text-fg-muted">{`{${name}}`}</dt>
+                      <dd className="min-w-0 break-words">{String(value)}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </>
+            ) : isAction(proposal) ? (
               <p className="max-w-prose text-sm text-paper-ink/70 dark:text-fg-muted">
                 {t(
                   proposal.patch.kind === 'injects'
@@ -900,9 +1008,10 @@ export function ProposalsPanel<D>({
               // With "Accept all" on the panel, that is its one primary action.
               className={actionable.length > 1 ? btnSecondary : btnPrimary}
               disabled={
-                disabledReason !== null || (isAction(proposal) && (actionBlocked ?? null) !== null)
+                disabledReason !== null ||
+                (isAction(proposal) && (actionBlocked?.(proposal) ?? null) !== null)
               }
-              title={isAction(proposal) ? (actionBlocked ?? undefined) : undefined}
+              title={isAction(proposal) ? (actionBlocked?.(proposal) ?? undefined) : undefined}
               // Which proposal it accepts, for whoever hears the button alone.
               aria-describedby={`proposal-${proposal.id}`}
               onClick={() => (isAction(proposal) ? onAction?.(proposal) : accept(proposal))}
@@ -913,7 +1022,7 @@ export function ProposalsPanel<D>({
               type="button"
               className={btnSecondary}
               aria-describedby={`proposal-${proposal.id}`}
-              onClick={() => void discard(proposal)}
+              onClick={() => askDiscard([proposal])}
             >
               {t('assistant.discard')}
             </button>
@@ -998,7 +1107,7 @@ export function ProposalsPanel<D>({
             >
               {t('assistant.acceptGroup', { count: open.length })}
             </button>
-            <button type="button" className={btnSecondary} onClick={() => void discardMany(open)}>
+            <button type="button" className={btnSecondary} onClick={() => askDiscard(open)}>
               {t('assistant.discardGroup')}
             </button>
           </div>
@@ -1040,7 +1149,7 @@ export function ProposalsPanel<D>({
                 type="button"
                 className={btnSecondary}
                 disabled={chosen.length === 0}
-                onClick={() => void discardMany(chosen)}
+                onClick={() => askDiscard(chosen)}
               >
                 {all ? t('assistant.discardGroup') : t('assistant.discardSelected')}
               </button>
@@ -1080,7 +1189,7 @@ export function ProposalsPanel<D>({
             <button
               type="button"
               className={btnSecondary}
-              onClick={() => setConfirmDiscardAll(true)}
+              onClick={() => askDiscard(actionable, true)}
             >
               {t('assistant.discardAll')}
             </button>
@@ -1121,24 +1230,63 @@ export function ProposalsPanel<D>({
           )}
         </ul>
       </div>
-      {confirmDiscardAll && (
-        <Modal titleId="assistant-discard-all-title" onClose={() => setConfirmDiscardAll(false)}>
-          <h2 id="assistant-discard-all-title" className="text-lg font-semibold tracking-tight">
-            {t('assistant.discardAllTitle')}
+      {discarding && (
+        <Modal titleId="assistant-discard-title" onClose={() => setDiscarding(null)}>
+          <h2 id="assistant-discard-title" className="text-lg font-semibold tracking-tight">
+            {discarding.all
+              ? t('assistant.discardAllTitle')
+              : t('assistant.discardTitle', { count: discarding.list.length })}
           </h2>
           <p className="text-sm text-paper-ink/70 dark:text-fg-muted">
-            {t('assistant.discardAllBody', { count: actionable.length })}
+            {discarding.all
+              ? t('assistant.discardAllBody', { count: discarding.list.length })
+              : t('assistant.discardBody', { count: discarding.list.length })}
           </p>
-          <div className="flex justify-end gap-2">
+          <label className="block space-y-1 text-sm">
+            <span>
+              {t('assistant.discardReasonLabel')}{' '}
+              <span className={optionalSuffix}>({t('common.optionalSuffix')})</span>
+            </span>
+            <select
+              className={inputBase}
+              value={discardReason}
+              onChange={(e) => setDiscardReason(e.target.value as DiscardReason | '')}
+            >
+              <option value="">{t('assistant.discardReasons.none')}</option>
+              {DISCARD_REASONS.map((reason) => (
+                <option key={reason} value={reason}>
+                  {t(DISCARD_REASON_KEYS[reason])}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="block space-y-1 text-sm">
+            <span>
+              {t('assistant.discardNoteLabel')}{' '}
+              <span className={optionalSuffix}>({t('common.optionalSuffix')})</span>
+            </span>
+            <textarea
+              className={inputBase}
+              rows={2}
+              maxLength={500}
+              value={discardNote}
+              placeholder={t('assistant.discardNotePlaceholder')}
+              onChange={(e) => setDiscardNote(e.target.value)}
+            />
+          </label>
+          <p className="text-[13px] text-paper-ink/70 dark:text-fg-muted">
+            {t('assistant.discardWhyHint')}
+          </p>
+          <div className="flex gap-2">
             <button
               type="button"
-              className={btnSecondary}
-              onClick={() => setConfirmDiscardAll(false)}
+              className={`${btnDanger} flex-1`}
+              onClick={() => void confirmDiscard()}
             >
-              {t('common.confirmButton.cancel')}
+              {discarding.all ? t('assistant.discardAll') : t('assistant.discard')}
             </button>
-            <button type="button" className={btnDanger} onClick={() => void discardAll()}>
-              {t('assistant.discardAll')}
+            <button type="button" className={btnSecondary} onClick={() => setDiscarding(null)}>
+              {t('common.confirmButton.cancel')}
             </button>
           </div>
         </Modal>

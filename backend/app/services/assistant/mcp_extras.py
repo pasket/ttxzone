@@ -103,15 +103,23 @@ Each document builds on the one before; a Planner approves or marks each
 READY, never the assistant.
 
 1. **Needs analysis** -- scope first (`propose_scope`: participating areas,
-   third parties, perimeter, frameworks), then needs (`propose_needs`), then
-   objectives that answer them (`propose_objectives`, `linked_needs`). The
-   person sends it for approval and the approvers sign.
+   third parties, perimeter, frameworks) and its context (`propose_context`:
+   motivation, triggers, levels, date window, stop keyword), then needs
+   (`propose_needs`), objectives that answer them (`propose_objectives`,
+   `linked_needs`) and the risks to the exercise itself (`propose_risks`,
+   from `search_risk_catalog`). The sponsor, the approvals and the
+   commitment to act on the findings are the person's.
 2. **MSEL** (opens once the needs analysis is approved) -- its settings
    (`propose_msel_settings`: duration, time compression, meters), phases
    (`propose_phases`), simulated and threat actors (`propose_actors`,
    `propose_threat_actors`), then injects in them (`propose_injects`), each
-   with expected actions that test its objectives. A Planner validates each
-   inject and takes the MSEL to review and READY.
+   with expected actions that test its objectives, and where it helps the
+   table, the `artifact` it's drawn as (an email, a press release, a post, a
+   chat message) and the rooms it plays in. `get_msel` cuts long texts:
+   `get_inject` returns one whole, to read before changing it. What a
+   template left as {placeholders} is read with `get_placeholders` and
+   filled with `propose_placeholder_values`. A Planner validates each inject
+   and takes the MSEL to review and READY.
 3. **Session plan** (opens once the MSEL is READY) -- the EEG's observation
    points (`propose_eeg_points`); the people, dates and logistics are the
    Planners'. A Planner marks it READY.
@@ -122,7 +130,10 @@ READY, never the assistant.
 
 At any step: `plan_to_ready` says what's left in order; `dry_run` measures a
 proposal (warnings added and resolved) before making it; deletions are
-`delete: true` with the row's code.
+`delete: true` with the row's code. Before proposing again on rows you
+proposed on before, read `list_my_proposals` with status discarded: the
+person may have said why (`discard_reason`, `discard_note`), and what they
+turned down isn't proposed again.
 """
 
 _TIME_COMPRESSION = """# Time compression
@@ -290,10 +301,14 @@ PROMPTS = {
             "Help me design the exercise {exercise} starting from an exercise template"
             "{scenario_hint}. Steps: get_exercise_overview; search_scenarios and get_scenario "
             "to pick one with me; then adapt it to this organization (its sector, areas, "
-            "systems) and propose it in stages: needs and objectives with propose_needs and "
-            "propose_objectives. Once I approve the needs analysis, continue with the MSEL: "
+            "systems) and propose it in stages: scope and context (propose_scope, "
+            "propose_context), needs, objectives and risks with propose_needs, "
+            "propose_objectives and propose_risks. Once I approve the needs analysis, continue "
+            "with the MSEL: "
             "propose_phases, propose_actors and propose_threat_actors, then propose_injects "
-            "naming the proposed rows by their ids.",
+            "naming the proposed rows by their ids. What the template left as {{placeholders}} "
+            "is filled last: get_placeholders, then propose_placeholder_values with fictitious "
+            "values that fit this organization.",
         ),
         Prompt(
             "build_msel",
@@ -305,8 +320,12 @@ PROMPTS = {
             "what fits its objectives. Propose what's missing in order: phases "
             "(propose_phases), simulated and threat actors (propose_actors, "
             "propose_threat_actors), then injects (propose_injects) that test every "
-            "objective, with expected actions; ATT&CK techniques need an attribution. Keep "
-            "the timeline within each phase.",
+            "objective, with expected actions; ATT&CK techniques need an attribution. Where "
+            "it makes the inject land, give it the artifact it's drawn as (email, press "
+            "release, social post, chat message) with a fictitious sender and subject. Keep "
+            "the timeline within each phase. Before changing an inject, read it whole with "
+            "get_inject; before proposing again, read what I discarded and why "
+            "(list_my_proposals, status discarded).",
         ),
         Prompt(
             "review_before_ready",
