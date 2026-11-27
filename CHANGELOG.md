@@ -2,7 +2,7 @@
 
 Notable changes to TTX-Zone, by release. Versions follow [Semantic Versioning](https://semver.org/). Before upgrading a deployment, read the release's entry and [Upgrade](https://docs.ttxzone.com/instance/upgrade/).
 
-## [Unreleased]
+## [0.4.0] - 2026-11-27
 
 ### Added
 - **AI assistant**: it reads one inject in full (`get_inject`) and the MSEL with each inject's recipients, rooms and where a contingent one branches; a long MSEL can be read by phase or by inject.
