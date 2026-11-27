@@ -9,6 +9,7 @@ from app.models.after_action import (
 )
 from app.models.allowed_domain_tag_assignment import AllowedDomainTagAssignment
 from app.models.assistant_call import AssistantCall
+from app.models.assistant_org_proposal import AssistantOrgProposal
 from app.models.assistant_proposal import AssistantProposal
 from app.models.assistant_request import AssistantRequest
 from app.models.email import EMAIL_SETTINGS_ID, EmailOutbox, EmailSettings
@@ -143,6 +144,7 @@ __all__ = [
     "AccountToken",
     "AssistantCall",
     "AssistantProposal",
+    "AssistantOrgProposal",
     "AssistantRequest",
     "PersonalAccessToken",
     "AttackAttribution",

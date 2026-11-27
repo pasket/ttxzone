@@ -43,7 +43,10 @@ def test_tools_list_describes_every_tool_with_its_schema(
 
     tools = mcp(client, token, "tools/list").json()["result"]["tools"]
 
-    assert [t["name"] for t in tools] == list(TOOLS)
+    # The founder plans and manages the programme: every tool but a
+    # Controller's and an Evaluator's own.
+    others = {"get_conduct_brief", "get_my_evaluation"}
+    assert [t["name"] for t in tools] == [name for name in TOOLS if name not in others]
     for tool in tools:
         assert tool["inputSchema"]["type"] == "object"
         assert tool["description"]

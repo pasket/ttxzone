@@ -36,6 +36,7 @@ import { TagChip } from '../common/TagChip'
 import { panelClass, textFaint, textPrimary, textSecondary } from '../dashboard/styles'
 import { panelFormFields } from '../../lib/panelStyles'
 import { AdminOrganizationDashboard } from './AdminOrganizationDashboard'
+import { OrganizationAssistantPanel } from './OrganizationAssistantPanel'
 import { OrganizationContextPanel } from './OrganizationContextPanel'
 
 /** The profile page's identity panel: who this organization is (logo,
@@ -570,6 +571,7 @@ export function AdminOrganizationProfileSection() {
             </div>
           </form>
           <OrganizationContextPanel organizationId={organizationId} />
+          <OrganizationAssistantPanel organizationId={organizationId} />
           {/* Apart from the profile's own form, and only here: it takes
               the organization and everything in it. */}
           <Panel

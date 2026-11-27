@@ -122,6 +122,7 @@ const ADMIN_ACTIONS: PlatformAuditAction[] = [
   'sso.settings_delete',
   'sso.test',
   'assistant.settings_update',
+  'assistant.organization_roles_update',
   'assistant.proposal_accepted',
   'assistant.proposal_discarded',
 ]
@@ -193,6 +194,8 @@ const AUDIT_ACTION_KEYS = {
   'sso.settings_delete': 'platform.activity.actions.sso.settings_delete',
   'sso.test': 'platform.activity.actions.sso.test',
   'assistant.settings_update': 'platform.activity.actions.assistant.settings_update',
+  'assistant.organization_roles_update':
+    'platform.activity.actions.assistant.organization_roles_update',
   'assistant.proposal_accepted': 'platform.activity.actions.assistant.proposal_accepted',
   'assistant.proposal_discarded': 'platform.activity.actions.assistant.proposal_discarded',
   'organization.leave': 'platform.activity.actions.organization.leave',

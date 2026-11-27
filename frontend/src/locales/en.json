@@ -3667,6 +3667,25 @@
         "criticalAssetsPlaceholder": "What must not stop, and what you protect first…",
         "save": "Save context",
         "saved": "Context saved"
+      },
+      "assistant": {
+        "title": "AI assistant",
+        "description": "Choose whose AI client reaches this organization’s exercises. Each person connects a client of their own with a personal access token, and it reads what their role already lets them see here; what it reads leaves the server for their AI provider. A role turned off keeps its tokens, which stop working on this organization.",
+        "instanceOff": "The AI assistant is turned off for this TTX-Zone, so nobody uses it for now. Your choice is kept for when it’s turned on.",
+        "roles": {
+          "program_manager": "Exercise Program Managers",
+          "planner": "Exercise Planners",
+          "controller": "Controllers and Facilitators",
+          "evaluator": "Evaluators"
+        },
+        "hints": {
+          "program_manager": "Read the exercises’ design and the programme: what was exercised, what never was, and the improvement plan’s overdue actions.",
+          "planner": "Read their exercises and receive proposals for the needs analysis, the MSEL, the session plan and the after-action report.",
+          "controller": "Read the MSEL in running order before the session, to rehearse it and write the Facilitator’s script. Never while a session is in play.",
+          "evaluator": "Read the EEGs they rate and, once the session has ended, their own notes. The Lead Evaluator also drafts the after-action report."
+        },
+        "save": "Save roles",
+        "saved": "AI assistant roles saved"
       }
     },
     "domainAllowlist": {
@@ -4219,7 +4238,9 @@
       "revoked": "Token revoked",
       "setupTitle": "Connect Claude Desktop",
       "setupDescription": "In Claude Desktop, open Settings, Developer, Edit Config, and add this to claude_desktop_config.json; then restart Claude Desktop. It needs Node.js, which runs the mcp-remote bridge. Replace YOUR_TOKEN with the token.",
-      "setupUrl": "Server address for any other MCP client: {{url}}"
+      "setupUrl": "Server address for any other MCP client: {{url}}",
+      "httpTitle": "Connect a client that speaks HTTP",
+      "httpDescription": "Some AI clients connect to an MCP server over HTTP themselves, with no Node.js bridge. Add this to the client’s MCP configuration (the file and its exact shape vary by client: check its documentation) and replace YOUR_TOKEN with the token."
     }
   },
   "dashboard": {
@@ -5325,6 +5346,7 @@
         },
         "assistant": {
           "settings_update": "AI assistant turned on or off",
+          "organization_roles_update": "AI assistant roles of an organization changed",
           "proposal_accepted": "Accepted an AI assistant proposal",
           "proposal_discarded": "Discarded an AI assistant proposal"
         },
@@ -5991,6 +6013,16 @@
     "removeNamed": "Delete {{target}} “{{name}}”",
     "changeContext": "Change the context",
     "changeSessionTexts": "Change the session plan’s texts",
+    "organization": {
+      "newExerciseTitle": "AI assistant: proposed exercises",
+      "libraryInjectTitle": "AI assistant: proposed Library injects",
+      "description": "Proposed by your own AI client. Review one to open it in the form: nothing is created until you save it there.",
+      "count_one": "{{count}} waiting",
+      "count_other": "{{count}} waiting",
+      "review": "Review",
+      "reviewLabel": "Review the proposal “{{name}}”",
+      "discardLabel": "Discard the proposal “{{name}}”"
+    },
     "requests": {
       "title": "Ask the AI assistant",
       "count_one": "{{count}} waiting",

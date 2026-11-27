@@ -6,7 +6,7 @@ import { useToast } from '../../hooks/useToast'
 import { useUndoableAction } from '../../hooks/useUndoableAction'
 import { apiFetch, ApiError } from '../../lib/api'
 import { btnPrimary, btnSecondary, inputBase } from '../../lib/buttonStyles'
-import { claudeDesktopConfig, mcpServerUrl } from '../../lib/assistant'
+import { claudeDesktopConfig, httpClientConfig, mcpServerUrl } from '../../lib/assistant'
 import { panelFormActions } from '../../lib/panelStyles'
 import type {
   PersonalAccessToken,
@@ -116,6 +116,7 @@ export function AccountSettingsAssistant() {
 
   const url = mcpServerUrl()
   const config = claudeDesktopConfig(url, created?.token ?? TOKEN_PLACEHOLDER)
+  const httpConfig = httpClientConfig(url, created?.token ?? TOKEN_PLACEHOLDER)
 
   return (
     <div className="max-w-3xl space-y-6">
@@ -296,6 +297,23 @@ export function AccountSettingsAssistant() {
               {t('account.assistant.setupUrl', { url })}
             </p>
             <CopyButton text={config} />
+          </div>
+        </div>
+      </Panel>
+
+      <Panel
+        title={t('account.assistant.httpTitle')}
+        description={t('account.assistant.httpDescription')}
+      >
+        <div className="space-y-3">
+          <pre
+            translate="no"
+            className="overflow-x-auto rounded-sm border border-panel-line bg-field p-3 font-mono text-xs"
+          >
+            {httpConfig}
+          </pre>
+          <div className="flex justify-end">
+            <CopyButton text={httpConfig} />
           </div>
         </div>
       </Panel>

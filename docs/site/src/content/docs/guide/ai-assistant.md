@@ -3,7 +3,7 @@ title: AI assistant
 description: Use an AI client to help design an exercise or write its report.
 ---
 
-You can connect an AI client you run yourself, such as Claude Desktop, to TTX-Zone. It helps you build an exercise and write its after-action report, and never takes part in the live session. Your instance administrator has to [turn it on](/instance/ai-assistant/).
+You can connect an AI client you run yourself, such as Claude Desktop, to TTX-Zone. It helps you build an exercise and write its after-action report, and never takes part in the live session. Your instance administrator has to [turn it on](/instance/ai-assistant/), and your organization chooses the roles it's on for in [Admin → Organization](/guide/administration/).
 
 No model runs in TTX-Zone, and the conversation stays in your client.
 
@@ -46,6 +46,24 @@ In the session plan it can also propose the invitation's text, the briefing's an
 
 It can build an MSEL from an empty one: it proposes the phases and actors first, then injects on them. Accepting an inject brings the phase and actors it needs with it, and discarding a phase discards the injects that need it.
 
+## A new exercise and Library injects
+
+It can propose a **new exercise**: a name, what it would test and its language. You find it in **Creator → New exercise**, under the assistant's panel; **Review** fills the form, and the exercise exists once you save it.
+
+If you're an Exercise Program Manager it can propose **injects for your Library**, for instance one that worked in an exercise, rewritten so it fits any other. They wait in **Library → Injects → Organization**; **Review** opens the inject's form with the proposal, for you to complete (ATT&CK techniques are yours to add) and save.
+
+Either can be discarded with a reason, like any other proposal.
+
+## If you don't plan the exercise
+
+What your client offers depends on your role, where your organization left the assistant on for it.
+
+- **Exercise Program Manager**: the programme as a whole. Every exercise and how far it got, which capabilities you exercised and which never, overdue improvement actions and those closed without a later exercise testing them again. The *Plan the exercise programme* flow turns it into suggestions for the next exercises.
+- **Controller or Facilitator**: before the session, the MSEL in running order with each inject's facilitator notes, the phases' key questions and the contingent injects. *Rehearse the session* walks you through it with the assistant answering as the table would; *Write the Facilitator's script* drafts how to open, moderate and close each phase.
+- **Evaluator**: the EEGs you rate, with what to watch for at each observation point, and after the session your own notes put in order against them (*Prepare my evaluation*). It never suggests a rating: that's yours to give.
+
+None of it is available while the session is in play. Observers and Players don't use the assistant.
+
 ## Ask from the page
 
 You don't have to explain in your client what you're looking at. On the needs analysis, the MSEL and the session plan, **Ask the AI assistant** leaves a request: about the whole document or one of its rows, with a note saying what you need. Nothing happens yet. The next time you open your client, ask it to work through your requests (there's a guided flow for it): it reads them and answers with proposals, which come back to the page marked **Answers your request**. You can withdraw a request while it waits.
@@ -78,7 +96,23 @@ You can also attach an exercise's documents to the conversation (its needs analy
    }
    ```
 
-It needs Node.js on your machine. If your instance uses your organization's own certificate authority, point Node.js at it with `NODE_EXTRA_CA_CERTS` in the same `env` block.
+If your client connects to MCP servers over HTTP itself, the same page shows that configuration too, with no bridge to install:
+
+   ```json
+   {
+     "mcpServers": {
+       "ttx-zone": {
+         "type": "http",
+         "url": "https://ttx.example.org/api/v1/mcp",
+         "headers": { "Authorization": "Bearer ttxz_..." }
+       }
+     }
+   }
+   ```
+
+The file it goes in, and its exact shape, vary by client: check your client's documentation.
+
+The Claude Desktop configuration needs Node.js on your machine. If your instance uses your organization's own certificate authority, point Node.js at it with `NODE_EXTRA_CA_CERTS` in the same `env` block.
 
 ## Tokens
 

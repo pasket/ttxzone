@@ -1,7 +1,13 @@
 import uuid
 from datetime import UTC, datetime
 
+from sqlalchemy import Column
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel
+
+# The roles whose holders reach the organization's data through the AI
+# assistant (services/assistant/switch.py), unless it turns them off.
+DEFAULT_ASSISTANT_ROLES = ("program_manager", "planner", "evaluator")
 
 
 class Organization(SQLModel, table=True):
@@ -29,4 +35,15 @@ class Organization(SQLModel, table=True):
     regulators: str | None = Field(default=None, max_length=1000)
     technologies: str | None = Field(default=None, max_length=2000)
     critical_assets: str | None = Field(default=None, max_length=2000)
+    # The roles the AI assistant is on for here (Admin → Organization),
+    # inside the instance's own switch: "program_manager", "planner",
+    # "controller" (the Facilitator with it), "evaluator".
+    assistant_roles: list[str] = Field(
+        default_factory=lambda: list(DEFAULT_ASSISTANT_ROLES),
+        sa_column=Column(
+            JSONB,
+            nullable=False,
+            server_default='["program_manager", "planner", "evaluator"]',
+        ),
+    )
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))

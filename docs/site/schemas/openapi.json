@@ -1050,6 +1050,108 @@
         "title": "AssistantCallerRead",
         "type": "object"
       },
+      "AssistantOrgProposalListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/AssistantOrgProposalRead"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "AssistantOrgProposalListResponse",
+        "type": "object"
+      },
+      "AssistantOrgProposalRead": {
+        "description": "A proposal to the organization: a new exercise, or a Library inject.",
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "decided_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decided At"
+          },
+          "decision_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decision Note"
+          },
+          "decision_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decision Reason"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "patch": {
+            "additionalProperties": true,
+            "title": "Patch",
+            "type": "object"
+          },
+          "status": {
+            "enum": [
+              "pending",
+              "accepted",
+              "discarded"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "summary": {
+            "title": "Summary",
+            "type": "string"
+          },
+          "target": {
+            "enum": [
+              "new_exercise",
+              "library_inject"
+            ],
+            "title": "Target",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "target",
+          "patch",
+          "summary",
+          "status",
+          "created_at",
+          "decided_at"
+        ],
+        "title": "AssistantOrgProposalRead",
+        "type": "object"
+      },
       "AssistantProposalAppliedRequest": {
         "properties": {
           "row_id": {
@@ -1382,6 +1484,11 @@
       },
       "AssistantRequestListResponse": {
         "properties": {
+          "enabled": {
+            "default": false,
+            "title": "Enabled",
+            "type": "boolean"
+          },
           "items": {
             "items": {
               "$ref": "#/components/schemas/AssistantRequestRead"
@@ -13926,6 +14033,60 @@
           }
         },
         "title": "OrganizationAllowedDomainUpdateRequest",
+        "type": "object"
+      },
+      "OrganizationAssistantRead": {
+        "additionalProperties": false,
+        "properties": {
+          "instance_enabled": {
+            "title": "Instance Enabled",
+            "type": "boolean"
+          },
+          "roles": {
+            "items": {
+              "enum": [
+                "program_manager",
+                "planner",
+                "controller",
+                "evaluator"
+              ],
+              "type": "string"
+            },
+            "maxItems": 4,
+            "title": "Roles",
+            "type": "array"
+          }
+        },
+        "required": [
+          "roles",
+          "instance_enabled"
+        ],
+        "title": "OrganizationAssistantRead",
+        "type": "object"
+      },
+      "OrganizationAssistantRoles": {
+        "additionalProperties": false,
+        "description": "The roles the organization leaves the AI assistant on for (Admin →\nOrganization), inside the instance's own switch.",
+        "properties": {
+          "roles": {
+            "items": {
+              "enum": [
+                "program_manager",
+                "planner",
+                "controller",
+                "evaluator"
+              ],
+              "type": "string"
+            },
+            "maxItems": 4,
+            "title": "Roles",
+            "type": "array"
+          }
+        },
+        "required": [
+          "roles"
+        ],
+        "title": "OrganizationAssistantRoles",
         "type": "object"
       },
       "OrganizationContext": {
@@ -31540,6 +31701,351 @@
         "summary": "Set allowed domain tags",
         "tags": [
           "Organizations"
+        ]
+      }
+    },
+    "/api/v1/organizations/{organization_id}/assistant": {
+      "get": {
+        "description": "The roles the organization leaves the AI assistant on for.",
+        "operationId": "get_organization_assistant_endpoint_api_v1_organizations__organization_id__assistant_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organization_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Organization Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationAssistantRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Get organization assistant",
+        "tags": [
+          "Organizations"
+        ]
+      },
+      "put": {
+        "description": "Choose the roles whose holders reach this organization's exercises\nthrough the AI assistant.",
+        "operationId": "update_organization_assistant_endpoint_api_v1_organizations__organization_id__assistant_put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organization_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Organization Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrganizationAssistantRoles"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrganizationAssistantRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "csrfToken": [],
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Update organization assistant",
+        "tags": [
+          "Organizations"
+        ]
+      }
+    },
+    "/api/v1/organizations/{organization_id}/assistant/proposals": {
+      "get": {
+        "description": "The AI assistant's proposals to this organization waiting for the caller.",
+        "operationId": "list_organization_proposals_endpoint_api_v1_organizations__organization_id__assistant_proposals_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "organization_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Organization Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "pending",
+                    "accepted",
+                    "discarded"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": "pending",
+              "title": "Status"
+            }
+          },
+          {
+            "in": "query",
+            "name": "target",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "new_exercise",
+                    "library_inject"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Target"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistantOrgProposalListResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "sessionCookie": []
+          }
+        ],
+        "summary": "List organization proposals",
+        "tags": [
+          "AI assistant"
+        ]
+      }
+    },
+    "/api/v1/organizations/{organization_id}/assistant/proposals/{proposal_id}/applied": {
+      "post": {
+        "description": "The form saved what the proposal became: recorded as accepted.",
+        "operationId": "mark_organization_proposal_applied_endpoint_api_v1_organizations__organization_id__assistant_proposals__proposal_id__applied_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "proposal_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Proposal Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "organization_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Organization Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssistantProposalAppliedRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistantOrgProposalRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "csrfToken": [],
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Mark organization proposal applied",
+        "tags": [
+          "AI assistant"
+        ]
+      }
+    },
+    "/api/v1/organizations/{organization_id}/assistant/proposals/{proposal_id}/discard": {
+      "post": {
+        "description": "Discard one of the AI assistant's proposals, optionally saying why.",
+        "operationId": "discard_organization_proposal_endpoint_api_v1_organizations__organization_id__assistant_proposals__proposal_id__discard_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "proposal_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Proposal Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "organization_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Organization Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/AssistantProposalDiscardRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Payload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistantOrgProposalRead"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "csrfToken": [],
+            "sessionCookie": []
+          }
+        ],
+        "summary": "Discard organization proposal",
+        "tags": [
+          "AI assistant"
         ]
       }
     },

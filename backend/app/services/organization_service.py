@@ -1144,6 +1144,9 @@ def delete_organization(
         session.add(user)
     session.flush()
 
+    from app.services.assistant import proposals_org
+
+    proposals_org.delete_for_organization(session, organization_id)
     logo_path = organization.logo_path
     session.delete(organization)
     session.commit()

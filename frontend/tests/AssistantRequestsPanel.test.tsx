@@ -36,7 +36,9 @@ function stub(routes: Record<string, () => Response>) {
 
 describe('AssistantRequestsPanel', () => {
   it('shows nothing where the assistant is off', async () => {
-    const fetchMock = stub({ 'GET /instance/policy': () => respond({ assistant_enabled: false }) })
+    const fetchMock = stub({
+      'GET /ttx/t1/assistant/requests': () => respond({ items: [], enabled: false }),
+    })
 
     render(<AssistantRequestsPanel ttxId="t1" section="msel" rows={ROWS} />)
 
@@ -47,8 +49,7 @@ describe('AssistantRequestsPanel', () => {
   it('lists this page’s requests, leaves a new one about a row and withdraws one', async () => {
     let items = [WAITING, { ...WAITING, id: 'r2', section: 'needs', note: 'Elsewhere' }]
     const fetchMock = stub({
-      'GET /instance/policy': () => respond({ assistant_enabled: true }),
-      'GET /ttx/t1/assistant/requests': () => respond({ items }),
+      'GET /ttx/t1/assistant/requests': () => respond({ items, enabled: true }),
       'POST /ttx/t1/assistant/requests': () => respond({ ...WAITING, id: 'r3' }, 201),
       'DELETE /ttx/t1/assistant/requests/r1': () => {
         items = []

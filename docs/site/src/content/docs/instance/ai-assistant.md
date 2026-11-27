@@ -11,7 +11,7 @@ It's off by default.
 
 ## Turn it on
 
-Use **Instance administration → AI assistant**, or set `ASSISTANT_ENABLED` to pin it. There's one switch for the instance, with none per role or per exercise.
+Use **Instance administration → AI assistant**, or set `ASSISTANT_ENABLED` to pin it. There's one switch for the instance. Inside it, each organization's Exercise Program Managers choose the roles it's on for, in [Admin → Organization](/guide/administration/); there's none per exercise.
 
 Turning it off stops every token at once. Tokens that haven't expired work again if it's turned back on.
 

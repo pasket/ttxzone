@@ -27,7 +27,7 @@ def _invalid(code: str, message: str, params: dict | None = None) -> AppExceptio
     return AppException(code, message, 422, log_level=logging.WARNING, params=params)
 
 
-def _check(payload: OrganizationInjectFields) -> None:
+def check_fields(payload: OrganizationInjectFields) -> None:
     if payload.origin == ActorOrigin.SYSTEM and payload.origin_id not in {
         inject.id for inject in load_inject_catalog().injects
     }:
@@ -50,7 +50,7 @@ def _check(payload: OrganizationInjectFields) -> None:
 
 
 def _write(inject: OrganizationInject, payload: OrganizationInjectFields) -> None:
-    _check(payload)
+    check_fields(payload)
     data = payload.model_dump(mode="json")
     data["title"] = payload.title.strip()
     data["origin_id"] = payload.origin_id if payload.origin else None

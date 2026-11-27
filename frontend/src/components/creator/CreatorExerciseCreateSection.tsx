@@ -4,9 +4,13 @@ import { useNavigate } from 'react-router-dom'
 
 import { useAuth } from '../../hooks/useAuth'
 import { useToast } from '../../hooks/useToast'
+import { apiFetch } from '../../lib/api'
+import { orgProposalAppliedUrl } from '../../lib/assistant'
 import { linkAccent } from '../../lib/buttonStyles'
 import { ttxOptionsForModule } from '../../lib/moduleAccess'
 import type { ScenarioSource } from '../../lib/scenarios'
+import type { AssistantOrgProposal } from '../../lib/types'
+import { OrgProposalsPanel } from '../assistant/OrgProposalsPanel'
 import { SectionHeader } from '../common/SectionHeader'
 import { ScenarioApplyDialog } from '../templates/ScenarioDialogs'
 import { TemplatePickerDialog } from '../templates/TemplatePickerDialog'
@@ -28,6 +32,8 @@ export function CreatorExerciseCreateSection() {
   /** On its way into a new exercise: a library template, or a file
    * (`library` undefined). */
   const [starting, setStarting] = useState<{ library?: ScenarioSource } | null>(null)
+  /** An AI proposal the Planner is reviewing in the form below. */
+  const [proposal, setProposal] = useState<AssistantOrgProposal | null>(null)
 
   if (!activeOrganizationId) return null
 
@@ -52,7 +58,18 @@ export function CreatorExerciseCreateSection() {
           {t('creator.exercise.fromTemplate.import')}
         </button>
       </p>
+      <OrgProposalsPanel
+        organizationId={activeOrganizationId}
+        target="new_exercise"
+        onAccept={setProposal}
+      />
       <ExerciseForm
+        // A proposal taken for review starts the form over with its fields.
+        key={proposal?.id ?? 'blank'}
+        proposed={
+          proposal?.patch as
+            { name?: string; description?: string; content_language?: string | null } | undefined
+        }
         organizationId={activeOrganizationId}
         // A new exercise has no tags of its own yet: they're copied or
         // created in the Library once it exists.
@@ -60,6 +77,14 @@ export function CreatorExerciseCreateSection() {
         // A first exercise has nothing to go back to.
         onCancel={hasExercises ? () => navigate(-1) : undefined}
         onSaved={async (created) => {
+          if (proposal) {
+            // The exercise exists either way: a failed record leaves the
+            // proposal waiting, to discard by hand.
+            await apiFetch(orgProposalAppliedUrl(activeOrganizationId, proposal.id), {
+              method: 'POST',
+              body: JSON.stringify({ row_id: created.id }),
+            }).catch(() => undefined)
+          }
           await refresh()
           setActiveTtxId(created.id)
           showToast(t('common.toast.savedSuccess'))

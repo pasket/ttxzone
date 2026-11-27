@@ -2231,7 +2231,7 @@ def _evaluator_access(session: Session, ttx: TTX, user: User) -> TTXAccess:
     return access
 
 
-def _rated_objectives(plan: dict, user: User, lead: bool) -> list[dict]:
+def rated_objectives(plan: dict, user: User, lead: bool) -> list[dict]:
     """The EEGs an Evaluator rates: those assigned to them in the plan --
     every one, for the Lead Evaluator."""
     if lead:
@@ -2323,7 +2323,7 @@ def evaluation(
             statement=eeg["statement"],
             points=[point(p) for p in eeg["points"]],
         )
-        for eeg in _rated_objectives(plan, user, access.leads)
+        for eeg in rated_objectives(plan, user, access.leads)
     ]
     points = [p for o in objectives for p in o.points]
     return RunEvaluationRead(
@@ -2349,7 +2349,7 @@ def rate_point(
     run = started_run(session, ttx)
     plan = session.get(ConductPrepSnapshot, run.plan_snapshot_id).payload
     rated = {
-        str(p["id"]) for eeg in _rated_objectives(plan, user, access.leads) for p in eeg["points"]
+        str(p["id"]) for eeg in rated_objectives(plan, user, access.leads) for p in eeg["points"]
     }
     if str(point_id) not in rated:
         raise AppException("POINT_NOT_ASSIGNED", "You don't rate this observation point.", 403)

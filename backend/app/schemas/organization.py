@@ -245,6 +245,22 @@ class OrganizationContext(BaseModel):
 
 CONTEXT_FIELDS = tuple(OrganizationContext.model_fields)
 
+AssistantRole = Literal["program_manager", "planner", "controller", "evaluator"]
+
+
+class OrganizationAssistantRoles(BaseModel):
+    """The roles the organization leaves the AI assistant on for (Admin →
+    Organization), inside the instance's own switch."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    roles: list[AssistantRole] = Field(max_length=4)
+
+
+class OrganizationAssistantRead(OrganizationAssistantRoles):
+    # The instance's switch: off, nobody uses the assistant whatever is chosen here.
+    instance_enabled: bool
+
 
 class OrganizationProfileUpdateRequest(BaseModel):
     """Program Manager-editable organization profile fields, past signup --

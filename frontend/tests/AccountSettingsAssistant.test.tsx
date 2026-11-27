@@ -62,7 +62,8 @@ describe('AccountSettingsAssistant', () => {
     await waitFor(() => expect(screen.queryByText('ttxz_abcdSECRET')).not.toBeInTheDocument())
     expect(screen.queryByText(/ttxz_abcdSECRET/)).not.toBeInTheDocument()
     expect(screen.getByText('Claude Desktop')).toBeInTheDocument()
-    expect(screen.getByText(/Bearer YOUR_TOKEN/)).toBeInTheDocument()
+    // Both ways to connect: the Claude Desktop bridge and plain HTTP.
+    expect(screen.getAllByText(/Bearer YOUR_TOKEN/)).toHaveLength(2)
   })
 
   it('says so when the assistant is off', async () => {

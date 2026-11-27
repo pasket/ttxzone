@@ -18,13 +18,13 @@ import uuid
 from dataclasses import dataclass
 from typing import Any
 
-from sqlmodel import Session
+from sqlmodel import Session, col, select
 
 from app.data.knowledge_catalog import load_knowledge_catalog
 from app.data.scenario_catalog import scenario_catalog
-from app.models import User
+from app.models import Organization, OrganizationMembership, OrgRoleEnum, User
 from app.services.assistant import fixes
-from app.services.assistant.tools import ListExercisesInput, _list_exercises
+from app.services.assistant.tools import ListExercisesInput, _list_exercises, held_roles
 
 # --- Resources ---------------------------------------------------------------
 
@@ -244,12 +244,13 @@ def listed(session: Session, user: User) -> list[dict[str, Any]]:
         for name, (title, mime, _text) in GUIDES.items()
     ]
     for exercise in _exercises(session, user):
-        kinds = ["needs-analysis"]
-        if exercise["msel_status"]:
+        designs = bool({"planner", "program_manager"} & set(exercise["your_roles"]))
+        kinds = ["needs-analysis"] if designs else []
+        if designs and exercise["msel_status"]:
             kinds.append("msel")
         if exercise["you_plan"] and exercise["msel_status"]:
             kinds.append("session-plan")
-        if exercise["after_action_status"]:
+        if exercise["after_action_status"] and exercise["you_write_the_report"]:
             kinds.append("after-action-report")
         for name in kinds:
             kind = _BY_KIND[name]
@@ -274,6 +275,12 @@ _RULES = (
     "never people. Tell the person where in TTX-Zone to review the proposals."
 )
 
+_ORGANIZATION_ARG = {
+    "name": "organization",
+    "description": "The organization: its name or id.",
+    "required": True,
+}
+
 _EXERCISE_ARG = {
     "name": "exercise",
     "description": "The exercise: its code (e.g. TTX-0003), name or id.",
@@ -288,6 +295,8 @@ class Prompt:
     description: str
     arguments: tuple[dict[str, Any], ...]
     text: str
+    # Who it's for, like a tool's (tools.tool_roles).
+    roles: frozenset[str] = frozenset({"planner"})
 
 
 PROMPTS = {
@@ -407,6 +416,7 @@ PROMPTS = {
             "strengths, areas for improvement and analysis (propose_objective_assessments) "
             "and improvement actions (propose_improvement_actions), each citing the evidence "
             "that backs it. Never a level: the evaluation team settles it.",
+            frozenset({"planner", "evaluator"}),
         ),
         Prompt(
             "lessons_learned",
@@ -419,11 +429,67 @@ PROMPTS = {
             "findings and open or overdue actions, and suggest how this exercise could "
             "retest them: objectives and injects I could propose next.",
         ),
+        Prompt(
+            "plan_programme",
+            "Plan the exercise programme",
+            "What the organization exercised, what it never did, and what to run next.",
+            (_ORGANIZATION_ARG,),
+            "Help me plan the exercise programme of {organization}. Read get_program_overview "
+            "and get_organization_profile. Tell me which capabilities we exercised and which "
+            "never, which exercises stalled and where, and which improvement actions are "
+            "overdue or were closed without a later exercise testing them again. Then suggest "
+            "the next two or three exercises: what each would test, which actions it would "
+            "retest and a scenario that fits the organization (search_scenarios). Owners are "
+            "areas, never people.",
+            frozenset({"program_manager"}),
+        ),
+        Prompt(
+            "rehearse_session",
+            "Rehearse the session",
+            "Walk through the MSEL before the session, with the assistant playing the table.",
+            (_EXERCISE_ARG,),
+            "Help me rehearse the session of the exercise {exercise} before it runs. Read "
+            "get_conduct_brief. Walk through it in running order, one inject at a time: tell "
+            "me what goes out, to whom and how, then answer as the Players plausibly would "
+            "and stop for me to react as Controller. Point out where the table could stall or "
+            "take a turn the MSEL has no contingent inject for, where two injects come too "
+            "close, and what I should have at hand. Change nothing: note what I may want to "
+            "raise with the exercise's Planners.",
+            frozenset({"controller"}),
+        ),
+        Prompt(
+            "facilitator_script",
+            "Write the Facilitator's script",
+            "A running script for moderating the session, from the MSEL.",
+            (_EXERCISE_ARG,),
+            "Write a Facilitator's script for the exercise {exercise}. Read get_conduct_brief. "
+            "For each phase: how to open it (its situation update, in spoken words), its key "
+            "questions in the order to ask them, what to listen for against the phase's "
+            "objectives, a follow-up question for when the table goes quiet and one for when "
+            "it drifts out of scope, and how to close the phase. Keep the injects' own text "
+            "as written; mark each contingent inject with the condition that brings it in.",
+            frozenset({"controller"}),
+        ),
+        Prompt(
+            "prepare_my_evaluation",
+            "Prepare my evaluation",
+            "What to watch for in the session, from the EEGs you rate.",
+            (_EXERCISE_ARG,),
+            "Help me prepare to evaluate the exercise {exercise}. Read get_my_evaluation. For "
+            "each EEG I rate, tell me what to watch for at each observation point, when in the "
+            "session it should show (its inject) and what telling its rating levels apart "
+            "would look like in the room. If the session has ended, put my notes in order "
+            "against the observation points and tell me which points my notes don't cover. "
+            "Never suggest a level: rating is mine to do in TTX-Zone.",
+            frozenset({"evaluator"}),
+        ),
     )
 }
 
 
-def prompt_list() -> list[dict[str, Any]]:
+def prompt_list(session: Session, user: User) -> list[dict[str, Any]]:
+    """The guided flows of the roles the person holds."""
+    roles = held_roles(session, user)
     return [
         {
             "name": p.name,
@@ -432,6 +498,7 @@ def prompt_list() -> list[dict[str, Any]]:
             "arguments": list(p.arguments),
         }
         for p in PROMPTS.values()
+        if p.roles & roles
     ]
 
 
@@ -440,7 +507,7 @@ class PromptError(ValueError):
 
 
 def resolve_exercise(session: Session, user: User, value: str) -> dict[str, Any]:
-    """An exercise the person plans, by code, name or id."""
+    """One of the person's exercises, by code, name or id."""
     wanted = value.strip().lower()
     exercises = _exercises(session, user)
     for match in (
@@ -451,7 +518,31 @@ def resolve_exercise(session: Session, user: User, value: str) -> dict[str, Any]
         found = [e for e in exercises if match(e)]
         if len(found) == 1:
             return found[0]
-    raise PromptError(f"No single exercise you plan matches “{value}”: use its code.")
+    raise PromptError(f"No single exercise of yours matches “{value}”: use its code.")
+
+
+def resolve_organization(session: Session, user: User, value: str) -> Organization:
+    """An organization the person is a Program Manager of, by name or id."""
+    wanted = value.strip().lower()
+    managed = session.exec(
+        select(Organization)
+        .join(
+            OrganizationMembership, col(OrganizationMembership.organization_id) == Organization.id
+        )
+        .where(
+            OrganizationMembership.user_id == user.id,
+            OrganizationMembership.role == OrgRoleEnum.PROGRAM_MANAGER,
+            col(OrganizationMembership.disabled_at).is_(None),
+        )
+    ).all()
+    for match in (
+        lambda o: str(o.id) == wanted or o.name.lower() == wanted,
+        lambda o: wanted in o.name.lower(),
+    ):
+        found = [o for o in managed if match(o)]
+        if len(found) == 1:
+            return found[0]
+    raise PromptError(f"No single organization you manage matches “{value}”: use its id.")
 
 
 def prompt_get(
@@ -464,11 +555,19 @@ def prompt_get(
         value = arguments.get(argument["name"])
         if argument.get("required") and not (isinstance(value, str) and value.strip()):
             raise PromptError(f"Missing argument: {argument['name']}")
-    exercise = resolve_exercise(session, user, str(arguments["exercise"]))
+    named = {argument["name"] for argument in prompt.arguments}
+    exercise_label = organization_label = ""
+    if "exercise" in named:
+        exercise = resolve_exercise(session, user, str(arguments["exercise"]))
+        exercise_label = f"{exercise['code']} “{exercise['name']}” (ttx_id {exercise['ttx_id']})"
+    if "organization" in named:
+        organization = resolve_organization(session, user, str(arguments["organization"]))
+        organization_label = f"“{organization.name}” (organization_id {organization.id})"
     scenario = str(arguments.get("scenario") or "").strip()
     document = str(arguments.get("document") or "").strip()
     text = prompt.text.format(
-        exercise=f"{exercise['code']} “{exercise['name']}” (ttx_id {exercise['ttx_id']})",
+        exercise=exercise_label,
+        organization=organization_label,
         scenario_hint=f" (I have in mind: {scenario})" if scenario else "",
         document_hint=f", its {document.replace('_', ' ')}" if document else "",
     )

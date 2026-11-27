@@ -162,7 +162,11 @@ def list_requests_endpoint(
     """What the caller asked the AI assistant for on this exercise."""
     items = requests.list_for_author(session, ttx, user, status=status)
     codes = proposals.row_codes(session, ttx) if any(r.row_id for r in items) else {}
-    return AssistantRequestListResponse(items=[_request_read(r, codes) for r in items])
+    return AssistantRequestListResponse(
+        items=[_request_read(r, codes) for r in items],
+        enabled=switch.effective_enabled(session)
+        and "planner" in switch.organization_roles(session, ttx.organization_id),
+    )
 
 
 @requests_router.post(
@@ -180,6 +184,7 @@ def create_request_endpoint(
     """Ask the AI assistant for something on a document or one of its rows:
     kept until the caller's own AI client reads it."""
     switch.require_enabled(session)
+    switch.require_role(session, ttx.organization_id, "planner")
     request = requests.create(session, ttx, user, payload.section, payload.row_id, payload.note)
     codes = proposals.row_codes(session, ttx) if request.row_id else {}
     return _request_read(request, codes)

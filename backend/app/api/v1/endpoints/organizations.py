@@ -30,6 +30,8 @@ from app.schemas.organization import (
     OrganizationAllowedDomainListResponse,
     OrganizationAllowedDomainRead,
     OrganizationAllowedDomainUpdateRequest,
+    OrganizationAssistantRead,
+    OrganizationAssistantRoles,
     OrganizationContext,
     OrganizationDeleteRequest,
     OrganizationFoundRequest,
@@ -63,6 +65,7 @@ from app.schemas.organization_tag import (
 )
 from app.services import account_email_service, legal_service, platform_audit_service
 from app.services.actor_library_service import require_library_manager, require_library_reader
+from app.services.assistant import switch as assistant_switch
 from app.services.auth_service import record_signup
 from app.services.dashboard_service import (
     get_organization_dashboard,
@@ -1129,4 +1132,42 @@ def set_organization_tags_applied_endpoint(
         total=len(tags),
         limit=len(tags),
         offset=0,
+    )
+
+
+@router.get("/{organization_id}/assistant", response_model=OrganizationAssistantRead)
+def get_organization_assistant_endpoint(
+    organization_id: uuid.UUID,
+    user: User = Depends(get_current_user),
+    session: Session = Depends(get_session),
+) -> OrganizationAssistantRead:
+    """The roles the organization leaves the AI assistant on for."""
+    require_program_manager(session, user, organization_id)
+    roles = assistant_switch.organization_roles(
+        session, get_organization(session, organization_id).id
+    )
+    return OrganizationAssistantRead(
+        roles=[r for r in assistant_switch.ASSISTANT_ROLES if r in roles],
+        instance_enabled=assistant_switch.effective_enabled(session),
+    )
+
+
+@router.put(
+    "/{organization_id}/assistant",
+    response_model=OrganizationAssistantRead,
+    dependencies=[Depends(verify_csrf)],
+)
+def update_organization_assistant_endpoint(
+    organization_id: uuid.UUID,
+    payload: OrganizationAssistantRoles,
+    user: User = Depends(get_current_user),
+    session: Session = Depends(get_session),
+) -> OrganizationAssistantRead:
+    """Choose the roles whose holders reach this organization's exercises
+    through the AI assistant."""
+    require_program_manager(session, user, organization_id)
+    organization = get_organization(session, organization_id)
+    roles = assistant_switch.save_organization_roles(session, user, organization, payload.roles)
+    return OrganizationAssistantRead(
+        roles=roles, instance_enabled=assistant_switch.effective_enabled(session)
     )

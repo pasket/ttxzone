@@ -440,6 +440,15 @@ export interface OrganizationContext {
   critical_assets: string
 }
 
+export type AssistantRole = 'program_manager' | 'planner' | 'controller' | 'evaluator'
+
+/** GET/PUT /organizations/{id}/assistant: the roles it leaves the AI assistant on for. */
+export interface OrganizationAssistant {
+  roles: AssistantRole[]
+  /** The instance's own switch: off, nobody uses the assistant. */
+  instance_enabled: boolean
+}
+
 export interface OrganizationAllowedDomain {
   id: number
   domain: string
@@ -2720,6 +2729,7 @@ export type PlatformAuditAction =
   | 'sso.settings_delete'
   | 'sso.test'
   | 'assistant.settings_update'
+  | 'assistant.organization_roles_update'
   | 'assistant.proposal_accepted'
   | 'assistant.proposal_discarded'
   | 'organization.leave'
@@ -3150,6 +3160,26 @@ export interface AssistantRequest {
   answered_at: string | null
 }
 
+/** A proposal of the AI assistant's to the organization: a new exercise
+ * or a Library inject, as the fields of the form that takes it. */
+export interface AssistantOrgProposal {
+  id: string
+  target: 'new_exercise' | 'library_inject'
+  patch: Record<string, unknown>
+  summary: string
+  status: 'pending' | 'accepted' | 'discarded'
+  created_at: string
+  decided_at: string | null
+  decision_reason: string | null
+  decision_note: string | null
+}
+
+export interface AssistantOrgProposalList {
+  items: AssistantOrgProposal[]
+}
+
 export interface AssistantRequestList {
   items: AssistantRequest[]
+  /** The assistant is on here for Planners: the page offers asking. */
+  enabled: boolean
 }

@@ -3667,6 +3667,25 @@
         "criticalAssetsPlaceholder": "Lo que no puede parar y lo que proteges primero…",
         "save": "Guardar contexto",
         "saved": "Contexto guardado"
+      },
+      "assistant": {
+        "title": "Asistente de IA",
+        "description": "Elige el cliente de IA de quién llega a los ejercicios de esta organización. Cada persona conecta su propio cliente con un token de acceso personal, y lee lo que su rol ya le deja ver aquí; lo que lee sale del servidor hacia su proveedor de IA. Un rol desactivado conserva sus tokens, que dejan de funcionar en esta organización.",
+        "instanceOff": "El asistente de IA está desactivado en este TTX-Zone, así que por ahora nadie lo usa. Tu elección se guarda para cuando se active.",
+        "roles": {
+          "program_manager": "Responsables del Programa de Ejercicios",
+          "planner": "Planificadores",
+          "controller": "Controladores y Facilitadores",
+          "evaluator": "Evaluadores"
+        },
+        "hints": {
+          "program_manager": "Leen el diseño de los ejercicios y el programa: qué se ejercitó, qué nunca, y las acciones vencidas del plan de mejora.",
+          "planner": "Leen sus ejercicios y reciben propuestas para el análisis de necesidades, el MSEL, el plan de sesión y el informe posterior.",
+          "controller": "Leen el MSEL en orden de ejecución antes de la sesión, para ensayarla y escribir el guion del Facilitador. Nunca con una sesión en curso.",
+          "evaluator": "Leen los EEG que valoran y, cuando la sesión ha terminado, sus propias notas. El Lead Evaluator además redacta el informe posterior."
+        },
+        "save": "Guardar roles",
+        "saved": "Roles del asistente de IA guardados"
       }
     },
     "domainAllowlist": {
@@ -4219,7 +4238,9 @@
       "revoked": "Token revocado",
       "setupTitle": "Conectar Claude Desktop",
       "setupDescription": "En Claude Desktop, abre Configuración, Desarrollador, Editar configuración, y añade esto a claude_desktop_config.json; después reinicia Claude Desktop. Necesita Node.js, que ejecuta el puente mcp-remote. Sustituye YOUR_TOKEN por el token.",
-      "setupUrl": "Dirección del servidor para cualquier otro cliente MCP: {{url}}"
+      "setupUrl": "Dirección del servidor para cualquier otro cliente MCP: {{url}}",
+      "httpTitle": "Conectar un cliente que habla HTTP",
+      "httpDescription": "Algunos clientes de IA se conectan a un servidor MCP por HTTP ellos mismos, sin el puente de Node.js. Añade esto a la configuración MCP del cliente (el archivo y su forma exacta varían según el cliente: consulta su documentación) y sustituye YOUR_TOKEN por el token."
     }
   },
   "dashboard": {
@@ -5325,6 +5346,7 @@
         },
         "assistant": {
           "settings_update": "Activó o desactivó el asistente de IA",
+          "organization_roles_update": "Cambió los roles del asistente de IA de una organización",
           "proposal_accepted": "Aceptó una propuesta del asistente de IA",
           "proposal_discarded": "Descartó una propuesta del asistente de IA"
         },
@@ -5991,6 +6013,16 @@
     "removeNamed": "Eliminar {{target}} «{{name}}»",
     "changeContext": "Cambiar el contexto",
     "changeSessionTexts": "Cambiar los textos del plan de sesión",
+    "organization": {
+      "newExerciseTitle": "Asistente de IA: ejercicios propuestos",
+      "libraryInjectTitle": "Asistente de IA: injects propuestos para la Library",
+      "description": "Propuestos por tu propio cliente de IA. Revisa uno para abrirlo en el formulario: no se crea nada hasta que lo guardes allí.",
+      "count_one": "{{count}} en espera",
+      "count_other": "{{count}} en espera",
+      "review": "Revisar",
+      "reviewLabel": "Revisar la propuesta «{{name}}»",
+      "discardLabel": "Descartar la propuesta «{{name}}»"
+    },
     "requests": {
       "title": "Pedir al asistente de IA",
       "count_one": "{{count}} en espera",

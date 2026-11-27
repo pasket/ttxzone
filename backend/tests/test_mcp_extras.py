@@ -107,8 +107,11 @@ def test_prompts_are_listed_and_filled_with_the_exercise(
     ttx = assistant_planner["ttx"]
     token = create_token(client)["token"]
     prompts = _result(mcp(client, token, "prompts/list"))["prompts"]
-    assert {p["name"] for p in prompts} == set(mcp_extras.PROMPTS)
-    assert all(p["arguments"][0]["name"] == "exercise" for p in prompts)
+    # The founder plans and manages the programme: neither a Controller's
+    # prompts (off for the organization) nor an Evaluator's.
+    others = {"rehearse_session", "facilitator_script", "prepare_my_evaluation"}
+    assert {p["name"] for p in prompts} == set(mcp_extras.PROMPTS) - others
+    assert {p["arguments"][0]["name"] for p in prompts} == {"exercise", "organization"}
 
     got = _result(
         mcp(

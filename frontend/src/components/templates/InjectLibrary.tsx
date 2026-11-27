@@ -8,6 +8,7 @@ import { useLibraryFilters } from '../../hooks/useLibraryFilters'
 import { useLibraryLevelParam } from '../../hooks/useLibraryLevelParam'
 import { useToast } from '../../hooks/useToast'
 import { apiFetch, ApiError } from '../../lib/api'
+import { orgProposalAppliedUrl } from '../../lib/assistant'
 import {
   badgeNeutral,
   libraryActionsCellClass,
@@ -66,6 +67,7 @@ import { LibraryDeleteDialog } from './LibraryDeleteDialog'
 import { DisabledBadge, EnableButton } from './LibraryItemState'
 import { DuplicateMenu } from './DuplicateMenu'
 import { InjectCopyDialog } from './InjectCopyDialog'
+import { OrgProposalsPanel } from '../assistant/OrgProposalsPanel'
 import { InjectFormModal } from './InjectFormModal'
 import { InjectTemplateDialog } from './InjectTemplateDialog'
 import {
@@ -146,7 +148,10 @@ export function InjectLibrary({
     id: string | null
     initial: OrganizationInjectFields
     readOnly?: boolean
+    /** The AI proposal the form was filled from: recorded once saved. */
+    proposalId?: string
   } | null>(null)
+  const [proposalsKey, setProposalsKey] = useState(0)
   const [copying, setCopying] = useState<OrganizationInjectFields | null>(null)
   const [saving, setSaving] = useState<string | null>(null)
   const [deleting, setDeleting] = useState<{ level: Level; id: string; name: string } | null>(null)
@@ -209,10 +214,19 @@ export function InjectLibrary({
   async function saveForm(values: OrganizationInjectFields) {
     if (!form) return
     try {
-      await apiFetch(form.id ? `${libraryUrl}/${form.id}` : libraryUrl, {
-        method: form.id ? 'PATCH' : 'POST',
-        body: JSON.stringify(values),
-      })
+      const saved = await apiFetch<OrganizationInject>(
+        form.id ? `${libraryUrl}/${form.id}` : libraryUrl,
+        { method: form.id ? 'PATCH' : 'POST', body: JSON.stringify(values) },
+      )
+      if (form.proposalId) {
+        // The inject is in the Library either way: a failed record leaves
+        // the proposal waiting, to discard by hand.
+        await apiFetch(orgProposalAppliedUrl(organizationId, form.proposalId), {
+          method: 'POST',
+          body: JSON.stringify({ row_id: saved.id }),
+        }).catch(() => undefined)
+        setProposalsKey((k) => k + 1)
+      }
       setForm(null)
       library.refetch()
       showToast(t('common.toast.savedSuccess'))
@@ -604,6 +618,21 @@ export function InjectLibrary({
               true,
               SYSTEM_INJECT_LANGUAGES,
             )
+          }
+        />
+      )}
+      {level === 'organization' && permissions.toOrganization && (
+        <OrgProposalsPanel
+          key={proposalsKey}
+          organizationId={organizationId}
+          target="library_inject"
+          onAccept={(proposal) =>
+            setForm({
+              id: null,
+              // Validated by the server against the Library's own form.
+              initial: proposal.patch as unknown as OrganizationInjectFields,
+              proposalId: proposal.id,
+            })
           }
         />
       )}

@@ -115,7 +115,9 @@ def test_who_does_not_plan_is_refused(
 
     for tool in ("get_exercise_overview", "get_needs_analysis", "get_msel"):
         assert _error_code(call(client, token, tool, {"ttx_id": ttx_id})) == "TTX_ACCESS_DENIED"
-    assert _data(call(client, token, "list_exercises"))["exercises"] == []
+    # Listed only with a role the organization leaves the assistant on for.
+    listed = _data(call(client, token, "list_exercises"))["exercises"]
+    assert [e["your_roles"] for e in listed] == ([["evaluator"]] if role == "evaluator" else [])
     [record] = db_session.exec(select(AssistantCall).where(AssistantCall.tool == "get_msel")).all()
     assert record.outcome == "TTX_ACCESS_DENIED"
 
@@ -133,8 +135,9 @@ def test_a_program_manager_without_a_seat_only_reads(
     overview = _data(call(client, token, "get_exercise_overview", {"ttx_id": ttx_id}))
 
     assert overview["exercise"]["ttx_id"] == ttx_id
-    # Not one of the exercises they plan.
-    assert _data(call(client, token, "list_exercises"))["exercises"] == []
+    # Theirs to oversee, not one they plan.
+    [listed] = _data(call(client, token, "list_exercises"))["exercises"]
+    assert (listed["you_plan"], listed["your_roles"]) == (False, ["program_manager"])
 
 
 def test_another_organizations_exercise_or_a_made_up_one_is_not_readable(

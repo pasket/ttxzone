@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -138,6 +138,30 @@ class AssistantRequestRead(BaseModel):
 
 class AssistantRequestListResponse(BaseModel):
     items: list[AssistantRequestRead]
+    # The assistant is on here for Planners (the instance's switch and the
+    # organization's): the page offers asking only then.
+    enabled: bool = False
+
+
+class AssistantOrgProposalRead(BaseModel):
+    """A proposal to the organization: a new exercise, or a Library inject."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    target: Literal["new_exercise", "library_inject"]
+    # The form's fields, as its save takes them.
+    patch: dict[str, Any]
+    summary: str
+    status: Literal["pending", "accepted", "discarded"]
+    created_at: datetime
+    decided_at: datetime | None
+    decision_reason: str | None = None
+    decision_note: str | None = None
+
+
+class AssistantOrgProposalListResponse(BaseModel):
+    items: list[AssistantOrgProposalRead]
 
 
 class AssistantProposalAppliedRequest(BaseModel):

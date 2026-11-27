@@ -61,6 +61,7 @@ _DELETED_WITH_ACCOUNT = {
     ("assistant_call", "user_id"),
     ("assistant_proposal", "user_id"),
     ("assistant_request", "user_id"),
+    ("assistant_org_proposal", "user_id"),
 }
 # Platform's activity log keeps the email (actor_label); only the link goes.
 _DETACHED_ON_DELETE = {("platform_audit_event", "actor_user_id")}

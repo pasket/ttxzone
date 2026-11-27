@@ -64,15 +64,9 @@ Grouped by theme. Section numbers are stable references (other documents cite th
 The design: TTX-Zone serves an MCP endpoint and each person uses an AI client they run themselves, as themselves, with a personal access token; only for building an exercise and writing its after-action report, never in the Playground. Proposals wait for a person to accept or discard them. No data filtering, responsible-use notices instead; an instance switch; no embeddings (`docs/features/ai-assistant.md`).
 - The server marks a proposal applied when the form's save holds it, instead of the page.
 - Asking from the page (built: a request about a document or one of its rows): the same from a validation issue, and from each row's own menu.
-- **Other roles**, each behind the switch below:
-  - Program Manager: a programme overview (portfolio, capabilities exercised and not, overdue actions, retests due) and a proposed new exercise accepted in Creator.
-  - Controller and Facilitator, before the session only (refused while one is in play): the MSEL in running order with notes, key questions and contingent injects, to rehearse the session and write the Facilitator's script.
-  - Evaluator: their own EEGs and, after the session, their own notes. Never a P/S/M/U level.
-  - Observer and Player: nothing, by decision.
-  - `tools/list` filtered by what the person can do.
-- **A switch per organization and role** (Admin → Organization, audited, off by default), inside the instance switch: a guest organization's Evaluators mustn't inherit the host's choice. Needed before the other roles; the integrated chat below builds on it.
-- **More clients**: Preferences shows the configuration for clients that speak HTTP natively (no Node.js bridge); OAuth 2.1 with PKCE for web connectors.
-- Proposals for the Library: an exercise's inject saved as a Library inject, and exercise templates. Needs proposals scoped to an organization rather than an exercise.
+- **Other roles** (built: the programme for a Program Manager, the conduct brief for a Controller or Facilitator, their own EEGs and notes for an Evaluator, behind a switch per organization and role): a guest organization's people follow the host's switch, since an exercise has one organization -- revisit if exercises are ever shared between organizations.
+- **More clients** (built: Preferences shows the configuration for clients that speak HTTP natively): OAuth 2.1 with PKCE for web connectors.
+- Proposals for the Library (built: injects, and a new exercise for Creator): exercise templates, which are whole documents rather than a form's fields; and ATT&CK techniques on a proposed Library inject.
 - **Delegated acceptance**: a Planner lets low-risk proposals of one exercise accept themselves, by kind, recorded in the activity log as accepted by delegation; validating injects, approvals and READY always by hand. Accepting with nobody on the page needs the server to write the document itself, which ends "propose, never write" for those kinds — the decision to take first.
 - **Integrated chat** inside TTX-Zone through a provider the operator contracts (Azure AI Foundry, Amazon Bedrock, Google Vertex AI), for organizations that need it for compliance: split screen with the real form, same tools and guards. Never on the public (Player) face.
   - With it, optionally the provider and region per organization (the switch per organization is above).

@@ -87,6 +87,8 @@ AuditAction = Literal[
     "sso.settings_delete",
     "sso.test",
     "assistant.settings_update",
+    # A Program Manager choosing the roles their organization leaves it on for.
+    "assistant.organization_roles_update",
     # A person deciding an AI assistant's proposal (who, which row, never the content).
     "assistant.proposal_accepted",
     "assistant.proposal_discarded",
@@ -644,6 +646,9 @@ async def forward_forever() -> None:
                 from app.services.assistant import requests as assistant_requests
 
                 assistant_requests.prune_expired(session, now)
+                from app.services.assistant import proposals_org as assistant_org_proposals
+
+                assistant_org_proposals.prune_expired(session, now)
                 from app.services import login_throttle_service
 
                 login_throttle_service.prune_expired(session, now)

@@ -14,10 +14,15 @@ Notable changes to TTX-Zone, by release. Versions follow [Semantic Versioning](h
 - **Admin → Organization**: "Context for exercise design" takes the organization's sector, size, regulators, technologies and critical assets in its own words. Where the AI assistant is on, the Exercise Planners' AI client reads it so proposals fit the organization.
 - **Ask the AI assistant** from the needs analysis, the MSEL and the session plan: leave a request about the document or one of its rows; your AI client reads it the next time you work with it, and its proposals come back marked as the answer.
 - **AI assistant**: proposals for the session plan's texts (the invitation, briefing and session notes, how data is collected).
+- **Admin → Organization**: "AI assistant" chooses the roles your organization leaves the assistant on for: Exercise Program Managers, Exercise Planners, Controllers and Facilitators, Evaluators. Existing organizations keep what they had (Program Managers, Planners and Evaluators); Controllers and Facilitators start off.
+- **AI assistant for other roles**: an Exercise Program Manager reads the programme (what was exercised, what never was, overdue actions); a Controller or Facilitator reads the MSEL in running order before the session, to rehearse it or write the Facilitator's script; an Evaluator reads the EEGs they rate and, after the session, their own notes. Never while a session is in play. Each person's client is offered only the tools of their roles.
+- **AI assistant**: it can propose a new exercise, reviewed in Creator → New exercise, and injects for the organization's Library, reviewed in Library → Injects.
+- **Preferences → AI assistant**: the configuration for AI clients that connect over HTTP themselves, with no Node.js bridge.
+- **API**: `GET|PUT /organizations/{id}/assistant`, `GET /organizations/{id}/assistant/proposals` and `POST …/{id}/applied|discard`.
 - **API**: `GET /ttx/{id}/design-review`, `GET|PUT /organizations/{id}/context`, `GET|POST /ttx/{id}/assistant/requests` and `DELETE /ttx/{id}/assistant/requests/{id}`.
 
 ### Changed
-- **API**: `POST /ttx/{id}/assistant/proposals/{id}/discard` takes an optional `{reason, note}`. This release includes database migrations (`0004` to `0006`), applied when the backend starts.
+- **API**: `POST /ttx/{id}/assistant/proposals/{id}/discard` takes an optional `{reason, note}`. This release includes database migrations (`0004` to `0008`), applied when the backend starts.
 
 ## [0.3.0] - 2026-11-20
 

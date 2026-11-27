@@ -225,6 +225,8 @@ INTERNAL_ONLY: frozenset[tuple[str, str]] = frozenset(
         ("PATCH", "/organizations/{organization_id}"),
         ("GET", "/organizations/{organization_id}/context"),
         ("PUT", "/organizations/{organization_id}/context"),
+        ("GET", "/organizations/{organization_id}/assistant"),
+        ("PUT", "/organizations/{organization_id}/assistant"),
         ("GET", "/organizations/{organization_id}/allowed-domains"),
         ("POST", "/organizations/{organization_id}/allowed-domains"),
         ("DELETE", "/organizations/{organization_id}/allowed-domains/{domain_id}"),
@@ -331,6 +333,10 @@ INTERNAL_ONLY: frozenset[tuple[str, str]] = frozenset(
         ("PUT", "/ttx/{ttx_id}/planning-team/{user_id}/tags"),
         ("PUT", "/ttx/{ttx_id}/tags/apply"),
         ("POST", "/ttx/{ttx_id}/unarchive"),
+        # organization_assistant
+        ("GET", "/organizations/{organization_id}/assistant/proposals"),
+        ("POST", "/organizations/{organization_id}/assistant/proposals/{proposal_id}/applied"),
+        ("POST", "/organizations/{organization_id}/assistant/proposals/{proposal_id}/discard"),
         # ttx_assistant
         ("GET", "/ttx/{ttx_id}/assistant/proposals"),
         ("POST", "/ttx/{ttx_id}/assistant/proposals/{proposal_id}/applied"),

@@ -8,7 +8,7 @@ import { apiFetch, ApiError } from '../../lib/api'
 import { btnPrimary, btnSecondary, inputBase, linkAccent } from '../../lib/buttonStyles'
 import { codeRefText } from '../../lib/codeRef'
 import { panelFormActions } from '../../lib/panelStyles'
-import type { AssistantRequest, AssistantRequestList, InstancePolicy } from '../../lib/types'
+import type { AssistantRequest, AssistantRequestList } from '../../lib/types'
 import { ButtonSpinner } from '../common/ButtonSpinner'
 import { CodeRef } from '../common/CodeRef'
 import { DiscardConfirm } from '../common/DiscardConfirm'
@@ -40,15 +40,11 @@ export function AssistantRequestsPanel({
 }) {
   const { t } = useTranslation()
   const { showToast } = useToast()
-  const policy = useApiResource<InstancePolicy>('/instance/policy')
-  const enabled = policy.data?.assistant_enabled === true
-  const list = useApiResource<AssistantRequestList>(
-    enabled ? `/ttx/${ttxId}/assistant/requests` : null,
-  )
+  const list = useApiResource<AssistantRequestList>(`/ttx/${ttxId}/assistant/requests`)
   const [asking, setAsking] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  if (!enabled || !list.data) return null
+  if (!list.data?.enabled) return null
   const mine = list.data.items.filter((request) => request.section === section)
   const titleOf = (request: AssistantRequest) =>
     rows.find((row) => row.id === request.row_id)?.title ?? ''

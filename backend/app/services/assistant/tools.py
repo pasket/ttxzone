@@ -23,31 +23,59 @@ from pydantic import BaseModel, ConfigDict, Field
 from sqlmodel import Session, col, select
 
 from app.core.exceptions import AppException
-from app.core.security import authorize_ttx, is_program_manager
+from app.core.security import (
+    authorize_ttx,
+    is_program_manager,
+    require_planner,
+    require_program_manager,
+    ttx_access_of,
+)
 from app.data.attack_catalog import DOMAIN_NAMES, LATEST_ATTACK_VERSION, load_domain, load_groups
 from app.data.inject_catalog import catalog_inject
 from app.data.knowledge_catalog import load_knowledge_catalog
 from app.data.objective_catalog import objective_catalog_by_id
 from app.data.risk_catalog import RISK_CATALOG, RiskCategory
 from app.data.scenario_catalog import scenario_catalog
-from app.models import TTX, AssistantProposal, Organization, RoleEnum, TTXContextRole, User
+from app.models import (
+    TTX,
+    AssistantProposal,
+    Organization,
+    OrganizationMembership,
+    OrgRoleEnum,
+    RoleEnum,
+    TTXAccess,
+    TTXContextRole,
+    User,
+)
+from app.models.exercise_run import RunNote, RunStatus
+from app.models.ttx_conduct_prep import ConductPrepSnapshot
+from app.models.ttx_needs_form import Capability
 from app.schemas.scenario import ScenarioVariables
 from app.services import (
     after_action_service,
+    exercise_run_service,
     inject_library_service,
     organization_scenario_service,
     organization_service,
     ttx_placeholder_service,
 )
 from app.services.actor_library_service import require_library_reader
-from app.services.assistant import fixes, proposals, proposals_aar, proposals_prep, requests
+from app.services.assistant import (
+    fixes,
+    proposals,
+    proposals_aar,
+    proposals_org,
+    proposals_prep,
+    requests,
+    switch,
+)
 from app.services.assistant.search import inject_index, knowledge_index, objective_index
 from app.services.assistant.session_record import SECTIONS, session_record
 from app.services.assistant.switch import SESSION_DATA_NOTICE
 from app.services.design_review_service import design_review
 from app.services.needs_markdown_service import render_needs_markdown
 from app.services.organization_scenario_service import library_document
-from app.services.ttx_conduct_prep_service import find_prep, prep_read
+from app.services.ttx_conduct_prep_service import find_prep, latest_prep_snapshot, prep_read
 from app.services.ttx_msel_service import find_msel, msel_read
 from app.services.ttx_needs_form_service import form_read, get_form
 from app.services.ttx_service import list_ttx_for_user
@@ -256,8 +284,44 @@ def _org_names(session: Session, ids: set[uuid.UUID]) -> dict[uuid.UUID, str]:
     return {o.id: o.name for o in rows}
 
 
+def acting_roles(session: Session, user: User, ttx: TTX, access: Any = None) -> set[str]:
+    """What the person is on this exercise, in the roles an organization
+    turns the assistant on for (switch.ASSISTANT_ROLES)."""
+    roles = set()
+    if is_program_manager(session, user, ttx.organization_id):
+        roles.add("program_manager")
+    access = access or ttx_access_of(session, user.id, ttx.id)
+    if access is not None:
+        held = access.context_roles()
+        if TTXContextRole.PLANNER.value in held:
+            roles.add("planner")
+        if held & {TTXContextRole.CONTROLLER.value, TTXContextRole.FACILITATOR.value}:
+            roles.add("controller")
+        if access.is_evaluator:
+            roles.add("evaluator")
+    return roles
+
+
+def _switched_on(session: Session, user: User, ttx: TTX, *among: str) -> TTX:
+    """The exercise's organization leaves the assistant on for one of the
+    roles (`among`) the person holds on it."""
+    switch.require_role(
+        session, ttx.organization_id, *(acting_roles(session, user, ttx) & set(among))
+    )
+    return ttx
+
+
 def _authorize(session: Session, user: User, ttx_id: uuid.UUID) -> TTX:
-    return authorize_ttx(session, user, ttx_id, _PLANNER, read=True)
+    ttx = authorize_ttx(session, user, ttx_id, _PLANNER, read=True)
+    return _switched_on(session, user, ttx, "planner", "program_manager")
+
+
+def _library_reader(session: Session, user: User, organization_id: uuid.UUID) -> None:
+    """The organization's library, as on its screens, with the assistant on
+    for the role that reads it."""
+    require_library_reader(session, user, organization_id)
+    manager = is_program_manager(session, user, organization_id)
+    switch.require_role(session, organization_id, "program_manager" if manager else "planner")
 
 
 # --- Exercises ---------------------------------------------------------------
@@ -265,19 +329,27 @@ def _authorize(session: Session, user: User, ttx_id: uuid.UUID) -> TTX:
 
 def _list_exercises(session: Session, user: User, args: ListExercisesInput) -> ToolResult:
     archived = None if args.include_archived else False
-    ttxs, _access, _total = list_ttx_for_user(
-        session, user, limit=200, offset=0, role=TTXContextRole.PLANNER, archived=archived
+    listed, access, _total = list_ttx_for_user(
+        session, user, limit=200, offset=0, archived=archived
     )
-    # A Lead Evaluator who doesn't plan writes the after-action report.
-    evaluated, _access, _total = list_ttx_for_user(
-        session, user, limit=200, offset=0, role=TTXContextRole.EVALUATOR, archived=archived
-    )
-    planned = {ttx.id for ttx in ttxs}
-    ttxs = ttxs + [
-        ttx
-        for ttx in evaluated
-        if ttx.id not in planned and after_action_service.can_write(session, user, ttx)
-    ]
+    # What the person is on each, among the roles its organization leaves
+    # the assistant on for (a Player's or an Observer's exercises: none).
+    enabled: dict[uuid.UUID, set[str]] = {}
+    roles: dict[uuid.UUID, set[str]] = {}
+    authors: set[uuid.UUID] = set()
+    ttxs = []
+    for ttx in listed:
+        if ttx.organization_id not in enabled:
+            enabled[ttx.organization_id] = switch.organization_roles(session, ttx.organization_id)
+        held = acting_roles(session, user, ttx, access.get(ttx.id))
+        held &= enabled[ttx.organization_id]
+        if held:
+            roles[ttx.id] = held
+            ttxs.append(ttx)
+            seat = access.get(ttx.id)
+            if "planner" in held or ("evaluator" in held and seat is not None and seat.leads):
+                authors.add(ttx.id)
+    planned = {ttx_id for ttx_id, held in roles.items() if "planner" in held}
     names = _org_names(session, {t.organization_id for t in ttxs})
     items = []
     for ttx in ttxs:
@@ -299,6 +371,9 @@ def _list_exercises(session: Session, user: User, args: ListExercisesInput) -> T
                 "after_action_status": report.status.value if report else None,
                 "archived": ttx.archived_at is not None,
                 "you_plan": ttx.id in planned,
+                "your_roles": sorted(roles[ttx.id]),
+                # The after-action report is yours to write (its Planners and Lead Evaluator).
+                "you_write_the_report": ttx.id in authors,
             }
         )
     return ToolResult({"exercises": items, "total": len(items)})
@@ -627,7 +702,7 @@ def _search_scenarios(session: Session, user: User, args: ScenarioSearchInput) -
                 "Name the organization (organization_id) whose library to search.",
                 422,
             )
-        require_library_reader(session, user, args.organization_id)
+        _library_reader(session, user, args.organization_id)
         rows = [
             organization_scenario_service.organization_summary(row)
             for row in organization_scenario_service.list_scenarios(session, args.organization_id)
@@ -658,7 +733,7 @@ def _get_scenario(session: Session, user: User, args: ScenarioInput) -> ToolResu
                 "Name the organization (organization_id) whose library to search.",
                 422,
             )
-        require_library_reader(session, user, args.organization_id)
+        _library_reader(session, user, args.organization_id)
         doc, _origin = library_document(
             session, args.organization_id, "organization", args.scenario_id, args.language
         )
@@ -779,7 +854,8 @@ def _improvement_plan(session: Session, user: User, args: ImprovementPlanInput) 
     """The organization's improvement actions as Admin shows them to its
     Program Managers; anyone else, the actions of the reports they can
     read."""
-    if is_program_manager(session, user, args.organization_id):
+    enabled = switch.organization_roles(session, args.organization_id)
+    if is_program_manager(session, user, args.organization_id) and "program_manager" in enabled:
         rows = after_action_service.organization_plan(
             session,
             args.organization_id,
@@ -794,7 +870,12 @@ def _improvement_plan(session: Session, user: User, args: ImprovementPlanInput) 
         ttxs, _access, _total = list_ttx_for_user(
             session, user, limit=200, offset=0, organization_id=args.organization_id
         )
-        readable = {t.id for t in ttxs if after_action_service.can_read(session, user, t)}
+        readable = {
+            t.id
+            for t in ttxs
+            if after_action_service.can_read(session, user, t)
+            and acting_roles(session, user, t) & enabled
+        }
         if not readable:
             raise AppException(
                 "TTX_ACCESS_DENIED",
@@ -1005,7 +1086,7 @@ def _msel(session: Session, user: User, args: MselInput) -> ToolResult:
 
 
 def _organization_profile(session: Session, user: User, args: OrganizationInput) -> ToolResult:
-    require_library_reader(session, user, args.organization_id)
+    _library_reader(session, user, args.organization_id)
     organization = organization_service.get_organization(session, args.organization_id)
     context = organization_service.organization_context(organization).model_dump()
     return ToolResult(
@@ -1196,7 +1277,7 @@ def _search_attack(session: Session, user: User, args: AttackSearchInput) -> Too
 
 
 def _search_library(session: Session, user: User, args: LibrarySearchInput) -> ToolResult:
-    require_library_reader(session, user, args.organization_id)
+    _library_reader(session, user, args.organization_id)
     needle = args.query.strip().lower()
     if args.kind == "inject":
         items = [
@@ -1378,7 +1459,8 @@ class ListProposalsInput(ExerciseInput):
 def _authorize_design(session: Session, user: User, ttx_id: uuid.UUID) -> TTX:
     """Proposing is designing: the Planner guard for a write (a Program
     Manager off the team only reads; an archived exercise refuses)."""
-    return authorize_ttx(session, user, ttx_id, _PLANNER, read=False)
+    ttx = authorize_ttx(session, user, ttx_id, _PLANNER, read=False)
+    return _switched_on(session, user, ttx, "planner")
 
 
 def _authorize_report_author(
@@ -1392,7 +1474,7 @@ def _authorize_report_author(
         raise AppException(
             "TTX_ACCESS_DENIED", "Only the exercise's Planners and Lead Evaluator write it.", 403
         )
-    return ttx
+    return _switched_on(session, user, ttx, "planner", "evaluator")
 
 
 def _tlp(session: Session, ttx: TTX) -> str:
@@ -1710,6 +1792,417 @@ def _list_requests(session: Session, user: User, args: ListRequestsInput) -> Too
     )
 
 
+# --- Other roles: the programme, the session's conduct, an Evaluator's work -----
+
+
+def _program_overview(session: Session, user: User, args: OrganizationInput) -> ToolResult:
+    """The organization's exercise programme as its Program Managers
+    oversee it: every exercise and how far it got, what each capability
+    was exercised in, and the improvement plan's loose ends."""
+    require_program_manager(session, user, args.organization_id)
+    switch.require_role(session, args.organization_id, "program_manager")
+    ttxs = session.exec(
+        select(TTX).where(TTX.organization_id == args.organization_id).order_by(col(TTX.created_at))
+    ).all()
+    runs = exercise_run_service.run_states(session, [t.id for t in ttxs])
+    exercises = []
+    planned: dict[str, list[str]] = {c.value: [] for c in Capability}
+    played: dict[str, list[str]] = {c.value: [] for c in Capability}
+    for ttx in ttxs:
+        form = get_form(session, ttx.id)
+        msel = find_msel(session, ttx.id)
+        report = after_action_service.find_report(session, ttx.id)
+        run = runs.get(ttx.id)
+        done = run in (RunStatus.ENDED, RunStatus.STOPPED)
+        for capability in form.capabilities:
+            if capability in planned:
+                (played if done else planned)[capability].append(ttx.code)
+        exercises.append(
+            {
+                "ttx_id": str(ttx.id),
+                "code": ttx.code,
+                "name": ttx.name,
+                "created": ttx.created_at.date().isoformat(),
+                "needs_analysis_status": form.status.value,
+                "msel_status": msel.status.value if msel else None,
+                "session": run.value if run else "not_started",
+                "after_action_status": report.status.value if report else None,
+                "capabilities": list(form.capabilities),
+                "archived": ttx.archived_at is not None,
+            }
+        )
+    plan = after_action_service.organization_plan(
+        session, args.organization_id, status=None, overdue=False, q=None, limit=200, offset=0
+    )
+
+    def action(r: Any) -> dict[str, Any]:
+        return {
+            "code": r.code,
+            "exercise": r.ttx_code,
+            "action": _cut(r.action, 200),
+            # The area, never the person who owns it.
+            "owner_area": r.owner_area or None,
+            "due_date": r.due_date,
+        }
+
+    data = {
+        "exercises": exercises,
+        "capabilities": [
+            {
+                "capability": c.value,
+                # Exercises whose session ended, and those still being designed.
+                "exercised_in": played[c.value],
+                "planned_in": planned[c.value],
+            }
+            for c in Capability
+        ],
+        "never_exercised": [c.value for c in Capability if not played[c.value]],
+        "improvement_plan": {
+            "open": plan.open,
+            "overdue": plan.overdue,
+            "overdue_actions": [action(r) for r in plan.items if r.overdue],
+            # Done, with no later exercise that tested it again.
+            "done_without_retest": [
+                action(r) for r in plan.items if r.status.value == "done" and r.retest is None
+            ],
+        },
+    }
+    return ToolResult(data, organization_id=args.organization_id)
+
+
+def _refuse_in_play(session: Session, ttx: TTX) -> None:
+    run = exercise_run_service.find_run(session, ttx.id)
+    if run is not None and run.status in (RunStatus.LIVE, RunStatus.PAUSED):
+        raise AppException(
+            "ASSISTANT_SESSION_IN_PLAY",
+            "The AI assistant stays out of a session in play: come back once it has ended.",
+            409,
+        )
+
+
+def _conduct_brief(session: Session, user: User, args: ExerciseInput) -> ToolResult:
+    """The MSEL as the people who run the session need it, before it
+    starts: in running order, with what the Controller and the Facilitator
+    are told and nobody else is."""
+    conducting = (TTXContextRole.CONTROLLER, TTXContextRole.FACILITATOR)
+    ttx = authorize_ttx(session, user, args.ttx_id, conducting, read=False, allow_archived=True)
+    _switched_on(session, user, ttx, "controller")
+    _refuse_in_play(session, ttx)
+    msel = find_msel(session, ttx.id)
+    if msel is None:
+        return ToolResult({"msel": None, "note": "No MSEL yet."}, ttx.id, ttx.organization_id)
+    read = msel_read(session, ttx, msel)
+    codes = _MselCodes.of(read)
+
+    def minute(i: Any) -> int:
+        return i.offset_minutes if i.offset_minutes is not None else 10**6
+
+    scripted = [i for i in read.injects if i.kind.value != "contingent"]
+    data = {
+        "status": read.status.value,
+        "version": read.version,
+        "title": read.title,
+        "duration_minutes": read.duration_minutes,
+        "time_compression": read.time_compression,
+        "rooms": [{"code": r.code, "name": r.name} for r in read.rooms],
+        "actors": [{"code": a.code, "name": a.name, "played_by": a.played_by} for a in read.actors],
+        "phases": [
+            {
+                "code": p.code,
+                "name": p.name,
+                "start_minute": p.start_offset,
+                "end_minute": p.end_offset,
+                "situation_update": p.situation_update,
+                "key_questions": p.key_questions,
+                "objectives": [codes.objectives.get(o, "?") for o in p.objective_ids],
+                "injects": [
+                    _inject_row(i, codes, full=True)
+                    for i in sorted((i for i in scripted if i.phase_id == p.id), key=minute)
+                ],
+            }
+            for p in read.phases
+        ],
+        # Held back until their condition is met.
+        "contingent_injects": [
+            _inject_row(i, codes, full=True) for i in read.injects if i.kind.value == "contingent"
+        ],
+        "objectives": [
+            {"code": o.code, "title": o.title, "statement": o.statement}
+            for o in read.needs.objectives
+        ],
+    }
+    return ToolResult(data, ttx.id, ttx.organization_id)
+
+
+def _my_evaluation(session: Session, user: User, args: ExerciseInput) -> ToolResult:
+    """An Evaluator's own work on an exercise: the EEGs they rate and, once
+    the session has ended, the notes they took in it. Never anyone else's
+    notes, and never a rating."""
+    ttx = authorize_ttx(
+        session, user, args.ttx_id, (TTXContextRole.EVALUATOR,), read=False, allow_archived=True
+    )
+    _switched_on(session, user, ttx, "evaluator")
+    _refuse_in_play(session, ttx)
+    access = ttx_access_of(session, user.id, ttx.id)
+    run = exercise_run_service.find_run(session, ttx.id)
+    snapshot = (
+        session.get(ConductPrepSnapshot, run.plan_snapshot_id)
+        if run is not None
+        else latest_prep_snapshot(session, ttx.id)
+    )
+    if snapshot is None:
+        return ToolResult(
+            {
+                "eeg": None,
+                "note": "The session plan isn't ready yet: the EEGs you'll rate come with it.",
+            },
+            ttx.id,
+            ttx.organization_id,
+        )
+    rated = exercise_run_service.rated_objectives(snapshot.payload, user, bool(access.leads))
+    data: dict[str, Any] = {
+        "lead_evaluator": bool(access.leads),
+        "session": run.status.value if run else "not_started",
+        "eeg": [
+            {
+                "code": eeg["code"],
+                "title": eeg.get("title", ""),
+                "capability": eeg["capability"],
+                "statement": eeg["statement"],
+                "points": [
+                    {
+                        "kind": p["kind"],
+                        "text": p["text"],
+                        "criteria": {level.upper(): p[f"criteria_{level}"] for level in "psmu"},
+                        "inject": p["source_inject_code"],
+                        "expected_action": p["source_action_code"],
+                        "responsible_role": p["responsible_role"],
+                        "within_minutes": p["expected_within_minutes"],
+                    }
+                    for p in eeg["points"]
+                ],
+            }
+            for eeg in rated
+        ],
+        "notes": None,
+    }
+    if run is not None:
+        notes = session.exec(
+            select(RunNote)
+            .where(
+                RunNote.ttx_id == ttx.id,
+                RunNote.run_id == run.id,
+                RunNote.author_id == user.id,
+                RunNote.role == TTXContextRole.EVALUATOR.value,
+            )
+            .order_by(col(RunNote.inject_code))
+        ).all()
+        data["notes"] = [
+            {
+                # None: the general note, about the whole session.
+                "inject": n.inject_code or None,
+                "room": n.room_code or None,
+                "text": n.text,
+            }
+            for n in notes
+            if n.text.strip()
+        ]
+    return ToolResult(data, ttx.id, ttx.organization_id)
+
+
+# --- Proposals to the organization: a new exercise, Library injects -----------
+
+_ORG_PROPOSAL_NOTE = (
+    " Nothing is created until the person accepts the proposal in TTX-Zone, where it fills "
+    "the form for them to review and save; tell them where."
+)
+
+
+class ProposeNewExerciseInput(OrganizationInput, proposals_org.NewExerciseItem):
+    summary: str = Field(
+        default="", max_length=500, description="Why this exercise, in a sentence."
+    )
+
+
+class ProposeLibraryInjectsInput(OrganizationInput):
+    items: list[proposals_org.LibraryInjectItem] = Field(  # type: ignore[valid-type]
+        min_length=1, max_length=10
+    )
+    summary: str = Field(default="", max_length=500, description="Why, in a sentence.")
+
+
+class OrganizationProposalsInput(OrganizationInput):
+    status: Literal["pending", "accepted", "discarded"] | None = Field(
+        default=None, description="Only these (default: all)."
+    )
+
+
+def _propose_new_exercise(
+    session: Session, user: User, args: ProposeNewExerciseInput
+) -> ToolResult:
+    """Creating an exercise is an organization Planner's."""
+    require_planner(session, user, args.organization_id)
+    switch.require_role(session, args.organization_id, "planner")
+    organization = organization_service.get_organization(session, args.organization_id)
+    item = proposals_org.NewExerciseItem(
+        **args.model_dump(include=set(proposals_org.NewExerciseItem.model_fields))
+    )
+    kept = proposals_org.propose_new_exercise(session, organization, user, item, args.summary)
+    return ToolResult(
+        {
+            "proposal_id": str(kept.id),
+            "review_in": "TTX-Zone → Creator → New exercise",
+        },
+        organization_id=organization.id,
+    )
+
+
+def _propose_library_injects(
+    session: Session, user: User, args: ProposeLibraryInjectsInput
+) -> ToolResult:
+    """The Library is its Program Managers' to change."""
+    require_program_manager(session, user, args.organization_id)
+    switch.require_role(session, args.organization_id, "program_manager")
+    organization = organization_service.get_organization(session, args.organization_id)
+    kept = proposals_org.propose_library_injects(
+        session, organization, user, list(args.items), args.summary
+    )
+    return ToolResult(
+        {
+            "proposals": [{"proposal_id": str(p.id), "title": p.patch["title"]} for p in kept],
+            "review_in": "TTX-Zone → Library → Injects → Organization",
+        },
+        organization_id=organization.id,
+    )
+
+
+def _list_organization_proposals(
+    session: Session, user: User, args: OrganizationProposalsInput
+) -> ToolResult:
+    _library_reader(session, user, args.organization_id)
+    rows = proposals_org.list_for_author(session, args.organization_id, user, status=args.status)
+    return ToolResult(
+        {
+            "proposals": [
+                {
+                    "proposal_id": str(p.id),
+                    "target": p.target,
+                    "title": p.patch.get("title") or p.patch.get("name"),
+                    "summary": p.summary,
+                    "status": p.status,
+                    # The person's own words on a discard: read them before proposing again.
+                    "discard_reason": p.decision_reason,
+                    "discard_note": p.decision_note,
+                }
+                for p in rows
+            ]
+        },
+        organization_id=args.organization_id,
+    )
+
+
+# --- What each person is offered --------------------------------------------------
+
+_DESIGNERS = frozenset({"planner"})
+_DESIGN_READERS = frozenset({"planner", "program_manager"})
+_REPORT_AUTHORS = frozenset({"planner", "evaluator"})
+_EVERYONE = frozenset(switch.ASSISTANT_ROLES)
+# Who each tool is for (tools/list offers a person the tools of the roles
+# they hold); a tool not named here is a Planner's. The guard that decides
+# is each tool's own.
+_TOOL_ROLES: dict[str, frozenset[str]] = {
+    **dict.fromkeys(
+        ("list_exercises", "search_knowledge", "get_knowledge_entry", "get_improvement_plan"),
+        _EVERYONE,
+    ),
+    **dict.fromkeys(
+        (
+            "get_exercise_overview",
+            "get_needs_analysis",
+            "get_msel",
+            "get_inject",
+            "get_organization_profile",
+            "get_design_review",
+            "get_session_plan",
+            "get_validation_report",
+            "plan_to_ready",
+            "search_scenarios",
+            "get_scenario",
+            "search_inject_catalog",
+            "get_catalog_inject",
+            "search_objective_catalog",
+            "search_attack",
+            "search_risk_catalog",
+            "search_organization_library",
+            "get_placeholders",
+        ),
+        _DESIGN_READERS,
+    ),
+    **dict.fromkeys(
+        (
+            "get_after_action_report",
+            "get_session_record",
+            "propose_report_text",
+            "propose_objective_assessments",
+            "propose_improvement_actions",
+            "list_my_proposals",
+        ),
+        _REPORT_AUTHORS,
+    ),
+    "get_program_overview": frozenset({"program_manager"}),
+    "propose_library_injects": frozenset({"program_manager"}),
+    "list_organization_proposals": _DESIGN_READERS,
+    "get_conduct_brief": frozenset({"controller"}),
+    "get_my_evaluation": frozenset({"evaluator"}),
+}
+
+
+def tool_roles(name: str) -> frozenset[str]:
+    return _TOOL_ROLES.get(name, _DESIGNERS)
+
+
+def held_roles(session: Session, user: User) -> set[str]:
+    """The roles the person holds anywhere, where the organization leaves
+    the assistant on for them."""
+    enabled: dict[uuid.UUID, set[str]] = {}
+
+    def on(organization_id: uuid.UUID, role: str) -> bool:
+        if organization_id not in enabled:
+            enabled[organization_id] = switch.organization_roles(session, organization_id)
+        return role in enabled[organization_id]
+
+    roles: set[str] = set()
+    memberships = session.exec(
+        select(OrganizationMembership).where(
+            OrganizationMembership.user_id == user.id,
+            col(OrganizationMembership.disabled_at).is_(None),
+        )
+    ).all()
+    for m in memberships:
+        role = {OrgRoleEnum.PROGRAM_MANAGER: "program_manager", OrgRoleEnum.PLANNER: "planner"}
+        if m.role in role and on(m.organization_id, role[m.role]):
+            roles.add(role[m.role])
+    rows = session.exec(
+        select(TTXAccess, TTX.organization_id)
+        .join(TTX, col(TTX.id) == TTXAccess.ttx_id)
+        .where(TTXAccess.user_id == user.id)
+    ).all()
+    for access, organization_id in rows:
+        held = access.context_roles()
+        flags = (
+            (TTXContextRole.PLANNER.value in held, "planner"),
+            (bool(held & {"controller", "facilitator"}), "controller"),
+            (access.is_evaluator, "evaluator"),
+        )
+        roles |= {role for holds, role in flags if holds and on(organization_id, role)}
+    return roles
+
+
+def tools_for(session: Session, user: User) -> list[ToolSpec]:
+    roles = held_roles(session, user)
+    return [spec for spec in TOOLS.values() if tool_roles(spec.name) & roles]
+
+
 def _not_found(message: str) -> AppException:
     return AppException("ASSISTANT_ENTRY_NOT_FOUND", message, 404)
 
@@ -1719,9 +2212,10 @@ TOOLS: dict[str, ToolSpec] = {
     for spec in (
         ToolSpec(
             "list_exercises",
-            "The exercises you plan in TTX-Zone, or write the after-action report of as Lead "
-            "Evaluator (not archived): id, code, name, organization and the status of their "
-            "needs analysis, MSEL and report. Start here to get a ttx_id. With "
+            "Your exercises in TTX-Zone (not archived), with what you are on each (your_roles: "
+            "planner, program_manager, controller, evaluator): id, code, name, organization "
+            "and the status of their needs analysis, MSEL and report. Start here to get a "
+            "ttx_id. With "
             "include_archived, also past exercises: read their reports and session records to "
             "learn from them.",
             ListExercisesInput,
@@ -2136,6 +2630,69 @@ TOOLS: dict[str, ToolSpec] = {
             "and don't repeat what was turned down." + _DATA_NOTE,
             ListProposalsInput,
             _list_proposals,
+        ),
+        ToolSpec(
+            "get_program_overview",
+            "For a Program Manager: the organization's exercise programme. Every exercise and "
+            "how far it got (needs analysis, MSEL, session, after-action report), what each "
+            "capability was exercised in and which never were, and the improvement plan's "
+            "loose ends: overdue actions, and actions done that no later exercise tested "
+            "again. Use it to plan the next exercises; owners are areas, never people."
+            + _DATA_NOTE,
+            OrganizationInput,
+            _program_overview,
+        ),
+        ToolSpec(
+            "get_conduct_brief",
+            "For a Controller or a Facilitator, before the session: the MSEL in running "
+            "order, phase by phase, with each inject whole (content, facilitator notes, "
+            "expected actions, polls), the phases' key questions and the contingent injects "
+            "with what triggers them. Use it to rehearse the session or write the "
+            "Facilitator's script. Refused while the session is in play." + _DATA_NOTE,
+            ExerciseInput,
+            _conduct_brief,
+        ),
+        ToolSpec(
+            "get_my_evaluation",
+            "For an Evaluator: the EEGs you rate on this exercise, with each observation "
+            "point and its rating criteria, and, once the session has ended, the notes you "
+            "took in it. Yours only. Use it to prepare what to watch for, or to put your notes "
+            "in order; the rating of each point stays yours to give in TTX-Zone, never "
+            "suggest one. Refused while the session is in play." + _SESSION_NOTE,
+            ExerciseInput,
+            _my_evaluation,
+            notice=SESSION_DATA_NOTICE,
+        ),
+        ToolSpec(
+            "propose_new_exercise",
+            "Propose a new exercise for the organization: its name, a description of what it "
+            "will test and why, and the language of its content. For an organization Planner, "
+            "who creates it from the proposal in Creator → New exercise; its needs analysis "
+            "comes next, with the other propose tools." + _ORG_PROPOSAL_NOTE,
+            ProposeNewExerciseInput,
+            _propose_new_exercise,
+            annotations=_WRITE,
+        ),
+        ToolSpec(
+            "propose_library_injects",
+            "For a Program Manager: propose injects for the organization's Library, to reuse "
+            "across exercises -- for instance an exercise's inject that worked (get_inject), "
+            "rewritten so it fits any exercise: no names of people, {placeholders} where an "
+            "exercise's own details go (variable_defaults gives each a default), and the "
+            "family, stage, audience and capabilities it serves. ATT&CK techniques are added "
+            "by the person in the form. Check search_organization_library first, so the "
+            "Library gets no duplicate." + _ORG_PROPOSAL_NOTE,
+            ProposeLibraryInjectsInput,
+            _propose_library_injects,
+            annotations=_WRITE,
+        ),
+        ToolSpec(
+            "list_organization_proposals",
+            "Your proposals to an organization (new exercises, Library injects) and what "
+            "became of each: pending, accepted or discarded, with the person's reason for a "
+            "discard. Read it before proposing again.",
+            OrganizationProposalsInput,
+            _list_organization_proposals,
         ),
         ToolSpec(
             "search_organization_library",
