@@ -19,7 +19,7 @@ Every use is a copy, so editing or deleting a library item never changes an exer
 
 An exercise template is a whole exercise packaged for reuse: its needs analysis, MSEL and library, with images. (The *scenario* is something else: the story the exercise tells, written in the MSEL.) It never carries people, approvals or dates, so you add those after copying: the needs analysis starts as a draft, and the MSEL stays read-only until you approve it.
 
-TTX-Zone includes templates such as ransomware, an executive tabletop, insider threat, supply chain, business continuity when a critical provider goes down, and sector demos.
+TTX-Zone includes templates such as ransomware, an executive tabletop, insider threat, supply chain, business continuity when a critical provider goes down, sector demos, and one played in three rooms by three administrations that share a crisis.
 
 You can:
 

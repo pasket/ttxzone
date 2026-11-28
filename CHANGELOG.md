@@ -2,6 +2,11 @@
 
 Notable changes to TTX-Zone, by release. Versions follow [Semantic Versioning](https://semver.org/). Before upgrading a deployment, read the release's entry and [Upgrade](https://docs.ttxzone.com/instance/upgrade/).
 
+## [Unreleased]
+
+### Added
+- **Library**: the TTX-Zone exercise template "Three rooms, one crisis" (`three-rooms-one-crisis`, English and Spanish). A town hall, the regional government and a water utility share a citizen-services platform that a tampered open-source dependency opens to an attacker. Each plays in its own room, with its own inject and its own poll, then all three meet in the main room to agree one statement, notify on time and tell residents. Four polls that move four impact meters, a contingent inject for when the three answer the media separately, and seven placeholders with suggested values.
+
 ## [0.4.0] - 2026-11-27
 
 ### Added
